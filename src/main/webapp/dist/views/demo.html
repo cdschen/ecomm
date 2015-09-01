@@ -1,0 +1,196 @@
+<!-- form -->
+<form name="demoOperatorForm" class="form-horizontal" novalidate ng-submit="save()">
+</form>
+<!-- input type[text, number, email] -->
+<!-- field -->
+<div class="form-group has-feedback" ng-class="{'has-success':(someOperatorForm.field.$dirty && someOperatorForm.field.$valid), 'has-warning':(someOperatorForm.field.$dirty && someOperatorForm.field.$invalid) }">
+    <label class="control-label col-md-2">属性 <span class="text-danger">*</span></label>
+    <div class="col-md-5">
+        <input type="text" class="form-control" name="field" ng-model="object.field" placeholder="field" required ng-maxlength="50" />
+        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="someOperatorForm.field.$dirty && someOperatorForm.field.$valid"></span>
+        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="someOperatorForm.field.$dirty && someOperatorForm.field.$invalid"></span>
+    </div>
+    <span class="col-md-5 help-block" ng-messages="someOperatorForm.field.$error" ng-show="someOperatorForm.field.$dirty && someOperatorForm.field.$invalid">
+        <span ng-messages-include="views/error-messages.html"></span>
+    </span>
+</div>
+<textarea class="form-control" rows="10" name="field" ng-model="object.field" placeholder="field" required ng-minlength="5" ng-maxlength="50"></textarea>
+<!-- select -->
+<!-- field -->
+<div class="form-group">
+    <label class="control-label col-md-2">属性 <span class="text-danger">*</span></label>
+    <div class="col-md-6">
+        <ui-select ng-model="object.field">
+            <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
+            <ui-select-choices repeat="field in fields | filter: $select.search">
+                <div ng-bind-html="field.name | highlight: $select.search"></div>
+            </ui-select-choices>
+        </ui-select>
+    </div>
+</div>
+<!-- checkbox -->
+<!-- roles -->
+<div class="form-group">
+    <label class="control-label col-md-2" for="name">是否删除 <span class="text-danger">*</span></label>
+    <div class="col-md-10">
+        <ul class="list-unstyled">
+            <li ng-repeat="role in roles">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="role" ng-model="role.done"> {{role.name}}
+                    </label>
+                </div>
+            </li>
+        </ul>
+        <p class="text-warning" ng-show="rolesDoneWarning">请选择至少一个角色</p>
+    </div>
+</div>
+<!-- form button -->
+<button type="submit" class="btn btn-success btn-lg" ng-disabled="!someOperatorForm.$valid">保存</button>
+
+
+
+
+
+
+
+
+
+
+
+<!-- process create -->
+    <div class="panel panel-default" style="display:none">
+        <div class="panel-body">
+            <h4 class="text-success">流程编辑</h4>
+            <hr>
+            <!-- process form -->
+            <form name="processForm" class="form-horizontal" novalidate>
+                <!-- process.name -->
+                <div class="form-group has-feedback" ng-class="{'has-success':(processForm.name.$dirty && processForm.name.$valid), 'has-warning':(processForm.name.$dirty && processForm.name.$invalid) }">
+                    <label class="control-label col-md-2">名称 <span class="text-danger">*</span></label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="name" ng-model="process.name" placeholder="(必填)" required ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="processForm.name.$dirty && processForm.name.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="processForm.name.$dirty && processForm.name.$invalid"></span>
+                    </div>
+                    <span class="col-md-4 help-block" ng-messages="processForm.name.$error" ng-show="processForm.name.$dirty && processForm.name.$invalid">
+                        <span ng-messages-include="views/error-messages.html"></span>
+                    </span>
+                </div>
+                <!-- process.type -->
+                <div class="form-group">
+                    <label class="control-label col-md-2">类型 <span class="text-danger">*</span></label>
+                    <div class="col-md-4">
+                        <ui-select ng-model="process.type">
+                            <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
+                            <ui-select-choices repeat="type in types | filter: $select.search">
+                                <div ng-bind-html="type.label | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <!-- process.objectType -->
+                <div class="form-group">
+                    <label class="control-label col-md-2">应用对象 <span class="text-danger">*</span></label>
+                    <div class="col-md-4">
+                        <ui-select ng-model="process.objectType">
+                            <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
+                            <ui-select-choices repeat="objectType in objectTypes | filter: $select.search">
+                                <div ng-bind-html="objectType.label | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <!-- process.defaultStepId -->
+                <div class="form-group">
+                    <label class="control-label col-md-2">流程默认状态 <span class="text-danger"></span></label>
+                    <div class="col-md-4">
+                        <ui-select ng-model="process.defaultStep">
+                            <ui-select-match placeholder="(可选)">{{$select.selected.name}}</ui-select-match>
+                            <ui-select-choices repeat="step in process.steps | filter: $select.search">
+                                <div ng-bind-html="step.name | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <!-- process.hideWhenComplete -->
+                <div class="form-group">
+                    <label class="control-label col-md-2">流程完成后是否隐藏 <span class="text-danger">*</span></label>
+                    <div class="col-md-4">
+                        <ui-select ng-model="process.hideWhenComplete">
+                            <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
+                            <ui-select-choices repeat="opt in isorno | filter: $select.search">
+                                <div ng-bind-html="opt.label | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+            </form>
+            <hr>
+            <h4 class="text-success">状态设计</h4>
+            <hr>
+            <!-- step form -->
+            <form name="stepForm" novalidate>
+                <div class="row">
+                    <div class="col-md-2" ng-repeat="step in process.steps">
+                        <div class="row">
+                            <div class="col-md-11">
+                                <div class="panel panel-default" style="padding: 1px;" data-drop="true" jqyoui-droppable="{index: {{$index}}, onDrop: 'drop' }" ng-model="process.steps" data-jqyoui-options="{revert: 'invalid'}">
+                                    <div class="panel panel-info" style="margin:0" data-drag="true" jqyoui-draggable="{index: {{$index}}, placeholder: true, animate: true}" data-jqyoui-options="{revert: 'invalid'}" ng-model="process.steps">
+                                        <div class="panel-body">
+                                            <div style="height:30px;margin-bottom:15px;">
+                                                <span ng-show="!step.editable"><strong>{{step.name}}</strong></span>
+                                                <div class="form-group has-feedback" ng-show="step.editable" ng-class="{'has-success':(stepForm.name{{step.$index}}.$dirty && stepForm.name{{step.$index}}.$valid), 'has-warning':(stepForm.name{{step.$index}}.$dirty && stepForm.name{{step.$index}}.$invalid) }">
+                                                    <input type="text" class="form-control input-sm" name="name{{step.$index}}" ng-model="step.name" placeholder="状态名称" required ng-maxlength="12" />
+                                                    <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="stepForm.name{{step.$index}}.$dirty && stepForm.name{{step.$index}}.$valid"></span>
+                                                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="stepForm.name{{step.$index}}.$dirty && stepForm.name{{step.$index}}.$invalid"></span>
+                                                </div>
+                                            </div>
+                                            <span class="badge">{{step.sequence+1}}</span>
+                                            <div class="btn-group btn-group-xs pull-right">
+                                                <button type="button" class="btn btn-info" ng-show="!step.editable" ng-click="updateStep(step, $index)">
+                                                    <span class="glyphicon glyphicon-edit"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-success" ng-show="step.editable" ng-click="saveUpdateStep(step, stepForm, $index)" ng-disabled="!stepForm.name{{step.$index}}.$valid">
+                                                    <span class="glyphicon glyphicon-floppy-saved"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-danger" ng-click="removeStep(step, $index)">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1" style="padding-left: 0;margin-left: -10px;">
+                                <a href="" class="btn btn-success btn-xs" style="margin:40px 0" ng-show="!$last">
+                                    <span class="glyphicon glyphicon-circle-arrow-right"></span>
+                                </a>
+                                <a href="" class="btn btn-primary btn-xs" style="margin:40px 0" ng-show="$last" ng-click="addStep(step, $index)">
+                                    <span class="glyphicon glyphicon-plus-sign"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <!-- save button -->
+            <hr>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="alert alert-warning" ng-show="!availableStep">
+                                <span class="glyphicon glyphicon-info-sign"></span> 此流程的所有状态必须为编辑完成的
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-success btn-lg btn-block" ng-click="save(process)" ng-disabled="!processForm.$valid || !process.objectType || !availableStep">
+                                <span class="glyphicon glyphicon-floppy-saved"></span> 保存
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

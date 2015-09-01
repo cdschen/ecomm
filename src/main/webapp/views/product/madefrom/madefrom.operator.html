@@ -1,0 +1,33 @@
+<div pageslide ps-open="madeFromSlideChecked" ps-speed="0.25" ps-size="700px">
+    <div id="operator-slider">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <button type="button" class="close" ng-click="colseMadeFromSlide()">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h3>编辑标签</h3>
+                <hr>
+                <form name="madeFromForm" class="form-horizontal" novalidate ng-submit="saveMadeFrom(madeFromForm, madeFrom)">
+                    <!-- name -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(madeFromForm.name.$dirty && madeFromForm.name.$valid), 'has-warning':(madeFromForm.name.$dirty && madeFromForm.name.$invalid) }">
+                        <label class="control-label col-md-2">标签名称 <span class="text-danger">*</span></label>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control" name="name" ng-model="madeFrom.name" placeholder="" required ng-maxlength="50" />
+                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="madeFromForm.name.$dirty && madeFromForm.name.$valid"></span>
+                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="madeFromForm.name.$dirty && madeFromForm.name.$invalid"></span>
+                        </div>
+                        <span class="col-md-5 help-block" ng-messages="madeFromForm.name.$error" ng-show="madeFromForm.name.$dirty && madeFromForm.name.$invalid">
+                            <span ng-messages-include="views/error-messages.html"></span>
+                        </span>
+                    </div>
+                     <!-- button -->
+                    <div class="form-group">
+                        <div class="col-md-5 col-md-offset-2">
+                            <button type="submit" class="btn btn-success btn-lg" ng-disabled="!madeFromForm.$valid">保存</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,97 @@
+<nav class="navbar navbar-default navbar-static-top" style="margin-bottom:0">
+    <div class="container-fluid">
+        <!-- brand -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" style="padding:0" ui-sref="dashboard">
+                <img alt="Brand" ng-src="images/miandao_logo.jpg" style="height:50px">
+            </a>
+        </div>
+        <!-- collapse -->
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+            <section ng-if="isAuthenticated()">
+                <!-- search -->
+                <form class="navbar-form navbar-left" role="search">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="超级搜索">
+                    </div>
+                    <button type="submit" class="btn btn-default">搜索</button>
+                </form>
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="" class="dropdown-toggle" data-toggle="dropdown">任务 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a >日常任务</a></li>
+                            <li><a >其他任务</a></li>
+                            <li><a href="#">需要审批</a></li>
+                            <li><a href="#">我知道了</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="">订单</a></li>
+                    <li class="dropdown">
+                        <a href="" class="dropdown-toggle" data-toggle="dropdown">商品 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a ui-sref="product">商品管理</a>
+                            </li>
+                            <li>
+                                <a ui-sref="brand">品牌管理</a>
+                            </li>
+                            <li>
+                                <a ui-sref="category">类别管理</a>
+                            </li>
+                            <li>
+                                <a ui-sref="madefrom">产地管理</a>
+                            </li>
+                            <li>
+                                <a ui-sref="tag">标签管理</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">库存 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a ui-sref="warehouse">仓库管理</a>
+                            </li>
+                            <li>
+                                <a ui-sref="inventory">库存管理</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#">采购</a></li>
+                    <li><a href="#">客户</a></li>
+                    <li><a ui-sref="process">流程</a></li>
+                    <li><a ui-sref="supplier">供应商</a></li>
+                </ul>
+                <p class="navbar-text navbar-right" style="margin-right:0">
+                    <span class="glyphicon glyphicon-user"></span>  
+                    {{ user().username }}
+                </p>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">系统 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a ui-sref="user"><span class="glyphicon glyphicon-user"></span> 用户管理</a>
+                            </li>
+                            <li>
+                                <a ui-sref="shop"><span class="glyphicon glyphicon-home"></span> 店铺管理</a>
+                            </li>
+                            <li>
+                                <a href="#" ng-click="logout()">登出</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </section>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>

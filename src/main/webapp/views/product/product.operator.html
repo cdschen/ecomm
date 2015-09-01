@@ -1,0 +1,31 @@
+<ol class="breadcrumb">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li><a ui-sref="product">商品管理</a></li>
+    <li class="active">{{actionLabel}}商品</li>
+</ol>
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div>
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" id="productTabs">
+                    <li class="active"><a href="#product-info">信息</a></li>
+                    <li><a href="#product-img">图片</a></li>
+                    <li><a href="#product-multilanguage">多语言</a></li>
+                    <li><a href="#product-multicurrency">多货币</a></li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <!-- 信息 -->
+                    <div id="product-info" ng-controller="ProductInformationController" ng-include="template.info.url" class="tab-pane fade in active"></div>
+                    <!-- 图片 -->
+                    <div id="product-img" ng-controller="ProductImageController" ng-include="template.img.url" onload="initImgFunction()" class="tab-pane fade"></div>
+                    <!-- 多语言 -->
+                    <div id="product-multilanguage" ng-controller="ProductMultiLanguageController" ng-include="template.multilanguage.url" class="tab-pane fade"></div>
+                    <!-- 多货币 -->
+                    <div id="product-multicurrency" ng-controller="ProductMultiCurrencyController" ng-include="template.multicurrency.url" class="tab-pane fade"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,147 @@
+<div class="panel-body">
+    <h4 class="text-success"><strong>组合商品</strong></h4>
+    <hr ng-show="product.members.length > 0">
+</div>
+<!-- member form -->
+<form name="memberForm" novalidate>
+    <table class="table" ng-show="product.members.length > 0" ng-init="priceL1Total=0">
+        <thead>
+            <tr>
+                <th width="30%">商品名称</th>
+                <th width="5%">一级</th>
+                <th width="5%">二级</th>
+                <th width="5%">三级</th>
+                <th width="5%">四级</th>
+                <th width="5%">五级</th>
+                <th width="5%">六级</th>
+                <th width="5%">七级</th>
+                <th width="5%">八级</th>
+                <th width="5%">九级</th>
+                <th width="5%">十级</th>
+                <th width="10%">数量</th>
+                <th width="10%">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="member in product.members" class="pagination-ul" >
+                <td>
+                    <span ng-show="!member.editable">{{member.product.name + '(' + member.product.sku + ')'}}</span>
+                    <span ng-show="member.editable">
+                        <ui-select ng-model="member.product">
+                            <ui-select-match placeholder="商品(必选)">{{$select.selected.name + '(' + $select.selected.sku + ')'}}</ui-select-match>
+                            <ui-select-choices group-by="'sku'" repeat="member in members | filter: $select.search">
+                                <div ng-bind-html="member.name | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </span>
+                </td>
+                <td>{{member.product.priceL1 | currency:'':2}}</td>
+                <td>{{member.product.priceL2 | currency:'':2}}</td>
+                <td>{{member.product.priceL3 | currency:'':2}}</td>
+                <td>{{member.product.priceL4 | currency:'':2}}</td>
+                <td>{{member.product.priceL5 | currency:'':2}}</td>
+                <td>{{member.product.priceL6 | currency:'':2}}</td>
+                <td>{{member.product.priceL7 | currency:'':2}}</td>
+                <td>{{member.product.priceL8 | currency:'':2}}</td>
+                <td>{{member.product.priceL9 | currency:'':2}}</td>
+                <td>{{member.product.priceL10 | currency:'':2}}</td>
+                <td>
+                    <span ng-show="!member.editable">{{member.quantity}}</span>
+                    <div ng-show="member.editable" class="form-group has-feedback" ng-class="{'has-success':(memberForm.quantity{{$index}}.$dirty && memberForm.quantity{{$index}}.$valid), 'has-warning':(memberForm.quantity{{$index}}.$dirty && memberForm.quantity{{$index}}.$invalid) }">
+                        <input type="number" name="quantity{{$index}}" ng-model="member.quantity" placeholder="数量(必填)" class="form-control" required min="1" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="memberForm.quantity{{$index}}.$dirty && memberForm.quantity{{$index}}.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="memberForm.quantity{{$index}}.$dirty && memberForm.quantity{{$index}}.$invalid"></span>
+                    </div>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-success" ng-click="saveUpdateMember(member, memberForm, $index)" ng-show="member.editable" ng-disabled="!memberForm.quantity{{$index}}.$valid || !member.product">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                    </button>
+                    <button type="button" class="btn btn-info" ng-click="updateMember(member, $index)" ng-show="!member.editable">
+                        <span class="glyphicon glyphicon-edit"></span>
+                    </button>
+                    <button type="button" class="btn btn-danger" ng-click="showRemoveMember(member, $index)">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td class="success">{{sum.totalPriceL1 | currency:'':2}}</td>
+                <td class="success">{{sum.totalPriceL2 | currency:'':2}}</td>
+                <td class="success">{{sum.totalPriceL3 | currency:'':2}}</td>
+                <td class="success">{{sum.totalPriceL4 | currency:'':2}}</td>
+                <td class="success">{{sum.totalPriceL5 | currency:'':2}}</td>
+                <td class="success">{{sum.totalPriceL6 | currency:'':2}}</td>
+                <td class="success">{{sum.totalPriceL7 | currency:'':2}}</td>
+                <td class="success">{{sum.totalPriceL8 | currency:'':2}}</td>
+                <td class="success">{{sum.totalPriceL9 | currency:'':2}}</td>
+                <td class="success">{{sum.totalPriceL10 | currency:'':2}}</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<!-- member add form -->
+<form name="memberAddForm" novalidate>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td width="30%">
+                    <!-- member.product -->
+                    <div class="input-group">
+                        <ui-select ng-model="member.product">
+                            <ui-select-match placeholder="商品(必选)">{{$select.selected.name + '(' + $select.selected.sku + ')'}}</ui-select-match>
+                            <ui-select-choices group-by="'sku'" repeat="member in members | filter: $select.search">
+                                <div ng-bind-html="member.name | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                        <span class="input-group-btn">
+                            <button type="button" ng-click="member.product = undefined" class="btn btn-default">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </span>
+                    </div>
+                </td>
+                <td width="5%">{{member.product.priceL1 | currency:'':2}}</td>
+                <td width="5%">{{member.product.priceL2 | currency:'':2}}</td>
+                <td width="5%">{{member.product.priceL3 | currency:'':2}}</td>
+                <td width="5%">{{member.product.priceL4 | currency:'':2}}</td>
+                <td width="5%">{{member.product.priceL5 | currency:'':2}}</td>
+                <td width="5%">{{member.product.priceL6 | currency:'':2}}</td>
+                <td width="5%">{{member.product.priceL7 | currency:'':2}}</td>
+                <td width="5%">{{member.product.priceL8 | currency:'':2}}</td>
+                <td width="5%">{{member.product.priceL9 | currency:'':2}}</td>
+                <td width="5%">{{member.product.priceL10 | currency:'':2}}</td>
+                <td width="10%">
+                    <!-- member.quantity -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(memberAddForm.quantity.$dirty && memberAddForm.quantity.$valid), 'has-warning':(memberAddForm.quantity.$dirty && memberAddForm.quantity.$invalid) }">
+                        <input type="number" name="quantity" ng-model="member.quantity" placeholder="数量(必填)" class="form-control" required min="1" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="memberAddForm.quantity.$dirty && memberAddForm.quantity.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="memberAddForm.quantity.$dirty && memberAddForm.quantity.$invalid"></span>
+                    </div>
+                </td>
+                <td width="10%">
+                    <button type="button" class="btn btn-success" ng-click="saveMember(memberAddForm, member)" ng-disabled="!memberAddForm.$valid || !member.product">添加</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<!-- member delete Modal -->
+<div class="modal fade" id="memberDeleteModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-danger">
+                    <span class="glyphicon glyphicon-question-sign"></span> 确定删除
+                </h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" ng-click="removeMember()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>

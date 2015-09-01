@@ -1,0 +1,48 @@
+<div pageslide ps-open="processSlideChecked" ps-speed="0.25" ps-size="700px">
+    <div id="operator-slider">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <button type="button" class="close" ng-click="colseProcessSlide()">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4>
+                    <strong>{{processProduct.name}} ({{processProduct.sku}})</strong>
+                </h4>
+            </div>
+            <table class="table" ng-show="processes.length > 0" style="height:100%">
+                <thead>
+                    <tr>
+                        <th width="22%">流程</th>
+                        <th width="70%">状态</th>
+                        <th width="8%">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="process in processes">
+                        <td>
+                            {{process.name}}
+                            <small class="text-warning">({{process.type == 1 ? '线性' : '开关'}})</small>
+                        </td>
+                        <td>
+                            <div ng-if="process.type == 1">
+                                <span ng-repeat="step in process.steps | orderBy: 'sequence'"> 
+                                    <button type="button" class="btn btn-xs {{forObjectProcesses(step) ? 'btn-success' : 'btn-info' }}" style="margin-bottom:5px;">{{step.name}}</button>
+                                    <span class="glyphicon glyphicon-circle-arrow-right" ng-show="!$last"></span>
+                                </span>
+                            </div>
+                            <div ng-if="process.type == 2">
+                                <div class="btn-group btn-group-xs">
+                                    <button type="button" class="btn btn-xs {{forObjectProcesses(step) ? 'btn-success' : 'btn-info' }}" ng-repeat="step in process.steps | orderBy: 'sequence'">{{step.name}}</button>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <a href="" ng-if="appliedProcess(process)" class="btn btn-danger btn-xs" ng-click="removeProcess(process)">删除</a>
+                            <a href="" ng-if="!appliedProcess(process)" class="btn btn-success btn-xs" ng-click="applyProcess(process)">应用</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

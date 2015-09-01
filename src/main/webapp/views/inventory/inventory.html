@@ -1,0 +1,84 @@
+<ol class="breadcrumb">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li class="active">库存管理</li>
+</ol>
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control" ng-model="p.sku" placeholder="SKU">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" ng-model="p.name" placeholder="商品名称">
+                </div>
+                <div class="form-group">
+                    <select ng-options="warehouse.id as warehouse.name for warehouse in warehouses" ng-model="warehouse.id" ng-change="changeWarehouse()" class="form-control" style="width:200px" id="warehouseId" name="warehouseId">
+                    </select>
+                </div>
+                <div class="form-group pull-right">
+                    <a ui-sref="inventory.enter({id:warehouse.id})" class="btn btn-info">入库</a>
+                    <a ui-sref="inventory.out({id:warehouse.id})" class="btn btn-info">出库</a>
+                    <a class="btn btn-info">移库</a>
+                </div>
+            </form>
+        </div>
+        <div class="panel-body" ng-show="products.length == 0">
+            <div class="alert alert-warning">
+                本仓库没有任何货品
+            </div>
+        </div>
+        <table class="table table-bordered" ng-show="products.length > 0">
+            <thead>
+                <tr>
+                    <th width="15%">SKU</th>
+                    <th width="15%">商品名称</th>
+
+                    <th width="17.5%">库位</th>
+                    <th width="17.5%">数量</th>
+                    <th width="17.5%">有效期</th>
+                    <th width="17.5%">批次</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="product in products | filter:{sku: p.sku, name: p.name}">
+                    <td>
+                        {{product.sku}}
+                    </td>
+                    <td>
+                        {{product.name}}
+                    </td>
+                    <td colspan="4">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr ng-repeat="detail in product.details">
+                                    <td width="25%">
+                                        {{detail.position.name}}
+                                    </td>
+                                    <td width="25%">
+                                        {{detail.quantity}}
+                                    </td>
+                                    <td width="25%">
+                                        {{detail.expireDate | date:'yyyy-MM-dd'}}
+                                    </td>
+                                    <td width="25%">
+                                        {{detail.batchId}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                     <td>
+                                        <span class="text-success">总共：{{product.total}}</span>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

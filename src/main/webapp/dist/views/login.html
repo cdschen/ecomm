@@ -1,0 +1,43 @@
+<div class="container-fluid">
+    <div class="row" style="margin-top:20px">
+        <div class="col-md-4 col-md-offset-4">
+            <!-- alert -->
+            <div class="alert alert-danger alert-dismissible" role="alert" ng-show="error">
+                <button type="button" class="close" aria-label="Close" ng-click="error=false"><span aria-hidden="true">&times;</span></button>
+                <strong>Warning!</strong> 用户名或密码不正确
+            </div>
+            <!-- panel -->
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">登入</h3>
+                </div>
+                <div class="panel-body">
+                    <form name="loginForm" role="form" novalidate ng-submit="login(credentials)">
+                        <!-- username -->
+                        <div class="form-group has-feedback" ng-class="{'has-success':(loginForm.username.$dirty && loginForm.username.$valid), 'has-warning':(loginForm.username.$dirty && loginForm.username.$invalid) }">
+                            <label for="username">用户名</label>
+                            <input type="text" class="form-control" id="username" name="username" ng-model="credentials.username" placeholder="用户名" required ng-minlength="5" ng-maxlength="50" />
+                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="loginForm.username.$dirty && loginForm.username.$valid"></span>
+                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="loginForm.username.$dirty && loginForm.username.$invalid"></span>
+                            <span class="help-block" ng-messages="loginForm.username.$error" ng-messages-multiple ng-show="loginForm.username.$dirty && loginForm.username.$invalid">
+                            <span ng-messages-include="views/error-messages.html" ></span>
+                            </span>
+                        </div>
+                        <!-- password -->
+                        <div class="form-group has-feedback" ng-class="{'has-success':(loginForm.password.$dirty && loginForm.password.$valid), 'has-warning':(loginForm.password.$dirty && loginForm.password.$invalid) }">
+                            <label for="password">密码</label>
+                            <input type="password" class="form-control" id="password" name="password" ng-model="credentials.password" placeholder="密码" required ng-minlength="5" ng-maxlength="50" />
+                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="loginForm.password.$dirty && loginForm.password.$valid"></span>
+                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="loginForm.password.$dirty && loginForm.password.$invalid"></span>
+                            <span class="help-block" ng-messages="loginForm.password.$error" ng-messages-multiple ng-show="loginForm.password.$dirty && loginForm.password.$invalid">
+                            <span ng-messages-include="views/error-messages.html" ></span>
+                            </span>
+                        </div>
+                        <!-- button -->
+                        <button type="submit" class="btn btn-success btn-lg btn-block" ng-disabled="!loginForm.$valid">登入</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

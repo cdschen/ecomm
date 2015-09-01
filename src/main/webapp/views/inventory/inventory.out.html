@@ -1,0 +1,121 @@
+<ol class="breadcrumb">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li><a ui-sref="inventory">库存管理</a></li>
+    <li class="active">出库</li>
+</ol>
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form class="form-inline">
+                <div class="form-group">
+                    <select ng-options="warehouse.id as warehouse.name for warehouse in warehouses" ng-model="warehouse.id" ng-change="changeWarehouse()" class="form-control" style="width:200px" id="warehouseId" name="warehouseId">
+                    </select>
+                </div>
+            </form>
+        </div>
+        <form name="itemsForm" novalidate ng-submit="add()">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th width="36%">SKU | 商品名称</th>
+                        <th width="18%">出库库位</th>
+                        <th width="18%">批次号 (可选)</th>
+                        <th width="10%">保有数量</th>
+                        <th width="10%">出库数量</th>
+                        <th width="8%">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in batch.items">
+                        <td>
+                            {{item.product.sku + ' : ' + item.product.name}}
+                        </td>
+                        <td>
+                            {{item.position.name}}
+                        </td>
+                        <td>
+                            {{item.outBatch.id}}
+                        </td>
+                        <td>
+                            
+                        </td>
+                        <td>
+                            {{item.changedQuantity}}
+                        </td>
+                        <td>
+                            <a href="" class="btn btn-danger" ng-click="remove($index, item)">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </a>
+                        </td>
+                        
+                    </tr>
+                    <tr>
+                        <td>
+                            <ui-select ng-model="product.selected" on-select="changeProduct()" ng-show="products.length > 0">
+                                <ui-select-match placeholder="选择或搜索商品">{{$select.selected.sku + ' : ' + $select.selected.name}}</ui-select-match>
+                                <ui-select-choices repeat="product in products | filter: $select.search">
+                                    <div ng-bind-html="product.sku | highlight: $select.search"></div>
+                                    <small ng-bind-html="product.name | highlight: $select.search"></small>
+                                </ui-select-choices>
+                            </ui-select>
+                        </td>
+                        <td>
+                            <ui-select ng-model="position.selected" on-select="changePosition()" ng-show="warehouse.positions && warehouse.positions.length > 0 && product.selected.existPosition == true">
+                                <ui-select-match placeholder="选择库位">{{$select.selected.name}}</ui-select-match>
+                                <ui-select-choices repeat="position in product.selected.positions | filter: $select.search">
+                                    <div ng-bind-html="position.name | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                        </td>
+                        <td>
+                            <ui-select ng-model="selectedBatch.selected" on-select="changeBatch()" ng-show="product.selected">
+                                <ui-select-match placeholder="选择批次">{{$select.selected.id + ''}}</ui-select-match>
+                                <ui-select-choices repeat="batch in batches | filter: $select.search">
+                                    <div ng-bind-html="batch.id + '' | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                        </td>
+                        <td>
+                            {{quantity}}
+                        </td>
+                        <td>
+                            <!-- item.changedQuantity -->
+                            <div class="form-group has-feedback" ng-class="{'has-success':(itemsForm.changedQuantity.$dirty && itemsForm.changedQuantity.$valid), 'has-warning':(itemsForm.changedQuantity.$dirty && itemsForm.changedQuantity.$invalid) }">
+                                <input type="number" class="form-control" id="changedQuantity" name="changedQuantity" ng-model="item.changedQuantity" placeholder="" required min="1" ng-maxlength="10" max="{{quantity}}"/>
+                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="itemsForm.changedQuantity.$dirty && itemsForm.changedQuantity.$valid"></span>
+                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="itemsForm.changedQuantity.$dirty && itemsForm.changedQuantity.$invalid"></span>
+                            </div>
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-info" ng-disabled="!itemsForm.$valid || !product.selected">添加</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <div class="panel-body">
+            <form name="" class="form-horizontal" novalidate>
+                <!-- orderId -->
+                <div class="form-group has-feedback">
+                    <label class="control-label col-md-2" for="name">订单号 <span class="text-danger"></span></label>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" id="orderId" name="orderId" ng-model="batch.orderId" placeholder="订单号" />
+                    </div>
+                </div>
+                <!-- memo -->
+                <div class="form-group has-feedback">
+                    <label class="control-label col-md-2" for="name">备注 <span class="text-danger"></span></label>
+                    <div class="col-md-5">
+                        <textarea class="form-control" rows="10" id="memo" name="memo" ng-model="batch.memo" placeholder="备注"></textarea>
+                    </div>
+                </div>
+                <!-- button -->
+                <div class="form-group has-feedback">
+                    <div class="col-md-5 col-md-offset-2">
+                        <button type="button" class="btn btn-success btn-lg" ng-disabled="batch.items.length == 0" ng-click="save()">确定出库</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

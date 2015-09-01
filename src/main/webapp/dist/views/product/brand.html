@@ -1,0 +1,108 @@
+<ol class="breadcrumb">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li class="active">品牌管理</li>
+</ol>
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <!-- brand add form -->
+        <form name="brandAddForm" novalidate ng-submit="saveBrand(brandAddForm, brand)">
+            <table class="table table-condensed clear-marginbottom-table">
+                <thead>
+                    <tr>
+                        <th width="10%">编号</th>
+                        <th width="80%">名称</th>
+                        <th width="10%">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td width="10%">
+                        </td>
+                        <td width="80%">
+                            <!-- brand.name -->
+                            <div class="form-group has-feedback" ng-class="{'has-success':(brandAddForm.name.$dirty && brandAddForm.name.$valid), 'has-warning':(brandAddForm.name.$dirty && brandAddForm.name.$invalid) }">
+                                <input type="text" name="name" ng-model="brand.name" placeholder="名称(必填)" class="form-control" required ng-maxlength="50" />
+                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="brandAddForm.name.$dirty && brandAddForm.name.$valid"></span>
+                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="brandAddForm.name.$dirty && brandAddForm.name.$invalid"></span>
+                            </div>
+                        </td>
+                        <td width="10%">
+                            <button type="submit" class="btn btn-success" ng-disabled="!brandAddForm.$valid">添加</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <!-- brand from -->
+        <form name="brandForm" novalidate>
+            <table class="table table-condensed table-striped clear-marginbottom-table" ng-show="page.content.length > 0">
+                <tbody>
+                    <tr ng-repeat="brand in page.content">
+                        <th width="10%">
+                            {{brand.id}}
+                        </th>
+                        <td width="80%">
+                            <span ng-show="!brand.editable">{{brand.name}}</span>
+                            <div ng-show="brand.editable" class="form-group has-feedback" ng-class="{'has-success':(brandForm.name{{$index}}.$dirty && brandForm.name{{$index}}.$valid), 'has-warning':(brandForm.name{{$index}}.$dirty && brandForm.name{{$index}}.$invalid) }">
+                                <input type="text" name="name{{$index}}" ng-model="brand.name" placeholder="名称(必填)" class="form-control" required ng-maxlength="50" />
+                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="brandForm.name{{$index}}.$dirty && brandForm.name{{$index}}.$valid"></span>
+                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="brandForm.name{{$index}}.$dirty && brandForm.name{{$index}}.$invalid"></span>
+                            </div>
+                        </td>
+                        <td width="10%">
+                            <button type="button" class="btn btn-success" ng-click="saveUpdateBrand(brand, brandForm, $index)" ng-show="brand.editable" ng-disabled="!brandForm.name{{$index}}.$valid">
+                                <span class="glyphicon glyphicon-floppy-saved"></span>
+                            </button>
+                            <button type="button" class="btn btn-info" ng-click="updateBrand(brand, $index)" ng-show="!brand.editable">
+                                <span class="glyphicon glyphicon-edit"></span>
+                            </button>
+                            <button type="button" class="btn btn-danger" ng-click="showRemoveBrand(brand, $index)">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="20">
+                            <nav class="page-list">
+                                <ul class="pagination pagination-sm">
+                                    <li ng-class="{disabled: page.first}">
+                                        <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
+                                    </li>
+                                    <li ng-repeat="i in totalPagesList" ng-class="{active: i == page.number}">
+                                        <a href="" ng-click="turnPage(i)">{{i+1}}</a>
+                                    </li>
+                                    <li ng-class="{disabled: page.last}">
+                                        <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                    </li>
+                                </ul>
+                                <div class="page-total">
+                                    共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
+                                    <select class="form-control" style="display: inline; padding:0" ng-model="pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                    </select>
+                                </div>
+                            </nav>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </form>
+    </div>
+</div>
+<!-- brand delete Modal -->
+<div class="modal fade" id="brandDeleteModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-danger">
+                    <span class="glyphicon glyphicon-question-sign"></span> 确定删除
+                </h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" ng-click="removeBrand()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
