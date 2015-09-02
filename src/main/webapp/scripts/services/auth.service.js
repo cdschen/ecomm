@@ -13,7 +13,7 @@ angular.module('ecommApp')
                         }
                     })
                     .success(function() {
-                        Principal.identify(true).then(function(user) {});
+                        Principal.identify(true).then(function() {});
                     })
                     .error(function() {});
             },

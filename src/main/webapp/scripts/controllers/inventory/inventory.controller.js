@@ -23,13 +23,14 @@ angular.module('ecommApp')
             Inventory.getAllByWarehouseId($scope.warehouse.id).then(function(inventories) {
                 $scope.products = Inventory.refresh(inventories);
             });
-        }
+        };
     }
 ])
 
-.controller('InventoryEnterController', ['$rootScope', '$scope', '$state', '$stateParams', 'Warehouse', 'Product', 'InventoryBatch', 'Utils',
-    function($rootScope, $scope, $state, $stateParams, Warehouse, Product, InventoryBatch, Utils) {
+.controller('InventoryEnterController', ['$rootScope', '$scope', '$state', '$stateParams', 'Warehouse', 'Product', 'InventoryBatch',
+    function($rootScope, $scope, $state, $stateParams, Warehouse, Product, InventoryBatch) {
 
+        var $ = angular.element;
         $scope.warehouses = [];
         $scope.warehouse = {};
         $scope.products = [];
@@ -54,32 +55,34 @@ angular.module('ecommApp')
 
         function setPositionSelected() {
             console.log($scope.warehouse);
-            $scope.warehouse.enablePosition == true ?
-                $scope.position.selected = $scope.warehouse.positions[0] :
+            if ($scope.warehouse.enablePosition === true) {
+                $scope.position.selected = $scope.warehouse.positions[0];
+            } else {
                 $scope.position.selected = undefined;
+            }
         }
 
         $scope.changeWarehouse = function() {
             $scope.batch.items = [];
             angular.forEach($scope.warehouses, function(warehouse) {
-                if (warehouse.id == $scope.warehouse.id) {
+                if (warehouse.id === $scope.warehouse.id) {
                     $scope.warehouse = angular.copy(warehouse);
                     return;
                 }
             });
             setPositionSelected();
             $scope.batch.warehouseId = $scope.warehouse.id;
-        }
+        };
 
         var $date = $('#sandbox-container input').datepicker({
-            format: "yyyy-mm-dd",
+            format: 'yyyy-mm-dd',
             clearBtn: true,
-            language: "zh-CN",
-            orientation: "top left",
+            language: 'zh-CN',
+            orientation: 'top left',
             todayHighlight: true,
         }).on('changeDate', function(e) {
             console.log(e.format());
-            if (e.date && e.date != '') {
+            if (e.date && e.date !== '') {
                 $scope.$apply(function() {
                     $scope.item.expireDate = e.format();
                 });
@@ -88,9 +91,9 @@ angular.module('ecommApp')
 
         Warehouse.getAll().then(function(warehouses) {
             $scope.warehouses = warehouses;
-            if ($stateParams.id && $stateParams.id != '') {
+            if ($stateParams.id && $stateParams.id !== '') {
                 angular.forEach(warehouses, function(warehouse) {
-                    if (warehouse.id == $stateParams.id) {
+                    if (warehouse.id === $stateParams.id) {
                         $scope.warehouse = angular.copy(warehouse);
                         return;
                     }
@@ -127,15 +130,15 @@ angular.module('ecommApp')
 
         $scope.remove = function($index) {
             $scope.batch.items.splice($index, 1);
-        }
+        };
 
         $scope.save = function() {
             console.log($scope.batch);
             InventoryBatch.save({}, $scope.batch, function(batch) {
                 console.log(batch);
                 $state.go('inventory');
-            })
-        }
+            });
+        };
 
     }
 ])
@@ -202,9 +205,11 @@ angular.module('ecommApp')
         }
 
         function setPositionSelected() {
-            ($scope.product.selected && $scope.product.selected.positions.length > 0) ?
-            $scope.position.selected = $scope.product.selected.positions[0]:
+            if ($scope.product.selected && $scope.product.selected.positions.length > 0) {
+                $scope.position.selected = $scope.product.selected.positions[0];
+            } else {
                 $scope.position.selected = undefined;
+            }
         }
 
         function setChangedQuantity() {
@@ -236,9 +241,9 @@ angular.module('ecommApp')
 
         Warehouse.getAll().then(function(warehouses) {
             $scope.warehouses = warehouses;
-            if ($stateParams.id && $stateParams.id != '') {
+            if ($stateParams.id && $stateParams.id !== '') {
                 angular.forEach(warehouses, function(warehouse) {
-                    if (warehouse.id == $stateParams.id) {
+                    if (warehouse.id === $stateParams.id) {
                         $scope.warehouse = angular.copy(warehouse);
                         return;
                     }
@@ -257,7 +262,7 @@ angular.module('ecommApp')
         $scope.changeWarehouse = function() {
             $scope.batch.items = [];
             angular.forEach($scope.warehouses, function(warehouse) {
-                if (warehouse.id == $scope.warehouse.id) {
+                if (warehouse.id === $scope.warehouse.id) {
                     $scope.warehouse = angular.copy(warehouse);
                     return;
                 }
@@ -321,10 +326,10 @@ angular.module('ecommApp')
             setBatches();
             setQuantity();
             setChangedQuantity();
-        }
+        };
 
         $scope.remove = function($index, item) {
-        	console.log(item);
+            console.log(item);
             $scope.batch.items.splice($index, 1);
             $scope.products = Inventory.refrechProducts($scope.products, item, 'remove');
 
@@ -346,4 +351,4 @@ angular.module('ecommApp')
         };
 
     }
-])
+]);

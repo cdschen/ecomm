@@ -23,14 +23,14 @@ angular.module('ecommApp')
         angular.forEach(inventories, function(inventory) {
             var exist = false;
             angular.forEach(products, function(product) {
-                if (product.sku == inventory.product.sku) {
+                if (product.sku === inventory.product.sku) {
                     if (inventory.position) {
                         var existPosition = false;
                         angular.forEach(product.positions, function(position) {
-                            if (position.id == inventory.position.id) {
+                            if (position.id === inventory.position.id) {
                                 var existPositionBatch = false;
                                 angular.forEach(position.batches, function(batch) {
-                                    if (batch.id == inventory.inventoryBatchId) {
+                                    if (batch.id === inventory.inventoryBatchId) {
                                         batch.total += inventory.quantity;
                                         existPositionBatch = true;
                                         return;
@@ -59,7 +59,7 @@ angular.module('ecommApp')
                     } else {
                         var existBatch = false;
                         angular.forEach(product.batches, function(batch) {
-                            if (batch.id == inventory.inventoryBatchId) {
+                            if (batch.id === inventory.inventoryBatchId) {
                                 batch.total += inventory.quantity;
                                 existBatch = true;
                                 return;
@@ -117,11 +117,11 @@ angular.module('ecommApp')
     var itemHasBatch = function(parent, item, action) {
         for (var i = 0, len = parent.batches.length; i < len; i++) {
             var batch = parent.batches[i];
-            if (batch.id == item.outBatch.id) {
-                if (action == 'add') {
+            if (batch.id === item.outBatch.id) {
+                if (action === 'add') {
                     batch.total -= item.changedQuantity;
                     parent.total -= item.changedQuantity;
-                } else if (action == 'remove') {
+                } else if (action === 'remove') {
                     batch.total += item.changedQuantity;
                     parent.total += item.changedQuantity;
                 }
@@ -132,11 +132,12 @@ angular.module('ecommApp')
     };
 
     var itemNoBatch = function(parent, item, action) {
-        if (action == 'add') {
+        var batch;
+        if (action === 'add') {
             parent.total -= item.changedQuantity;
             var temp = item.changedQuantity;
             for (var i = 0, len = parent.batches.length; i < len; i++) {
-                var batch = parent.batches[i];
+                batch = parent.batches[i];
                 if (batch.total - temp < 0) {
                 	batch[item.$index] = batch.total;
                     temp = temp - batch.total;
@@ -147,10 +148,10 @@ angular.module('ecommApp')
                     break;
                 }
             }
-        } else if (action == 'remove') {
+        } else if (action === 'remove') {
             parent.total += item.changedQuantity;
-            for (var i = 0, len = parent.batches.length; i < len; i++) {
-                var batch = parent.batches[i];
+            for (var j = 0, jlen = parent.batches.length; j < jlen; j++) {
+                batch = parent.batches[j];
                 batch.total += batch[item.$index] !== undefined && batch[item.$index];
             }
         }
@@ -159,7 +160,7 @@ angular.module('ecommApp')
 
     var itemHasPosition = function(parent, item, action) {
         for (var i = 0, len = parent.positions.length; i < len; i++) {
-            if (parent.positions[i].id == item.position.id) {
+            if (parent.positions[i].id === item.position.id) {
                 if (item.outBatch) {
                     console.log('item有批次');
                     parent.positions[i] = itemHasBatch(parent.positions[i], item, action);
@@ -177,7 +178,7 @@ angular.module('ecommApp')
 
     inventory.refrechProducts = function(products, item, action) {
         for (var i = 0, len = products.length; i < len; i++) {
-            if (products[i].sku == item.product.sku) {
+            if (products[i].sku === item.product.sku) {
                 console.log('匹配到商品');
                 if (item.position) {
                     console.log('item有库位');

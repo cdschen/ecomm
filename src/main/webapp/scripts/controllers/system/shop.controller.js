@@ -9,6 +9,7 @@ angular.module('ecommApp')
         $scope.pageSize = 20;
         $scope.processSlideChecked = false;
         $scope.processShop = undefined;
+        $scope.action = undefined;
 
         $scope.template = {
             process: {
@@ -26,7 +27,7 @@ angular.module('ecommApp')
             console.log(page);
             $scope.page = page;
             $scope.totalPagesList = Utils.setTotalPagesList(page);
-        }).then(function(){
+        }).then(function() {
             Process.getAll({
                 deleted: false,
                 objectType: 1
@@ -64,16 +65,32 @@ angular.module('ecommApp')
             console.clear();
             console.log('loadProcesses:');
             console.log(shop);
+            $scope.action = action;
             $scope.processSlideChecked = true;
             $scope.processShop = shop;
             $scope.processShop.active = true;
         };
+
+        $scope.applyState = function(step) {
+            console.clear();
+            console.log('applyState:[' + $scope.action + ']');
+            console.log(step);
+            if ($scope.action === 'init') {
+                $scope.processShop.initStep = angular.copy(step);
+            } else if ($scope.action === 'complete') {
+                $scope.processShop.completeStep = angular.copy(step);
+            } else if ($scope.action === 'error') {
+                $scope.processShop.errorStep = angular.copy(step);
+            }
+            console.log($scope.processShop);
+            Shop.save({}, $scope.processShop, function(shop){
+                console.log('applyState complete:');
+                console.log(shop);
+                $scope.colseProcessSlide();
+            });
+        };
     }
 ])
-
-.controller('ShopProcessController', ['$scope', function($scope){
-    
-}])
 
 .controller('ShopOperatorController', ['$rootScope', '$scope', '$state', '$stateParams', 'User', 'Language', 'Currency', 'Shop', 'Supplier', 'Warehouse',
     function($rootScope, $scope, $state, $stateParams, User, Language, Currency, Shop, Supplier, Warehouse) {

@@ -5,6 +5,7 @@ angular.module('ecommApp')
 .controller('BrandController', ['$scope', 'Brand', 'Utils',
     function($scope, Brand, Utils) {
 
+        var $ = angular.element;
         $scope.totalPagesList = [];
         $scope.pageSize = 20;
         $scope.brand = {};
@@ -53,16 +54,16 @@ angular.module('ecommApp')
                 $scope.brand = {};
                 refresh();
             });
-        }
+        };
 
-        $scope.updateBrand = function(brand, $index) {
+        $scope.updateBrand = function(brand) {
             console.clear();
             console.log('updateBrand:');
             console.log(brand);
             brand.editable = true;
         };
 
-        $scope.saveUpdateBrand = function(brand, brandForm, $index) {
+        $scope.saveUpdateBrand = function(brand, brandForm) {
             console.clear();
             console.log('saveUpdateBrand complete:');
             Brand.save({}, brand, function() {
@@ -81,7 +82,7 @@ angular.module('ecommApp')
 
             $scope.removingBrand = brand;
             $('#brandDeleteModal').modal('show');
-        }
+        };
 
         $scope.removeBrand = function() {
             console.clear();

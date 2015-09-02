@@ -13,7 +13,7 @@ angular.module('ecommApp')
             }
             angular.forEach($scope.authorities, function(authority) {
                 authority.done = false;
-            })
+            });
         };
 
         $scope.reset();
@@ -39,7 +39,7 @@ angular.module('ecommApp')
                     $scope.role.authorities.push(authority);
                 }
             });
-            if ($scope.role.authorities.length == 0) {
+            if ($scope.role.authorities.length === 0) {
                 $scope.authoritiesDoneWarning = true;
                 return false;
             } else {
@@ -58,25 +58,25 @@ angular.module('ecommApp')
         $scope.remove = function(id) {
             Role.remove({
                 id: id
-            }, {}, function(res) {
+            }, {}, function() {
                 var old = $scope.roles;
                 $scope.roles = [];
                 angular.forEach(old, function(role) {
-                    if (role.id != id) {
+                    if (role.id !== id) {
                         $scope.roles.push(role);
                     }
                 });
                 $scope.reset();
             }, function(err) {
                 console.log(err);
-            })
+            });
         };
 
         $scope.select = function(role) {
             $scope.role = role;
             angular.forEach($scope.authorities, function(authority) {
                 angular.forEach($scope.role.authorities, function(roleAuhority) {
-                    if (authority.id == roleAuhority.id) {
+                    if (authority.id === roleAuhority.id) {
                         authority.done = true;
                         return;
                     }
@@ -84,9 +84,10 @@ angular.module('ecommApp')
             });
         };
 
-
         function authoritiesToString(roles) {
-            if (!angular.isArray(roles)) roles = [roles];
+            if (!angular.isArray(roles)) {
+                roles = [roles];
+            }
             angular.forEach(roles, function(role) {
                 role.authorityString = '';
                 var authorities = role.authorities;
@@ -95,20 +96,22 @@ angular.module('ecommApp')
                 }
                 role.authorityString += authorities[authorities.length - 1].name;
             });
-        };
+        }
 
         function refreshRoles(role) {
         	var isExist = false;
         	angular.forEach($scope.roles, function(r){
-        		if (r.id == role.id) {
+        		if (r.id === role.id) {
         			r.authorityString = role.authorityString;
         			console.log(r);
         			isExist = true;
         			return;
         		}
         	});
-        	if (!isExist) $scope.roles.push(role);
-        };
+        	if (!isExist) {
+                $scope.roles.push(role);
+            }
+        }
 
     }
 ]);

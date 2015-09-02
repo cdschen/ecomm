@@ -19,6 +19,7 @@ angular.module('ecommApp')
 
 .factory('ProcessStep', ['$resource', '$http', function($resource, $http) {
 
+    var $ = angular.element;
     var step = $resource('/api/processsteps/:id');
 
     step.getAll = function() {

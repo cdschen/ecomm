@@ -22,7 +22,7 @@ angular.module('ecommApp')
                         $http.get(url)
                             .success(function(data) {
                                 ctrl.$setValidity('unique', !data);
-                            }).error(function(data) {
+                            }).error(function() {
                                 ctrl.$setValidity('unique', false);
                             });
                     }, 350);

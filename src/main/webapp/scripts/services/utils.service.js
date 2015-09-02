@@ -2,7 +2,7 @@
 
 angular.module('ecommApp')
 
-.factory('Utils', ['$q', function($q) {
+.factory('Utils', [function() {
 
     return {
         setTotalPagesList: function(page) {

@@ -8,10 +8,10 @@ angular.module('ecommApp')
         $scope.error = false;
 
         $scope.login = function(credentials) {
-            Auth.login(credentials).then(function(data) {
+            Auth.login(credentials).then(function() {
                 $scope.error = false;
                 $state.go('dashboard');
-            }, function(data) {
+            }, function() {
             	$scope.error = true;
             });
         };

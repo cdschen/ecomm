@@ -23,25 +23,34 @@ public class Shop implements Serializable {
 	private String name;
 
 	@Column(name = "type", nullable = false)
-	private int type;
+	private Integer type;
 
 	@Column(name = "status", nullable = false)
-	private int status;
+	private Integer status;
 
-//	@Column(name = "admin_id", nullable = false, insertable = false, updatable = false)
-//	private long adminId;
+	@Column(name = "admin_id", nullable = false, insertable = false, updatable = false)
+	private Long adminId;
 
 	@Column(name = "api_call_limit", nullable = false)
-	private int apiCallLimit;
-	
-//	@Column(name = "language_id", nullable = false, insertable = false, updatable = false)
-//	private long languageId;
-//	
-//	@Column(name = "currencyId", nullable = false, insertable = false, updatable = false)
-//	private long currency_id;
+	private Integer apiCallLimit;
+
+	@Column(name = "language_id", nullable = false, insertable = false, updatable = false)
+	private Long languageId;
+
+	@Column(name = "currency_id", nullable = false, insertable = false, updatable = false)
+	private Long currencyId;
 
 	@Column(name = "price_level", nullable = false)
-	private int priceLevel;
+	private Integer priceLevel;
+
+	@Column(name = "init_process_step_id", insertable = false, updatable = false)
+	private Long initProcessStepId;
+
+	@Column(name = "complete_process_step_id", insertable = false, updatable = false)
+	private Long completeProcessStepId;
+
+	@Column(name = "error_process_step_id", insertable = false, updatable = false)
+	private Long errorProcessStepId;
 
 	/*
 	 * Related Properties
@@ -50,7 +59,7 @@ public class Shop implements Serializable {
 	@OneToOne
 	@JoinColumn(name = "admin_id")
 	private User user;
-	
+
 	@OneToOne
 	@JoinColumn(name = "language_id")
 	private Language language;
@@ -58,22 +67,26 @@ public class Shop implements Serializable {
 	@OneToOne
 	@JoinColumn(name = "currency_id")
 	private Currency currency;
-	
+
+	@OneToOne
+	@JoinColumn(name = "init_process_step_id")
+	private ProcessStep initStep;
+
+	@OneToOne
+	@JoinColumn(name = "complete_process_step_id")
+	private ProcessStep completeStep;
+
+	@OneToOne
+	@JoinColumn(name = "error_process_step_id")
+	private ProcessStep errorStep;
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "shop_id")
-	private List<ShopTunnel> tunnels; 
+	private List<ShopTunnel> tunnels;
 
 	//
 
 	public Shop() {
-	}
-
-	public List<ShopTunnel> getTunnels() {
-		return tunnels;
-	}
-
-	public void setTunnels(List<ShopTunnel> tunnels) {
-		this.tunnels = tunnels;
 	}
 
 	public Long getId() {
@@ -92,52 +105,84 @@ public class Shop implements Serializable {
 		this.name = name;
 	}
 
-	public int getType() {
+	public Integer getType() {
 		return type;
 	}
 
-	public void setType(int type) {
+	public void setType(Integer type) {
 		this.type = type;
 	}
 
-	public int getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 
-//	public long getAdminId() {
-//		return adminId;
-//	}
-//
-//	public void setAdminId(long adminId) {
-//		this.adminId = adminId;
-//	}
+	public Long getAdminId() {
+		return adminId;
+	}
 
-	public int getApiCallLimit() {
+	public void setAdminId(Long adminId) {
+		this.adminId = adminId;
+	}
+
+	public Integer getApiCallLimit() {
 		return apiCallLimit;
 	}
 
-	public void setApiCallLimit(int apiCallLimit) {
+	public void setApiCallLimit(Integer apiCallLimit) {
 		this.apiCallLimit = apiCallLimit;
 	}
 
-	public int getPriceLevel() {
+	public Long getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(Long languageId) {
+		this.languageId = languageId;
+	}
+
+	public Long getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(Long currencyId) {
+		this.currencyId = currencyId;
+	}
+
+	public Integer getPriceLevel() {
 		return priceLevel;
 	}
 
-	public void setPriceLevel(int priceLevel) {
+	public void setPriceLevel(Integer priceLevel) {
 		this.priceLevel = priceLevel;
 	}
 
-	public Currency getCurrency() {
-		return currency;
+	public Long getInitProcessStepId() {
+		return initProcessStepId;
 	}
 
-	public void setCurrency(Currency currency) {
-		this.currency = currency;
+	public void setInitProcessStepId(Long initProcessStepId) {
+		this.initProcessStepId = initProcessStepId;
+	}
+
+	public Long getCompleteProcessStepId() {
+		return completeProcessStepId;
+	}
+
+	public void setCompleteProcessStepId(Long completeProcessStepId) {
+		this.completeProcessStepId = completeProcessStepId;
+	}
+
+	public Long getErrorProcessStepId() {
+		return errorProcessStepId;
+	}
+
+	public void setErrorProcessStepId(Long errorProcessStepId) {
+		this.errorProcessStepId = errorProcessStepId;
 	}
 
 	public User getUser() {
@@ -148,22 +193,6 @@ public class Shop implements Serializable {
 		this.user = user;
 	}
 
-//	public long getLanguageId() {
-//		return languageId;
-//	}
-//
-//	public void setLanguageId(long languageId) {
-//		this.languageId = languageId;
-//	}
-//
-//	public long getCurrency_id() {
-//		return currency_id;
-//	}
-//
-//	public void setCurrency_id(long currency_id) {
-//		this.currency_id = currency_id;
-//	}
-
 	public Language getLanguage() {
 		return language;
 	}
@@ -171,7 +200,45 @@ public class Shop implements Serializable {
 	public void setLanguage(Language language) {
 		this.language = language;
 	}
-	
-	
+
+	public Currency getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(Currency currency) {
+		this.currency = currency;
+	}
+
+	public ProcessStep getInitStep() {
+		return initStep;
+	}
+
+	public void setInitStep(ProcessStep initStep) {
+		this.initStep = initStep;
+	}
+
+	public ProcessStep getCompleteStep() {
+		return completeStep;
+	}
+
+	public void setCompleteStep(ProcessStep completeStep) {
+		this.completeStep = completeStep;
+	}
+
+	public ProcessStep getErrorStep() {
+		return errorStep;
+	}
+
+	public void setErrorStep(ProcessStep errorStep) {
+		this.errorStep = errorStep;
+	}
+
+	public List<ShopTunnel> getTunnels() {
+		return tunnels;
+	}
+
+	public void setTunnels(List<ShopTunnel> tunnels) {
+		this.tunnels = tunnels;
+	}
 
 }

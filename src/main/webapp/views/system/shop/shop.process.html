@@ -25,13 +25,13 @@
                         <td>
                             <div ng-if="process.type == 1">
                                 <span ng-repeat="step in process.steps | orderBy: 'sequence'"> 
-                                    <button type="button" class="btn btn-xs {{forObjectProcesses(step) ? 'btn-success' : 'btn-info' }}" style="margin-bottom:5px;">{{step.name}}</button>
+                                    <button type="button" class="btn btn-xs {{forObjectProcesses(step) ? 'btn-success' : 'btn-info' }}" style="margin-bottom:5px;" ng-click="applyState(step)">{{step.name}}</button>
                                     <span class="glyphicon glyphicon-circle-arrow-right" ng-show="!$last"></span>
                                 </span>
                             </div>
                             <div ng-if="process.type == 2">
                                 <div class="btn-group btn-group-xs">
-                                    <button type="button" class="btn btn-xs {{forObjectProcesses(step) ? 'btn-success' : 'btn-info' }}" ng-repeat="step in process.steps | orderBy: 'sequence'">{{step.name}}</button>
+                                    <button type="button" class="btn btn-xs {{forObjectProcesses(step) ? 'btn-success' : 'btn-info' }}" ng-repeat="step in process.steps | orderBy: 'sequence'" ng-click="applyState(step)">{{step.name}}</button>
                                 </div>
                             </div>
                         </td>

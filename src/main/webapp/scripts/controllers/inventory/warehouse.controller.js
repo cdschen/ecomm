@@ -5,6 +5,7 @@ angular.module('ecommApp')
 .controller('WarehouseController', ['$rootScope', '$scope', 'Warehouse', 'Utils',
     function($rootScope, $scope, Warehouse, Utils) {
 
+        var $ = angular.element;
         $scope.totalPagesList = [];
         $scope.pageSize = 20;
 
@@ -121,7 +122,7 @@ angular.module('ecommApp')
             } else {
                 warehouse.positions = [];
             }
-            Warehouse.save({}, warehouse, function(warehouse) {
+            Warehouse.save({}, warehouse, function() {
                 $state.go('warehouse');
             }, function(err) {
                 console.log(err);
@@ -132,7 +133,7 @@ angular.module('ecommApp')
         $scope.remove = function() {
             Warehouse.remove({
                 id: $stateParams.id
-            }, {}, function(res) {
+            }, {}, function() {
                 $state.go('warehouse');
             }, function(err) {
                 console.log(err);
