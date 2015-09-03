@@ -42,10 +42,10 @@ public class Process implements Serializable {
 	private Long defaultStepId;
 
 	@Column(name = "hide_when_complete", nullable = false)
-	private boolean hideWhenComplete;
+	private Boolean hideWhenComplete;
 
 	@Column(name = "deleted", nullable = false)
-	private boolean deleted;
+	private Boolean deleted;
 
 	/*
 	 * Related Properties
@@ -120,19 +120,19 @@ public class Process implements Serializable {
 		this.defaultStepId = defaultStepId;
 	}
 
-	public boolean isHideWhenComplete() {
+	public Boolean getHideWhenComplete() {
 		return hideWhenComplete;
 	}
 
-	public void setHideWhenComplete(boolean hideWhenComplete) {
+	public void setHideWhenComplete(Boolean hideWhenComplete) {
 		this.hideWhenComplete = hideWhenComplete;
 	}
 
-	public boolean isDeleted() {
+	public Boolean getDeleted() {
 		return deleted;
 	}
 
-	public void setDeleted(boolean deleted) {
+	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 	}
 
