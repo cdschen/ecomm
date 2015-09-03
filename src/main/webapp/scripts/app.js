@@ -3,16 +3,11 @@
 // LocalStorageModule 提供 web存储功能
 // ui.router 提供 路由服务
 // ngResource Angular官方提供， 与服务器交互的模块
-var app = angular.module('ecommApp', ['toastr', 'ngTinyScrollbar', 'LocalStorageModule', 'ui.router', 'ngResource', 'ngMessages', 'ngCookies', 'ui.select', 'ngSanitize', 'ngAnimate', 'ngDragDrop', 'pageslide-directive', 'ui.bootstrap'])
+var ecommApp = angular.module('ecommApp', ['toastr', 'ngTinyScrollbar', 'LocalStorageModule', 'ui.router', 'ngResource', 'ngMessages', 'ngCookies', 'ui.select', 'ngSanitize', 'ngAnimate', 'ngDragDrop', 'pageslide-directive', 'ui.bootstrap']);
 
-.constant('ROLES', {
+ecommApp.constant('ROLES', {
     sysadmin: 'sysadmin'
 })
-
-/*.constant('AUTHORITIES', {
-    userManagement: '用户管理',
-    productManagement: '商品管理'
-})*/
 
 .run(['$rootScope', '$state', '$window', 'Auth', 'Principal', 'Resource',
     function($rootScope, $state, $window, Auth, Principal, Resource) {
