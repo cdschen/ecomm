@@ -1,0 +1,161 @@
+<p>&nbsp;</p>
+<!-- ml form -->
+<form name="mlForm" class="form-horizontal" novalidate>
+    <table class="table" ng-show="product.multiLanguages.length > 0">
+        <thead>
+            <tr>
+                <th width="15%">语言</th>
+                <th width="75%">属性</th>
+                <th width="10%">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="ml in product.multiLanguages" class="pagination-ul">
+                <td>
+                    <span ng-show="!ml.editable">{{ml.language.name}}</span>
+                    <span ng-show="ml.editable">
+                        <ui-select ng-model="ml.language">
+                            <ui-select-match placeholder="显示语言(必选)">{{$select.selected.name + '(' + $select.selected.code + ')'}}</ui-select-match>
+                            <ui-select-choices repeat="language in languages | filter: $select.search">
+                                <div ng-bind-html="language.name | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </span>
+                </td>
+                <td>
+                    <!-- ml.name -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(mlForm.name{{$index}}.$dirty && mlForm.name{{$index}}.$valid), 'has-warning':(mlForm.name{{$index}}.$dirty && mlForm.name{{$index}}.$invalid) }">
+                        <label class="control-label col-md-2">商品名称 <span class="text-danger">*</span></label>
+                        <div class="col-md-6">
+                            <p ng-show="!ml.editable" class="form-control-static">{{ml.name}}</p>
+                            <div ng-show="ml.editable">
+                                <input type="text" name="name{{$index}}" ng-model="ml.name" placeholder="(必填)" class="form-control" required ng-maxlength="50" />
+                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mlForm.name{{$index}}.$dirty && mlForm.name{{$index}}.$valid"></span>
+                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mlForm.name{{$index}}.$dirty && mlForm.name{{$index}}.$invalid"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ml.shortName -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(mlForm.shortName{{$index}}.$dirty && mlForm.shortName{{$index}}.$valid), 'has-warning':(mlForm.shortName{{$index}}.$dirty && mlForm.shortName{{$index}}.$invalid) }">
+                        <label class="control-label col-md-2">商品简称 <span class="text-danger">*</span></label>
+                        <div class="col-md-6">
+                            <p ng-show="!ml.editable" class="form-control-static">{{ml.shortName}}</p>
+                            <div ng-show="ml.editable">
+                                <input type="text" name="shortName{{$index}}" ng-model="ml.shortName" placeholder="(必填)" class="form-control" required ng-maxlength="50" />
+                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mlForm.shortName{{$index}}.$dirty && mlForm.shortName{{$index}}.$valid"></span>
+                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mlForm.shortName{{$index}}.$dirty && mlForm.shortName{{$index}}.$invalid"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ml.shortDescription -->
+                    <div class="form-group has-feedback" ng-class="{'has-warning':(mlForm.shortDescription{{$index}}.$dirty && mlForm.shortDescription{{$index}}.$invalid) }">
+                        <label class="control-label col-md-2">简单描述</label>
+                        <div class="col-md-6">
+                            <p ng-show="!ml.editable" class="form-control-static">{{ml.shortDescription}}</p>
+                            <div ng-show="ml.editable">
+                                <textarea name="shortDescription{{$index}}" ng-model="ml.shortDescription" rows="10" placeholder="(选填)" class="form-control" ng-maxlength="1000"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ml.fullDescription -->
+                    <div class="form-group">
+                        <label class="control-label col-md-2">完整描述</label>
+                        <div class="col-md-10">
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-success" ng-click="saveUpdateLanguage(ml, mlForm, $index)" ng-show="ml.editable" ng-disabled="!mlForm.name{{$index}}.$valid || !mlForm.shortName{{$index}}.$valid || !ml.language">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                    </button>
+                    <button type="button" class="btn btn-info" ng-click="updateLanguage(ml, $index)" ng-show="!ml.editable">
+                        <span class="glyphicon glyphicon-edit"></span>
+                    </button>
+                    <button type="button" class="btn btn-danger" ng-click="showRemoveLanguage(ml, $index)">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<!-- ml add form -->
+<form name="mlAddForm" class="form-horizontal" novalidate>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td width="15%">
+                    <!-- multiLanguage.language -->
+                    <ui-select ng-model="multiLanguage.language">
+                        <ui-select-match placeholder="显示语言(必选)">{{$select.selected.name + '(' + $select.selected.code + ')'}}</ui-select-match>
+                        <ui-select-choices repeat="language in languages | filter: $select.search">
+                            <div ng-bind-html="language.name | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </td>
+                <td width="75%">
+                    <!-- multiLanguage.name -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(mlAddForm.name.$dirty && mlAddForm.name.$valid), 'has-warning':(mlAddForm.name.$dirty && mlAddForm.name.$invalid) }">
+                        <label class="control-label col-md-2">商品名称 <span class="text-danger">*</span></label>
+                        <div class="col-md-6">
+                            <input type="text" name="name" ng-model="multiLanguage.name" placeholder="(必填)" class="form-control" required ng-maxlength="50" />
+                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mlAddForm.name.$dirty && mlAddForm.name.$valid"></span>
+                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mlAddForm.name.$dirty && mlAddForm.name.$invalid"></span>
+                        </div>
+                        <span class="col-md-4 help-block" ng-messages="mlAddForm.name.$error" ng-show="mlAddForm.name.$dirty && mlAddForm.name.$invalid">
+                            <span ng-messages-include="views/error-messages.html" ></span>
+                        </span>
+                    </div>
+                    <!-- multiLanguage.shortName -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(mlAddForm.shortName.$dirty && mlAddForm.shortName.$valid), 'has-warning':(mlAddForm.shortName.$dirty && mlAddForm.shortName.$invalid) }">
+                        <label class="control-label col-md-2">商品简称 <span class="text-danger">*</span></label>
+                        <div class="col-md-6">
+                            <input type="text" name="shortName" ng-model="multiLanguage.shortName" placeholder="(必填)" class="form-control" required ng-maxlength="50" />
+                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mlAddForm.shortName.$dirty && mlAddForm.shortName.$valid"></span>
+                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mlAddForm.shortName.$dirty && mlAddForm.shortName.$invalid"></span>
+                        </div>
+                        <span class="col-md-4 help-block" ng-messages="mlAddForm.shortName.$error" ng-show="mlAddForm.shortName.$dirty && mlAddForm.shortName.$invalid">
+                            <span ng-messages-include="views/error-messages.html" ></span>
+                        </span>
+                    </div>
+                    <!-- multiLanguage.shortDescription -->
+                    <div class="form-group has-feedback" ng-class="{'has-warning':(mlAddForm.shortDescription.$dirty && mlAddForm.shortDescription.$invalid) }">
+                        <label class="control-label col-md-2">简单描述</label>
+                        <div class="col-md-6">
+                            <textarea name="shortDescription" ng-model="multiLanguage.shortDescription" rows="10" placeholder="(选填)" class="form-control" ng-maxlength="1000"></textarea>
+                        </div>
+                        <span class="col-md-4 help-block" ng-messages="mlAddForm.shortDescription.$error" ng-show="mlAddForm.shortDescription.$dirty && mlAddForm.shortDescription.$invalid">
+                            <span ng-messages-include="views/error-messages.html" ></span>
+                        </span>
+                    </div>
+                    <!-- multiLanguage.fullDescription -->
+                    <div class="form-group">
+                        <label class="control-label col-md-2">完整描述</label>
+                        <div class="col-md-10">
+                        </div>
+                    </div>
+                </td>
+                <td width="10%">
+                    <button type="button" class="btn btn-success" ng-click="saveLanguage(mlAddForm, multiLanguage)" ng-disabled="!mlAddForm.$valid || !multiLanguage.language">添加</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<!-- ml delete Modal -->
+<div class="modal fade" id="mlDeleteModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-danger">
+                    <span class="glyphicon glyphicon-question-sign"></span> 确定删除
+                </h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" ng-click="removeLanguage()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+

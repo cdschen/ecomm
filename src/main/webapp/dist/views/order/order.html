@@ -1,15 +1,15 @@
 <ol class="breadcrumb">
     <li><a ui-sref="dashboard">首页</a></li>
-    <li class="active">商品管理</li>
+    <li class="active">订单管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="product.operator">创建</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="order.operator">创建</a>
         <a href="javascript:void(0)" class="btn btn-info btn-xs">导入</a>
         <a href="javascript:void(0)" class="btn btn-info btn-xs">导出</a>
     </li>
 </ol>
 <div class="container-fluid">
     <div class="panel panel-default">
-        <form name="productSerachForm" novalidate ng-submit="search()">
+        <form name="orderSerachForm" novalidate ng-submit="search()">
             <table class="table" style="margin:0">
                 <tbody>
                     <tr>
