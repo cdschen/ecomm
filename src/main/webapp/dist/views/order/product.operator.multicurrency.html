@@ -1,0 +1,245 @@
+<p>&nbsp;</p>
+<!-- mc table -->
+<form name="mcForm" novalidate>
+    <table class="table" ng-show="product.multiCurrencies.length > 0">
+        <thead>
+            <tr>
+                <th width="10%">货币</th>
+                <th width="8%">一级</th>
+                <th width="8%">二级</th>
+                <th width="8%">三级</th>
+                <th width="8%">四级</th>
+                <th width="8%">五级</th>
+                <th width="8%">六级</th>
+                <th width="8%">七级</th>
+                <th width="8%">八级</th>
+                <th width="8%">九级</th>
+                <th width="8%">十级</th>
+                <th width="10%">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="mc in product.multiCurrencies" class="pagination-ul">
+                <td>
+                    <span ng-show="!mc.editable">{{mc.currency.name}}</span>
+                    <span ng-show="mc.editable">
+                        <ui-select ng-model="mc.currency">
+                            <ui-select-match placeholder="货币(必选)">{{$select.selected.name}}</ui-select-match>
+                            <ui-select-choices repeat="currnecy in currencies | filter: $select.search">
+                                <div ng-bind-html="currnecy.name | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </span>
+                </td>
+                <td>
+                    <span ng-show="!mc.editable">{{mc.priceL1 | currency:'':2}}</span>
+                    <div ng-show="mc.editable" class="form-group has-feedback" ng-class="{'has-success':(mcForm.mcPriceL1{{$index}}.$dirty && mcForm.mcPriceL1{{$index}}.$valid), 'has-warning':(mcForm.mcPriceL1{{$index}}.$dirty && mcForm.mcPriceL1{{$index}}.$invalid) }">
+                        <input type="number" name="mcPriceL1{{$index}}" ng-model="mc.priceL1" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcForm.mcPriceL1{{$index}}.$dirty && mcForm.mcPriceL1{{$index}}.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcForm.mcPriceL1{{$index}}.$dirty && mcForm.mcPriceL1{{$index}}.$invalid"></span>
+                    </div>                    
+                </td>
+                <td>
+                    <span ng-show="!mc.editable">{{mc.priceL2 | currency:'':2}}</span>
+                    <div ng-show="mc.editable" class="form-group has-feedback" ng-class="{'has-success':(mcForm.mcPriceL2{{$index}}.$dirty && mcForm.mcPriceL2{{$index}}.$valid), 'has-warning':(mcForm.mcPriceL2{{$index}}.$dirty && mcForm.mcPriceL2{{$index}}.$invalid) }">
+                        <input type="number" name="mcPriceL2{{$index}}" ng-model="mc.priceL2" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcForm.mcPriceL2{{$index}}.$dirty && mcForm.mcPriceL2{{$index}}.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcForm.mcPriceL2{{$index}}.$dirty && mcForm.mcPriceL2{{$index}}.$invalid"></span>
+                    </div>   
+                </td>
+                <td>
+                    <span ng-show="!mc.editable">{{mc.priceL3 | currency:'':2}}</span>
+                    <div ng-show="mc.editable" class="form-group has-feedback" ng-class="{'has-success':(mcForm.mcPriceL3{{$index}}.$dirty && mcForm.mcPriceL3{{$index}}.$valid), 'has-warning':(mcForm.mcPriceL3{{$index}}.$dirty && mcForm.mcPriceL3{{$index}}.$invalid) }">
+                        <input type="number" name="mcPriceL3{{$index}}" ng-model="mc.priceL3" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcForm.mcPriceL3{{$index}}.$dirty && mcForm.mcPriceL3{{$index}}.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcForm.mcPriceL3{{$index}}.$dirty && mcForm.mcPriceL3{{$index}}.$invalid"></span>
+                    </div> 
+                </td>
+                <td>
+                    <span ng-show="!mc.editable">{{mc.priceL4 | currency:'':2}}</span>
+                    <div ng-show="mc.editable" class="form-group has-feedback" ng-class="{'has-success':(mcForm.mcPriceL4{{$index}}.$dirty && mcForm.mcPriceL4{{$index}}.$valid), 'has-warning':(mcForm.mcPriceL4{{$index}}.$dirty && mcForm.mcPriceL4{{$index}}.$invalid) }">
+                        <input type="number" name="mcPriceL4{{$index}}" ng-model="mc.priceL4" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcForm.mcPriceL4{{$index}}.$dirty && mcForm.mcPriceL4{{$index}}.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcForm.mcPriceL4{{$index}}.$dirty && mcForm.mcPriceL4{{$index}}.$invalid"></span>
+                    </div>
+                </td>
+                <td>
+                    <span ng-show="!mc.editable">{{mc.priceL5 | currency:'':2}}</span>
+                    <div ng-show="mc.editable" class="form-group has-feedback" ng-class="{'has-success':(mcForm.mcPriceL5{{$index}}.$dirty && mcForm.mcPriceL5{{$index}}.$valid), 'has-warning':(mcForm.mcPriceL5{{$index}}.$dirty && mcForm.mcPriceL5{{$index}}.$invalid) }">
+                        <input type="number" name="mcPriceL5{{$index}}" ng-model="mc.priceL5" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcForm.mcPriceL5{{$index}}.$dirty && mcForm.mcPriceL5{{$index}}.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcForm.mcPriceL5{{$index}}.$dirty && mcForm.mcPriceL5{{$index}}.$invalid"></span>
+                    </div>
+                </td>
+                <td>
+                    <span ng-show="!mc.editable">{{mc.priceL6 | currency:'':2}}</span>
+                    <div ng-show="mc.editable" class="form-group has-feedback" ng-class="{'has-success':(mcForm.mcPriceL6{{$index}}.$dirty && mcForm.mcPriceL6{{$index}}.$valid), 'has-warning':(mcForm.mcPriceL6{{$index}}.$dirty && mcForm.mcPriceL6{{$index}}.$invalid) }">
+                        <input type="number" name="mcPriceL6{{$index}}" ng-model="mc.priceL6" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="60" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcForm.mcPriceL6{{$index}}.$dirty && mcForm.mcPriceL6{{$index}}.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcForm.mcPriceL6{{$index}}.$dirty && mcForm.mcPriceL6{{$index}}.$invalid"></span>
+                    </div>
+                </td>
+                <td>
+                    <span ng-show="!mc.editable">{{mc.priceL7 | currency:'':2}}</span>
+                    <div ng-show="mc.editable" class="form-group has-feedback" ng-class="{'has-success':(mcForm.mcPriceL7{{$index}}.$dirty && mcForm.mcPriceL7{{$index}}.$valid), 'has-warning':(mcForm.mcPriceL7{{$index}}.$dirty && mcForm.mcPriceL7{{$index}}.$invalid) }">
+                        <input type="number" name="mcPriceL7{{$index}}" ng-model="mc.priceL7" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="70" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcForm.mcPriceL7{{$index}}.$dirty && mcForm.mcPriceL7{{$index}}.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcForm.mcPriceL7{{$index}}.$dirty && mcForm.mcPriceL7{{$index}}.$invalid"></span>
+                    </div>
+                </td>
+                <td>
+                    <span ng-show="!mc.editable">{{mc.priceL8 | currency:'':2}}</span>
+                    <div ng-show="mc.editable" class="form-group has-feedback" ng-class="{'has-success':(mcForm.mcPriceL8{{$index}}.$dirty && mcForm.mcPriceL8{{$index}}.$valid), 'has-warning':(mcForm.mcPriceL8{{$index}}.$dirty && mcForm.mcPriceL8{{$index}}.$invalid) }">
+                        <input type="number" name="mcPriceL8{{$index}}" ng-model="mc.priceL8" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="80" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcForm.mcPriceL8{{$index}}.$dirty && mcForm.mcPriceL8{{$index}}.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcForm.mcPriceL8{{$index}}.$dirty && mcForm.mcPriceL8{{$index}}.$invalid"></span>
+                    </div>
+                </td>
+                <td>
+                    <span ng-show="!mc.editable">{{mc.priceL9 | currency:'':2}}</span>
+                    <div ng-show="mc.editable" class="form-group has-feedback" ng-class="{'has-success':(mcForm.mcPriceL9{{$index}}.$dirty && mcForm.mcPriceL9{{$index}}.$valid), 'has-warning':(mcForm.mcPriceL9{{$index}}.$dirty && mcForm.mcPriceL9{{$index}}.$invalid) }">
+                        <input type="number" name="mcPriceL9{{$index}}" ng-model="mc.priceL9" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="90" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcForm.mcPriceL9{{$index}}.$dirty && mcForm.mcPriceL9{{$index}}.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcForm.mcPriceL9{{$index}}.$dirty && mcForm.mcPriceL9{{$index}}.$invalid"></span>
+                    </div>
+                </td>
+                <td>
+                    <span ng-show="!mc.editable">{{mc.priceL10 | currency:'':2}}</span>
+                    <div ng-show="mc.editable" class="form-group has-feedback" ng-class="{'has-success':(mcForm.mcPriceL10{{$index}}.$dirty && mcForm.mcPriceL10{{$index}}.$valid), 'has-warning':(mcForm.mcPriceL10{{$index}}.$dirty && mcForm.mcPriceL10{{$index}}.$invalid) }">
+                        <input type="number" name="mcPriceL10{{$index}}" ng-model="mc.priceL10" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="100" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcForm.mcPriceL10{{$index}}.$dirty && mcForm.mcPriceL10{{$index}}.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcForm.mcPriceL10{{$index}}.$dirty && mcForm.mcPriceL10{{$index}}.$invalid"></span>
+                    </div>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-success" ng-click="saveUpdateCurrency(mc, $index)" ng-show="mc.editable" ng-disabled="!mcForm.mcPriceL1{{$index}}.$valid || !mcForm.mcPriceL2{{$index}}.$valid || !mcForm.mcPriceL3{{$index}}.$valid || !mcForm.mcPriceL4{{$index}}.$valid || !mcForm.mcPriceL5{{$index}}.$valid || !mcForm.mcPriceL6{{$index}}.$valid || !mcForm.mcPriceL7{{$index}}.$valid || !mcForm.mcPriceL8{{$index}}.$valid || !mcForm.mcPriceL9{{$index}}.$valid || !mcForm.mcPriceL10{{$index}}.$valid || !mc.currency">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                    </button>
+                    <button type="button" class="btn btn-info" ng-click="updateCurrency(mc, $index)" ng-show="!mc.editable">
+                        <span class="glyphicon glyphicon-edit"></span>
+                    </button>
+                    <button type="button" class="btn btn-danger" ng-click="showRemoveCurrency(mc, $index)">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<!-- mc add table -->
+<form name="mcAddForm" novalidate>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td width="10%">
+                    <!-- multiCurrency.currency -->
+                    <ui-select ng-model="multiCurrency.currency">
+                        <ui-select-match placeholder="货币(必选)">{{$select.selected.name}}</ui-select-match>
+                        <ui-select-choices repeat="currency in currencies | filter: $select.search">
+                            <div ng-bind-html="currency.name | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </td>
+                <td width="8%">
+                    <!-- multiCurrency.priceL1 -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(mcAddForm.priceL1.$dirty && mcAddForm.priceL1.$valid), 'has-warning':(mcAddForm.priceL1.$dirty && mcAddForm.priceL1.$invalid) }">
+                        <input type="number" name="priceL1" ng-model="multiCurrency.priceL1" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcAddForm.priceL1.$dirty && mcAddForm.priceL1.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcAddForm.priceL1.$dirty && mcAddForm.priceL1.$invalid"></span>
+                    </div>
+                </td>
+                <td width="8%">
+                    <!-- multiCurrency.priceL2 -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(mcAddForm.priceL2.$dirty && mcAddForm.priceL2.$valid), 'has-warning':(mcAddForm.priceL2.$dirty && mcAddForm.priceL2.$invalid) }">
+                        <input type="number" name="priceL2" ng-model="multiCurrency.priceL2" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcAddForm.priceL2.$dirty && mcAddForm.priceL2.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcAddForm.priceL2.$dirty && mcAddForm.priceL2.$invalid"></span>
+                    </div>
+                </td>
+                <td width="8%">
+                    <!-- multiCurrency.priceL3 -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(mcAddForm.priceL3.$dirty && mcAddForm.priceL3.$valid), 'has-warning':(mcAddForm.priceL3.$dirty && mcAddForm.priceL3.$invalid) }">
+                        <input type="number" name="priceL3" ng-model="multiCurrency.priceL3" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcAddForm.priceL3.$dirty && mcAddForm.priceL3.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcAddForm.priceL3.$dirty && mcAddForm.priceL3.$invalid"></span>
+                    </div>
+                </td>
+                <td width="8%">
+                    <!-- multiCurrency.priceL4 -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(mcAddForm.priceL4.$dirty && mcAddForm.priceL4.$valid), 'has-warning':(mcAddForm.priceL4.$dirty && mcAddForm.priceL4.$invalid) }">
+                        <input type="number" name="priceL4" ng-model="multiCurrency.priceL4" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcAddForm.priceL4.$dirty && mcAddForm.priceL4.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcAddForm.priceL4.$dirty && mcAddForm.priceL4.$invalid"></span>
+                    </div>
+                </td>
+                <td width="8%">
+                    <!-- multiCurrency.priceL5 -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(mcAddForm.priceL5.$dirty && mcAddForm.priceL5.$valid), 'has-warning':(mcAddForm.priceL5.$dirty && mcAddForm.priceL5.$invalid) }">
+                        <input type="number" name="priceL5" ng-model="multiCurrency.priceL5" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcAddForm.priceL5.$dirty && mcAddForm.priceL5.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcAddForm.priceL5.$dirty && mcAddForm.priceL5.$invalid"></span>
+                    </div>
+                </td>
+                <td width="8%">
+                    <!-- multiCurrency.priceL6 -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(mcAddForm.priceL6.$dirty && mcAddForm.priceL6.$valid), 'has-warning':(mcAddForm.priceL6.$dirty && mcAddForm.priceL6.$invalid) }">
+                        <input type="number" name="priceL6" ng-model="multiCurrency.priceL6" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcAddForm.priceL6.$dirty && mcAddForm.priceL6.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcAddForm.priceL6.$dirty && mcAddForm.priceL6.$invalid"></span>
+                    </div>
+                </td>
+                <td width="8%">
+                    <!-- multiCurrency.priceL7 -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(mcAddForm.priceL7.$dirty && mcAddForm.priceL7.$valid), 'has-warning':(mcAddForm.priceL7.$dirty && mcAddForm.priceL7.$invalid) }">
+                        <input type="number" name="priceL7" ng-model="multiCurrency.priceL7" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcAddForm.priceL7.$dirty && mcAddForm.priceL7.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcAddForm.priceL7.$dirty && mcAddForm.priceL7.$invalid"></span>
+                    </div>
+                </td>
+                <td width="8%">
+                    <!-- multiCurrency.priceL8 -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(mcAddForm.priceL8.$dirty && mcAddForm.priceL8.$valid), 'has-warning':(mcAddForm.priceL8.$dirty && mcAddForm.priceL8.$invalid) }">
+                        <input type="number" name="priceL8" ng-model="multiCurrency.priceL8" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcAddForm.priceL8.$dirty && mcAddForm.priceL8.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcAddForm.priceL8.$dirty && mcAddForm.priceL8.$invalid"></span>
+                    </div>
+                </td>
+                <td width="8%">
+                    <!-- multiCurrency.priceL9 -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(mcAddForm.priceL9.$dirty && mcAddForm.priceL9.$valid), 'has-warning':(mcAddForm.priceL9.$dirty && mcAddForm.priceL9.$invalid) }">
+                        <input type="number" name="priceL9" ng-model="multiCurrency.priceL9" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcAddForm.priceL9.$dirty && mcAddForm.priceL9.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcAddForm.priceL9.$dirty && mcAddForm.priceL9.$invalid"></span>
+                    </div>
+                </td>
+                <td width="8%">
+                    <!-- multiCurrency.priceL10 -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(mcAddForm.priceL10.$dirty && mcAddForm.priceL10.$valid), 'has-warning':(mcAddForm.priceL10.$dirty && mcAddForm.priceL10.$invalid) }">
+                        <input type="number" name="priceL10" ng-model="multiCurrency.priceL10" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="mcAddForm.priceL10.$dirty && mcAddForm.priceL10.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="mcAddForm.priceL10.$dirty && mcAddForm.priceL10.$invalid"></span>
+                    </div>
+                </td>
+                <td width="10%">
+                    <button type="button" class="btn btn-success" ng-click="saveCurrency(mcAddForm, multiCurrency)" ng-disabled="!mcAddForm.$valid || !multiCurrency.currency">添加</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<!-- mc delete Modal -->
+<div class="modal fade" id="mcDeleteModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-danger">
+                    <span class="glyphicon glyphicon-question-sign"></span> 确定删除
+                </h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" ng-click="removeCurrency()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>

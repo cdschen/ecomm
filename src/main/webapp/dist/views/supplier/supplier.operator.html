@@ -1,0 +1,69 @@
+<div pageslide ps-open="supplierSlideChecked" ps-speed="0.25" ps-size="700px">
+    <div id="operator-slider">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <button type="button" class="close" ng-click="colseSupplierSlide()">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h3>编辑供应商</h3>
+                <hr>
+                <form name="supplierForm" class="form-horizontal" novalidate ng-submit="saveSupplier(supplierForm, supplier)">
+                    <!-- name -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(supplierForm.name.$dirty && supplierForm.name.$valid), 'has-warning':(supplierForm.name.$dirty && supplierForm.name.$invalid) }">
+                        <label class="control-label col-md-2">供应商名称 <span class="text-danger">*</span></label>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control" name="name" ng-model="supplier.name" placeholder="" required ng-maxlength="50" />
+                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="supplierForm.name.$dirty && supplierForm.name.$valid"></span>
+                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="supplierForm.name.$dirty && supplierForm.name.$invalid"></span>
+                        </div>
+                        <span class="col-md-5 help-block" ng-messages="supplierForm.name.$error" ng-show="supplierForm.name.$dirty && supplierForm.name.$invalid">
+                            <span ng-messages-include="views/error-messages.html"></span>
+                        </span>
+                    </div>
+                    <!-- phone -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(supplierForm.phone.$dirty && supplierForm.phone.$valid), 'has-warning':(supplierForm.phone.$dirty && supplierForm.phone.$invalid) }">
+                        <label class="control-label col-md-2">电话 <span class="text-danger">*</span></label>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control" name="phone" ng-model="supplier.phone" placeholder="" required ng-maxlength="50" />
+                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="supplierForm.phone.$dirty && supplierForm.phone.$valid"></span>
+                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="supplierForm.phone.$dirty && supplierForm.phone.$invalid"></span>
+                        </div>
+                        <span class="col-md-5 help-block" ng-messages="supplierForm.phone.$error" ng-show="supplierForm.phone.$dirty && supplierForm.phone.$invalid">
+                            <span ng-messages-include="views/error-messages.html"></span>
+                        </span>
+                    </div>
+                    <!-- email -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(supplierForm.email.$dirty && supplierForm.email.$valid), 'has-warning':(supplierForm.email.$dirty && supplierForm.email.$invalid) }">
+                        <label class="control-label col-md-2">Email <span class="text-danger">*</span></label>
+                        <div class="col-md-5">
+                            <input type="email" class="form-control" name="email" ng-model="supplier.email" placeholder="" required ng-maxlength="50" />
+                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="supplierForm.email.$dirty && supplierForm.email.$valid"></span>
+                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="supplierForm.email.$dirty && supplierForm.email.$invalid"></span>
+                        </div>
+                        <span class="col-md-5 help-block" ng-messages="supplierForm.email.$error" ng-show="supplierForm.email.$dirty && supplierForm.email.$invalid">
+                            <span ng-messages-include="views/error-messages.html"></span>
+                        </span>
+                    </div>
+                    <!-- address -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(supplierForm.address.$dirty && supplierForm.address.$valid), 'has-warning':(supplierForm.address.$dirty && supplierForm.address.$invalid) }">
+                        <label class="control-label col-md-2">地址 <span class="text-danger">*</span></label>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control" name="address" ng-model="supplier.address" placeholder="" required ng-maxlength="50" />
+                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="supplierForm.address.$dirty && supplierForm.address.$valid"></span>
+                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="supplierForm.address.$dirty && supplierForm.address.$invalid"></span>
+                        </div>
+                        <span class="col-md-5 help-block" ng-messages="supplierForm.address.$error" ng-show="supplierForm.address.$dirty && supplierForm.address.$invalid">
+                            <span ng-messages-include="views/error-messages.html"></span>
+                        </span>
+                    </div>
+                     <!-- button -->
+                    <div class="form-group">
+                        <div class="col-md-5 col-md-offset-2">
+                            <button type="submit" class="btn btn-success btn-lg" ng-disabled="!supplierForm.$valid">保存</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

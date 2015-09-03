@@ -287,6 +287,22 @@ angular.module('ecommApp', ['toastr', 'ngTinyScrollbar', 'LocalStorageModule', '
                 }
             })
 
+        //订单模块路由
+        .state('order', {
+            parent: 'site',
+            url: '/orders',
+            views: {
+                'content@': {
+                    templateUrl: 'views/order/order.html?' + (new Date()),
+                    controller: 'OrderController'
+                }
+            },
+            data: {
+                roles: [ROLES.sysadmin],
+                authorities: []
+            }
+        })
+
 
         // 库存模块路由
         .state('warehouse', {
