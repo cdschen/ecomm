@@ -1,10 +1,11 @@
-app.config(['$stateProvider', 'ROLES',
+'use strict';
+
+var ecommApp = angular.module('ecommApp');
+
+ecommApp.config(['$stateProvider', 'ROLES',
     function($stateProvider, ROLES) {
 
         $stateProvider
-
-
-            // 库存模块路由
             .state('warehouse', {
                 parent: 'site',
                 url: '/warehouses',

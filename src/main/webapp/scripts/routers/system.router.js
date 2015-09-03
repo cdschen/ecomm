@@ -1,4 +1,8 @@
-app.config(['$stateProvider', 'ROLES',
+'use strict';
+
+var ecommApp = angular.module('ecommApp');
+
+ecommApp.config(['$stateProvider', 'ROLES',
     function($stateProvider, ROLES) {
 
         $stateProvider

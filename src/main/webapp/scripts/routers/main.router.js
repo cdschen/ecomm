@@ -1,9 +1,14 @@
-app.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ROLES',
+'use strict';
+
+var ecommApp = angular.module('ecommApp');
+
+ecommApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ROLES',
     function($httpProvider, $stateProvider, $urlRouterProvider, ROLES) {
 
         $httpProvider.interceptors.push('authExpiredInterceptor');
 
         $urlRouterProvider.otherwise('/login');
+        
         $stateProvider
             .state('site', {
                 abstract: true,

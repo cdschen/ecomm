@@ -1,9 +1,11 @@
-app.config(['$stateProvider', 'ROLES',
+'use strict';
+
+var ecommApp = angular.module('ecommApp');
+
+ecommApp.config(['$stateProvider', 'ROLES',
     function($stateProvider, ROLES) {
 
         $stateProvider
-
-            //流程模块路由
             .state('process', {
                 parent: 'site',
                 url: '/processes',
