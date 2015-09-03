@@ -124,7 +124,7 @@ public class Product implements Serializable {
 	private String image9Url;
 
 	@Column(name = "deleted")
-	private boolean deleted;
+	private Boolean deleted;
 
 	/*
 	 * Related Properties
@@ -178,7 +178,17 @@ public class Product implements Serializable {
 	public Product() {
 	}
 
-	
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
+
 
 	public Integer[] getStatus() {
 		return status;
@@ -382,14 +392,6 @@ public class Product implements Serializable {
 
 	public void setCurrency(Currency currency) {
 		this.currency = currency;
-	}
-
-	public boolean isDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
 	}
 
 	public Integer getProductType() {
