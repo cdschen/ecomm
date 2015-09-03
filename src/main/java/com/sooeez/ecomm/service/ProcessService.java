@@ -72,7 +72,7 @@ public class ProcessService {
 			if (process.getObjectType() != null) {
 				predicates.add(cb.equal(root.get("objectType"), process.getObjectType()));
 			}
-			predicates.add(cb.equal(root.get("deleted"), process.isDeleted()));
+			predicates.add(cb.equal(root.get("deleted"), process.getDeleted()));
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
 	}

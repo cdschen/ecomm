@@ -68,11 +68,7 @@ public class ProductService {
 		
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			if (product.getDeleted()) {
-				predicates.add(cb.equal(root.get("deleted"), true));
-			} else {
-				predicates.add(cb.equal(root.get("deleted"), false));
-			}
+			predicates.add(cb.equal(root.get("deleted"), product.getDeleted()));
 			if (StringUtils.hasText(product.getSku())) {
 				predicates.add(cb.like(root.get("sku"), "%" + product.getSku() + "%"));
 			}

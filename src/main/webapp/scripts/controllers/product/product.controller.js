@@ -58,7 +58,8 @@ angular.module('ecommApp')
         Product.get({
             page: 0,
             size: $scope.pageSize,
-            sort: ['name']
+            sort: ['name'],
+            deleted: false
         }).$promise.then(function(page) {
             console.clear();
             console.log('page:');
@@ -88,6 +89,7 @@ angular.module('ecommApp')
                     sort: ['name'],
                     sku: $scope.product.sku,
                     name: $scope.product.name,
+                    deleted: false,
                     status: refreshStatus($scope.selected.status)
                 }, function(page) {
                     $scope.page = page;
