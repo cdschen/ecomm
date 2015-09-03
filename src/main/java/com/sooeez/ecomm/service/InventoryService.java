@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sooeez.ecomm.domain.Inventory;
 import com.sooeez.ecomm.domain.InventoryBatch;
-import com.sooeez.ecomm.domain.InventoryBatchItem;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.domain.WarehousePosition;
@@ -23,17 +22,13 @@ import com.sooeez.ecomm.repository.WarehouseRepository;
 @Service
 public class InventoryService {
 
-	@Autowired
-	private WarehouseRepository warehouseRepository;
+	@Autowired private WarehouseRepository warehouseRepository;
 
-	@Autowired
-	private WarehousePositionRepository warehousePositionRepository;
+	@Autowired private WarehousePositionRepository warehousePositionRepository;
 
-	@Autowired
-	private InventoryRepository inventoryRepository;
+	@Autowired private InventoryRepository inventoryRepository;
 
-	@Autowired
-	private InventoryBatchRepository inventoryBatchRepository;
+	@Autowired private InventoryBatchRepository inventoryBatchRepository;
 
 	/*
 	 * Warehouse
