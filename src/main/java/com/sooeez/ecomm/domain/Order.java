@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "t_order")
@@ -180,11 +181,43 @@ public class Order implements Serializable {
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id")
 	private List<OrderItem> orderItem;
+	
+	
+	/*
+	 * Query Params;
+	 */
+	@Transient
+	private Date internalCreateTimeStart;
+	
+	@Transient
+	private Date internalCreateTimeEnd;
 
 	//
+	
+	
 
 	public Long getId() {
 		return id;
+	}
+
+
+	public Date getInternalCreateTimeStart() {
+		return internalCreateTimeStart;
+	}
+
+
+	public void setInternalCreateTimeStart(Date internalCreateTimeStart) {
+		this.internalCreateTimeStart = internalCreateTimeStart;
+	}
+
+
+	public Date getInternalCreateTimeEnd() {
+		return internalCreateTimeEnd;
+	}
+
+
+	public void setInternalCreateTimeEnd(Date internalCreateTimeEnd) {
+		this.internalCreateTimeEnd = internalCreateTimeEnd;
 	}
 
 
