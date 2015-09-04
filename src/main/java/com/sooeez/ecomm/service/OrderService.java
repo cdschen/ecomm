@@ -58,6 +58,20 @@ public class OrderService {
 			if (order.getId() != null) {
 				predicates.add(cb.like(root.get("id"), "%" + order.getId() + "%"));
 			}
+			
+			if(order.getInternalCreateTimeStart()!=null && order.getInternalCreateTimeEnd()!=null)
+			{
+				predicates.add(cb.between(root.get("internalCreateTime"), order.getInternalCreateTimeStart(), order.getInternalCreateTimeEnd()));
+			}
+			else if (order.getInternalCreateTimeStart() != null)
+			{
+				predicates.add(cb.greaterThanOrEqualTo(root.get("internalCreateTime"), order.getInternalCreateTimeStart()));
+			}
+			else if (order.getInternalCreateTimeEnd() != null)
+			{
+				predicates.add(cb.lessThanOrEqualTo(root.get("internalCreateTime"), order.getInternalCreateTimeEnd()));
+			}
+			
 //			if (product.getProductType() != null) {
 //				predicates.add(cb.equal(root.get("productType"), product.getProductType()));
 //			}

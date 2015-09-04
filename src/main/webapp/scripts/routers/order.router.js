@@ -17,6 +17,19 @@ angular.module('ecommApp')
                     roles: [ROLES.sysadmin],
                     authorities: []
                 }
+            })
+            .state('order.operator', {
+                url: '/order/:id',
+                views: {
+                    'content@': {
+                        templateUrl: 'views/order/order.operator.html?' + (new Date()),
+                        controller: 'OrderOperatorController'
+                    }
+                },
+                data: {
+                    roles: [ROLES.sysadmin],
+                    authorities: []
+                }
             });
     }
 ]);
