@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .controller('SupplierController', ['$rootScope', '$scope', 'Supplier', 'Utils',
@@ -20,6 +18,7 @@ angular.module('ecommApp')
         };
         $scope.supplier = angular.copy($scope.defaultSupplier);
         $scope.supplierSlideChecked = false;
+        $scope.title = '';
 
         $scope.refresh = function() {
             Supplier.get({
@@ -33,7 +32,7 @@ angular.module('ecommApp')
                 console.log(page);
                 $scope.page = page;
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
-                $scope.colseSupplierSlide();
+                $scope.closeSupplierSlide();
             });
         };
 
@@ -106,11 +105,16 @@ angular.module('ecommApp')
 
         // operator
 
-        $scope.colseSupplierSlide = function() {
+        $scope.closeSupplierSlide = function() {
             $scope.supplierSlideChecked = false;
         };
 
-        $scope.operateSupplier = function() {
+        $scope.operateSupplier = function(action) {
+            $scope.title = '编辑';
+            if (action === 'create') {
+                $scope.title = '创建';
+                $scope.supplier = angular.copy($scope.defaultSupplier);
+            }
             $scope.supplierSlideChecked = true;
         };
     }

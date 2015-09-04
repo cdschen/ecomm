@@ -1,16 +1,22 @@
-'use strict';
-
 angular.module('ecommApp')
 
-.controller('BrandController', ['$scope', 'Brand', 'Utils',
-    function($scope, Brand, Utils) {
+.controller('BrandController', ['$rootScope', '$scope', 'Brand', 'Utils',
+    function($rootScope, $scope, Brand, Utils) {
 
         var $ = angular.element;
+
+        $scope.template = {
+            operator: {
+                url: 'views/product/brand/brand.operator.html?' + (new Date())
+            }
+        };
+
         $scope.totalPagesList = [];
         $scope.pageSize = 20;
-        $scope.brand = {};
+        $scope.brandSlideChecked = false;
+        $scope.title = '';
 
-        function refresh() {
+        $scope.refresh = function() {
             Brand.get({
                 page: 0,
                 size: $scope.pageSize,
@@ -21,17 +27,18 @@ angular.module('ecommApp')
                 console.log(page);
                 $scope.page = page;
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
+                $scope.closeBrandSlide();
             });
-        }
+        };
 
-        refresh();
+        $scope.refresh();
 
         $scope.turnPage = function(number) {
             if (number > -1 && number < $scope.page.totalPages) {
                 Brand.get({
                     page: number,
                     size: $scope.pageSize,
-                    sort: ['id,desc'],
+                    sort: ['id,desc']
                 }, function(page) {
                     console.clear();
                     console.log('turnPage:');
@@ -42,35 +49,12 @@ angular.module('ecommApp')
             }
         };
 
-        $scope.saveBrand = function(brandAddForm, brand) {
-            console.clear();
-            console.log('saveBrand:');
-            console.log(brand);
-
-            Brand.save({}, brand, function(brand) {
-                console.log('saveBrand complete:');
-                console.log(brand);
-                brandAddForm.$setPristine();
-                $scope.brand = {};
-                refresh();
-            });
-        };
-
         $scope.updateBrand = function(brand) {
             console.clear();
             console.log('updateBrand:');
             console.log(brand);
-            brand.editable = true;
-        };
-
-        $scope.saveUpdateBrand = function(brand, brandForm) {
-            console.clear();
-            console.log('saveUpdateBrand complete:');
-            Brand.save({}, brand, function() {
-                console.log(brand);
-                brand.editable = false;
-                brandForm.$setPristine();
-            });
+            $scope.brand = brand;
+            $scope.operateBrand();
         };
 
         $scope.removingBrand = undefined;
@@ -95,9 +79,37 @@ angular.module('ecommApp')
                 }, {}, function() {
                     $scope.removingBrand = undefined;
                     $('#brandDeleteModal').modal('hide');
-                    refresh();
+                    $scope.refresh();
                 });
             }
+        };
+
+        $scope.saveBrand = function(brandForm, brand) {
+            console.clear();
+            console.log('saveBrand:');
+            console.log(brand);
+
+            Brand.save({}, brand, function(brand) {
+                console.log('saveBrand complete:');
+                console.log(brand);
+                brandForm.$setPristine();
+                $scope.refresh();
+            });
+        };
+
+        // operator
+
+        $scope.closeBrandSlide = function() {
+            $scope.brandSlideChecked = false;
+        };
+
+        $scope.operateBrand = function(action) {
+            $scope.title = '编辑';
+            if (action === 'create') {
+                $scope.title = '创建';
+                $scope.brand = {};
+            }
+            $scope.brandSlideChecked = true;
         };
     }
 ]);

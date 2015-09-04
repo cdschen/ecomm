@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .controller('TagController', ['$rootScope', '$scope', 'Tag', 'Utils',
@@ -28,7 +26,7 @@ angular.module('ecommApp')
                 console.log(page);
                 $scope.page = page;
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
-                $scope.colseTagSlide();
+                $scope.closeTagSlide();
             });
         };
 
@@ -101,11 +99,14 @@ angular.module('ecommApp')
 
         // operator
 
-        $scope.colseTagSlide = function() {
+        $scope.closeTagSlide = function() {
             $scope.tagSlideChecked = false;
         };
 
-        $scope.operateTag = function() {
+        $scope.operateTag = function(action) {
+            if (action === 'create') {
+                $scope.tag = {};
+            }
             $scope.tagSlideChecked = true;
         };
     }

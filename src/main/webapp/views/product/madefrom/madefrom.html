@@ -2,24 +2,25 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">产地管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="" class="btn btn-info btn-xs" ng-click="operateMadeFrom()">创建</a>
+        <a href="" class="btn btn-info btn-xs" ng-click="operateMadeFrom('create')">创建</a>
     </li>
 </ol>
 <div class="container-fluid">
     <div class="panel panel-default" ng-show="page.content.length > 0">
-        <table class="table table-condensed table-striped clear-marginbottom-table" >
+        <table class="table table-condensed clear-marginbottom-table" >
             <thead>
                 <tr>
                     <th>编号</th>
-                    <th>名称</th>
+                    <th>产地</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="madeFrom in page.content">
-                    <td width="10%">
+                    <th width="10%">
                         {{madeFrom.id}}
-                    </td>
-                    <td width="20%">
+                    </th>
+                    <td width="80%">
                         {{madeFrom.name}}
                     </td>
                     <td width="10%">

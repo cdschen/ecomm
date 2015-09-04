@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .controller('RoleController', ['$rootScope', '$scope', 'Authority', 'Role',

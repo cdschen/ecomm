@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .factory('Category', ['$resource', '$http', function($resource, $http) {

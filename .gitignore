@@ -53,3 +53,5 @@ node_modules
 .svn
 src/main/webapp/bower_components
 src/main/webapp/.idea
+src/main/webapp/scripts/ecommApp.js
+*.yml

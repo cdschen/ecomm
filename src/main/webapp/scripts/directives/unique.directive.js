@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .directive('ensureUnique', ['$timeout', '$http', function($timeout, $http) {

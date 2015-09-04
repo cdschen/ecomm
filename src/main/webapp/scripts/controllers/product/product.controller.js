@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .controller('ProductController', ['$scope', 'Product', 'Utils', 'Process', 'ObjectProcess',
@@ -20,7 +18,7 @@ angular.module('ecommApp')
         $scope.totalPagesList = [];
         $scope.pageSize = 20;
         $scope.product = {
-            sku: '',
+            sku: '', 
             name: ''
         };
         $scope.processes = [];
@@ -136,7 +134,7 @@ angular.module('ecommApp')
 
         // status
 
-        $scope.colseStatusSlide = function() {
+        $scope.closeStatusSlide = function() {
             $scope.statusSlideChecked = false;
         };
 
@@ -163,7 +161,7 @@ angular.module('ecommApp')
 
         // process
 
-        $scope.colseProcessSlide = function() {
+        $scope.closeProcessSlide = function() {
             $scope.processSlideChecked = false;
             if ($scope.processProduct) {
                 $scope.processProduct.active = false;
@@ -199,7 +197,7 @@ angular.module('ecommApp')
 
         // details
 
-        $scope.colseDetailsSlide = function() {
+        $scope.closeDetailsSlide = function() {
             $scope.detailsSlideChecked = false;
         };
 
@@ -257,7 +255,7 @@ angular.module('ecommApp')
                     console.log('refresh Processes:');
                     console.log(objectProcesses);
                     $scope.processProduct.processes = angular.copy(objectProcesses);
-                    $scope.colseProcessSlide();
+                    $scope.closeProcessSlide();
                 });
             });
 
@@ -282,7 +280,7 @@ angular.module('ecommApp')
                         console.log('refresh Processes:');
                         console.log(objectProcesses);
                         $scope.processProduct.processes = angular.copy(objectProcesses);
-                        $scope.colseProcessSlide();
+                        $scope.closeProcessSlide();
                     });
                 });
             }
@@ -435,6 +433,7 @@ angular.module('ecommApp')
                         if (product.productType.value === 1) {
                             Product.getAll({
                                 productType: 0,
+                                deleted: false
                             }).then(function(members) {
                                 // console.log('members:');
                                 // console.log(members);

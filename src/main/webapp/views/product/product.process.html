@@ -1,8 +1,8 @@
-<div pageslide ps-open="processSlideChecked" ps-speed="0.25" ps-size="700px">
+<div pageslide ps-open="processSlideChecked" ps-speed="0.25" ps-size="700px" style="border-left-width: 1px; border-left-style: solid; border-left-color: #c8c8c8">
     <div id="operator-slider">
         <div class="panel panel-default">
             <div class="panel-body">
-                <button type="button" class="close" ng-click="colseProcessSlide()">
+                <button type="button" class="close" ng-click="closeProcessSlide()">
                     <span aria-hidden="true">×</span>
                 </button>
                 <h4>
@@ -25,15 +25,16 @@
                         </td>
                         <td>
                             <div ng-if="process.type == 1">
-                                <span ng-repeat="step in process.steps | orderBy: 'sequence'"> 
-                                    <button type="button" class="btn btn-xs {{forObjectProcesses(step) ? 'btn-success' : 'btn-info' }}" style="margin-bottom:5px;">{{step.name}}</button>
+                                <span ng-repeat="step in process.steps | orderBy: 'sequence'">
+                                    <span class="label {{forObjectProcesses(step) ? 'label-success' : 'label-info' }}" style="margin-bottom:5px;">{{step.name}}</span>
                                     <span class="glyphicon glyphicon-circle-arrow-right" ng-show="!$last"></span>
                                 </span>
                             </div>
                             <div ng-if="process.type == 2">
-                                <div class="btn-group btn-group-xs">
+                                <span class="label {{forObjectProcesses(step) ? 'label-success' : 'label-info' }}" ng-repeat="step in process.steps | orderBy: 'sequence'" >{{step.name}}</span>
+                                <!-- <div class="btn-group btn-group-xs">
                                     <button type="button" class="btn btn-xs {{forObjectProcesses(step) ? 'btn-success' : 'btn-info' }}" ng-repeat="step in process.steps | orderBy: 'sequence'">{{step.name}}</button>
-                                </div>
+                                </div> -->
                             </div>
                         </td>
                         <td>

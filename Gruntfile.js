@@ -27,6 +27,18 @@ module.exports = function(grunt) {
         // Project settings
         yeoman: appConfig,
 
+        concat: {
+            merge: {
+                src: ['<%= yeoman.app %>/scripts/app.js',
+                    '<%= yeoman.app %>/scripts/routers/**/*.js',
+                    '<%= yeoman.app %>/scripts/services/**/*.js',
+                    '<%= yeoman.app %>/scripts/controllers/**/*.js',
+                    '<%= yeoman.app %>/scripts/directives/**/*.js',
+                ],
+                dest: '<%= yeoman.app %>/scripts/ecommApp.js'
+            },
+        },
+
         // Watches files for changes and runs tasks based on the changed files
         watch: {
             bower: {
@@ -34,8 +46,14 @@ module.exports = function(grunt) {
                 tasks: ['wiredep']
             },
             js: {
-                files: ['<%= yeoman.app %>/scripts/**/*.js'],
-                tasks: ['newer:jshint:all'],
+                files: [
+                    '<%= yeoman.app %>/scripts/controllers/**/*.js',
+                    '<%= yeoman.app %>/scripts/directives/**/*.js',
+                    '<%= yeoman.app %>/scripts/routers/**/*.js',
+                    '<%= yeoman.app %>/scripts/services/**/*.js',
+                    '<%= yeoman.app %>/scripts/app.js'
+                ],
+                tasks: ['concat:merge', 'newer:jshint:all'],
                 options: {
                     livereload: '<%= connect.options.livereload %>'
                 }
@@ -66,11 +84,11 @@ module.exports = function(grunt) {
         browserSync: {
             dev: {
                 bsFiles: {
-                    src : [
+                    src: [
                         'src/main/webapp/**/*.html',
                         'src/main/webapp/**/*.json',
                         'src/main/webapp/styles/**/*.css',
-                        'src/main/webapp/scripts/**/*.js',
+                        'src/main/webapp/scripts/ecommApp.js',
                         'src/main/webapp/images/**/*.{png,jpg,jpeg,gif,webp,svg}',
                         'tmp/**/*.{css,js}'
                     ]
@@ -142,7 +160,11 @@ module.exports = function(grunt) {
             all: {
                 src: [
                     'Gruntfile.js',
-                    '<%= yeoman.app %>/scripts/**/*.js'
+                    '<%= yeoman.app %>/scripts/controllers/**/*.js',
+                    '<%= yeoman.app %>/scripts/directives/**/*.js',
+                    '<%= yeoman.app %>/scripts/routers/**/*.js',
+                    '<%= yeoman.app %>/scripts/services/**/*.js',
+                    '<%= yeoman.app %>/scripts/app.js'
                 ]
             },
             test: {
@@ -165,6 +187,7 @@ module.exports = function(grunt) {
                     ]
                 }]
             },
+            ecommApp: '<%= yeoman.app %>/scripts/ecommApp.js',
             server: '.tmp'
         },
 
@@ -380,6 +403,9 @@ module.exports = function(grunt) {
                 singleRun: true
             }
         }
+
+
+        
     });
 
 
@@ -393,6 +419,7 @@ module.exports = function(grunt) {
             'wiredep',
             'concurrent:server',
             'autoprefixer:server',
+            'concat:merge',
             //'connect:livereload',
             'browserSync',
             'watch'
