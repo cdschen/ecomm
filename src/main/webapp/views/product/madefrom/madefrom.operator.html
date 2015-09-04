@@ -1,16 +1,16 @@
-<div pageslide ps-open="madeFromSlideChecked" ps-speed="0.25" ps-size="700px">
+<div pageslide ps-open="madeFromSlideChecked" ps-speed="0.25" ps-size="700px" style="border-left-width: 1px; border-left-style: solid; border-left-color: #c8c8c8">
     <div id="operator-slider">
         <div class="panel panel-default">
             <div class="panel-body">
-                <button type="button" class="close" ng-click="colseMadeFromSlide()">
+                <button type="button" class="close" ng-click="closeMadeFromSlide()">
                     <span aria-hidden="true">×</span>
                 </button>
-                <h3>编辑标签</h3>
+                <h3>{{title}}产地</h3>
                 <hr>
                 <form name="madeFromForm" class="form-horizontal" novalidate ng-submit="saveMadeFrom(madeFromForm, madeFrom)">
                     <!-- name -->
                     <div class="form-group has-feedback" ng-class="{'has-success':(madeFromForm.name.$dirty && madeFromForm.name.$valid), 'has-warning':(madeFromForm.name.$dirty && madeFromForm.name.$invalid) }">
-                        <label class="control-label col-md-2">标签名称 <span class="text-danger">*</span></label>
+                        <label class="control-label col-md-2">产地名称 <span class="text-danger">*</span></label>
                         <div class="col-md-5">
                             <input type="text" class="form-control" name="name" ng-model="madeFrom.name" placeholder="" required ng-maxlength="50" />
                             <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="madeFromForm.name.$dirty && madeFromForm.name.$valid"></span>

@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .directive('hasAnyRole', ['Principal', function(Principal) {

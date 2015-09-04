@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .controller('WarehouseController', ['$rootScope', '$scope', 'Warehouse', 'Utils',

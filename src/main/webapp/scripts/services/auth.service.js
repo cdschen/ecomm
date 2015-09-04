@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .factory('Auth', ['$rootScope', '$http', '$state', 'Account', 'Principal', 'localStorageService',

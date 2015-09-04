@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .factory('Principal', ['$q', 'Account', function($q, Account) {

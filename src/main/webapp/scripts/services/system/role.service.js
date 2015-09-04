@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .factory('Role', ['$resource', function($resource) {

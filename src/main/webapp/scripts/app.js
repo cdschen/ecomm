@@ -1,11 +1,8 @@
 'use strict';
 
-// LocalStorageModule 提供 web存储功能
-// ui.router 提供 路由服务
-// ngResource Angular官方提供， 与服务器交互的模块
-var ecommApp = angular.module('ecommApp', ['toastr', 'ngTinyScrollbar', 'LocalStorageModule', 'ui.router', 'ngResource', 'ngMessages', 'ngCookies', 'ui.select', 'ngSanitize', 'ngAnimate', 'ngDragDrop', 'pageslide-directive', 'ui.bootstrap']);
+angular.module('ecommApp', ['toastr', 'ngTinyScrollbar', 'LocalStorageModule', 'ui.router', 'ngResource', 'ngMessages', 'ngCookies', 'ui.select', 'ngSanitize', 'ngAnimate', 'ngDragDrop', 'pageslide-directive', 'ui.bootstrap'])
 
-ecommApp.constant('ROLES', {
+.constant('ROLES', {
     sysadmin: 'sysadmin'
 })
 

@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .factory('Tag', ['$resource', '$http', function($resource, $http) {

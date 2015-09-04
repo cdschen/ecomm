@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .factory('MadeFrom', ['$resource', '$http', function($resource, $http) {

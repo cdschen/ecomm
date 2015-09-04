@@ -1,8 +1,6 @@
-'use strict';
+angular.module('ecommApp')
 
-var ecommApp = angular.module('ecommApp');
-
-ecommApp.config(['$stateProvider', 'ROLES',
+.config(['$stateProvider', 'ROLES',
     function($stateProvider, ROLES) {
 
         $stateProvider
@@ -38,7 +36,7 @@ ecommApp.config(['$stateProvider', 'ROLES',
                 url: '/brands',
                 views: {
                     'content@': {
-                        templateUrl: 'views/product/brand.html?' + (new Date()),
+                        templateUrl: 'views/product/brand/brand.html?' + (new Date()),
                         controller: 'BrandController'
                     }
                 },

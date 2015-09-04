@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .controller('NavbarController', ['$rootScope', '$scope', '$state', 'Auth', 'Principal',
