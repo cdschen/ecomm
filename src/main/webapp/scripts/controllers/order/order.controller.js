@@ -1,15 +1,10 @@
-'use strict';
-
 angular.module('ecommApp')
 
-.controller('OrderController', ['$scope', 'Order', 'Utils', 'Process',
-    function($scope, Order, Utils, Process) {
+.controller('OrderController', ['$scope', 'Order', 'Utils', 'Process', 'ObjectProcess',
+    function($scope, Order, Utils, Process, ObjectProcess) {
 
         //var $ = angular.element;
         $scope.template = {
-            details: {
-                url: 'views/order/order.details.html?' + (new Date())
-            },
             process: {
                 url: 'views/order/order.process.html?' + (new Date())
             },
