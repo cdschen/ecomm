@@ -67,7 +67,7 @@ public class Order implements Serializable {
 
 	/* 已发货商品总件数 */
 	@Column(name = "qty_total_item_shipped", nullable = false)
-	private Integer qtyTotalItemShipped;
+	private Integer qtyTotalItemShipped = 0;
 
 	/* 订单总金额 = 商品金额(subtotal) + 运费(shipping_fee) */
 	@Column(name = "grand_total", nullable = false)
@@ -174,7 +174,7 @@ public class Order implements Serializable {
 
 	/* 订单是否已经被删除 */
 	@Column(name = "deleted")
-	private Boolean deleted;
+	private Boolean deleted = false;
 
 	/* 订单备注 */
 	@Column(name = "memo")
