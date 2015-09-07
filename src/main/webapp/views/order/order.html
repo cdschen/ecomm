@@ -10,48 +10,26 @@
 <div class="container-fluid">
     <div class="panel panel-default">
         <form name="orderSerachForm" novalidate ng-submit="search()">
-            <div class="col-md-12">
-                <div class="col-md-6">
-                    <div class="col-md-9">
-                        <div class="panel panel-default">
-                            <div class="panel-body">
-                                <a href="javascript:0;" class="btn btn-info btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-repeat="state in selected.status">
-                                    {{state.name}} <span class="glyphicon glyphicon-remove" sytle="color:white" ng-click="selectState(state)"></span>
-                                </a>
-                                <a href="" class="btn btn-primary btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-click="loadStatus()">选择状态</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group pull-right">
-                            <button type="reset" class="btn btn-default" ng-click="reset()">重置</button>
-                            <button type="submit" class="btn btn-default">
-                                <span class="glyphicon glyphicon-search"></span> 搜索
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <table class="table" style="margin:0">
                 <tbody>
                     <tr>
                         <td width="12%">
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom:0; margin-top:5px;">
                                 <input type="text" ng-model="order.id" class="form-control" placeholder="订单编号" />
                             </div>
                         </td>
                         <td width="12%">
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom:0; margin-top:5px;">
                                 <input type="text" class="form-control" placeholder="快递单号" />
                             </div>
                         </td>
                         <td width="12%">
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom:0; margin-top:5px;">
                                 <input type="text" class="form-control" placeholder="订单编号" />
                             </div>
                         </td>
                         <td width="12%">
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom:0; margin-top:5px;">
                                 <ui-select ng-model="shop.selected">
                                     <ui-select-match placeholder="店铺">{{$select.selected.label}}</ui-select-match>
                                     <ui-select-choices repeat="shop in shops | filter: $select.search">
@@ -61,7 +39,7 @@
                             </div>
                         </td>
                         <td rowspan="2">
-                            <div class="panel panel-default">
+                            <div class="panel panel-default" style="height:100px;">
                                 <div class="panel-body">
                                     <a href="" class="btn btn-info btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-repeat="state in selected.status"> 
                                         {{state.name}} <span class="glyphicon glyphicon-remove" sytle="color:white" ng-click="selectState(state)"></span>
@@ -71,38 +49,36 @@
                             </div>
                         </td>
                         <td width="12%" rowspan="2">
-                            <div class="form-group pull-right">
-                                <button type="reset" class="btn btn-default" ng-click="reset()">重置</button>
-                                <button type="submit" class="btn btn-default">
-                                    <span class="glyphicon glyphicon-search"></span> 搜索
+                            <div class="form-group text-center">
+                                <button type="reset" class="btn btn-default btn-block" ng-click="reset()" style="margin-top:6px;">
+                                    <span class="glyphicon glyphicon-refresh"></span>&nbsp;重置
+                                </button>
+                                <br/>
+                                <button type="submit" class="btn btn-default btn-block">
+                                    <span class="glyphicon glyphicon-search"></span>&nbsp;搜索
                                 </button>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <td width="12%">
+                        <td width="12%" style="border:none;">
                             <div class="form-group">
-                                <input type="text" ng-model="order.id" class="form-control" placeholder="下单起始日期" />
+                                <input type="text" ng-model="order.internalCreateTimeStart" class="form-control" placeholder="下单起始日期" />
                             </div>
                         </td>
-                        <td width="12%">
+                        <td width="12%" style="border:none;">
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="快递单号" />
+                                <input type="text" ng-model="order.internalCreateTimeEnd" class="form-control" placeholder="下单结束日期" />
                             </div>
                         </td>
-                        <td width="12%">
+                        <td width="12%" style="border:none;">
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="订单编号" />
+                                <input type="text" ng-model="order.shippingTimeStart" class="form-control" placeholder="发货起始日期" />
                             </div>
                         </td>
-                        <td width="12%">
+                        <td width="12%" style="border:none;">
                             <div class="form-group">
-                                <ui-select ng-model="shop.selected">
-                                    <ui-select-match placeholder="店铺">{{$select.selected.label}}</ui-select-match>
-                                    <ui-select-choices repeat="shop in shops | filter: $select.search">
-                                        <div ng-bind-html="shop.label | highlight: $select.search"></div>
-                                    </ui-select-choices>
-                                </ui-select>
+                                <input type="text" ng-model="order.shippingTimeEnd" class="form-control" placeholder="发货结束日期" />
                             </div>
                         </td>
                     </tr>
@@ -114,15 +90,18 @@
             <thead>
                 <tr>
                     <th width="2%">
-                        <input type="checkbox" name="productId">
+                        <input type="checkbox" name="orderId">
                     </th>
-                    <th width="12%">SKU</th>
-                    <th width="12%">商品名称</th>
-                    <th width="20%">销售</th>
-                    <th width="15%">成本</th>
-                    <th width="17%">库存</th>
-                    <th width="14%">状态</th>
-                    <th width="8%" style="padding: 2px">
+                    <th width="10%">订单编号</th>
+                    <th width="10%">店铺</th>
+                    <th width="10%">店铺单号</th>
+                    <th width="10%">时间（店铺下单，导入时间，发货时间）</th>
+                    <th width="6%">总金额</th>
+                    <th width="10%">收件人</th>
+                    <th width="10%">商品信息</th>
+                    <th width="12%">备注</th>
+                    <th width="10%">状态</th>
+                    <th width="10%" style="padding: 2px">
                         <select class="form-control input-sm">
                             <option selected="selected">批量操作</option>
                             <option>批量上架</option>
@@ -134,40 +113,57 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="product in page.content" ng-class="{active: product.active}">
+                <tr ng-repeat="order in page.content" ng-class="{active: order.active}">
                     <td>
-                        <input type="checkbox" name="productId">
+                        <input type="checkbox" name="orderId">
                     </td>
                     <td>
-                        {{product.sku}}
+                        <a href="" ng-click="loadItems(order)">{{order.id}}</a>
                     </td>
                     <td>
-                        <span class="glyphicon glyphicon-th-large text-success" ng-show="product.productType==1"></span>
-                        <a href="" ng-click="loadDetails(product)">{{product.name}}</a>
+                        {{order.shopId}}
                     </td>
                     <td>
-                        &nbsp;
+                        {{order.externalSn}}
                     </td>
                     <td>
-                        &nbsp;
+                        {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}
                     </td>
                     <td>
-                        &nbsp;
+                        {{order.grandTotal | currency : ''}}
                     </td>
                     <td>
-                        <a href="" popover-template="popover.url" popover-title="{{process.process.name}}" ng-click="updateStep(product)" class="btn btn-success btn-xs" ng-repeat="process in product.processes" style="margin-right: 5px; margin-bottom:5px">
+                        {{order.receiveName}}
+                    </td>
+                    <td>
+                        <div ng-repeat="item in order.items | limitTo:3">
+                            {{item.name}}&nbsp;*&nbsp;{{item.qtyOrdered}}
+                        </div>
+                    </td>
+                    <td>
+                        {{order.memo}}
+                    </td>
+                    <td>
+                        <a href="" popover-template="popover.url" popover-title="{{process.process.name}}" ng-click="updateStep(order)" class="btn btn-success btn-xs" ng-repeat="process in order.processes" style="margin-right: 5px; margin-bottom:5px">
                             {{process.step.name}}
                         </a>
-                        <a href="" class="btn btn-info btn-xs pull-right" ng-click="loadProcesses(product)">...</a>
+                        <a href="" class="btn btn-info btn-xs pull-right" ng-click="loadProcesses(order)">...</a>
                     </td>
                     <td>
-                        <a ui-sref="product.operator({id:product.id})" class="btn btn-info btn-xs">
+                        <a ui-sref="order.operator({id:order.id})" class="btn btn-info btn-xs">
                             <span class="glyphicon glyphicon-edit"></span> 编辑
                         </a>
                     </td>
                 </tr>
             </tbody>
             <tfoot>
+                <tr>
+                    <td colspan="20">
+                        <div class="panel-body" ng-show="page.content.length == 0">
+                            <div class="alert alert-warning">没有任何数据被检索到</div>
+                        </div>
+                    </td>
+                </tr>
                 <tr>
                     <td colspan="20">
                         <nav class="page-list">
@@ -192,14 +188,11 @@
                 </tr>
             </tfoot>
         </table>
-        <div class="panel-body" ng-show="page.content.length == 0">
-            <div class="alert alert-warning">没有任何数据被检索到</div>
-        </div>
     </div>
 </div>
-<section ng-controller="ProductDetailsController" onload="initProductDetailsTabs()" ng-include="template.details.url"></section>
+<section ng-controller="OrderItemsController" onload="initOrderItemsTabs()" ng-include="template.items.url"></section>
 <section ng-include="template.status.url"></section>
-<section ng-controller="ProductProcessController" ng-include="template.process.url"></section>
+<section ng-controller="OrderProcessController" ng-include="template.process.url"></section>
 <script type="text/ng-template" id="process-tmpl.html">
     <span ng-if="process.process.type == 1">
     <span ng-repeat="step in process.process.steps | orderBy: 'sequence'" >

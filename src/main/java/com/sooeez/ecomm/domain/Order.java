@@ -14,10 +14,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "t_order")
@@ -94,18 +98,21 @@ public class Order implements Serializable {
 	private BigDecimal totalRefunded;
 
 	/* 订单结算货币 */
-	@Column(name = "currency_id", nullable = false)
+	@Column(name = "currency_id", nullable = false, insertable = false, updatable = false)
 	private Long currencyId;
 
 	/* 重量 */
 	@Column(name = "weight", nullable = false)
 	private Integer weight;
 
-	/* 客户id, 可以为空，如果店铺不乐意发过来客户信息的话。。。 如果店铺发来了客户信息（用户名，email, 手机号，等等）， 导入时检查有没此客户，如果有，设置id,如果没有， 自动创建新客户，然后设置id */
+	/*
+	 * 客户id, 可以为空，如果店铺不乐意发过来客户信息的话。。。 如果店铺发来了客户信息（用户名，email, 手机号，等等），
+	 * 导入时检查有没此客户，如果有，设置id,如果没有， 自动创建新客户，然后设置id
+	 */
 	@Column(name = "customer_id")
 	private Long customerId;
 
-	/* 店铺要求的发货方式描述， 可以为空， 也未必真的通过这种方式发货   */
+	/* 店铺要求的发货方式描述， 可以为空， 也未必真的通过这种方式发货 */
 	@Column(name = "shipping_description")
 	private String shippingDescription;
 
@@ -173,409 +180,378 @@ public class Order implements Serializable {
 	@Column(name = "memo")
 	private String memo;
 
-
 	/*
 	 * Related Properties
 	 */
-	
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id")
-	private List<OrderItem> orderItem;
-	
-	
+	private List<OrderItem> items;
+
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "object_id")
+	private List<ObjectProcess> processes;
+
+	@OneToOne
+	@NotFound(action=NotFoundAction.IGNORE)
+	@JoinColumn(name = "currency_id")
+	private Currency currency;
+
 	/*
 	 * Query Params;
 	 */
+	/* 下单起始日期 */
 	@Transient
 	private Date internalCreateTimeStart;
-	
+
+	/* 下单结束日期 */
 	@Transient
 	private Date internalCreateTimeEnd;
 
+	/* 发货起始日期 */
+	@Transient
+	private Date shippingTimeStart;
+
+	/* 发货结束日期 */
+	@Transient
+	private Date shippingTimeEnd;
+
 	//
-	
-	
 
 	public Long getId() {
 		return id;
 	}
 
+	public Currency getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(Currency currency) {
+		this.currency = currency;
+	}
+
+	public List<ObjectProcess> getProcesses() {
+		return processes;
+	}
+
+	public void setProcesses(List<ObjectProcess> processes) {
+		this.processes = processes;
+	}
 
 	public Date getInternalCreateTimeStart() {
 		return internalCreateTimeStart;
 	}
 
-
 	public void setInternalCreateTimeStart(Date internalCreateTimeStart) {
 		this.internalCreateTimeStart = internalCreateTimeStart;
 	}
-
 
 	public Date getInternalCreateTimeEnd() {
 		return internalCreateTimeEnd;
 	}
 
-
 	public void setInternalCreateTimeEnd(Date internalCreateTimeEnd) {
 		this.internalCreateTimeEnd = internalCreateTimeEnd;
 	}
 
+	public Date getShippingTimeStart() {
+		return shippingTimeStart;
+	}
+
+	public void setShippingTimeStart(Date shippingTimeStart) {
+		this.shippingTimeStart = shippingTimeStart;
+	}
+
+	public Date getShippingTimeEnd() {
+		return shippingTimeEnd;
+	}
+
+	public void setShippingTimeEnd(Date shippingTimeEnd) {
+		this.shippingTimeEnd = shippingTimeEnd;
+	}
 
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-
 	public Long getShopId() {
 		return shopId;
 	}
-
 
 	public void setShopId(Long shopId) {
 		this.shopId = shopId;
 	}
 
-
 	public String getExternalSn() {
 		return externalSn;
 	}
-
 
 	public void setExternalSn(String externalSn) {
 		this.externalSn = externalSn;
 	}
 
-
 	public Date getExternalCreateTime() {
 		return externalCreateTime;
 	}
-
 
 	public void setExternalCreateTime(Date externalCreateTime) {
 		this.externalCreateTime = externalCreateTime;
 	}
 
-
 	public Date getInternalCreateTime() {
 		return internalCreateTime;
 	}
-
 
 	public void setInternalCreateTime(Date internalCreateTime) {
 		this.internalCreateTime = internalCreateTime;
 	}
 
-
 	public Date getLastUpdateTime() {
 		return lastUpdateTime;
 	}
-
 
 	public void setLastUpdateTime(Date lastUpdateTime) {
 		this.lastUpdateTime = lastUpdateTime;
 	}
 
-
 	public Integer getQtyTotalItemOrdered() {
 		return qtyTotalItemOrdered;
 	}
-
 
 	public void setQtyTotalItemOrdered(Integer qtyTotalItemOrdered) {
 		this.qtyTotalItemOrdered = qtyTotalItemOrdered;
 	}
 
-
 	public Integer getQtyTotalItemShipped() {
 		return qtyTotalItemShipped;
 	}
-
 
 	public void setQtyTotalItemShipped(Integer qtyTotalItemShipped) {
 		this.qtyTotalItemShipped = qtyTotalItemShipped;
 	}
 
-
 	public BigDecimal getGrandTotal() {
 		return grandTotal;
 	}
-
 
 	public void setGrandTotal(BigDecimal grandTotal) {
 		this.grandTotal = grandTotal;
 	}
 
-
 	public BigDecimal getSubtotal() {
 		return subtotal;
 	}
-
 
 	public void setSubtotal(BigDecimal subtotal) {
 		this.subtotal = subtotal;
 	}
 
-
 	public BigDecimal getShippingFee() {
 		return shippingFee;
 	}
-
 
 	public void setShippingFee(BigDecimal shippingFee) {
 		this.shippingFee = shippingFee;
 	}
 
-
 	public BigDecimal getTax() {
 		return tax;
 	}
-
 
 	public void setTax(BigDecimal tax) {
 		this.tax = tax;
 	}
 
-
 	public BigDecimal getTotalInvoiced() {
 		return totalInvoiced;
 	}
-
 
 	public void setTotalInvoiced(BigDecimal totalInvoiced) {
 		this.totalInvoiced = totalInvoiced;
 	}
 
-
 	public BigDecimal getTotalPaid() {
 		return totalPaid;
 	}
-
 
 	public void setTotalPaid(BigDecimal totalPaid) {
 		this.totalPaid = totalPaid;
 	}
 
-
 	public BigDecimal getTotalRefunded() {
 		return totalRefunded;
 	}
-
 
 	public void setTotalRefunded(BigDecimal totalRefunded) {
 		this.totalRefunded = totalRefunded;
 	}
 
-
 	public Long getCurrencyId() {
 		return currencyId;
 	}
-
 
 	public void setCurrencyId(Long currencyId) {
 		this.currencyId = currencyId;
 	}
 
-
 	public Integer getWeight() {
 		return weight;
 	}
-
 
 	public void setWeight(Integer weight) {
 		this.weight = weight;
 	}
 
-
 	public Long getCustomerId() {
 		return customerId;
 	}
-
 
 	public void setCustomerId(Long customerId) {
 		this.customerId = customerId;
 	}
 
-
 	public String getShippingDescription() {
 		return shippingDescription;
 	}
-
 
 	public void setShippingDescription(String shippingDescription) {
 		this.shippingDescription = shippingDescription;
 	}
 
-
 	public Integer getDeliveryMethod() {
 		return deliveryMethod;
 	}
-
 
 	public void setDeliveryMethod(Integer deliveryMethod) {
 		this.deliveryMethod = deliveryMethod;
 	}
 
-
 	public String getSenderName() {
 		return senderName;
 	}
-
 
 	public void setSenderName(String senderName) {
 		this.senderName = senderName;
 	}
 
-
 	public String getSenderAddress() {
 		return senderAddress;
 	}
-
 
 	public void setSenderAddress(String senderAddress) {
 		this.senderAddress = senderAddress;
 	}
 
-
 	public String getSenderPhone() {
 		return senderPhone;
 	}
-
 
 	public void setSenderPhone(String senderPhone) {
 		this.senderPhone = senderPhone;
 	}
 
-
 	public String getSender_email() {
 		return sender_email;
 	}
-
 
 	public void setSender_email(String sender_email) {
 		this.sender_email = sender_email;
 	}
 
-
 	public String getSenderPost() {
 		return senderPost;
 	}
-
 
 	public void setSenderPost(String senderPost) {
 		this.senderPost = senderPost;
 	}
 
-
 	public String getReceiveName() {
 		return receiveName;
 	}
-
 
 	public void setReceiveName(String receiveName) {
 		this.receiveName = receiveName;
 	}
 
-
 	public String getReceivePhone() {
 		return receivePhone;
 	}
-
 
 	public void setReceivePhone(String receivePhone) {
 		this.receivePhone = receivePhone;
 	}
 
-
 	public String getReceiveEmail() {
 		return receiveEmail;
 	}
-
 
 	public void setReceiveEmail(String receiveEmail) {
 		this.receiveEmail = receiveEmail;
 	}
 
-
 	public String getReceiveCountry() {
 		return receiveCountry;
 	}
-
 
 	public void setReceiveCountry(String receiveCountry) {
 		this.receiveCountry = receiveCountry;
 	}
 
-
 	public String getReceiveProvince() {
 		return receiveProvince;
 	}
-
 
 	public void setReceiveProvince(String receiveProvince) {
 		this.receiveProvince = receiveProvince;
 	}
 
-
 	public String getReceiveCity() {
 		return receiveCity;
 	}
-
 
 	public void setReceiveCity(String receiveCity) {
 		this.receiveCity = receiveCity;
 	}
 
-
 	public String getReceiveAddress() {
 		return receiveAddress;
 	}
-
 
 	public void setReceiveAddress(String receiveAddress) {
 		this.receiveAddress = receiveAddress;
 	}
 
-
 	public String getReceivePost() {
 		return receivePost;
 	}
-
 
 	public void setReceivePost(String receivePost) {
 		this.receivePost = receivePost;
 	}
 
-
 	public Boolean getDeleted() {
 		return deleted;
 	}
-
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 	}
 
-
 	public String getMemo() {
 		return memo;
 	}
-
 
 	public void setMemo(String memo) {
 		this.memo = memo;
 	}
 
-
-	public List<OrderItem> getOrderItem() {
-		return orderItem;
+	public List<OrderItem> getItems() {
+		return items;
 	}
 
-
-	public void setOrderItem(List<OrderItem> orderItem) {
-		this.orderItem = orderItem;
+	public void setItems(List<OrderItem> items) {
+		this.items = items;
 	}
-	
-	
-	
 
 }
