@@ -5,6 +5,9 @@ angular.module('ecommApp')
 
         //var $ = angular.element;
         $scope.template = {
+            items: {
+                url: 'views/order/order.items.html?' + (new Date())
+            },
             process: {
                 url: 'views/order/order.process.html?' + (new Date())
             },
@@ -28,7 +31,7 @@ angular.module('ecommApp')
         $scope.popover = {
             url: 'process-tmpl.html'
         };
-        $scope.detailsSlideChecked = false;
+        $scope.itemsSlideChecked = false;
         $scope.processSlideChecked = false;
         $scope.statusSlideChecked = false;
         $scope.processOrder = undefined;
@@ -66,7 +69,7 @@ angular.module('ecommApp')
         }).then(function() {
             Process.getAll({
                 deleted: false,
-                objectType: 2
+                objectType: 1
             }).then(function(processes) {
                 console.log('Process.getAll:');
                 console.log(processes);
@@ -152,7 +155,7 @@ angular.module('ecommApp')
 
         // process
 
-        $scope.colseProcessSlide = function() {
+        $scope.closeProcessSlide = function() {
             $scope.processSlideChecked = false;
             if ($scope.processOrder) {
                 $scope.processOrder.active = false;
@@ -186,14 +189,15 @@ angular.module('ecommApp')
             });
         };
 
-        // details
+        // items
 
-        $scope.colseDetailsSlide = function() {
-            $scope.detailsSlideChecked = false;
+        $scope.closeItemsSlide = function() {
+            $scope.itemsSlideChecked = false;
         };
 
-        $scope.loadDetails = function(order) {
-            $scope.detailsSlideChecked = true;
+        $scope.loadItems = function(order) {
+            $scope.itemsSlideChecked = true;
+            console.log(order);
             $scope.processOrder = order;
         };
 
@@ -203,8 +207,8 @@ angular.module('ecommApp')
 .controller('OrderItemsController', ['$scope', function($scope) {
     var $ = angular.element;
 
-    $scope.initOrderDetailsTabs = function() {
-        $('#orderDetailsTabs a').click(function(e) {
+    $scope.initOrderItemsTabs = function() {
+        $('#orderItemsTabs a').click(function(e) {
             e.preventDefault();
             $(this).tab('show');
         });
@@ -219,7 +223,7 @@ angular.module('ecommApp')
             
             var objectProcess = {
                 objectId: $scope.processOrder.id,
-                objectType: 2,
+                objectType: 1,
                 process: {
                     id: process.id
                 }
@@ -246,7 +250,7 @@ angular.module('ecommApp')
                     console.log('refresh Processes:');
                     console.log(objectProcesses);
                     $scope.processOrder.processes = angular.copy(objectProcesses);
-                    $scope.colseProcessSlide();
+                    $scope.closeProcessSlide();
                 });
             });
 
@@ -271,7 +275,7 @@ angular.module('ecommApp')
                         console.log('refresh Processes:');
                         console.log(objectProcesses);
                         $scope.processOrder.processes = angular.copy(objectProcesses);
-                        $scope.colseProcessSlide();
+                        $scope.closeProcessSlide();
                     });
                 });
             }

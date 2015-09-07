@@ -14,10 +14,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "t_order")
@@ -94,7 +98,7 @@ public class Order implements Serializable {
 	private BigDecimal totalRefunded;
 
 	/* 订单结算货币 */
-	@Column(name = "currency_id", nullable = false)
+	@Column(name = "currency_id", nullable = false, insertable = false, updatable = false)
 	private Long currencyId;
 
 	/* 重量 */
@@ -182,7 +186,16 @@ public class Order implements Serializable {
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id")
-	private List<OrderItem> orderItem;
+	private List<OrderItem> items;
+
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "object_id")
+	private List<ObjectProcess> processes;
+
+	@OneToOne
+	@NotFound(action=NotFoundAction.IGNORE)
+	@JoinColumn(name = "currency_id")
+	private Currency currency;
 
 	/*
 	 * Query Params;
@@ -207,6 +220,22 @@ public class Order implements Serializable {
 
 	public Long getId() {
 		return id;
+	}
+
+	public Currency getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(Currency currency) {
+		this.currency = currency;
+	}
+
+	public List<ObjectProcess> getProcesses() {
+		return processes;
+	}
+
+	public void setProcesses(List<ObjectProcess> processes) {
+		this.processes = processes;
 	}
 
 	public Date getInternalCreateTimeStart() {
@@ -517,12 +546,12 @@ public class Order implements Serializable {
 		this.memo = memo;
 	}
 
-	public List<OrderItem> getOrderItem() {
-		return orderItem;
+	public List<OrderItem> getItems() {
+		return items;
 	}
 
-	public void setOrderItem(List<OrderItem> orderItem) {
-		this.orderItem = orderItem;
+	public void setItems(List<OrderItem> items) {
+		this.items = items;
 	}
 
 }

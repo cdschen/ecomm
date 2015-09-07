@@ -50,7 +50,7 @@ public class OrderService {
 		
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			if (order.getDeleted()) {
+			if (order.getDeleted()!=null && order.getDeleted()) {
 				predicates.add(cb.equal(root.get("deleted"), true));
 			} else {
 				predicates.add(cb.equal(root.get("deleted"), false));
