@@ -213,6 +213,10 @@ angular.module('ecommApp')
     var $ = angular.element;
 
     $scope.initProductDetailsTabs = function() {
+        $scope.defaultHeight = {
+            height: $(window).height() - 100
+        };
+        
         $('#productDetailsTabs a').click(function(e) {
             e.preventDefault();
             $(this).tab('show');

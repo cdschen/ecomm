@@ -1,13 +1,22 @@
 package com.sooeez.ecomm.service;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.sooeez.ecomm.domain.Brand;
+import com.sooeez.ecomm.domain.ObjectProcess;
+import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Shop;
 import com.sooeez.ecomm.domain.ShopTunnel;
 import com.sooeez.ecomm.repository.ShopRepository;
@@ -40,8 +49,17 @@ public class ShopService {
 		return this.shopRepository.findAll();
 	}
 
-	public Page<Shop> getPagedShops(Pageable pageable) {
-		return this.shopRepository.findAll(pageable);
+	public Page<Shop> getPagedShops(Pageable pageable, Shop shop) {
+		return this.shopRepository.findAll(getShopSpecification(shop), pageable);
+	}
+	
+	private Specification<Shop> getShopSpecification(Shop shop) {
+
+		return (root, query, cb) -> {
+			List<Predicate> predicates = new ArrayList<>();
+			predicates.add(cb.equal(root.get("deleted"), shop.getDeleted() != null && shop.getDeleted() == true ? true : false));
+			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+		};
 	}
 	
 	/*

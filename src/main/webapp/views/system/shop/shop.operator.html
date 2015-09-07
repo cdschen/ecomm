@@ -22,6 +22,18 @@
                         <span ng-messages-include="views/error-messages.html?1" ></span>
                     </span>
                 </div>
+                <!-- token -->
+                <div class="form-group has-feedback" ng-class="{'has-success':(shopOperatorForm.token.$dirty && shopOperatorForm.token.$valid), 'has-warning':(shopOperatorForm.token.$dirty && shopOperatorForm.token.$invalid) }">
+                    <label class="control-label col-md-2" for="token">店铺Token <span class="text-danger">*</span></label>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" id="token" name="token" ng-model="shop.token" placeholder="店铺名称" required ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="shopOperatorForm.token.$dirty && shopOperatorForm.token.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="shopOperatorForm.token.$dirty && shopOperatorForm.token.$invalid"></span>
+                    </div>
+                    <span class="col-md-5 help-block" ng-messages="shopOperatorForm.token.$error" ng-show="shopOperatorForm.token.$dirty && shopOperatorForm.token.$invalid">
+                        <span ng-messages-include="views/error-messages.html?1" ></span>
+                    </span>
+                </div>
                 <!-- type -->
                 <div class="form-group has-feedback">
                     <label class="control-label col-md-2" for="type">店铺类型 <span class="text-danger">*</span></label>
