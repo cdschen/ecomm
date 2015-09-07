@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.NotFound;
+
 @Entity
 @Table(name = "t_shop")
 public class Shop implements Serializable {
@@ -52,6 +54,12 @@ public class Shop implements Serializable {
 	@Column(name = "error_process_step_id", insertable = false, updatable = false)
 	private Long errorProcessStepId;
 
+	@Column(name = "token")
+	private String token;
+
+	@Column(name = "deleted")
+	private Boolean deleted;
+
 	/*
 	 * Related Properties
 	 */
@@ -87,6 +95,22 @@ public class Shop implements Serializable {
 	//
 
 	public Shop() {
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 	public Long getId() {
