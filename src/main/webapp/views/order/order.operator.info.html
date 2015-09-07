@@ -1,0 +1,134 @@
+<p>&nbsp;</p>
+<form name="orderOperatorForm" class="form-horizontal" novalidate>
+    <div class="row">
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+
+
+            <!-- order.ship_id -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">店铺编号</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.shopId" />
+                </div>
+            </div>
+            <!-- order.external_sn -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">店铺订单号</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.externalSn" />
+                </div>
+            </div>
+            <!-- order.internal_create_time 订单在系统创建时间, 为订单导入或在系统创建的时间 -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">订单在系统创建时间</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.internalCreateTime" />
+                </div>
+            </div>
+            <!-- order.last_update_time -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">订单最近更新时间</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.lastUpdateTime" />
+                </div>
+            </div>
+            <!-- order.qty_total_item_ordered -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">商品总件数</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.qtyTotalItemOrdered" />
+                </div>
+            </div>
+            <!-- order.grand_total 订单总金额 = 商品金额(subtotal) + 运费(shipping_fee) -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">订单总金额</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.grandTotal" />
+                </div>
+            </div>
+            <!-- order.subtotal -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">商品总金额（含税)</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.subtotal" />
+                </div>
+            </div>
+            <!-- order.shipping_fee -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">运费金额</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.shippingFee" />
+                </div>
+            </div>
+            <!-- order.tax -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">商品包含的税金</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.tax" />
+                </div>
+            </div>
+            <!-- order.total_invoiced -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">总共开出的发票金额</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.totalInvoiced" />
+                </div>
+            </div>
+            <!-- order.total_paid -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">总共收到的付款金额</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.totalPaid" />
+                </div>
+            </div>
+            <!-- order.total_refunded -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">总共完成的退款金额</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.totalRefunded" />
+                </div>
+            </div>
+            <!-- order.currency_id -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">订单结算货币</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.currencyId" />
+                </div>
+            </div>
+            <!-- order.weight -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">重量</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.weight" />
+                </div>
+            </div>
+            <!-- order.receive_name -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">收件人姓名</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.receiveName" />
+                </div>
+            </div>
+            <!-- order.receive_phone -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">收件人电话</label>
+                <div class="col-md-6">
+                    <input type="text" ng-model="order.receivePhone" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-2">
+                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="save(order)">
+                    <span class="glyphicon glyphicon-floppy-saved"></span> 保存
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
