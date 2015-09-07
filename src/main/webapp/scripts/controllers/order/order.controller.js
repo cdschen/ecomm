@@ -368,6 +368,10 @@ angular.module('ecommApp')
         $scope.save = function(order) {
             //console.clear();
             console.log('[' + $scope.action + '] save order');
+
+            order.currency = {
+                id: order.currencyId
+            };
             console.log(order);
             Order.save({
                 action: $scope.action
