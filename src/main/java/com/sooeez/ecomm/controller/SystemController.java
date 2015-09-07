@@ -118,8 +118,8 @@ public class SystemController {
 	}
 	
 	@RequestMapping(value = "/shops")
-	public Page<Shop> getPagedShops(Pageable pageable) {
-		return this.shopService.getPagedShops(pageable);
+	public Page<Shop> getPagedShops(Pageable pageable, Shop shop) {
+		return this.shopService.getPagedShops(pageable, shop);
 	}
 	
 	@RequestMapping(value = "/shops/get/all")
