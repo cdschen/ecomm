@@ -12,6 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,13 +53,13 @@ public class ProductController {
 	}
 	
 	@RequestMapping(value = "/products")
-	public Page<Product> getPagedProducts(Pageable pageable, Product product) {
-		return this.productService.getPagedProducts(pageable, product);
+	public Page<Product> getPagedProducts(Product product, Pageable pageable) {
+		return this.productService.getPagedProducts(product, pageable);
 	}
 	
 	@RequestMapping(value = "/products/get/all")
-	public List<Product> getProducts(Product product) {
-		return this.productService.getProducts(product);
+	public List<Product> getProducts(Product product, Sort sort) {
+		return this.productService.getProducts(product, sort);
 	}
 	
 	@RequestMapping(value = "/products", method = RequestMethod.POST)

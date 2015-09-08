@@ -18,7 +18,7 @@ angular.module('ecommApp')
         $scope.totalPagesList = [];
         $scope.pageSize = 20;
         $scope.product = {
-            sku: '', 
+            sku: '',
             name: ''
         };
         $scope.processes = [];
@@ -216,7 +216,7 @@ angular.module('ecommApp')
         $scope.defaultHeight = {
             height: $(window).height() - 100
         };
-        
+
         $('#productDetailsTabs a').click(function(e) {
             e.preventDefault();
             $(this).tab('show');
@@ -229,7 +229,7 @@ angular.module('ecommApp')
     function($scope, $filter, Process, ObjectProcess) {
 
         $scope.applyProcess = function(process) {
-            
+
             var objectProcess = {
                 objectId: $scope.processProduct.id,
                 objectType: 2,
@@ -321,10 +321,12 @@ angular.module('ecommApp')
         $scope.appliedProcess = function(process) {
             if ($scope.processProduct) {
                 var objectProcesses = $scope.processProduct.processes;
-                for (var i = 0, len = objectProcesses.length; i < len; i++) {
-                    var objectProcess = objectProcesses[i];
-                    if (process.id === objectProcess.process.id) {
-                        return true;
+                if (objectProcesses) {
+                    for (var i = 0, len = objectProcesses.length; i < len; i++) {
+                        var objectProcess = objectProcesses[i];
+                        if (process.id === objectProcess.process.id) {
+                            return true;
+                        }
                     }
                 }
                 return false;

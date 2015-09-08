@@ -136,21 +136,10 @@ public class InventoryService {
 			batch.getItems().forEach(item -> {
 
 				Inventory inventory = new Inventory();
+				inventory.setProduct(item.getProduct());
+				inventory.setWarehouseId(item.getWarehouse().getId());
+				inventory.setPosition(item.getPosition());
 				inventory.setInventoryBatchId(batch.getId());
-
-				Product prodcut = new Product();
-				prodcut.setId(item.getProduct().getId());
-
-				inventory.setProduct(prodcut);
-
-				inventory.setWarehouseId(batch.getWarehouseId());
-
-				if (item.getPosition() != null) {
-					WarehousePosition position = new WarehousePosition();
-					position.setId(item.getPosition().getId());
-					inventory.setPosition(position);
-				}
-
 				inventory.setQuantity(item.getChangedQuantity());
 				inventory.setExpireDate(item.getExpireDate());
 
@@ -159,38 +148,38 @@ public class InventoryService {
 
 		} else if (batch.getOperate() == 2) { // 正常出库
 			
-			batch.getItems().forEach(item -> {
-				item.setChangedQuantity(-item.getChangedQuantity());
-			});
-			
-			this.inventoryBatchRepository.save(batch);
-
-			batch.getItems().forEach(item -> {
-				
-				Inventory inventory = null;
-				
-				if (item.getPosition() != null) {
-					if (item.getOutBatch() != null) {
-						inventory = this.inventoryRepository.findFirstByWarehousePositionIdAndInventoryBatchId(item.getPosition().getId(), item.getOutBatch().getId());
-						inventory.setQuantity(inventory.getQuantity() + item.getChangedQuantity());
-					} else {
-						inventory = this.inventoryRepository.findFirstByWarehousePositionId(item.getPosition().getId());
-						inventory.setQuantity(inventory.getQuantity() + item.getChangedQuantity());
-					}
-				} else {
-					if (item.getOutBatch() != null) {
-						inventory = this.inventoryRepository.findFirstByInventoryBatchId(item.getOutBatch().getId());
-						inventory.setQuantity(inventory.getQuantity() + item.getChangedQuantity());
-					} else {
-						inventory = this.inventoryRepository.findFirstByWarehouseIdAndProductId(item.getWarehouseId(), item.getProduct().getId());
-						inventory.setQuantity(inventory.getQuantity() + item.getChangedQuantity());
-					}
-				}
-				
-				if (inventory != null) {
-					this.inventoryRepository.save(inventory);
-				}
-			});
+//			batch.getItems().forEach(item -> {
+//				item.setChangedQuantity(-item.getChangedQuantity());
+//			});
+//			
+//			this.inventoryBatchRepository.save(batch);
+//
+//			batch.getItems().forEach(item -> {
+//				
+//				Inventory inventory = null;
+//				
+//				if (item.getPosition() != null) {
+//					if (item.getOutBatch() != null) {
+//						inventory = this.inventoryRepository.findFirstByWarehousePositionIdAndInventoryBatchId(item.getPosition().getId(), item.getOutBatch().getId());
+//						inventory.setQuantity(inventory.getQuantity() + item.getChangedQuantity());
+//					} else {
+//						inventory = this.inventoryRepository.findFirstByWarehousePositionId(item.getPosition().getId());
+//						inventory.setQuantity(inventory.getQuantity() + item.getChangedQuantity());
+//					}
+//				} else {
+//					if (item.getOutBatch() != null) {
+//						inventory = this.inventoryRepository.findFirstByInventoryBatchId(item.getOutBatch().getId());
+//						inventory.setQuantity(inventory.getQuantity() + item.getChangedQuantity());
+//					} else {
+//						inventory = this.inventoryRepository.findFirstByWarehouseIdAndProductId(item.getWarehouseId(), item.getProduct().getId());
+//						inventory.setQuantity(inventory.getQuantity() + item.getChangedQuantity());
+//					}
+//				}
+//				
+//				if (inventory != null) {
+//					this.inventoryRepository.save(inventory);
+//				}
+//			});
 
 		} else if (batch.getOperate() == 3) { // 调整入库
 

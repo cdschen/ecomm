@@ -5,27 +5,33 @@
 <div class="container-fluid">
     <div class="panel panel-default">
         <div class="panel-body">
-            <form class="form-inline">
-                <div class="form-group">
-                    <input type="text" class="form-control" ng-model="p.sku" placeholder="SKU">
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" ng-model="p.name" placeholder="商品名称">
-                </div>
-                <div class="form-group">
-                    <select ng-options="warehouse.id as warehouse.name for warehouse in warehouses" ng-model="warehouse.id" ng-change="changeWarehouse()" class="form-control" style="width:200px" id="warehouseId" name="warehouseId">
-                    </select>
-                </div>
-                <div class="form-group pull-right">
-                    <a ui-sref="inventory.enter({id:warehouse.id})" class="btn btn-info">入库</a>
-                    <a ui-sref="inventory.out({id:warehouse.id})" class="btn btn-info">出库</a>
-                    <a class="btn btn-info">移库</a>
+            <form>
+                <div class="row">
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" ng-model="p.sku" placeholder="SKU">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" ng-model="p.name" placeholder="商品名称">
+                    </div>
+                    <div class="col-md-2">
+                        <ui-select ng-model="warehouse.selected" on-select="changeWarehouse($item, $model)">
+                            <ui-select-match placeholder="请选择一个仓库">{{$select.selected.name}}</ui-select-match>
+                            <ui-select-choices repeat="warehouse in warehouses | filter: $select.search">
+                                <div ng-bind-html="warehouse.name | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                    <div class="col-md-2 col-md-offset-4">
+                        <a ui-sref="inventory.enter({id:warehouse.selected.id})" class="btn btn-info">入库</a>
+                        <a ui-sref="inventory.out({id:warehouse.selected.id})" class="btn btn-info">出库</a>
+                        <a class="btn btn-info">移库</a>
+                    </div>
                 </div>
             </form>
         </div>
         <div class="panel-body" ng-show="products.length == 0">
             <div class="alert alert-warning">
-                本仓库没有任何货品
+                没有任何数据被检索到
             </div>
         </div>
         <table class="table table-bordered" ng-show="products.length > 0">
@@ -33,7 +39,6 @@
                 <tr>
                     <th width="15%">SKU</th>
                     <th width="15%">商品名称</th>
-
                     <th width="17.5%">库位</th>
                     <th width="17.5%">数量</th>
                     <th width="17.5%">有效期</th>
@@ -67,14 +72,13 @@
                                 </tr>
                                 <tr>
                                     <td></td>
-                                     <td>
+                                    <td>
                                         <span class="text-success">总共：{{product.total}}</span>
                                     </td>
                                     <td></td>
                                     <td></td>
                                 </tr>
                             </tbody>
-
                         </table>
                     </td>
                 </tr>
