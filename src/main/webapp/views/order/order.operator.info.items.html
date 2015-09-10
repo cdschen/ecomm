@@ -1,0 +1,123 @@
+<div class="panel-body">
+    <h4 class="text-success"><strong>订购商品</strong></h4>
+    <hr ng-show="order.items.length > 0">
+</div>
+<!-- item form -->
+<form name="itemForm" novalidate>
+    <table class="table" ng-show="order.items.length > 0">
+        <thead>
+            <tr>
+                <th>商品外部SKU</th>
+                <th>商品sku</th>
+                <th>商品外部名称</th>
+                <th>商品名称</th>
+                <th>商品重量</th>
+                <th>订购数量</th>
+                <th>已发货数量</th>
+                <th>单位售价</th>
+                <th>单位成本</th>
+                <th>单位售价包含的税金</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in order.items" class="pagination-ul" >
+                <td>{{ item.externalSku }}</td>
+                <td>{{ item.sku }}</td>
+                <td>{{ item.externalName }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.unitWeight }}</td>
+                <td>
+                    <span ng-show="!item.editable">{{ item.qtyOrdered }}</span>
+                    <div ng-show="item.editable" class="form-group has-feedback" ng-class="{'has-success':(itemForm.qtyOrdered{{$index}}.$dirty && itemForm.qtyOrdered{{$index}}.$valid), 'has-warning':(itemForm.qtyOrdered{{$index}}.$dirty && itemForm.qtyOrdered{{$index}}.$invalid) }">
+                        <input type="number" name="qtyOrdered{{$index}}" ng-model="item.qtyOrdered" placeholder="数量(必填)" class="form-control" required min="1" />
+                    </div>
+                </td>
+                <td>{{ item.qtyShipped }}</td>
+                <td>{{ item.unitPrice | currency : '$' }}</td>
+                <td>{{ item.unitCost | currency : '$' }}</td>
+                <td>{{ item.unitGst | currency : '$' }}</td>
+                <td>
+                    <button type="button" class="btn btn-success" ng-click="saveUpdateItem(item, itemForm, $index)" ng-show="item.editable" ng-disabled="!itemForm.qtyOrdered{{$index}}.$valid">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                    </button>
+                    <button type="button" class="btn btn-info" ng-click="updateItem(item, $index)" ng-show="!item.editable">
+                        <span class="glyphicon glyphicon-edit"></span>
+                    </button>
+                    <button type="button" class="btn btn-danger" ng-click="showRemoveItem(item, $index)">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<!-- item add form -->
+<form name="itemAddForm" novalidate>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td width="30%">
+                    <!-- selectedProduct -->
+                    <div class="input-group">
+                        <ui-select ng-model="order.selectedProduct">
+                            <ui-select-match placeholder="商品(必选)">{{$select.selected.name + '(' + $select.selected.sku + ')'}}</ui-select-match>
+                            <ui-select-choices group-by="'sku'" repeat="product in products | filter: $select.search">
+                                <div ng-bind-html="product.name | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                        <span class="input-group-btn">
+                            <button type="button" ng-click="order.selectedProduct = undefined" class="btn btn-default">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </span>
+                    </div>
+                </td>
+                <td width="30%">
+                    <!-- selectedPrice -->
+                    <div class="input-group" ng-show="order.selectedProduct">
+                        <ui-select ng-model="order.selectedProduct.selectedPrice">
+                            <ui-select-match placeholder="价格(必选)">{{ $select.selected.name + '(' + $select.selected.value + ')'}}</ui-select-match>
+                            <ui-select-choices group-by="'value'" repeat="price in prices | filter: $select.search">
+                                <div ng-bind-html="price.name | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                        <span class="input-group-btn">
+                            <button type="button" ng-click="order.selectedProduct.selectedPrice = undefined" class="btn btn-default">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <!-- qtyOrdered -->
+                    <div class="form-group has-feedback" ng-class="{'has-success':(itemAddForm.qtyOrdered.$dirty && itemAddForm.qtyOrdered.$valid), 'has-warning':(itemAddForm.qtyOrdered.$dirty && itemAddForm.qtyOrdered.$invalid) }">
+
+                        <input type="number" name="qtyOrdered" ng-model="order.selectedProduct.qtyOrdered" placeholder="数量(必填)" class="form-control" required min="1" ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="itemAddForm.qtyOrdered.$dirty && itemAddForm.qtyOrdered.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="itemAddForm.qtyOrdered.$dirty && itemAddForm.qtyOrdered.$invalid"></span>
+                    </div>
+                </td>
+                <td width="10%">
+                    <button type="button" class="btn btn-success" ng-click="pushItem(itemAddForm, order.selectedProduct)" ng-disabled="!itemAddForm.$valid || !order.selectedProduct || !order.selectedProduct.selectedPrice">添加</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<!-- item delete Modal -->
+<div class="modal fade" id="itemDeleteModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-danger">
+                    <span class="glyphicon glyphicon-question-sign"></span> 确定删除
+                </h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" ng-click="removeItem()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
