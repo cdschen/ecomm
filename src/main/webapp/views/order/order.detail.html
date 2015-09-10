@@ -1,0 +1,229 @@
+<div pageslide ps-open="detailSlideChecked" ps-side="left" ps-speed="0.25" ps-size="100%">
+    <div id="operator-slider">
+        <div class="panel panel-info">
+            <div class="panel-body">
+                <button type="button" class="close" ng-click="closeDetailSlide()">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <div>
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" id="orderDetailTabs">
+                        <li class="active"><a href="#order-detail">详细信息</a></li>
+                    </ul>
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <!-- 详细信息 -->
+                        <div id="order-detail" class="tab-pane fade in active">
+                            <!--<section id="orderItemsScrollbarContainer" scrollbar="{autoUpdate: true}">-->
+                            <section style="overflow-y: scroll; overflow-x:hidden; height:600px; padding-right: 5px;">
+                                <div class="row" style="margin-top:5px;">
+                                    <div class="col-md-4">
+                                        <div class="panel panel-info">
+                                            <div class="panel-heading">
+                                                <h3 class="panel-title">信息</h3>
+                                            </div>
+                                            <table class="table table-condensed table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="35%">基本参数</th>
+                                                        <th width="65%">值</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="active"><strong>订单编号</strong></td>
+                                                        <td>{{processOrder.id}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>店铺编号</strong></td>
+                                                        <td>{{processOrder.shop.name}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>店铺订单号</strong></td>
+                                                        <td>{{processOrder.externalSn}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>店铺订单创建时间</strong></td>
+                                                        <td>{{processOrder.externalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>系统订单创建时间</strong></td>
+                                                        <td>{{processOrder.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>最近更新时间</strong></td>
+                                                        <td>{{processOrder.lastUpdateTime | date : 'yyyy-MM-dd HH:mm:ss'}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>商品总件数</strong></td>
+                                                        <td>{{processOrder.qtyTotalItemOrdered}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>已发货商品总件数</strong></td>
+                                                        <td>{{processOrder.qtyTotalItemShipped}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>订单总金额</strong></td>
+                                                        <td>{{processOrder.grandTotal | currency : ''}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>商品总金额</strong></td>
+                                                        <td>{{processOrder.subtotal | currency : ''}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>运费金额</strong></td>
+                                                        <td>{{processOrder.shippingFee | currency : ''}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>商品包含的税金</strong></td>
+                                                        <td>{{processOrder.tax | currency : ''}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>总共开出的发票金额</strong></td>
+                                                        <td>{{processOrder.totalInvoiced | currency : ''}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>总共收到的付款金额</strong></td>
+                                                        <td>{{processOrder.totalPaid | currency : ''}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>总共完成的退款金额</strong></td>
+                                                        <td>{{processOrder.totalRefounded | currency : ''}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>订单结算货币</strong></td>
+                                                        <td>{{processOrder.currency ? processOrder.currency.code : 'N/A'}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>重量</strong></td>
+                                                        <td>{{processOrder.weight}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>客户id</strong></td>
+                                                        <td>{{processOrder.customerId}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>店铺要求的发货方式描述</strong></td>
+                                                        <td>{{processOrder.shippingDescription}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>发货方式</strong></td>
+                                                        <td>{{processOrder.deliveryMethod}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>发件人姓名</strong></td>
+                                                        <td>{{processOrder.senderName}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>发件地址</strong></td>
+                                                        <td>{{processOrder.senderAddress}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>发件人电话</strong></td>
+                                                        <td>{{processOrder.senderPhone}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>发件人email</strong></td>
+                                                        <td>{{processOrder.senderEmail}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>发件人邮编</strong></td>
+                                                        <td>{{processOrder.senderPost}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>收件人姓名</strong></td>
+                                                        <td>{{processOrder.receiveName}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>收件人电话</strong></td>
+                                                        <td>{{processOrder.receivePhone}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>收件人email</strong></td>
+                                                        <td>{{processOrder.receiveEmail}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>收件国家</strong></td>
+                                                        <td>{{processOrder.receiveCountry}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>收件省</strong></td>
+                                                        <td>{{processOrder.receiveProvince}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>收件城市</strong></td>
+                                                        <td>{{processOrder.receiveCity}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>收件地址</strong></td>
+                                                        <td>{{processOrder.receiveAddress}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>收件邮编</strong></td>
+                                                        <td>{{processOrder.receivePost}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="active"><strong>订单备注</strong></td>
+                                                        <td>{{processOrder.memo}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="panel panel-info">
+                                            <div class="panel-heading">
+                                                <h3 class="panel-title">订购商品</h3>
+                                            </div>
+                                            <table class="table table-condensed table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <th>商品id</th>
+                                                    <th>商品SKU</th>
+                                                    <th>商品外部SKU</th>
+                                                    <th>商品外部名称</th>
+                                                    <th>商品名称</th>
+                                                    <th>商品重量</th>
+                                                    <th>订购数量</th>
+                                                    <th>已发货数量</th>
+                                                    <th>单位售价</th>
+                                                    <th>单位成本</th>
+                                                    <th>单位售价包含的税金</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr ng-repeat="item in processOrder.items">
+                                                    <td>{{item.productId}}</td>
+                                                    <td>{{item.externalSku}}</td>
+                                                    <td>{{item.sku}}</td>
+                                                    <td>{{item.externalName}}</td>
+                                                    <td>{{item.name}}</td>
+                                                    <td>{{item.unitWeight}}</td>
+                                                    <td>{{item.qtyOrdered}}</td>
+                                                    <td>{{item.qtyShipped}}</td>
+                                                    <td>{{item.unitPrice | currency : ''}}</td>
+                                                    <td>{{item.unitCost | currency : ''}}</td>
+                                                    <td>{{item.unitGst | currency : ''}}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                        
+                        <!-- 统计信息 -->
+                        <div id="order-statistics" class="tab-pane fade">
+                            统计信息
+                        </div>
+                        <!-- 配置 -->
+                        <div id="order-config" class="tab-pane fade">
+                            配置
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
