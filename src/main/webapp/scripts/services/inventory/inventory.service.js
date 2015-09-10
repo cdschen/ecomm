@@ -220,7 +220,9 @@ angular.module('ecommApp')
 
     }
 
-    function noPositionAndBatch() {}
+    function noPositionAndBatch(product, item, action) {
+        
+    }
 
     inventory.refrechProducts = function(products, item, action) {
         // selected position
@@ -257,7 +259,13 @@ angular.module('ecommApp')
                 });
                 // no batch
             } else {
-
+                $.each(products, function(){
+                    var product = this;
+                    if (product.stu === item.product.sku) {
+                        noPositionAndBatch(product, item, action);
+                        return false;
+                    }
+                });
             }
         }
     };
