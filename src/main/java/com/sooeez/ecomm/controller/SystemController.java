@@ -123,8 +123,8 @@ public class SystemController {
 	}
 	
 	@RequestMapping(value = "/shops/get/all")
-	public List<Shop> getShops(Pageable pageable) {
-		return this.shopService.getShops();
+	public List<Shop> getShops(Shop shop) {
+		return this.shopService.getShops(shop);
 	}
 	
 	@RequestMapping(value = "/shops", method = RequestMethod.POST)
