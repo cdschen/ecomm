@@ -34,7 +34,7 @@
                 没有任何数据被检索到
             </div>
         </div>
-        <table class="table table-bordered" ng-show="products.length > 0">
+        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="products.length > 0">
             <thead>
                 <tr>
                     <th width="15%">SKU</th>
@@ -54,7 +54,7 @@
                         {{product.name}}
                     </td>
                     <td colspan="4">
-                        <table class="table table-bordered">
+                        <table class="table table-bordered table-condensed clear-marginbottom-table">
                             <tbody>
                                 <tr ng-repeat="detail in product.details">
                                     <td width="25%">

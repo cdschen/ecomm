@@ -3,10 +3,11 @@ package com.sooeez.ecomm.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.sooeez.ecomm.domain.Inventory;
 
-public interface InventoryRepository extends JpaRepository<Inventory, Long> {
+public interface InventoryRepository extends JpaRepository<Inventory, Long>, JpaSpecificationExecutor<Inventory> {
 	
 	List<Inventory> findAllByWarehouseId(Long id);
 //	

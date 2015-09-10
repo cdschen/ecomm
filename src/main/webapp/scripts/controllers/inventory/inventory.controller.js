@@ -20,15 +20,23 @@ angular.module('ecommApp')
                         $scope.warehouse.selected = angular.copy(this);
                     }
                 });
-                Inventory.getAllByWarehouseId($rootScope.usingWarehouseId).then(function(inventories) {
+                Inventory.getAll({
+                    warehouseId: $rootScope.usingWarehouseId,
+                    sort: ['productId', 'inventoryBatchId']
+                }).then(function(inventories) {
                     $scope.products = Inventory.refresh(inventories);
                 });
             }
         });
 
         $scope.changeWarehouse = function($item) {
-            Inventory.getAllByWarehouseId($item.id).then(function(inventories) {
+            Inventory.getAll({
+                warehouseId: $item.id,
+                sort: ['productId', 'inventoryBatchId']
+            }).then(function(inventories) {
                 $scope.products = Inventory.refresh(inventories);
+                console.clear();
+                console.log($scope.products);
             });
         };
     }

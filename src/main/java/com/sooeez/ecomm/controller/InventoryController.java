@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -107,13 +108,8 @@ public class InventoryController {
 	}
 	
 	@RequestMapping(value = "/inventories/get/all")
-	public List<Inventory> getInventories() {
-		return this.inventoryService.getInventories();
-	}
-	
-	@RequestMapping(value = "/inventories/get/all/{warehouseId}")
-	public List<Inventory> getInventoriesByWarehouseId(@PathVariable("warehouseId") Long id) {
-		return this.inventoryService.getInventoriesByWarehouseId(id);
+	public List<Inventory> getInventories(Inventory inventory, Sort sort) {
+		return this.inventoryService.getInventories(inventory, sort);
 	}
 	
 	@RequestMapping(value = "/inventories", method = RequestMethod.POST)

@@ -1,16 +1,25 @@
 package com.sooeez.ecomm.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.sooeez.ecomm.domain.Inventory;
 import com.sooeez.ecomm.domain.InventoryBatch;
+import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.domain.WarehousePosition;
@@ -61,14 +70,12 @@ public class InventoryService {
 	 */
 
 	@Transactional
-	public WarehousePosition saveWarehousePosition(
-			WarehousePosition warehousePosition) {
+	public WarehousePosition saveWarehousePosition(WarehousePosition warehousePosition) {
 		return this.warehousePositionRepository.save(warehousePosition);
 	}
 
 	@Transactional
-	public List<WarehousePosition> saveWarehousePositions(
-			List<WarehousePosition> positions) {
+	public List<WarehousePosition> saveWarehousePositions(List<WarehousePosition> positions) {
 		return this.warehousePositionRepository.save(positions);
 	}
 
@@ -107,17 +114,29 @@ public class InventoryService {
 		return this.inventoryRepository.findOne(id);
 	}
 
-	public List<Inventory> getInventories() {
-		return this.inventoryRepository.findAll();
-	}
-
-	public List<Inventory> getInventoriesByWarehouseId(Long id) {
-		List<Inventory> inventories = this.inventoryRepository.findAllByWarehouseId(id);
-		return inventories;
+	public List<Inventory> getInventories(Inventory inventory, Sort sort) {
+		return this.inventoryRepository.findAll(getInventorySpecification(inventory), sort);
 	}
 
 	public Page<Inventory> getPagedInventories(Pageable pageable) {
 		return this.inventoryRepository.findAll(pageable);
+	}
+	
+	private Specification<Inventory> getInventorySpecification(Inventory inventory) {
+		
+		return (root, query, cb) -> {
+			
+			List<Predicate> predicates = new ArrayList<>();
+			
+			if (inventory.getId() != null) {
+				predicates.add(cb.equal(root.get("id"), inventory.getId()));
+			}
+			if (inventory.getWarehouseId() != null) {
+				predicates.add(cb.equal(root.get("warehouseId"), inventory.getWarehouseId()));
+			}
+			
+			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+		};
 	}
 
 	/*

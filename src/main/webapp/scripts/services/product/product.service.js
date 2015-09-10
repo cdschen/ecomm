@@ -4,9 +4,9 @@ angular.module('ecommApp')
 
 	var product = $resource('/api/products/:id', {}, {});
 
-	product.getAll = function(product) {
+	product.getAll = function(params) {
         return $http.get('/api/products/get/all', {
-        	params: product
+        	params: params
         }).then(function(res) {
             return res.data;
         });

@@ -28,6 +28,9 @@ public class Inventory implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	@Column(name = "product_id", nullable = false, insertable = false, updatable = false)
+	private Long productId;
+
 	@Column(name = "warehouse_id", nullable = false)
 	private Long warehouseId;
 
@@ -56,6 +59,14 @@ public class Inventory implements Serializable {
 	//
 
 	public Inventory() {
+	}
+
+	public Long getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Long productId) {
+		this.productId = productId;
 	}
 
 	public Long getId() {

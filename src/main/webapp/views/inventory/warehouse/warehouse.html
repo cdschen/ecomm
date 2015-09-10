@@ -1,0 +1,110 @@
+<ol class="breadcrumb">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li class="active">仓库管理</li>
+</ol>
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <!-- Single button -->
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    操作 <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a ui-sref="warehouse.operator">创建仓库</a></li>
+                </ul>
+            </div>
+        </div>
+        <table class="table" ng-show="page">
+            <thead>
+                <tr>
+                    <th width="16%">编号</th>
+                    <th width="16%">名字</th>
+                    <th width="16%">地址</th>
+                    <th width="16%">电话</th>
+                    <th width="16%">Email</th>
+                    <th width="20%">支持库位</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="warehouse in page.content">
+                    <td>
+                        {{warehouse.id}}
+                    </td>
+                    <td>
+                        <a ui-sref="warehouse.operator({id:warehouse.id})">{{warehouse.name}}</a>
+                    </td>
+                    <td>
+                        {{warehouse.address}}
+                    </td>
+                    <td>
+                        {{warehouse.phone}}
+                    </td>
+                    <td>
+                        {{warehouse.email}}
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-info btn-xs" ng-show="{{warehouse.enablePosition}}" ng-click="positionsModal(warehouse)">
+                            <span class="glyphicon glyphicon-ok"></span> 编辑
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="20">
+                        <nav class="page-list">
+                            <ul class="pagination pagination-sm">
+                                <li ng-class="{disabled: page.first}">
+                                    <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
+                                </li>
+                                <li ng-repeat="i in totalPagesList" ng-class="{active: i == page.number}">
+                                    <a href="" ng-click="turnPage(i)">{{i+1}}</a>
+                                </li>
+                                <li ng-class="{disabled: page.last}">
+                                    <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                </li>
+                            </ul>
+                            <div class="page-total">
+                                共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
+                                <select class="form-control" style="display: inline; padding:0" ng-model="pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                </select>
+                            </div>
+                        </nav>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<!-- WarehousePositions Modal -->
+<div class="modal fade" id="positionsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">库位管理</h4>
+            </div>
+            <!-- form -->
+            <form name="positionsOperatorForm" class="form-horizontal" role="form" novalidate ng-submit="savePositions(positions)">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-3" ng-repeat="position in positions">
+                            <div class="form-group has-feedback" ng-class="{'has-success':(positionsOperatorForm.position{{$index}}.$dirty && positionsOperatorForm.position{{$index}}.$valid), 'has-warning':(positionsOperatorForm.position{{$index}}.$dirty && positionsOperatorForm.position{{$index}}.$invalid) }">
+                                <div class="col-md-12">
+                                    <input type="text" class="form-control" id="position{{$index}}" name="position{{$index}}" ng-model="position.name" required />
+                                    <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="positionsOperatorForm.position{{$index}}.$dirty && positionsOperatorForm.position{{$index}}.$valid"></span>
+                                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="positionsOperatorForm.position{{$index}}.$dirty && positionsOperatorForm.position{{$index}}.$invalid"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-success" ng-disabled="!positionsOperatorForm.$valid">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
