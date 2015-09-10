@@ -2,36 +2,37 @@ angular.module('ecommApp')
 
 .factory('Inventory', ['$resource', '$http', function($resource, $http) {
 
+    var $ = angular.element;
     var inventory = $resource('/api/inventories/:id');
 
-    inventory.getAll = function() {
-        return $http.get('/api/inventories/get/all').then(function(res) {
-            return res.data;
-        });
-    };
-
-    inventory.getAllByWarehouseId = function(warehouseId) {
-        return $http.get('/api/inventories/get/all/' + warehouseId).then(function(res) {
+    inventory.getAll = function(params) {
+        return $http.get('/api/inventories/get/all', {
+            params: params
+        }).then(function(res) {
             return res.data;
         });
     };
 
     inventory.refresh = function(inventories) {
         var products = [];
-        angular.forEach(inventories, function(inventory) {
-            var exist = false;
-            angular.forEach(products, function(product) {
+        $.each(inventories, function() {
+            var inventory = this,
+                existInventory = false;
+            $.each(products, function() {
+                var product = this;
                 if (product.sku === inventory.product.sku) {
                     if (inventory.position) {
                         var existPosition = false;
-                        angular.forEach(product.positions, function(position) {
+                        $.each(product.positions, function() {
+                            var position = this;
                             if (position.id === inventory.position.id) {
                                 var existPositionBatch = false;
-                                angular.forEach(position.batches, function(batch) {
+                                $.each(position.batches, function() {
+                                    var batch = this;
                                     if (batch.id === inventory.inventoryBatchId) {
                                         batch.total += inventory.quantity;
                                         existPositionBatch = true;
-                                        return;
+                                        return false;
                                     }
                                 });
                                 if (!existPositionBatch) {
@@ -42,7 +43,7 @@ angular.module('ecommApp')
                                 }
                                 position.total += inventory.quantity;
                                 existPosition = true;
-                                return;
+                                return false;
                             }
                         });
                         if (!existPosition) {
@@ -54,21 +55,6 @@ angular.module('ecommApp')
                             product.positions.push(inventory.position);
                         }
                         product.existPosition = true;
-                    } else {
-                        var existBatch = false;
-                        angular.forEach(product.batches, function(batch) {
-                            if (batch.id === inventory.inventoryBatchId) {
-                                batch.total += inventory.quantity;
-                                existBatch = true;
-                                return;
-                            }
-                        });
-                        if (!existBatch) {
-                            product.batches.push({
-                                id: inventory.inventoryBatchId,
-                                total: inventory.quantity
-                            });
-                        }
                     }
                     var detail = {
                         position: inventory.position,
@@ -77,13 +63,27 @@ angular.module('ecommApp')
                         batchId: inventory.inventoryBatchId
                     };
                     product.total += inventory.quantity;
+                    var existBatch = false;
+                    $.each(product.batches, function() {
+                        var batch = this;
+                        if (batch.id === inventory.inventoryBatchId) {
+                            batch.total += inventory.quantity;
+                            existBatch = true;
+                            return false;
+                        }
+                    });
+                    if (!existBatch) {
+                        product.batches.push({
+                            id: inventory.inventoryBatchId,
+                            total: inventory.quantity
+                        });
+                    }
                     product.details.push(detail);
-                    exist = true;
-                    return;
+                    existInventory = true;
+                    return false;
                 }
             });
-
-            if (!exist) {
+            if (!existInventory) {
                 inventory.product.positions = [];
                 if (inventory.position) {
                     inventory.position.total = inventory.quantity;
@@ -93,11 +93,6 @@ angular.module('ecommApp')
                     }];
                     inventory.product.positions.push(inventory.position);
                     inventory.product.existPosition = true;
-                } else {
-                    inventory.product.batches = [{
-                        id: inventory.inventoryBatchId,
-                        total: inventory.quantity
-                    }];
                 }
                 inventory.product.details = [{
                     position: inventory.position,
@@ -106,96 +101,165 @@ angular.module('ecommApp')
                     batchId: inventory.inventoryBatchId
                 }];
                 inventory.product.total = inventory.quantity;
+                inventory.product.batches = [{
+                    id: inventory.inventoryBatchId,
+                    total: inventory.quantity
+                }];
                 products.push(inventory.product);
             }
         });
         return products;
     };
 
-    var itemHasBatch = function(parent, item, action) {
-        for (var i = 0, len = parent.batches.length; i < len; i++) {
-            var batch = parent.batches[i];
+    function calculateSelectedBatch(object, item, action) {
+        $.each(object.batches, function() {
+            var batch = this;
             if (batch.id === item.outBatch.id) {
                 if (action === 'add') {
                     batch.total -= item.changedQuantity;
-                    parent.total -= item.changedQuantity;
+                    object.total -= item.changedQuantity;
                 } else if (action === 'remove') {
                     batch.total += item.changedQuantity;
-                    parent.total += item.changedQuantity;
+                    object.total += item.changedQuantity;
                 }
-                break;
+                return false;
             }
-        }
-        return parent;
-    };
+        });
+    }
 
-    var itemNoBatch = function(parent, item, action) {
-        var batch;
+    function calcualteNoBatchAdd(object, item) {
+        var temp = item.changedQuantity;
+        object.total -= item.changedQuantity;
+        $.each(object.batches, function() {
+            var batch = this;
+            if (batch.total - temp < 0) {
+                batch[item.$field] = batch.total;
+                temp = temp - batch.total;
+                batch.total = 0;
+            } else {
+                batch[item.$field] = temp;
+                batch.total -= temp;
+                return false;
+            }
+        });
+    }
+
+    function calcualteNoBatchRemove(object, item) {
+        console.log(object.batches);
+        console.log(item);
+        object.total += item.changedQuantity;
+        $.each(object.batches, function() {
+            var batch = this;
+            batch.total += batch[item.$field] !== undefined && batch[item.$field];
+        });
+    }
+
+    function selectedPositionAndBatch(product, position, item, action) {
+        // calculate product.total, product.selectedBatch.total
+        calculateSelectedBatch(product, item, action);
+        // calculate position.total, position.selectedBatch.total
+        calculateSelectedBatch(position, item, action);
+    }
+
+    function selectedPositionNoBatch(product, position, item, action) {
         if (action === 'add') {
-            parent.total -= item.changedQuantity;
-            var temp = item.changedQuantity;
-            for (var i = 0, len = parent.batches.length; i < len; i++) {
-                batch = parent.batches[i];
-                if (batch.total - temp < 0) {
-                	batch[item.$index] = batch.total;
-                    temp = temp - batch.total;
-                    batch.total = 0;
-                } else {
-                	batch[item.$index] = temp;
-                    batch.total -= temp;
-                    break;
-                }
-            }
+            // calculate product.total, product.batches[x].total
+            calcualteNoBatchAdd(product, item);
+            // calculate position.total, position.batches[x].total
+            calcualteNoBatchAdd(position, item);
         } else if (action === 'remove') {
-            parent.total += item.changedQuantity;
-            for (var j = 0, jlen = parent.batches.length; j < jlen; j++) {
-                batch = parent.batches[j];
-                batch.total += batch[item.$index] !== undefined && batch[item.$index];
-            }
+            // calculate product.total, product.batches[x].total
+            calcualteNoBatchRemove(product, item);
+            // calculate position.total, position.batches[x].total
+            calcualteNoBatchRemove(position, item);
         }
-        return parent;
-    };
+    }
 
-    var itemHasPosition = function(parent, item, action) {
-        for (var i = 0, len = parent.positions.length; i < len; i++) {
-            if (parent.positions[i].id === item.position.id) {
-                if (item.outBatch) {
-                    console.log('item有批次');
-                    parent.positions[i] = itemHasBatch(parent.positions[i], item, action);
-
-                } else {
-                    console.log('item没批次');
-                    parent.positions[i] = itemNoBatch(parent.positions[i], item, action);
+    function noPositionSelectedBatch(product, item, action) {
+        // calculate product.total, product.selectedBatch.total
+        calculateSelectedBatch(product, item, action);
+        // calculate position.total, position.selectedBatch.total
+        if (action === 'add') {
+            var temp = item.changedQuantity;
+            var exitPositionEach = false;
+            $.each(product.positions, function() {
+                var position = this;
+                $.each(position.batches, function() {
+                    var batch = this;
+                    if (batch.id === item.outBatch.id) {
+                        if (batch.total - temp < 0) {
+                            batch[item.$field] = batch.total;
+                            temp = temp - batch.total;
+                            batch.total = 0;
+                            position[item.$field] = batch.total;
+                            position.total -= batch.total;
+                        } else {
+                            batch[item.$field] = temp;
+                            batch.total -= temp;
+                            position[item.$field] = temp;
+                            position.total -= temp;
+                            exitPositionEach = true;
+                        }
+                        return false;
+                    }
+                });
+                if (exitPositionEach) {
+                    return false;
                 }
-                console.log(parent.positions[i]);
-                break;
-            }
+            });
+        } else if (action === 'remove') {
+            $.each(product.positions, function() {
+                var position = this;
+                position.total += position[item.$field] !== undefined && position[item.$field];
+                $.each(position.batches, function() {
+                    var batch = this;
+                    batch.total += batch[item.$field] !== undefined && batch[item.$field];
+                });
+            });
         }
-        return parent;
-    };
+
+    }
+
+    function noPositionAndBatch() {}
 
     inventory.refrechProducts = function(products, item, action) {
-        for (var i = 0, len = products.length; i < len; i++) {
-            if (products[i].sku === item.product.sku) {
-                console.log('匹配到商品');
-                if (item.position) {
-                    console.log('item有库位');
-                    products[i] = itemHasPosition(products[i], item, action);
-                    console.log(products[i]);
-                } else {
-                    console.log('item没库位');
-                    if (item.outBatch) {
-                        console.log('item有批次');
-                        products[i] = itemHasBatch(products[i], item, action);
-                    } else {
-                        console.log('item没批次');
-                        products[i] = itemNoBatch(products[i], item, action);
-                    }
+        // selected position
+        if (item.position) {
+            $.each(products, function() {
+                var product = this;
+                if (product.sku === item.product.sku) {
+                    $.each(product.positions, function() {
+                        var position = this;
+                        if (position.id === item.position.id) {
+                            // selected batch
+                            if (item.outBatch) {
+                                selectedPositionAndBatch(product, position, item, action);
+                                // no batch
+                            } else {
+                                selectedPositionNoBatch(product, position, item, action);
+                            }
+                            return false;
+                        }
+                    });
+                    return false;
                 }
-                break;
+            });
+            // no position
+        } else {
+            // selected batch
+            if (item.outBatch) {
+                $.each(products, function() {
+                    var product = this;
+                    if (product.sku === item.product.sku) {
+                        noPositionSelectedBatch(product, item, action);
+                        return false;
+                    }
+                });
+                // no batch
+            } else {
+
             }
         }
-        return products;
     };
 
     return inventory;

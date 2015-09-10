@@ -9,7 +9,7 @@ angular.module('ecommApp')
                 url: '/warehouses',
                 views: {
                     'content@': {
-                        templateUrl: 'views/inventory/warehouse.html?' + (new Date()),
+                        templateUrl: 'views/inventory/warehouse/warehouse.html?' + (new Date()),
                         controller: 'WarehouseController'
                     }
                 },
@@ -22,7 +22,7 @@ angular.module('ecommApp')
                 url: '/warehouse/:id',
                 views: {
                     'content@': {
-                        templateUrl: 'views/inventory/warehouse.operator.html?' + (new Date()),
+                        templateUrl: 'views/inventory/warehouse/warehouse.operator.html?' + (new Date()),
                         controller: 'WarehouseOperatorController'
                     }
                 },

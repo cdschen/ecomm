@@ -27,6 +27,8 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SelectBeforeUpdate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "t_product")
 public class Product implements Serializable {
@@ -169,7 +171,7 @@ public class Product implements Serializable {
 	@ManyToMany
 	@JoinTable(name = "t_product_tag", joinColumns = { @JoinColumn(name = "product_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id", referencedColumnName = "id") })
 	private List<Tag> tags;
-	
+
 	@Transient
 	private Integer[] status;
 
@@ -182,25 +184,17 @@ public class Product implements Serializable {
 		return deleted;
 	}
 
-
-
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 	}
-
-
 
 	public Integer[] getStatus() {
 		return status;
 	}
 
-
-
 	public void setStatus(Integer[] status) {
 		this.status = status;
 	}
-
-
 
 	public List<ObjectProcess> getProcesses() {
 		return processes;

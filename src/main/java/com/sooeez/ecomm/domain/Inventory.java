@@ -28,11 +28,11 @@ public class Inventory implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	@Column(name = "product_id", nullable = false, insertable = false, updatable = false)
+	private Long productId;
+
 	@Column(name = "warehouse_id", nullable = false)
 	private Long warehouseId;
-
-	@Column(name = "warehouse_position_id", nullable = false, insertable = false, updatable = false)
-	private Long warehousePositionId;
 
 	@Column(name = "inventory_batch_id", nullable = false)
 	private Long inventoryBatchId;
@@ -61,12 +61,12 @@ public class Inventory implements Serializable {
 	public Inventory() {
 	}
 
-	public Long getWarehousePositionId() {
-		return warehousePositionId;
+	public Long getProductId() {
+		return productId;
 	}
 
-	public void setWarehousePositionId(Long warehousePositionId) {
-		this.warehousePositionId = warehousePositionId;
+	public void setProductId(Long productId) {
+		this.productId = productId;
 	}
 
 	public Long getId() {
@@ -83,22 +83,6 @@ public class Inventory implements Serializable {
 
 	public void setWarehouseId(Long warehouseId) {
 		this.warehouseId = warehouseId;
-	}
-
-	public Product getProduct() {
-		return product;
-	}
-
-	public void setProduct(Product product) {
-		this.product = product;
-	}
-
-	public WarehousePosition getPosition() {
-		return position;
-	}
-
-	public void setPosition(WarehousePosition position) {
-		this.position = position;
 	}
 
 	public Long getInventoryBatchId() {
@@ -123,6 +107,22 @@ public class Inventory implements Serializable {
 
 	public void setExpireDate(Date expireDate) {
 		this.expireDate = expireDate;
+	}
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
+	public WarehousePosition getPosition() {
+		return position;
+	}
+
+	public void setPosition(WarehousePosition position) {
+		this.position = position;
 	}
 
 }

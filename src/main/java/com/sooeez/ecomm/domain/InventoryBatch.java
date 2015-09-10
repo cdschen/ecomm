@@ -18,6 +18,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 @Entity
 @Table(name = "t_inventory_batch")
 public class InventoryBatch implements Serializable {
@@ -32,11 +35,8 @@ public class InventoryBatch implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@Column(name = "warehouse_id", nullable = false)
-	private Long warehouseId;
-
 	@Column(name = "operate", nullable = false)
-	private int operate;
+	private Integer operate;
 
 	@Column(name = "order_id")
 	private Long orderId;
@@ -54,8 +54,14 @@ public class InventoryBatch implements Serializable {
 	/*
 	 * Related Properties
 	 */
-	
+
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "warehouse_id")
+	private Warehouse warehouse;
+
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "user_id")
 	private User user;
 
@@ -67,16 +73,6 @@ public class InventoryBatch implements Serializable {
 
 	public InventoryBatch() {
 	}
-	
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-
 
 	public Long getId() {
 		return id;
@@ -86,19 +82,11 @@ public class InventoryBatch implements Serializable {
 		this.id = id;
 	}
 
-	public Long getWarehouseId() {
-		return warehouseId;
-	}
-
-	public void setWarehouseId(Long warehouseId) {
-		this.warehouseId = warehouseId;
-	}
-
-	public int getOperate() {
+	public Integer getOperate() {
 		return operate;
 	}
 
-	public void setOperate(int operate) {
+	public void setOperate(Integer operate) {
 		this.operate = operate;
 	}
 
@@ -132,6 +120,22 @@ public class InventoryBatch implements Serializable {
 
 	public void setMemo(String memo) {
 		this.memo = memo;
+	}
+
+	public Warehouse getWarehouse() {
+		return warehouse;
+	}
+
+	public void setWarehouse(Warehouse warehouse) {
+		this.warehouse = warehouse;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public List<InventoryBatchItem> getItems() {

@@ -12,6 +12,7 @@ import javax.persistence.criteria.Subquery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,11 +57,11 @@ public class ProductService {
 		return this.productRepository.findOne(id);
 	}
 
-	public List<Product> getProducts(Product product) {
-		return this.productRepository.findAll(getProductSpecification(product));
+	public List<Product> getProducts(Product product, Sort sort) {
+		return this.productRepository.findAll(getProductSpecification(product), sort);
 	}
 
-	public Page<Product> getPagedProducts(Pageable pageable, Product product) {
+	public Page<Product> getPagedProducts(Product product, Pageable pageable) {
 		return this.productRepository.findAll(getProductSpecification(product), pageable);
 	}
 	
