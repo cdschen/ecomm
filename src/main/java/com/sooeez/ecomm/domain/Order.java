@@ -39,7 +39,7 @@ public class Order implements Serializable {
 	private Long id;
 
 	/* 店铺id */
-	@Column(name = "shop_id", nullable = false)
+	@Column(name = "shop_id", nullable = false, insertable = false, updatable = false)
 	private Long shopId;
 
 	/* 店铺订单号 */
@@ -184,6 +184,16 @@ public class Order implements Serializable {
 	 * Related Properties
 	 */
 
+	@OneToOne
+	@NotFound(action=NotFoundAction.IGNORE)
+	@JoinColumn(name = "shop_id")
+	private Shop shop;
+
+	@OneToOne
+	@NotFound(action=NotFoundAction.IGNORE)
+	@JoinColumn(name = "currency_id")
+	private Currency currency;
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id")
 	private List<OrderItem> items;
@@ -192,34 +202,63 @@ public class Order implements Serializable {
 	@JoinColumn(name = "object_id")
 	private List<ObjectProcess> processes;
 
-	@OneToOne
-	@NotFound(action=NotFoundAction.IGNORE)
-	@JoinColumn(name = "currency_id")
-	private Currency currency;
-
 	/*
 	 * Query Params;
 	 */
 	/* 下单起始日期 */
 	@Transient
-	private Date internalCreateTimeStart;
+	private String internalCreateTimeStart;
 
 	/* 下单结束日期 */
 	@Transient
-	private Date internalCreateTimeEnd;
+	private String internalCreateTimeEnd;
 
 	/* 发货起始日期 */
 	@Transient
-	private Date shippingTimeStart;
+	private String shippingTimeStart;
 
 	/* 发货结束日期 */
 	@Transient
-	private Date shippingTimeEnd;
+	private String shippingTimeEnd;
+	
+	/* 流程状态 */
+	@Transient
+	private Integer[] status;
+	
+	/* 订单编号 */
+	@Transient
+	private Long orderId;
 
 	//
+	
+	
 
 	public Long getId() {
 		return id;
+	}
+
+	public Shop getShop() {
+		return shop;
+	}
+
+	public void setShop(Shop shop) {
+		this.shop = shop;
+	}
+
+	public Long getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(Long orderId) {
+		this.orderId = orderId;
+	}
+
+	public Integer[] getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer[] status) {
+		this.status = status;
 	}
 
 	public Currency getCurrency() {
@@ -238,35 +277,35 @@ public class Order implements Serializable {
 		this.processes = processes;
 	}
 
-	public Date getInternalCreateTimeStart() {
+	public String getInternalCreateTimeStart() {
 		return internalCreateTimeStart;
 	}
 
-	public void setInternalCreateTimeStart(Date internalCreateTimeStart) {
+	public void setInternalCreateTimeStart(String internalCreateTimeStart) {
 		this.internalCreateTimeStart = internalCreateTimeStart;
 	}
 
-	public Date getInternalCreateTimeEnd() {
+	public String getInternalCreateTimeEnd() {
 		return internalCreateTimeEnd;
 	}
 
-	public void setInternalCreateTimeEnd(Date internalCreateTimeEnd) {
+	public void setInternalCreateTimeEnd(String internalCreateTimeEnd) {
 		this.internalCreateTimeEnd = internalCreateTimeEnd;
 	}
 
-	public Date getShippingTimeStart() {
+	public String getShippingTimeStart() {
 		return shippingTimeStart;
 	}
 
-	public void setShippingTimeStart(Date shippingTimeStart) {
+	public void setShippingTimeStart(String shippingTimeStart) {
 		this.shippingTimeStart = shippingTimeStart;
 	}
 
-	public Date getShippingTimeEnd() {
+	public String getShippingTimeEnd() {
 		return shippingTimeEnd;
 	}
 
-	public void setShippingTimeEnd(Date shippingTimeEnd) {
+	public void setShippingTimeEnd(String shippingTimeEnd) {
 		this.shippingTimeEnd = shippingTimeEnd;
 	}
 

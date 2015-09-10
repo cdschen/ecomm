@@ -45,8 +45,8 @@ public class ShopService {
 		return this.shopRepository.findOne(id);
 	}
 	
-	public List<Shop> getShops() {
-		return this.shopRepository.findAll();
+	public List<Shop> getShops(Shop shop) {
+		return this.shopRepository.findAll(getShopSpecification(shop));
 	}
 
 	public Page<Shop> getPagedShops(Pageable pageable, Shop shop) {

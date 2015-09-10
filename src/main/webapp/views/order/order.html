@@ -15,7 +15,7 @@
                     <tr>
                         <td width="12%">
                             <div class="form-group" style="margin-bottom:0; margin-top:5px;">
-                                <input type="text" ng-model="order.id" class="form-control" placeholder="订单编号" />
+                                <input type="text" ng-model="order.orderId" class="form-control" placeholder="订单编号" />
                             </div>
                         </td>
                         <td width="12%">
@@ -25,17 +25,24 @@
                         </td>
                         <td width="12%">
                             <div class="form-group" style="margin-bottom:0; margin-top:5px;">
-                                <input type="text" class="form-control" placeholder="订单编号" />
+                                <input type="text" ng-model="order.receiveName" class="form-control" placeholder="收件人姓名" />
                             </div>
                         </td>
                         <td width="12%">
                             <div class="form-group" style="margin-bottom:0; margin-top:5px;">
-                                <ui-select ng-model="shop.selected">
-                                    <ui-select-match placeholder="店铺">{{$select.selected.label}}</ui-select-match>
-                                    <ui-select-choices repeat="shop in shops | filter: $select.search">
-                                        <div ng-bind-html="shop.label | highlight: $select.search"></div>
-                                    </ui-select-choices>
-                                </ui-select>
+                                <div class="input-group">
+                                    <ui-select ng-model="shop.selected">
+                                        <ui-select-match placeholder="店铺">{{$select.selected.name}}</ui-select-match>
+                                        <ui-select-choices repeat="shop in shops | filter: $select.search">
+                                            <div ng-bind-html="shop.name | highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                    </ui-select>
+                                    <span class="input-group-btn">
+                                        <button type="button" ng-click="shop.selected = undefined" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </span>
+                                </div>
                             </div>
                         </td>
                         <td rowspan="2">
@@ -63,22 +70,50 @@
                     <tr>
                         <td width="12%" style="border:none;">
                             <div class="form-group">
-                                <input type="text" ng-model="order.internalCreateTimeStart" class="form-control" placeholder="下单起始日期" />
+                                <div class="input-group">
+                                    <input type="text" ng-model="order.internalCreateTimeStart" class="form-control" placeholder="下单起始日期" />
+                                    <span class="input-group-btn">
+                                        <button type="button" ng-click="order.internalCreateTimeStart = undefined" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </span>
+                                </div>
                             </div>
                         </td>
                         <td width="12%" style="border:none;">
                             <div class="form-group">
-                                <input type="text" ng-model="order.internalCreateTimeEnd" class="form-control" placeholder="下单结束日期" />
+                                <div class="input-group">
+                                    <input type="text" ng-model="order.internalCreateTimeEnd" class="form-control" placeholder="下单结束日期" />
+                                    <span class="input-group-btn">
+                                        <button type="button" ng-click="order.internalCreateTimeEnd = undefined" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </span>
+                                </div>
                             </div>
                         </td>
                         <td width="12%" style="border:none;">
                             <div class="form-group">
-                                <input type="text" ng-model="order.shippingTimeStart" class="form-control" placeholder="发货起始日期" />
+                                <div class="input-group">
+                                    <input type="text" ng-model="order.shippingTimeStart" class="form-control" placeholder="发货起始日期" />
+                                    <span class="input-group-btn">
+                                        <button type="button" ng-click="order.shippingTimeStart = undefined" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </span>
+                                </div>
                             </div>
                         </td>
                         <td width="12%" style="border:none;">
                             <div class="form-group">
-                                <input type="text" ng-model="order.shippingTimeEnd" class="form-control" placeholder="发货结束日期" />
+                                <div class="input-group">
+                                    <input type="text" ng-model="order.shippingTimeEnd" class="form-control" placeholder="发货结束日期" />
+                                    <span class="input-group-btn">
+                                        <button type="button" ng-click="order.shippingTimeEnd = undefined" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </span>
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -95,13 +130,13 @@
                     <th width="10%">订单编号</th>
                     <th width="10%">店铺</th>
                     <th width="10%">店铺单号</th>
-                    <th width="10%">时间（店铺下单，导入时间，发货时间）</th>
+                    <th width="14%">时间（下单，导入，发货）</th>
                     <th width="6%">总金额</th>
                     <th width="10%">收件人</th>
                     <th width="10%">商品信息</th>
                     <th width="12%">备注</th>
                     <th width="10%">状态</th>
-                    <th width="10%" style="padding: 2px">
+                    <th width="6%" style="padding: 2px">
                         <select class="form-control input-sm">
                             <option selected="selected">批量操作</option>
                             <option>批量上架</option>
@@ -118,27 +153,45 @@
                         <input type="checkbox" name="orderId">
                     </td>
                     <td>
-                        <a href="" ng-click="loadItems(order)">{{order.id}}</a>
+                        {{order.id}}
                     </td>
                     <td>
-                        {{order.shopId}}
+                        {{order.shop.name}}
                     </td>
                     <td>
                         {{order.externalSn}}
                     </td>
                     <td>
-                        {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}
+                        <div ng-show="order.externalCreateTime">
+                            下单 : {{order.externalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}
+                        </div>
+                        <div ng-show="order.internalCreateTime">
+                            导入 : {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}
+                        </div>
+                        <div ng-show="order.internalCreateTime">
+                            发货 : {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}
+                        </div>
+
                     </td>
                     <td>
                         {{order.grandTotal | currency : ''}}
                     </td>
                     <td>
-                        {{order.receiveName}}
+                        <div ng-show="order.receiveName">
+                            名字 : {{order.receiveName}}
+                        </div>
+                        <div ng-show="order.receivePhone">
+                            电话 : {{order.receivePhone}}
+                        </div>
+                        <div ng-show="order.receiveAddress">
+                            地址 : {{order.receiveAddress}}
+                        </div>
                     </td>
                     <td>
-                        <div ng-repeat="item in order.items | limitTo:3">
+                        <div ng-repeat="item in order.items | limitTo:5">
                             {{item.name}}&nbsp;*&nbsp;{{item.qtyOrdered}}
                         </div>
+                        <a href="" class="btn btn-info btn-xs pull-right" ng-click="loadDetail(order)">...</a>
                     </td>
                     <td>
                         {{order.memo}}
@@ -190,7 +243,7 @@
         </table>
     </div>
 </div>
-<section ng-controller="OrderItemsController" onload="initOrderItemsTabs()" ng-include="template.items.url"></section>
+<section ng-controller="OrderDetailController" onload="initOrderDetailTabs()" ng-include="template.detail.url"></section>
 <section ng-include="template.status.url"></section>
 <section ng-controller="OrderProcessController" ng-include="template.process.url"></section>
 <script type="text/ng-template" id="process-tmpl.html">
