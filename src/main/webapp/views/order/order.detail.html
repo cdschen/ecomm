@@ -108,7 +108,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td class="active"><strong>发货方式</strong></td>
-                                                        <td>{{processOrder.deliveryMethod}}</td>
+                                                        <td>{{processOrder.deliveryMethod == 1 ? '快递' : processOrder.deliveryMethod == 2 ? '自提' : processOrder.deliveryMethod == 3 ? '送货上门' : '' }}</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="active"><strong>发件人姓名</strong></td>

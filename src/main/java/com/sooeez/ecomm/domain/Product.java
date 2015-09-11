@@ -168,6 +168,10 @@ public class Product implements Serializable {
 	@JoinColumn(name = "object_id")
 	private List<ObjectProcess> processes;
 
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "product_id")
+	private List<ProductShopTunnel> shopTunnels;
+
 	@ManyToMany
 	@JoinTable(name = "t_product_tag", joinColumns = { @JoinColumn(name = "product_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id", referencedColumnName = "id") })
 	private List<Tag> tags;
@@ -498,6 +502,14 @@ public class Product implements Serializable {
 
 	public void setFullDescription(String fullDescription) {
 		this.fullDescription = fullDescription;
+	}
+
+	public List<ProductShopTunnel> getShopTunnels() {
+		return shopTunnels;
+	}
+
+	public void setShopTunnels(List<ProductShopTunnel> shopTunnels) {
+		this.shopTunnels = shopTunnels;
 	}
 
 }

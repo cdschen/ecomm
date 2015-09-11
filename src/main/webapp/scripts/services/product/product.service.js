@@ -34,6 +34,13 @@ angular.module('ecommApp')
 	var member = $resource('/api/productmembers/:id', {}, {});
 
 	return member;
+}])
+
+.factory('ProductShopTunnel', ['$resource', function($resource) {
+
+	var shopTunnel = $resource('/api/productshoptunnels/:id', {}, {});
+
+	return shopTunnel;
 }]);
 
 

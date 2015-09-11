@@ -74,6 +74,7 @@ angular.module('ecommApp')
                 $scope.processes = processes;
                 initStatus(processes);
             });
+
         });
 
         $scope.turnPage = function(number) {
@@ -335,8 +336,8 @@ angular.module('ecommApp')
     }
 ])
 
-.controller('ProductOperatorController', ['$scope', '$state', '$stateParams', 'Product', 'Brand', 'Category', 'MadeFrom', 'Language', 'Currency', 'Tag',
-    function($scope, $state, $stateParams, Product, Brand, Category, MadeFrom, Language, Currency, Tag) {
+.controller('ProductOperatorController', ['$scope', '$state', '$stateParams', '$filter', 'Product', 'Brand', 'Category', 'MadeFrom', 'Language', 'Currency', 'Tag', 'Shop',
+    function($scope, $state, $stateParams, $filter, Product, Brand, Category, MadeFrom, Language, Currency, Tag, Shop) {
 
         console.clear();
         var $ = angular.element;
@@ -363,6 +364,9 @@ angular.module('ecommApp')
             },
             multicurrency: {
                 url: 'views/product/product.operator.multicurrency.html?' + new Date()
+            },
+            shopTunnel: {
+                url: 'views/product/product.operator.shop_tunnel.html?' + new Date()
             }
         };
 
@@ -374,6 +378,7 @@ angular.module('ecommApp')
             value: 1
         }];
 
+        $scope.shops = [];
         $scope.brands = [];
         $scope.categories = [];
         $scope.madeFroms = [];
@@ -396,9 +401,43 @@ angular.module('ecommApp')
             productType: $scope.productTypes[0],
             multiLanguages: [],
             multiCurrencies: [],
-            members: []
+            members: [],
+            shopTunnels: []
         };
         $scope.action = 'create';
+
+        $scope.isProductShopTunnelSelected = function(sTunnel, isDefault){
+            var isSelected = false;
+            var isProductShopOtherTunnelsNotSelected = true;
+            for(var psTunnel in $scope.product.shopTunnels)
+            {
+                if(sTunnel.shopId === $scope.product.shopTunnels[psTunnel].shopId &&
+                    sTunnel.id === $scope.product.shopTunnels[psTunnel].tunnelId)
+                {
+                    isSelected = true;
+                    break;
+                }
+                if(sTunnel.shopId === $scope.product.shopTunnels[psTunnel].shopId)
+                {
+                    isProductShopOtherTunnelsNotSelected = false;
+                }
+            }
+            if( isProductShopOtherTunnelsNotSelected && isDefault )
+            {
+                isSelected = true;
+            }
+            return isSelected;
+        };
+
+        $scope.getRelativeProductShopTunnelId = function(sTunnel){
+            for(var psTunnel in $scope.product.shopTunnels)
+            {
+                if(sTunnel.shopId === $scope.product.shopTunnels[psTunnel].shopId)
+                {
+                    return $scope.product.shopTunnels[psTunnel].id;
+                }
+            }
+        };
 
         Brand.getAll().then(function(brands) {
             $scope.brands = brands;
@@ -421,6 +460,10 @@ angular.module('ecommApp')
         }).then(function() {
             return Tag.getAll().then(function(tags) {
                 $scope.tags = tags;
+            });
+        }).then(function() {
+            return Shop.getAll().then(function(shops) {
+                $scope.shops = shops;
             });
         }).then(function() {
             if ($stateParams.id && $stateParams.id !== '') {
@@ -446,6 +489,7 @@ angular.module('ecommApp')
                                 $scope.members = members;
                             });
                         }
+
                     });
             }
         });
@@ -844,6 +888,114 @@ angular.module('ecommApp')
                 }
             }
         };
+
+    }
+])
+
+.controller('ProductShopTunnelController', ['$scope', '$stateParams', 'ProductShopTunnel',
+    function($scope, $stateParams, ProductShopTunnel) {
+
+        $scope.shopTunnel = {};
+
+        $scope.saveTunnel = function(stAddForm, shopTunnel, productShopTunnelId) {
+            console.clear();
+            console.log('[' + $scope.action + '] saveTunnel:');
+
+            var productShopTunnel = {};
+
+            if ($scope.action === 'create') {
+                console.log('[' + $scope.action + '] saveTunnel complete:');
+
+
+                if($scope.product.shopTunnels.length > 0)
+                {
+                    var isProductShopTunnelExisted = false;
+                    for(var psTunnel in $scope.product.shopTunnels)
+                    {
+                        if(shopTunnel.shopId === $scope.product.shopTunnels[psTunnel].shopId)
+                        {
+                            productShopTunnel = {
+                                'shopId': shopTunnel.shopId,
+                                'tunnelId': shopTunnel.id
+                            }
+                            $scope.product.shopTunnels[psTunnel] = productShopTunnel;
+                            isProductShopTunnelExisted = true;
+                        }
+                    }
+                    if( ! isProductShopTunnelExisted )
+                    {
+                        productShopTunnel = {
+                            'shopId': shopTunnel.shopId,
+                            'tunnelId': shopTunnel.id
+                        }
+                        $scope.product.shopTunnels.push(angular.copy(productShopTunnel));
+                    }
+                }
+                else
+                {
+                    productShopTunnel = {
+                        'shopId': shopTunnel.shopId,
+                        'tunnelId': shopTunnel.id
+                    }
+                    $scope.product.shopTunnels.push(angular.copy(productShopTunnel));
+                }
+
+                console.log($scope.product.shopTunnels);
+                stAddForm.$setPristine();
+                $scope.shopTunnel = {};
+            }
+            else if ($scope.action === 'update')
+            {
+                productShopTunnel = {
+                    'productId': $stateParams.id,
+                    'shopId': shopTunnel.shopId,
+                    'tunnelId': shopTunnel.id
+                };
+                if(productShopTunnelId)
+                {
+                    productShopTunnel.id = productShopTunnelId;
+                }
+
+                for(var psTunnel in $scope.product.shopTunnels)
+                {
+                    if(shopTunnel.shopId === $scope.product.shopTunnels[psTunnel].shopId)
+                    {
+                        $scope.product.shopTunnels[psTunnel].tunnelId = shopTunnel.id;
+                    }
+                }
+
+                ProductShopTunnel.save({}, productShopTunnel, function(st) {
+                    console.log('[' + $scope.action + '] saveTunnel complete:');
+                    console.log(st);
+                    //$scope.product.shopTunnels.push(angular.copy(st));
+                    stAddForm.$setPristine();
+                    $scope.shopTunnel = {};
+                });
+            }
+        };
+
+        //$scope.updateTunnel = function(st) {
+        //    console.clear();
+        //    console.log('updateTunnel:');
+        //    console.log(st);
+        //    st.editable = true;
+        //};
+        //
+        //$scope.saveUpdateTunnel = function(st, stForm) {
+        //    console.clear();
+        //    console.log('[' + $scope.action + '] saveUpdateTunnel complete:');
+        //    if ($scope.action === 'create') {
+        //        console.log(st);
+        //        st.editable = false;
+        //        stForm.$setPristine();
+        //    } else if ($scope.action === 'update') {
+        //        ProductShopTunnel.save({}, st, function() {
+        //            console.log(st);
+        //            st.editable = false;
+        //            stForm.$setPristine();
+        //        });
+        //    }
+        //};
 
     }
 ]);
