@@ -138,10 +138,11 @@ angular.module('ecommApp')
         $scope.saveItem = function(item, itemAddForm) {
             item.warehouse = $scope.batch.warehouse;
             item.$field = 't' + Date.parse(Date());
-            //console.log(item);
+            console.log('saveItem:');
+            console.log(item);
             $scope.batch.items.push(angular.copy(item));
             Inventory.refrechProducts($scope.products, item, 'add');
-            console.log('saveItem:');
+            console.log('$scope.products:');
             console.log($scope.products);
             //console.log($scope.products);
             $scope.item = angular.copy($scope.defaultItem);

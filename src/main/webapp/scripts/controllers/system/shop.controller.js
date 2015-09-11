@@ -75,13 +75,15 @@ angular.module('ecommApp')
             console.log(step);
             if ($scope.action === 'init') {
                 $scope.processShop.initStep = angular.copy(step);
+            } else if ($scope.action === 'initPicking') {
+                $scope.processShop.initPickingStep = angular.copy(step);
             } else if ($scope.action === 'complete') {
                 $scope.processShop.completeStep = angular.copy(step);
             } else if ($scope.action === 'error') {
                 $scope.processShop.errorStep = angular.copy(step);
             }
             console.log($scope.processShop);
-            Shop.save({}, $scope.processShop, function(shop){
+            Shop.save({}, $scope.processShop, function(shop) {
                 console.log('applyState complete:');
                 console.log(shop);
                 $scope.colseProcessSlide();
@@ -94,71 +96,74 @@ angular.module('ecommApp')
     function($rootScope, $scope, $state, $stateParams, User, Language, Currency, Shop, Supplier, Warehouse) {
 
         var $ = angular.element;
+        $scope.template = {
+            tunnel: {
+                url: 'views/system/shop/shop.operator.tunnel.html?' + (new Date())
+            }
+        };
         $scope.users = [];
         $scope.languages = [];
         $scope.currencies = [];
         $scope.warehouses = [];
         $scope.suppliers = [];
         $scope.types = [{
-            id: 0,
-            label: '自营'
+            label: '自营',
+            value: 0,
         }, {
-            id: 1,
-            label: '合作'
+            label: '合作',
+            value: 1
         }];
         $scope.statuses = [{
-            id: 0,
-            label: '禁用'
+            label: '禁用',
+            value: 0
         }, {
-            id: 1,
-            label: '正常'
+            label: '正常',
+            value: 1
         }];
         $scope.lvls = [{
-            id: 0,
-            label: 'Level 0'
+            label: 'Level 0',
+            value: 0
         }, {
-            id: 1,
-            label: 'Level 1'
+            label: 'Level 1',
+            value: 1
         }, {
-            id: 2,
-            label: 'Level 2'
+            label: 'Level 2',
+            value: 2
         }, {
-            id: 3,
-            label: 'Level 3'
+            label: 'Level 3',
+            value: 3
         }, {
-            id: 4,
-            label: 'Level 4'
+            label: 'Level 4',
+            value: 4
         }, {
-            id: 5,
-            label: 'Level 5'
+            label: 'Level 5',
+            value: 5
         }, {
-            id: 6,
-            label: 'Level 6'
+            label: 'Level 6',
+            value: 6
         }, {
-            id: 7,
-            label: 'Level 7'
+            label: 'Level 7',
+            value: 7
         }, {
-            id: 8,
-            label: 'Level 8'
+            label: 'Level 8',
+            value: 8
         }, {
-            id: 9,
-            label: 'Level 9'
+            label: 'Level 9',
+            value: 9
         }, {
-            id: 10,
-            label: 'Level 10'
+            label: 'Level 10',
+            value: 10
         }, ];
         $scope.shop = {
             type: 0,
             status: 1,
             apiCallLimit: -1,
-            language: {
-                id: 100
-            },
-            currency: {
-                id: 101
-            },
+            user: undefined,
+            language: undefined,
+            currency: undefined,
             priceLevel: 0,
-            tunnels: []
+            tunnels: [],
+            deleted: false
         };
         $scope.tunnelTypes = [{
             label: '仓库配货方式(自营)',
@@ -185,43 +190,48 @@ angular.module('ecommApp')
 
         $scope.action = 'create';
 
-        function initField(tunnel) {
-            tunnel.type = $scope.tunnelTypes[tunnel.type - 1];
-            tunnel.behavior = $scope.tunnelBehaviors[tunnel.behavior - 1];
-            tunnel.defaultOption = $scope.tunnelDefaultOptions[tunnel.defaultOption - 1];
+        function initShopField(shop) {
+            shop.type = $scope.types[shop.type];
+            shop.status = $scope.statuses[shop.status];
+            shop.priceLevel = $scope.lvls[shop.priceLevel];
         }
 
-        function refreshField(tunnel) {
+        function refreshShopField(shop) {
+            shop.type = shop.type.value;
+            shop.status = shop.status.value;
+            shop.priceLevel = shop.priceLevel.value;
+        }
+
+        function initTunnelField(tunnel) {
+            tunnel.type = $scope.tunnelTypes[tunnel.type - 1];
+            tunnel.behavior = $scope.tunnelBehaviors[tunnel.behavior - 1];
+            tunnel.defaultOption = $scope.tunnelDefaultOptions[tunnel.defaultOption ? 0 : 1];
+        }
+
+        function refreshTunnelField(tunnel) {
             tunnel.type = tunnel.type.value;
             tunnel.behavior = tunnel.behavior.value;
             tunnel.defaultOption = tunnel.defaultOption.value;
         }
 
-        console.clear();
-
         User.getAll().then(function(users) {
-            console.log('users loaded');
             $scope.users = users;
         }).then(function() {
             return Language.getAll().then(function(languages) {
-                console.log('languaegs loaded');
                 $scope.languages = languages;
             });
         }).then(function() {
             return Currency.getAll().then(function(currencies) {
-                console.log('currencies loaded');
                 $scope.currencies = currencies;
             });
         }).then(function() {
             return Warehouse.getAll().then(function(warehouses) {
-                console.log('warehouses loaded');
                 $scope.warehouses = warehouses;
             });
         }).then(function() {
             return Supplier.getAll({
                 deleted: false
             }).then(function(suppliers) {
-                console.log('suppliers loaded');
                 $scope.suppliers = suppliers;
             });
         }).then(function() {
@@ -230,21 +240,27 @@ angular.module('ecommApp')
                 Shop.get({
                     id: $stateParams.id
                 }, {}, function(shop) {
+                    initShopField(shop);
                     $scope.shop = shop;
                     angular.forEach($scope.shop.tunnels, function(tunnel) {
-                        initField(tunnel);
+                        initTunnelField(tunnel);
                     });
                     console.log(shop);
                 });
+            } else {
+                initShopField($scope.shop);
             }
         });
 
         $scope.saveShop = function(shop) {
             console.clear();
             console.log('saveShop:');
+            console.log(shop);
+
+            refreshShopField(shop);
 
             angular.forEach(shop.tunnels, function(tunnel) {
-                refreshField(tunnel);
+                refreshTunnelField(tunnel);
             });
 
             console.log(shop);
@@ -256,24 +272,33 @@ angular.module('ecommApp')
             });
         };
 
-        $scope.remove = function() {
-            Shop.remove({
-                id: $stateParams.id
-            }, {}, function() {
-                $state.go('shop');
-            }, function(err) {
-                console.log(err);
-            });
-        };
+        // $scope.remove = function() {
+        //     Shop.remove({
+        //         id: $stateParams.id
+        //     }, {}, function() {
+        //         $state.go('shop');
+        //     }, function(err) {
+        //         console.log(err);
+        //     });
+        // };
 
-        $scope.saveTunnel = function(tunnelAddForm, tunnel) {
+        function setDefaultToFalse(tunnels) {
+            $.each(tunnels, function() {
+                this.defaultOption = $scope.tunnelDefaultOptions[1];
+            });
+        }
+
+        $scope.saveTunnel = function(tunnel, tunnelAddForm) {
             console.clear();
             console.log('[' + $scope.action + '] saveTunnel complete:');
             console.log(tunnel);
 
+            if (tunnel.defaultOption.value) {
+                setDefaultToFalse($scope.shop.tunnels);
+            }
             $scope.shop.tunnels.push(angular.copy(tunnel));
             tunnelAddForm.$setPristine();
-            $scope.tunnel = angular.copy($scope.defaultTunnel);
+            $scope.tunnel = {};
         };
 
         $scope.updateTunnel = function(tunnel) {
@@ -286,12 +311,17 @@ angular.module('ecommApp')
         $scope.saveUpdateTunnel = function(tunnel, tunnelForm) {
             //console.clear();
             if (tunnel.type.value === 1) {
-                tunnel.suppliers.length = 0;
+                tunnel.suppliers = undefined;
             } else if (tunnel.type.value === 2) {
-                tunnel.warehouses.length = 0;
+                tunnel.warehouses = undefined;
             }
             console.log('[' + $scope.action + '] saveUpdateTunnel complete:');
             console.log(tunnel);
+
+            if (tunnel.defaultOption.value) {
+                setDefaultToFalse($scope.shop.tunnels);
+                tunnel.defaultOption = $scope.tunnelDefaultOptions[0];
+            }
             tunnel.editable = false;
             tunnelForm.$setPristine();
 

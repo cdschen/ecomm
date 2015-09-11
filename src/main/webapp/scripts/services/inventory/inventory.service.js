@@ -145,12 +145,21 @@ angular.module('ecommApp')
     }
 
     function calcualteNoBatchRemove(object, item) {
-        console.log(object.batches);
-        console.log(item);
         object.total += item.changedQuantity;
         $.each(object.batches, function() {
             var batch = this;
             batch.total += batch[item.$field] !== undefined && batch[item.$field];
+        });
+    }
+
+    function calculateNoPositionAndBatchRemove(object, item) {
+        $.each(object.positions, function() {
+            var position = this;
+            position.total += position[item.$field] !== undefined && position[item.$field];
+            $.each(position.batches, function() {
+                var batch = this;
+                batch.total += batch[item.$field] !== undefined && batch[item.$field];
+            });
         });
     }
 
@@ -188,16 +197,16 @@ angular.module('ecommApp')
                     var batch = this;
                     if (batch.id === item.outBatch.id) {
                         if (batch.total - temp < 0) {
+                            position[item.$field] = batch.total;
+                            position.total -= batch.total;
                             batch[item.$field] = batch.total;
                             temp = temp - batch.total;
                             batch.total = 0;
-                            position[item.$field] = batch.total;
-                            position.total -= batch.total;
                         } else {
-                            batch[item.$field] = temp;
-                            batch.total -= temp;
                             position[item.$field] = temp;
                             position.total -= temp;
+                            batch[item.$field] = temp;
+                            batch.total -= temp;
                             exitPositionEach = true;
                         }
                         return false;
@@ -208,20 +217,59 @@ angular.module('ecommApp')
                 }
             });
         } else if (action === 'remove') {
-            $.each(product.positions, function() {
-                var position = this;
-                position.total += position[item.$field] !== undefined && position[item.$field];
-                $.each(position.batches, function() {
-                    var batch = this;
-                    batch.total += batch[item.$field] !== undefined && batch[item.$field];
-                });
-            });
+            calculateNoPositionAndBatchRemove(product, item);
         }
-
     }
 
     function noPositionAndBatch(product, item, action) {
-        
+        if (action === 'add') {
+            // calculate product.total, product.batches[x].total
+            calcualteNoBatchAdd(product, item);
+            // calculate position.total, position.batches[x].total
+            var temp = item.changedQuantity;
+            var done = false;
+            $.each(product.batches, function() {
+                var outBatch = this;
+                var exitPositionEach = false;
+                console.log('outBatch:' + outBatch.id);
+                $.each(product.positions, function() {
+                    var position = this;
+                    console.log('position:'+ position.name + ', batches:');
+                    console.log(position.batches);
+                    $.each(position.batches, function() {
+                        var batch = this;
+                        if (batch.id === outBatch.id) {
+                            if (batch.total - temp < 0) {
+                                position[item.$field] = batch.total;
+                                position.total -= batch.total;
+                                batch[item.$field] = batch.total;
+                                temp = temp - batch.total;
+                                batch.total = 0;
+                            } else {
+                                batch[item.$field] = temp;
+                                batch.total -= temp;
+                                position[item.$field] = temp;
+                                position.total -= temp;
+                                exitPositionEach = true;
+                                done = true;
+                            }
+                            return false;
+                        }
+                    });
+                    if (exitPositionEach) {
+                        return false;
+                    }
+                });
+                if (done) {
+                    return false;
+                }
+            });
+        } else if (action === 'remove') {
+            // calculate product.total, product.batches[x].total
+            calcualteNoBatchRemove(product, item);
+            // calculate position.total, position.batches[x].total
+            calculateNoPositionAndBatchRemove(product, item);
+        }
     }
 
     inventory.refrechProducts = function(products, item, action) {
@@ -235,9 +283,11 @@ angular.module('ecommApp')
                         if (position.id === item.position.id) {
                             // selected batch
                             if (item.outBatch) {
+                                console.log('selectedPositionAndBatch:');
                                 selectedPositionAndBatch(product, position, item, action);
                                 // no batch
                             } else {
+                                console.log('selectedPositionNoBatch:');
                                 selectedPositionNoBatch(product, position, item, action);
                             }
                             return false;
@@ -253,15 +303,17 @@ angular.module('ecommApp')
                 $.each(products, function() {
                     var product = this;
                     if (product.sku === item.product.sku) {
+                        console.log('noPositionSelectedBatch:');
                         noPositionSelectedBatch(product, item, action);
                         return false;
                     }
                 });
                 // no batch
             } else {
-                $.each(products, function(){
+                $.each(products, function() {
                     var product = this;
-                    if (product.stu === item.product.sku) {
+                    if (product.sku === item.product.sku) {
+                        console.log('noPositionAndBatch:');
                         noPositionAndBatch(product, item, action);
                         return false;
                     }

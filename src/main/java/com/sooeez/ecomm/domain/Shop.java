@@ -47,6 +47,9 @@ public class Shop implements Serializable {
 
 	@Column(name = "init_process_step_id", insertable = false, updatable = false)
 	private Long initProcessStepId;
+	
+	@Column(name = "init_picking_process_step_id", insertable = false, updatable = false)
+	private Long initPickingProcessStepId;
 
 	@Column(name = "complete_process_step_id", insertable = false, updatable = false)
 	private Long completeProcessStepId;
@@ -79,6 +82,10 @@ public class Shop implements Serializable {
 	@OneToOne
 	@JoinColumn(name = "init_process_step_id")
 	private ProcessStep initStep;
+	
+	@OneToOne
+	@JoinColumn(name = "init_picking_process_step_id")
+	private ProcessStep initPickingStep;
 
 	@OneToOne
 	@JoinColumn(name = "complete_process_step_id")
