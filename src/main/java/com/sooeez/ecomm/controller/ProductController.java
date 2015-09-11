@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -23,16 +22,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sooeez.ecomm.domain.Brand;
-import com.sooeez.ecomm.domain.Category;
-import com.sooeez.ecomm.domain.MadeFrom;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.ProductMember;
-import com.sooeez.ecomm.domain.ProductMultiLanguage;
 import com.sooeez.ecomm.domain.ProductMultiCurrency;
-import com.sooeez.ecomm.service.BrandService;
-import com.sooeez.ecomm.service.CategoryService;
-import com.sooeez.ecomm.service.MadeFromService;
+import com.sooeez.ecomm.domain.ProductMultiLanguage;
+import com.sooeez.ecomm.domain.ProductShopTunnel;
 import com.sooeez.ecomm.service.ProductService;
 
 @RestController
@@ -289,6 +283,31 @@ public class ProductController {
 	@RequestMapping(value = "/productmembers/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteProductMember(@PathVariable("id") Long id) {
 		this.productService.deleteProductMember(id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	/*
+	 * ProductShopTunnel
+	 */
+	
+	@RequestMapping(value = "/productshoptunnels/{id}")
+	public ProductShopTunnel getProductShopTunnel(@PathVariable("id") Long id) {
+		return this.productService.getProductShopTunnel(id);
+	}
+	
+	@RequestMapping(value = "/productshoptunnels")
+	public List<ProductShopTunnel> getProductShopTunnel() {
+		return this.productService.getProductShopTunnels();
+	}
+	
+	@RequestMapping(value = "/productshoptunnels", method = RequestMethod.POST)
+	public ProductShopTunnel saveProductProductShopTunnel(@RequestBody ProductShopTunnel productShopTunnel) {
+		return this.productService.saveProductShopTunnel(productShopTunnel);
+	}
+	
+	@RequestMapping(value = "/productshoptunnels/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteProductShopTunnel(@PathVariable("id") Long id) {
+		this.productService.deleteProductShopTunnel(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	

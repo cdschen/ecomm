@@ -5,6 +5,12 @@ var OrderOperatorController = function($scope, $state, $stateParams, orderServic
     var $ = angular.element;
     $scope.actionLabel = ($stateParams.id && $stateParams.id !== '') ? '编辑' : '创建';
 
+    $scope.deliveryMethods = [
+        { name:'快递', value:1 },
+        { name:'自提', value:2 },
+        { name:'送货上门', value:3 }
+    ];
+
     $scope.template = {
         info: {
             url: 'views/order/order.operator.info.html?' + new Date(),
@@ -18,9 +24,34 @@ var OrderOperatorController = function($scope, $state, $stateParams, orderServic
         $scope.currencies = currencies;
     });
 
+
+    function initField() {
+        $scope.order.deliveryMethod = $scope.deliveryMethods[$scope.order.deliveryMethod - 1];
+    }
+
+    function refreshField() {
+        $scope.order.deliveryMethod = $scope.order.deliveryMethod.value;
+    }
+
     Shop.getAll().then(function(shops) {
         $scope.shops = shops;
     });
+
+    $scope.save = function(order) {
+        //console.clear();
+        console.log('[' + $scope.action + '] save order');
+        console.log(order);
+
+        refreshField();
+
+        orderService.save({
+            action: $scope.action
+        }, order, function(order) {
+            console.log('[' + $scope.action + '] save order complete:');
+            console.log(order);
+            $state.go('order');
+        });
+    };
 
     $scope.action = 'create';
 
@@ -34,6 +65,11 @@ var OrderOperatorController = function($scope, $state, $stateParams, orderServic
                 console.log(order);
                 $scope.order = order;
                 console.log(order.shop);
+
+                if(order.deliveryMethod)
+                {
+                    initField();
+                }
                 return order;
             });
     }

@@ -3,13 +3,6 @@ var OrderInformationController = function($scope, $state, $stateParams, orderSer
 
     var $ = angular.element;
 
-    $scope.orderDeliveryMethod = undefined;
-
-    $scope.deliveryMethods = [
-        { name:'快递', value:1 },
-        { name:'自提', value:2 },
-        { name:'送货上门', value:3 }
-    ];
 
     $scope.prices = [
         { name:'价格1', value:'priceL1' },
@@ -70,7 +63,6 @@ var OrderInformationController = function($scope, $state, $stateParams, orderSer
 
         if( ! isRepeated )
         {
-
             var item = {
                 'productId': selectedProduct.id,
                 'externalSku': selectedProduct.sku,
@@ -80,7 +72,7 @@ var OrderInformationController = function($scope, $state, $stateParams, orderSer
                 'unitWeight': selectedProduct.weight,
                 'qtyOrdered': selectedProduct.qtyOrdered,
                 'unitPrice': selectedPrice,
-                'unitGst': selectedPrice * 0.15,
+                'unitGst': selectedPrice * 0.15
             };
 
             $scope.order.items.push(item);
@@ -129,21 +121,6 @@ var OrderInformationController = function($scope, $state, $stateParams, orderSer
      * BEGIN Items Area
      */
 
-    $scope.save = function(order) {
-        //console.clear();
-        console.log('[' + $scope.action + '] save order');
-
-        console.log(order);
-        console.log($scope.orderDeliveryMethod);
-
-        orderService.save({
-            action: $scope.action
-        }, order, function(order) {
-            console.log('[' + $scope.action + '] save order complete:');
-            console.log(order);
-            $state.go('order');
-        });
-    };
 };
 
 OrderInformationController.$inject = ['$scope', '$state', '$stateParams', 'orderService', 'Product'];

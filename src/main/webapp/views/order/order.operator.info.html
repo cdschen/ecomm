@@ -139,7 +139,7 @@
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">发货方式</label>
                 <div class="col-md-3">
-                    <ui-select ng-model="orderDeliveryMethod">
+                    <ui-select ng-model="order.deliveryMethod">
                         <ui-select-match placeholder="发货方式(非必选)">{{$select.selected.name}}</ui-select-match>
                         <ui-select-choices repeat="deliveryMethod in deliveryMethods | filter: $select.search">
                             <div ng-bind-html="deliveryMethod.name | highlight: $select.search"></div>
