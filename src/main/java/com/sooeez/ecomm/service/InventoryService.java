@@ -21,6 +21,7 @@ import com.sooeez.ecomm.domain.Inventory;
 import com.sooeez.ecomm.domain.InventoryBatch;
 import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Product;
+import com.sooeez.ecomm.domain.Shop;
 import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.domain.WarehousePosition;
 import com.sooeez.ecomm.repository.InventoryBatchRepository;
@@ -57,12 +58,21 @@ public class InventoryService {
 		return this.warehouseRepository.findOne(id);
 	}
 
-	public List<Warehouse> getWarehouses() {
-		return this.warehouseRepository.findAll();
+	public List<Warehouse> getWarehouses(Warehouse warehouse, Sort sort) {
+		return this.warehouseRepository.findAll(getWarehouseSpecification(warehouse), sort);
 	}
 
-	public Page<Warehouse> getPagedWarehouses(Pageable pageable) {
-		return this.warehouseRepository.findAll(pageable);
+	public Page<Warehouse> getPagedWarehouses(Warehouse warehouse, Pageable pageable) {
+		return this.warehouseRepository.findAll(getWarehouseSpecification(warehouse), pageable);
+	}
+	
+	private Specification<Warehouse> getWarehouseSpecification(Warehouse warehouse) {
+
+		return (root, query, cb) -> {
+			List<Predicate> predicates = new ArrayList<>();
+			predicates.add(cb.equal(root.get("deleted"), warehouse.getDeleted() != null && warehouse.getDeleted() == true ? true : false));
+			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+		};
 	}
 
 	/*

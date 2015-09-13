@@ -4,11 +4,13 @@ angular.module('ecommApp')
 
     var shop = $resource('/api/shops/:id');
 
-        shop.getAll = function() {
-            return $http.get('/api/shops/get/all').then(function(res) {
-                return res.data;
-            });
-        };
+    shop.getAll = function(params) {
+        return $http.get('/api/shops/get/all', {
+            params: params
+        }).then(function(res) {
+            return res.data;
+        });
+    };
 
     return shop;
 }]);

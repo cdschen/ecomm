@@ -43,6 +43,9 @@ public class Warehouse implements Serializable {
 	@Column(name = "email", nullable = false)
 	private String email;
 
+	@Column(name = "deleted", nullable = false)
+	private Boolean deleted;
+
 	/*
 	 * Related Properties
 	 */
@@ -54,20 +57,22 @@ public class Warehouse implements Serializable {
 	//
 	public Warehouse() {
 	}
-	
-	
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
 
 	public List<WarehousePosition> getPositions() {
 		return positions;
 	}
 
-
-
 	public void setPositions(List<WarehousePosition> positions) {
 		this.positions = positions;
 	}
-
-
 
 	public Long getId() {
 		return id;

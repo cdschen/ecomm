@@ -72,6 +72,20 @@ angular.module('ecommApp')
                     roles: [ROLES.sysadmin],
                     authorities: []
                 }
+            })
+            .state('orderdeploy', {
+                parent: 'site',
+                url: '/orderdeploy',
+                views: {
+                    'content@': {
+                        templateUrl: 'views/inventory/orderdeploy/order-deploy.html?' + (new Date()),
+                        controller: 'OrderDeployController'
+                    }
+                },
+                data: {
+                    roles: [ROLES.sysadmin],
+                    authorities: []
+                }
             });
     }
 ]);

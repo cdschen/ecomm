@@ -42,6 +42,12 @@ public class ShopTunnel implements Serializable {
 	@Column(name = "default_option", nullable = false)
 	private Boolean defaultOption;
 
+	@Column(name = "default_warehouse", nullable = false)
+	private Long defaultWarehouse;
+
+	@Column(name = "default_supplier", nullable = false)
+	private Long defaultSupplier;
+
 	/*
 	 * Related Properties
 	 */
@@ -57,6 +63,22 @@ public class ShopTunnel implements Serializable {
 	//
 
 	public ShopTunnel() {
+	}
+
+	public Long getDefaultWarehouse() {
+		return defaultWarehouse;
+	}
+
+	public void setDefaultWarehouse(Long defaultWarehouse) {
+		this.defaultWarehouse = defaultWarehouse;
+	}
+
+	public Long getDefaultSupplier() {
+		return defaultSupplier;
+	}
+
+	public void setDefaultSupplier(Long defaultSupplier) {
+		this.defaultSupplier = defaultSupplier;
 	}
 
 	public Long getId() {
