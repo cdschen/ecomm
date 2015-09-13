@@ -223,7 +223,6 @@ angular.module('ecommApp')
             $(this).tab('show');
         });
     };
-
 }])
 
 .controller('ProductProcessController', ['$scope', '$filter', 'Process', 'ObjectProcess',
@@ -384,6 +383,7 @@ angular.module('ecommApp')
         $scope.madeFroms = [];
         $scope.languages = [];
         $scope.currencies = [];
+        $scope.selectedDefaultTunnelsMap = {};
         $scope.tags = [];
         $scope.members = [];
         $scope.product = {
@@ -402,42 +402,32 @@ angular.module('ecommApp')
             multiLanguages: [],
             multiCurrencies: [],
             members: [],
-            shopTunnels: []
+            shopTunnels: [],
+            deleted: false
         };
         $scope.action = 'create';
 
-        $scope.isProductShopTunnelSelected = function(sTunnel, isDefault){
-            var isSelected = false;
-            var isProductShopOtherTunnelsNotSelected = true;
-            for(var psTunnel in $scope.product.shopTunnels)
-            {
-                if(sTunnel.shopId === $scope.product.shopTunnels[psTunnel].shopId &&
-                    sTunnel.id === $scope.product.shopTunnels[psTunnel].tunnelId)
-                {
-                    isSelected = true;
-                    break;
-                }
-                if(sTunnel.shopId === $scope.product.shopTunnels[psTunnel].shopId)
-                {
-                    isProductShopOtherTunnelsNotSelected = false;
-                }
-            }
-            if( isProductShopOtherTunnelsNotSelected && isDefault )
-            {
-                isSelected = true;
-            }
-            return isSelected;
-        };
+        function initDefaultProductShopTunnel(tunnels) {
+            $.each(tunnels, function() {
+                this.selectedDefault = false;
+            });
+        }
 
-        $scope.getRelativeProductShopTunnelId = function(sTunnel){
-            for(var psTunnel in $scope.product.shopTunnels)
-            {
-                if(sTunnel.shopId === $scope.product.shopTunnels[psTunnel].shopId)
-                {
-                    return $scope.product.shopTunnels[psTunnel].id;
-                }
-            }
-        };
+        function setDefaultProductShopTunnel(shopTunnels) {
+            $.each(shopTunnels, function() {
+                var shopTunnel = this;
+                $.each($scope.shops, function() {
+                    var shop = this;
+                    $.each(this.tunnels, function() {
+                        if (this.shopId === shopTunnel.shopId && this.id === shopTunnel.tunnelId) {
+                            initDefaultProductShopTunnel(shop.tunnels);
+                            this.selectedDefault = true;
+                            return false;
+                        }
+                    });
+                });
+            });
+        }
 
         Brand.getAll().then(function(brands) {
             $scope.brands = brands;
@@ -464,6 +454,10 @@ angular.module('ecommApp')
         }).then(function() {
             return Shop.getAll().then(function(shops) {
                 $scope.shops = shops;
+                $.each(shops, function() {
+                    var shop = this;
+                    initDefaultProductShopTunnel(shop.tunnels);
+                });
             });
         }).then(function() {
             if ($stateParams.id && $stateParams.id !== '') {
@@ -476,6 +470,7 @@ angular.module('ecommApp')
                         console.log(product);
                         product.productType = $scope.productTypes[product.productType];
                         $scope.product = product;
+                        setDefaultProductShopTunnel(product.shopTunnels);
                         return product;
                     }).then(function(product) {
                         $scope.title = product.productType.label;
@@ -895,107 +890,64 @@ angular.module('ecommApp')
 .controller('ProductShopTunnelController', ['$scope', '$stateParams', 'ProductShopTunnel',
     function($scope, $stateParams, ProductShopTunnel) {
 
-        $scope.shopTunnel = {};
-
-        $scope.saveTunnel = function(stAddForm, shopTunnel, productShopTunnelId) {
-            console.clear();
-            console.log('[' + $scope.action + '] saveTunnel:');
-
-            var productShopTunnel = {};
-
-            if ($scope.action === 'create') {
-                console.log('[' + $scope.action + '] saveTunnel complete:');
-
-
-                if($scope.product.shopTunnels.length > 0)
-                {
-                    var isProductShopTunnelExisted = false;
-                    for(var psTunnel in $scope.product.shopTunnels)
-                    {
-                        if(shopTunnel.shopId === $scope.product.shopTunnels[psTunnel].shopId)
-                        {
-                            productShopTunnel = {
-                                'shopId': shopTunnel.shopId,
-                                'tunnelId': shopTunnel.id
-                            }
-                            $scope.product.shopTunnels[psTunnel] = productShopTunnel;
-                            isProductShopTunnelExisted = true;
+        $scope.setProductDefaultTunnel = function(tunnel, tunnels) {
+            $.each(tunnels, function() {
+                this.selectedDefault = false;
+            });
+            tunnel.selectedDefault = true;
+            $scope.selectedDefaultTunnelsMap[tunnel.shopId] = tunnel;
+            if ($scope.action == 'create') {
+                angular.forEach($scope.selectedDefaultTunnelsMap, function(tunnel) {
+                    var exist = false;
+                    $.each($scope.product.shopTunnels, function() {
+                        var shopTunnel = this;
+                        if (this.shopId == tunnel.shopId) {
+                            shopTunnel = tunnel;
+                            exist = true;
+                            return false;
                         }
+                    });
+                    if (!exist) {
+                        $scope.product.shopTunnels.push({
+                            shopId: tunnel.shopId,
+                            tunnelId: tunnel.id
+                        });
                     }
-                    if( ! isProductShopTunnelExisted )
-                    {
-                        productShopTunnel = {
-                            'shopId': shopTunnel.shopId,
-                            'tunnelId': shopTunnel.id
+                });
+            } else if ($scope.action == 'update') {
+                $.each($scope.selectedDefaultTunnelsMap, function(key, value) {
+                    var tunnel = value;
+                    var exist = false;
+                    var updateShopTunnel = undefined;
+                    $.each($scope.product.shopTunnels, function() {
+                        var shopTunnel = this;
+                        if (this.shopId === tunnel.shopId) {
+                            shopTunnel.tunnelId = tunnel.id;
+                            exist = true;
+                            updateShopTunnel = shopTunnel;
+                            return false;
                         }
-                        $scope.product.shopTunnels.push(angular.copy(productShopTunnel));
+                    });
+                    if (exist && updateShopTunnel) {
+                        console.log('exist');
+                        ProductShopTunnel.save({}, updateShopTunnel, function(shopTunnel) {
+                            console.log('[' + $scope.action + '] ProductShopTunnel update shopTunnel complete:');
+                            updateShopTunnel = undefined;
+                        });
+                        return false;
+                    } else {
+                        ProductShopTunnel.save({}, {
+                            productId: $scope.product.id,
+                            shopId: tunnel.shopId,
+                            tunnelId: tunnel.id
+                        }, function(shopTunnel) {
+                            console.log('[' + $scope.action + '] ProductShopTunnel create shopTunnel complete:');
+                            $scope.product.shopTunnels.push(shopTunnel);
+                        });
+                        return false;
                     }
-                }
-                else
-                {
-                    productShopTunnel = {
-                        'shopId': shopTunnel.shopId,
-                        'tunnelId': shopTunnel.id
-                    }
-                    $scope.product.shopTunnels.push(angular.copy(productShopTunnel));
-                }
-
-                console.log($scope.product.shopTunnels);
-                stAddForm.$setPristine();
-                $scope.shopTunnel = {};
-            }
-            else if ($scope.action === 'update')
-            {
-                productShopTunnel = {
-                    'productId': $stateParams.id,
-                    'shopId': shopTunnel.shopId,
-                    'tunnelId': shopTunnel.id
-                };
-                if(productShopTunnelId)
-                {
-                    productShopTunnel.id = productShopTunnelId;
-                }
-
-                for(var psTunnel in $scope.product.shopTunnels)
-                {
-                    if(shopTunnel.shopId === $scope.product.shopTunnels[psTunnel].shopId)
-                    {
-                        $scope.product.shopTunnels[psTunnel].tunnelId = shopTunnel.id;
-                    }
-                }
-
-                ProductShopTunnel.save({}, productShopTunnel, function(st) {
-                    console.log('[' + $scope.action + '] saveTunnel complete:');
-                    console.log(st);
-                    //$scope.product.shopTunnels.push(angular.copy(st));
-                    stAddForm.$setPristine();
-                    $scope.shopTunnel = {};
                 });
             }
         };
-
-        //$scope.updateTunnel = function(st) {
-        //    console.clear();
-        //    console.log('updateTunnel:');
-        //    console.log(st);
-        //    st.editable = true;
-        //};
-        //
-        //$scope.saveUpdateTunnel = function(st, stForm) {
-        //    console.clear();
-        //    console.log('[' + $scope.action + '] saveUpdateTunnel complete:');
-        //    if ($scope.action === 'create') {
-        //        console.log(st);
-        //        st.editable = false;
-        //        stForm.$setPristine();
-        //    } else if ($scope.action === 'update') {
-        //        ProductShopTunnel.save({}, st, function() {
-        //            console.log(st);
-        //            st.editable = false;
-        //            stForm.$setPristine();
-        //        });
-        //    }
-        //};
-
     }
 ]);
