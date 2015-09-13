@@ -25,12 +25,12 @@ var OrderOperatorController = function($scope, $state, $stateParams, orderServic
     });
 
 
-    function initField() {
-        $scope.order.deliveryMethod = $scope.deliveryMethods[$scope.order.deliveryMethod - 1];
+    function initField(order) {
+        order.deliveryMethod = $scope.deliveryMethods[order.deliveryMethod - 1];
     }
 
-    function refreshField() {
-        $scope.order.deliveryMethod = $scope.order.deliveryMethod.value;
+    function refreshField(order) {
+        order.deliveryMethod = order.deliveryMethod.value;
     }
 
     Shop.getAll().then(function(shops) {
@@ -42,7 +42,7 @@ var OrderOperatorController = function($scope, $state, $stateParams, orderServic
         console.log('[' + $scope.action + '] save order');
         console.log(order);
 
-        refreshField();
+        refreshField(order);
 
         orderService.save({
             action: $scope.action
@@ -68,7 +68,7 @@ var OrderOperatorController = function($scope, $state, $stateParams, orderServic
 
                 if(order.deliveryMethod)
                 {
-                    initField();
+                    initField(order);
                 }
                 return order;
             });

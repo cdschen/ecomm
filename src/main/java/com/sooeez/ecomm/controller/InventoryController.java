@@ -1,6 +1,5 @@
 package com.sooeez.ecomm.controller;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,18 +14,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sooeez.ecomm.domain.Courier;
 import com.sooeez.ecomm.domain.Inventory;
 import com.sooeez.ecomm.domain.InventoryBatch;
-import com.sooeez.ecomm.domain.User;
+import com.sooeez.ecomm.domain.Shipment;
+import com.sooeez.ecomm.domain.ShipmentItem;
 import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.domain.WarehousePosition;
+import com.sooeez.ecomm.service.CourierService;
 import com.sooeez.ecomm.service.InventoryService;
+import com.sooeez.ecomm.service.ShipmentService;
 
 @RestController
 @RequestMapping("/api")
 public class InventoryController {
 
 	@Autowired private InventoryService inventoryService;
+
+	@Autowired private CourierService courierService;
+
+	@Autowired private ShipmentService shipmentService;
 
 	/*
 	 * Warehouse
@@ -150,6 +157,96 @@ public class InventoryController {
 	@RequestMapping(value = "/inventorybatches/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteInventoryBatch(@PathVariable("id") Long id) {
 		this.inventoryService.deleteInventoryBatch(id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	/*
+	 * Courier
+	 */
+	
+	@RequestMapping(value = "/couerirs/{id}")
+	public Courier getCouerirs(@PathVariable("id") Long id) {
+		return this.courierService.getCourier(id);
+	}
+	
+	@RequestMapping(value = "/couerirs")
+	public Page<Courier> getPagedCouriers(Pageable pageable) {
+		return this.courierService.getPagedCouriers(pageable);
+	}
+	
+	@RequestMapping(value = "/couerirs/get/all")
+	public List<Courier> getCouriers() {
+		return this.courierService.getCouriers();
+	}
+	
+	@RequestMapping(value = "/couerirs", method = RequestMethod.POST)
+	public Courier saveCourier(@RequestBody Courier courier) {
+		return this.courierService.saveCourier(courier);
+	}
+	
+	@RequestMapping(value = "/couerirs/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteCourier(@PathVariable("id") Long id) {
+		this.courierService.deleteCourier(id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	/*
+	 * Shipment
+	 */
+	
+	@RequestMapping(value = "/shipments/{id}")
+	public Shipment getShipments(@PathVariable("id") Long id) {
+		return this.shipmentService.getShipment(id);
+	}
+	
+	@RequestMapping(value = "/shipments")
+	public Page<Shipment> getPagedShipments(Pageable pageable) {
+		return this.shipmentService.getPagedShipments(pageable);
+	}
+	
+	@RequestMapping(value = "/shipments/get/all")
+	public List<Shipment> getShipments() {
+		return this.shipmentService.getShipments();
+	}
+	
+	@RequestMapping(value = "/shipments", method = RequestMethod.POST)
+	public Shipment saveShipment(@RequestBody Shipment shipment) {
+		return this.shipmentService.saveShipment(shipment);
+	}
+	
+	@RequestMapping(value = "/shipments/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteShipment(@PathVariable("id") Long id) {
+		this.shipmentService.deleteShipment(id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	/*
+	 * ShipmentItem
+	 */
+	
+	@RequestMapping(value = "/shipmentitems/{id}")
+	public ShipmentItem getShipmentItems(@PathVariable("id") Long id) {
+		return this.shipmentService.getShipmentItem(id);
+	}
+	
+	@RequestMapping(value = "/shipmentitems")
+	public Page<ShipmentItem> getPagedShipmentItems(Pageable pageable) {
+		return this.shipmentService.getPagedShipmentItems(pageable);
+	}
+	
+	@RequestMapping(value = "/shipmentitems/get/all")
+	public List<ShipmentItem> getShipmentItems() {
+		return this.shipmentService.getShipmentItems();
+	}
+	
+	@RequestMapping(value = "/shipmentitems", method = RequestMethod.POST)
+	public ShipmentItem saveShipmentItem(@RequestBody ShipmentItem shipmentItem) {
+		return this.shipmentService.saveShipmentItem(shipmentItem);
+	}
+	
+	@RequestMapping(value = "/shipmentitems/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteShipmentItem(@PathVariable("id") Long id) {
+		this.shipmentService.deleteShipmentItem(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }
