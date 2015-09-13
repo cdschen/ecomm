@@ -1,22 +1,19 @@
 <p>&nbsp;</p>
-<div class="container">
-    <form name="stForm" class="form-horizontal" novalidate>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th width="10%">店铺名</th>
-                    <th width="90%">配货方式</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="shop in shops">
-                    <td>{{ shop.name }}</td>
-                    <td style="padding-bottom: 0;">
-                        <button type="button" class="btn btn-sm {{ isProductShopTunnelSelected(sTunnel, true) ? 'btn-success' : 'btn-info' }}" style="margin-bottom: 8px; margin-right:5px;" ng-repeat="sTunnel in shop.tunnels | filter:{ defaultOption:true }" ng-click="saveTunnel(stForm, sTunnel, getRelativeProductShopTunnelId(sTunnel))">{{ sTunnel.name }}&nbsp;(默认)</button>
-                        <button type="button" class="btn btn-sm {{ isProductShopTunnelSelected(sTunnel, false) ? 'btn-success' : 'btn-info' }}" style="margin-bottom: 8px; margin-right:5px;" ng-repeat="sTunnel in shop.tunnels | filter:{ defaultOption:false }" ng-click="saveTunnel(stForm, sTunnel, getRelativeProductShopTunnelId(sTunnel))">{{ sTunnel.name }}</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </form>
-</div>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th width="10%">店铺名</th>
+            <th width="90%">配货方式</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="shop in shops">
+            <td>{{ shop.name }}</td>
+            <td>
+                <button class="btn btn-{{tunnel.selectedDefault ? 'success' : 'info'}}" style="margin: 5px 10px 0 10px;" ng-repeat="tunnel in shop.tunnels" ng-click="setProductDefaultTunnel(tunnel, shop.tunnels)">
+                    {{tunnel.name}}&nbsp;{{tunnel.selectedDefault ? '(默认)' : ''}}
+                </button> 
+            </td>
+        </tr>
+    </tbody>
+</table>
