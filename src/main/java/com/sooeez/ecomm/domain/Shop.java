@@ -48,8 +48,8 @@ public class Shop implements Serializable {
 	@Column(name = "init_process_step_id", insertable = false, updatable = false)
 	private Long initProcessStepId;
 	
-	@Column(name = "init_picking_process_step_id", insertable = false, updatable = false)
-	private Long initPickingProcessStepId;
+	@Column(name = "deploy_process_step_id", insertable = false, updatable = false)
+	private Long deployProcessStepId;
 
 	@Column(name = "complete_process_step_id", insertable = false, updatable = false)
 	private Long completeProcessStepId;
@@ -84,8 +84,8 @@ public class Shop implements Serializable {
 	private ProcessStep initStep;
 	
 	@OneToOne
-	@JoinColumn(name = "init_picking_process_step_id")
-	private ProcessStep initPickingStep;
+	@JoinColumn(name = "deploy_process_step_id")
+	private ProcessStep deployStep;
 
 	@OneToOne
 	@JoinColumn(name = "complete_process_step_id")
@@ -102,6 +102,22 @@ public class Shop implements Serializable {
 	//
 
 	public Shop() {
+	}
+
+	public Long getDeployProcessStepId() {
+		return deployProcessStepId;
+	}
+
+	public void setDeployProcessStepId(Long deployProcessStepId) {
+		this.deployProcessStepId = deployProcessStepId;
+	}
+
+	public ProcessStep getDeployStep() {
+		return deployStep;
+	}
+
+	public void setDeployStep(ProcessStep deployStep) {
+		this.deployStep = deployStep;
 	}
 
 	public Boolean getDeleted() {

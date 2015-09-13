@@ -9,7 +9,8 @@ angular.module('ecommApp')
 
         Warehouse.get({
             page: 0,
-            size: $scope.pageSize
+            size: $scope.pageSize,
+            sort: ['name']
         }, function(page) {
             console.log(page);
             $scope.page = page;
@@ -20,7 +21,8 @@ angular.module('ecommApp')
             if (number > -1 && number < $scope.page.totalPages) {
                 Warehouse.get({
                     page: number,
-                    size: $scope.pageSize
+                    size: $scope.pageSize,
+                    sort: ['name']
                 }, function(page) {
                     $scope.page = page;
                     $scope.totalPagesList = Utils.setTotalPagesList(page);
@@ -48,7 +50,62 @@ angular.module('ecommApp')
 .controller('WarehouseOperatorController', ['$rootScope', '$scope', '$state', '$stateParams', 'Warehouse',
     function($rootScope, $scope, $state, $stateParams, Warehouse) {
 
-        $scope.warehouse = {};
+        $scope.warehouse = {
+            deleted: false
+        };
+        $scope.defaultPostions = [{
+            name: 'A'
+        }, {
+            name: 'B'
+        }, {
+            name: 'C'
+        }, {
+            name: 'D'
+        }, {
+            name: 'E'
+        }, {
+            name: 'F'
+        }, {
+            name: 'G'
+        }, {
+            name: 'H'
+        }, {
+            name: 'I'
+        }, {
+            name: 'J'
+        }, {
+            name: 'K'
+        }, {
+            name: 'L'
+        }, {
+            name: 'M'
+        }, {
+            name: 'N'
+        }, {
+            name: 'O'
+        }, {
+            name: 'P'
+        }, {
+            name: 'Q'
+        }, {
+            name: 'R'
+        }, {
+            name: 'S'
+        }, {
+            name: 'T'
+        }, {
+            name: 'U'
+        }, {
+            name: 'V'
+        }, {
+            name: 'W'
+        }, {
+            name: 'X'
+        }, {
+            name: 'Y'
+        }, {
+            name: 'Z'
+        }];
         $scope.action = 'create';
 
         if ($stateParams.id && $stateParams.id !== '') {
@@ -63,63 +120,23 @@ angular.module('ecommApp')
 
         $scope.save = function(warehouse) {
             console.log(warehouse);
-            if (warehouse.enablePosition) {
-                warehouse.positions = [{
-                    name: 'A'
-                }, {
-                    name: 'B'
-                }, {
-                    name: 'C'
-                }, {
-                    name: 'D'
-                }, {
-                    name: 'E'
-                }, {
-                    name: 'F'
-                }, {
-                    name: 'G'
-                }, {
-                    name: 'H'
-                }, {
-                    name: 'I'
-                }, {
-                    name: 'J'
-                }, {
-                    name: 'K'
-                }, {
-                    name: 'L'
-                }, {
-                    name: 'M'
-                }, {
-                    name: 'N'
-                }, {
-                    name: 'O'
-                }, {
-                    name: 'P'
-                }, {
-                    name: 'Q'
-                }, {
-                    name: 'R'
-                }, {
-                    name: 'S'
-                }, {
-                    name: 'T'
-                }, {
-                    name: 'U'
-                }, {
-                    name: 'V'
-                }, {
-                    name: 'W'
-                }, {
-                    name: 'X'
-                }, {
-                    name: 'Y'
-                }, {
-                    name: 'Z'
-                }];
-            } else {
-                warehouse.positions = [];
+            if ($scope.action === 'create') {
+                if (warehouse.enablePosition) {
+                    warehouse.positions = angular.copy($scope.defaultPostions);
+                } else {
+                    warehouse.positions.length = 0;
+                }
+            } else if ($scope.action === 'update') {
+                if (warehouse.enablePosition) {
+                    if (warehouse.positions.length === 0) {
+                        warehouse.positions = angular.copy($scope.defaultPostions);
+                    }
+                } else {
+                    warehouse.positions.length = 0;
+                }
             }
+
+
             Warehouse.save({}, warehouse, function() {
                 $state.go('warehouse');
             }, function(err) {

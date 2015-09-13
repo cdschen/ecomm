@@ -6,9 +6,9 @@ angular.module('ecommApp')
 
 	var order = $resource('/api/orders/:id', {}, {});
 
-	order.getAll = function(order) {
+	order.getAll = function(params) {
         return $http.get('/api/orders/get/all', {
-        	params: order
+        	params: params
         }).then(function(res) {
             return res.data;
         });

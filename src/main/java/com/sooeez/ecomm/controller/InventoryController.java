@@ -45,13 +45,13 @@ public class InventoryController {
 	}
 	
 	@RequestMapping(value = "/warehouses")
-	public Page<Warehouse> getPagedWarehouses(Pageable pageable) {
-		return this.inventoryService.getPagedWarehouses(pageable);
+	public Page<Warehouse> getPagedWarehouses(Warehouse warehouse, Pageable pageable) {
+		return this.inventoryService.getPagedWarehouses(warehouse, pageable);
 	}
 	
 	@RequestMapping(value = "/warehouses/get/all")
-	public List<Warehouse> getWarehouse() {
-		return this.inventoryService.getWarehouses();
+	public List<Warehouse> getWarehouse(Warehouse warehouse, Sort sort) {
+		return this.inventoryService.getWarehouses(warehouse, sort);
 	}
 	
 	@RequestMapping(value = "/warehouses", method = RequestMethod.POST)
