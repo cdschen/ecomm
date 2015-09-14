@@ -13,6 +13,22 @@ angular.module('ecommApp')
         });
     };
 
+    inventory.refreshByWarehouse = function(warehouses, inventories){
+        var inventory = {};
+        $.each(warehouses, function(){
+            var warehouse = this;
+            warehouse.inventories = [];
+            inventory[warehouse.id] = warehouse;
+            $.each(inventories, function(){
+                if (warehouse.id === this.warehouseId) {
+                    warehouse.inventories.push(this);
+                }
+            });
+
+        });
+        return inventory;
+    };
+
     inventory.refresh = function(inventories) {
         var products = [];
         $.each(inventories, function() {
@@ -110,6 +126,8 @@ angular.module('ecommApp')
         });
         return products;
     };
+
+
 
     function calculateSelectedBatch(object, item, action) {
         $.each(object.batches, function() {

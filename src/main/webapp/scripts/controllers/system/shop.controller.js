@@ -75,8 +75,8 @@ angular.module('ecommApp')
             console.log(step);
             if ($scope.action === 'init') {
                 $scope.processShop.initStep = angular.copy(step);
-            } else if ($scope.action === 'initPicking') {
-                $scope.processShop.initPickingStep = angular.copy(step);
+            } else if ($scope.action === 'deploy') {
+                $scope.processShop.deployStep = angular.copy(step);
             } else if ($scope.action === 'complete') {
                 $scope.processShop.completeStep = angular.copy(step);
             } else if ($scope.action === 'error') {
@@ -98,7 +98,10 @@ angular.module('ecommApp')
         var $ = angular.element;
         $scope.template = {
             tunnel: {
-                url: 'views/system/shop/shop.operator.tunnel.html?' + (new Date())
+                url: 'views/system/shop/shop.operator.tunnel.html?' + (new Date()),
+                warehouse: {
+                    url: 'views/system/shop/shop.operator.tunnel.warehouse.html?' + (new Date()),
+                }
             }
         };
         $scope.users = [];
@@ -186,9 +189,13 @@ angular.module('ecommApp')
             label: '否',
             value: false
         }];
-        $scope.tunnel = {};
+        $scope.defaultTunnel = {
+            warehouses: [],
+            suppliers: []
+        };
 
         $scope.action = 'create';
+        $scope.tunnel = angular.copy($scope.defaultTunnel);
 
         function initShopField(shop) {
             shop.type = $scope.types[shop.type];
@@ -206,6 +213,21 @@ angular.module('ecommApp')
             tunnel.type = $scope.tunnelTypes[tunnel.type - 1];
             tunnel.behavior = $scope.tunnelBehaviors[tunnel.behavior - 1];
             tunnel.defaultOption = $scope.tunnelDefaultOptions[tunnel.defaultOption ? 0 : 1];
+            if (tunnel.type.value === 1) {
+                $.each(tunnel.warehouses, function(){
+                    if (this.id === tunnel.defaultWarehouseId) {
+                        this.defaultOption = true;
+                        return false;
+                    }
+                });
+            } else if (tunnel.type.value === 2) {
+                $.each(tunnel.suppliers, function(){
+                    if (this.id === tunnel.defaultSupplierId) {
+                        this.defaultOption = true;
+                        return false;
+                    }
+                });
+            }
         }
 
         function refreshTunnelField(tunnel) {
@@ -225,12 +247,16 @@ angular.module('ecommApp')
                 $scope.currencies = currencies;
             });
         }).then(function() {
-            return Warehouse.getAll().then(function(warehouses) {
+            return Warehouse.getAll({
+                deleted: false,
+                sort: ['name']
+            }).then(function(warehouses) {
                 $scope.warehouses = warehouses;
             });
         }).then(function() {
             return Supplier.getAll({
-                deleted: false
+                deleted: false,
+                sort: ['name']
             }).then(function(suppliers) {
                 $scope.suppliers = suppliers;
             });
@@ -288,6 +314,24 @@ angular.module('ecommApp')
             });
         }
 
+        function setTunnelDefaultWarehouseIdAndSupplierId(tunnel) {
+            if (tunnel.type.value === 1) {
+                $.each(tunnel.warehouses, function() {
+                    if (this.defaultOption) {
+                        tunnel.defaultWarehouseId = this.id;
+                        return false;
+                    }
+                });
+            } else if (tunnel.type.value === 2) {
+                $.each(tunnel.suppliers, function() {
+                    if (this.defaultOption) {
+                        tunnel.defaultSupplierId = this.id;
+                        return false;
+                    }
+                });
+            }
+        }
+
         $scope.saveTunnel = function(tunnel, tunnelAddForm) {
             console.clear();
             console.log('[' + $scope.action + '] saveTunnel complete:');
@@ -296,9 +340,11 @@ angular.module('ecommApp')
             if (tunnel.defaultOption.value) {
                 setDefaultToFalse($scope.shop.tunnels);
             }
+            setTunnelDefaultWarehouseIdAndSupplierId(tunnel);
             $scope.shop.tunnels.push(angular.copy(tunnel));
             tunnelAddForm.$setPristine();
-            $scope.tunnel = {};
+            $scope.tunnel = angular.copy($scope.defaultTunnel);
+            $scope.closeTunnelWarehouseSlide();
         };
 
         $scope.updateTunnel = function(tunnel) {
@@ -312,9 +358,12 @@ angular.module('ecommApp')
             //console.clear();
             if (tunnel.type.value === 1) {
                 tunnel.suppliers = undefined;
+                $scope.closeTunnelWarehouseSlide();
             } else if (tunnel.type.value === 2) {
                 tunnel.warehouses = undefined;
+                $scope.closeTunnelSupplierSlide();
             }
+            setTunnelDefaultWarehouseIdAndSupplierId(tunnel);
             console.log('[' + $scope.action + '] saveUpdateTunnel complete:');
             console.log(tunnel);
 
@@ -324,7 +373,6 @@ angular.module('ecommApp')
             }
             tunnel.editable = false;
             tunnelForm.$setPristine();
-
         };
 
         $scope.removingTunnel = undefined;
@@ -350,5 +398,116 @@ angular.module('ecommApp')
                 $('#tunnelDeleteModal').modal('hide');
             }
         };
+
+        // slide
+        $scope.defaultSelected = {
+            warehouses: [],
+            suppliers: []
+        };
+        $scope.selected = angular.copy($scope.defaultSelected);
+        $scope.tunnelWarehouseSlideChecked = false;
+        $scope.tunnelSupplierSlideChecked = false;
+
+        // warehouse slide
+        $scope.operateWarehouses = [];
+
+        $scope.closeTunnelWarehouseSlide = function() {
+            $scope.tunnelWarehouseSlideChecked = false;
+        };
+
+        $scope.loadTunnelWarehouses = function(tunnelWarehouses) {
+            $scope.selected.warehouses = tunnelWarehouses;
+            $scope.tunnelWarehouseSlideChecked = true;
+            $scope.operateWarehouses.length = 0;
+            $.each($scope.warehouses, function() {
+                $scope.operateWarehouses.push(angular.copy(this));
+            });
+            $.each(tunnelWarehouses, function() {
+                var tunnelWarehouse = this;
+                $.each($scope.operateWarehouses, function() {
+                    if (this.id === tunnelWarehouse.id) {
+                        this.selected = true;
+                        return false;
+                    }
+                });
+            });
+        };
+
+        $scope.selectTunnelDeployWarehouse = function(warehouse) {
+            if (warehouse.selected && warehouse.selected === true) {
+                warehouse.selected = false;
+                $.each($scope.selected.warehouses, function(i) {
+                    if (this.id === warehouse.id) {
+                        $scope.selected.warehouses.splice(i, 1);
+                        return false;
+                    }
+                });
+            } else {
+                warehouse.selected = true;
+                $scope.selected.warehouses.push(warehouse);
+            }
+            console.log('selectTunnelDeployWarehouse:');
+            console.log($scope.selected.warehouses);
+        };
+
+        $scope.setTunnelDefaultWarehouse = function(warehouse, tunnel) {
+            $.each(tunnel.warehouses, function() {
+                this.defaultOption = false;
+            })
+            warehouse.defaultOption = true;
+            tunnel.defaultWarehouseId = warehouse.id;
+        };
+
+        // supplier slide
+        $scope.operateSuppliers = [];
+
+        $scope.closeTunnelSupplierSlide = function() {
+            $scope.tunnelSupplierSlideChecked = false;
+        };
+
+        $scope.loadTunnelSuppliers = function(tunnelSuppliers) {
+            $scope.selected.suppliers = tunnelSuppliers;
+            $scope.tunnelSupplierSlideChecked = true;
+            $scope.operateSuppliers.length = 0;
+            $.each($scope.suppliers, function() {
+                $scope.operateSuppliers.push(angular.copy(this));
+            });
+            $.each(tunnelSuppliers, function() {
+                var tunnelsupplier = this;
+                $.each($scope.operateSuppliers, function() {
+                    if (this.id === tunnelsupplier.id) {
+                        this.selected = true;
+                        return false;
+                    }
+                });
+            });
+        };
+
+        $scope.selectTunnelDeploySupplier = function(supplier) {
+            if (supplier.selected && supplier.selected === true) {
+                supplier.selected = false;
+                $.each($scope.selected.suppliers, function(i) {
+                    if (this.id === supplier.id) {
+                        $scope.selected.suppliers.splice(i, 1);
+                        return false;
+                    }
+                });
+            } else {
+                supplier.selected = true;
+                $scope.selected.suppliers.push(supplier);
+            }
+            console.log('selectTunnelDeploySupplier:');
+            console.log($scope.selected.suppliers);
+        };
+
+        $scope.setTunnelDefaultSupplier = function(supplier, tunnel) {
+            $.each(tunnel.suppliers, function() {
+                this.defaultOption = false;
+            })
+            supplier.defaultOption = true;
+            tunnel.defaultSupplierId = supplier.id;
+        };
+
+
     }
 ]);

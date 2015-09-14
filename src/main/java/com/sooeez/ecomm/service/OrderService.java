@@ -145,11 +145,11 @@ public class OrderService {
 					e.printStackTrace();
 				}
 			}
-			if (order.getStatus() != null) {
+			if (order.getStatusIds() != null) {
 				Subquery<ObjectProcess> objectProcessSubquery = query.subquery(ObjectProcess.class);
 				Root<ObjectProcess> objectProcessRoot = objectProcessSubquery.from(ObjectProcess.class);
 				objectProcessSubquery.select(objectProcessRoot.get("objectId"));
-				objectProcessSubquery.where(objectProcessRoot.get("stepId").in(order.getStatus()));
+				objectProcessSubquery.where(objectProcessRoot.get("stepId").in(order.getStatusIds()));
 				predicates.add(cb.in(root.get("id")).value(objectProcessSubquery));
 			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));

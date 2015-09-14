@@ -3,7 +3,7 @@ angular.module('ecommApp')
 .controller('ProductController', ['$scope', 'Product', 'Utils', 'Process', 'ObjectProcess',
     function($scope, Product, Utils, Process, ObjectProcess) {
 
-        //var $ = angular.element;
+        var $ = angular.element;
         $scope.template = {
             details: {
                 url: 'views/product/product.details.html?' + (new Date())
@@ -13,45 +13,28 @@ angular.module('ecommApp')
             },
             status: {
                 url: 'views/product/product.status.html?' + (new Date())
+            },
+            popover: {
+                url: 'process-tmpl.html'
             }
         };
         $scope.totalPagesList = [];
         $scope.pageSize = 20;
-        $scope.product = {
-            sku: '',
-            name: ''
+        $scope.defaultQuery = {
+            product: {
+                sku: '',
+                name: ''
+            }
         };
+        $scope.query = angular.copy($scope.defaultQuery);
         $scope.processes = [];
-        $scope.status = [];
         $scope.selected = {
-            status: []
-        };
-        $scope.popover = {
-            url: 'process-tmpl.html'
+            statuses: []
         };
         $scope.detailsSlideChecked = false;
         $scope.processSlideChecked = false;
         $scope.statusSlideChecked = false;
         $scope.processProduct = undefined;
-
-        function initStatus(processes) {
-            angular.forEach(processes, function(process) {
-                angular.forEach(process.steps, function(step) {
-                    step.processName = process.name;
-                    $scope.status.push(step);
-                });
-            });
-            // console.log('$scope.status:');
-            // console.log($scope.status);
-        }
-
-        function refreshStatus(status) {
-            var selectedStatus = [];
-            angular.forEach(status, function(state) {
-                selectedStatus.push(state.id);
-            });
-            return selectedStatus;
-        }
 
         Product.get({
             page: 0,
@@ -69,10 +52,10 @@ angular.module('ecommApp')
                 deleted: false,
                 objectType: 2
             }).then(function(processes) {
+                $scope.processes = processes;
+                Process.initStatus(processes);
                 console.log('Process.getAll:');
                 console.log(processes);
-                $scope.processes = processes;
-                initStatus(processes);
             });
 
         });
@@ -86,10 +69,10 @@ angular.module('ecommApp')
                     page: number,
                     size: $scope.pageSize,
                     sort: ['name'],
-                    sku: $scope.product.sku,
-                    name: $scope.product.name,
+                    sku: $scope.query.product.sku,
+                    name: $scope.query.product.name,
                     deleted: false,
-                    status: refreshStatus($scope.selected.status)
+                    statusIds: Process.refreshStatus($scope.selected.statuses)
                 }, function(page) {
                     $scope.page = page;
                     $scope.totalPagesList = Utils.setTotalPagesList(page);
@@ -100,14 +83,15 @@ angular.module('ecommApp')
         $scope.search = function() {
             console.clear();
             console.log('search:');
-            console.log($scope.product);
+            console.log($scope.query.product);
             Product.get({
                 page: 0,
                 size: $scope.pageSize,
                 sort: ['name'],
-                sku: $scope.product.sku,
-                name: $scope.product.name,
-                status: refreshStatus($scope.selected.status)
+                sku: $scope.query.product.sku,
+                name: $scope.query.product.name,
+                deleted: false,
+                statusIds: Process.refreshStatus($scope.selected.statuses)
             }, function(page) {
                 $scope.page = page;
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
@@ -117,16 +101,14 @@ angular.module('ecommApp')
         $scope.reset = function() {
             console.clear();
             console.log('reset:');
-            $scope.product = {
-                sku: '',
-                name: ''
-            };
-            $scope.selected.status.length = 0;
-            console.log($scope.product);
+            $scope.query = angular.copy($scope.defaultQuery);
+            $scope.selected.statuses.length = 0;
+            console.log($scope.query);
             Product.get({
                 page: 0,
                 size: $scope.pageSize,
-                sort: ['name']
+                sort: ['name'],
+                deleted: false
             }, function(page) {
                 $scope.page = page;
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
@@ -143,21 +125,21 @@ angular.module('ecommApp')
             $scope.statusSlideChecked = true;
         };
 
-        $scope.selectState = function(step) {
+        $scope.selectStatus = function(step) {
             if (step.selected && step.selected === true) {
                 step.selected = false;
-                for (var i = 0, len = $scope.selected.status.length; i < len; i++) {
-                    if ($scope.selected.status[i].id === step.id) {
-                        $scope.selected.status.splice(i, 1);
-                        break;
+                $.each($scope.selected.statuses, function(i){
+                    if (this.id === step.id) {
+                        $scope.selected.statuses.splice(i,1);
+                        return false;
                     }
-                }
+                });
             } else {
                 step.selected = true;
-                $scope.selected.status.push(step);
+                $scope.selected.statuses.push(step);
             }
-            console.log('$scope.selectState():');
-            console.log($scope.selected.status);
+            console.log('selectStatus:');
+            console.log($scope.selected.statuses);
         };
 
         // process

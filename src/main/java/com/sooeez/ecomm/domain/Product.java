@@ -177,7 +177,7 @@ public class Product implements Serializable {
 	private List<Tag> tags;
 
 	@Transient
-	private Integer[] status;
+	private Integer[] statusIds;
 
 	//
 
@@ -192,12 +192,12 @@ public class Product implements Serializable {
 		this.deleted = deleted;
 	}
 
-	public Integer[] getStatus() {
-		return status;
+	public Integer[] getStatusIds() {
+		return statusIds;
 	}
 
-	public void setStatus(Integer[] status) {
-		this.status = status;
+	public void setStatusIds(Integer[] statusIds) {
+		this.statusIds = statusIds;
 	}
 
 	public List<ObjectProcess> getProcesses() {

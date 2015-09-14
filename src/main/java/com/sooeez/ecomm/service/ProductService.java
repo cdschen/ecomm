@@ -81,11 +81,11 @@ public class ProductService {
 			if (product.getProductType() != null) {
 				predicates.add(cb.equal(root.get("productType"), product.getProductType()));
 			}
-			if (product.getStatus() != null) {
+			if (product.getStatusIds() != null) {
 				Subquery<ObjectProcess> objectProcessSubquery = query.subquery(ObjectProcess.class);
 				Root<ObjectProcess> objectProcessRoot = objectProcessSubquery.from(ObjectProcess.class);
 				objectProcessSubquery.select(objectProcessRoot.get("objectId"));
-				objectProcessSubquery.where(objectProcessRoot.get("stepId").in(product.getStatus()));
+				objectProcessSubquery.where(objectProcessRoot.get("stepId").in(product.getStatusIds()));
 				predicates.add(cb.in(root.get("id")).value(objectProcessSubquery));
 			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));

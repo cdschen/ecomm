@@ -15,12 +15,12 @@
                     <tr>
                         <td width="12%">
                             <div class="form-group">
-                                <input type="text" ng-model="product.sku" class="form-control" id="sku" placeholder="SKU">
+                                <input type="text" ng-model="query.product.sku" class="form-control" placeholder="SKU">
                             </div>
                         </td>
                         <td width="12%">
                             <div class="form-group">
-                                <input type="text" ng-model="product.name" class="form-control" id="name" placeholder="商品名称">
+                                <input type="text" ng-model="query.product.name" class="form-control" placeholder="商品名称">
                             </div>
                         </td>
                         <td width="12%">
@@ -59,16 +59,18 @@
                         <td>
                             <div class="panel panel-default">
                                 <div class="panel-body">
-                                    <a href="" class="btn btn-info btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-repeat="state in selected.status"> 
-                                        {{state.name}} <span class="glyphicon glyphicon-remove" sytle="color:white" ng-click="selectState(state)"></span>
+                                    <a href="" class="btn btn-info btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-repeat="status in selected.statuses" > 
+                                        {{status.name}} <span class="glyphicon glyphicon-remove" sytle="color:white" ng-click="selectStatus(status)"></span>
                                     </a>
                                     <a href="" class="btn btn-primary btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-click="loadStatus()">选择状态</a>
                                 </div>
                             </div>
                         </td>
-                        <td width="12%">
+                        <td width="14%">
                             <div class="form-group pull-right">
-                                <button type="reset" class="btn btn-default" ng-click="reset()">重置</button>
+                                <button type="reset" class="btn btn-default" ng-click="reset()">
+                                    <span class="glyphicon glyphicon-refresh"></span> 重置
+                                </button>
                                 <button type="submit" class="btn btn-default">
                                     <span class="glyphicon glyphicon-search"></span> 搜索
                                 </button>
@@ -124,7 +126,7 @@
                         &nbsp;
                     </td>
                     <td>
-                        <a href="" popover-template="popover.url" popover-title="{{process.process.name}}" ng-click="updateStep(product)" class="btn btn-success btn-xs" ng-repeat="process in product.processes" style="margin-right: 5px; margin-bottom:5px">
+                        <a href="" popover-template="template.popover.url" popover-title="{{process.process.name}}" ng-click="updateStep(product)" class="btn btn-success btn-xs" ng-repeat="process in product.processes" style="margin-right: 5px; margin-bottom:5px">
                             {{process.step.name}}
                         </a>
                         <a href="" class="btn btn-info btn-xs pull-right" ng-click="loadProcesses(product)">...</a>
