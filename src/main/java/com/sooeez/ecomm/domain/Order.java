@@ -185,12 +185,12 @@ public class Order implements Serializable {
 	 */
 
 	@OneToOne
-	@NotFound(action=NotFoundAction.IGNORE)
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "shop_id")
 	private Shop shop;
 
 	@OneToOne
-	@NotFound(action=NotFoundAction.IGNORE)
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "currency_id")
 	private Currency currency;
 
@@ -205,6 +205,7 @@ public class Order implements Serializable {
 	/*
 	 * Query Params;
 	 */
+	
 	/* 下单起始日期 */
 	@Transient
 	private String internalCreateTimeStart;
@@ -220,18 +221,16 @@ public class Order implements Serializable {
 	/* 发货结束日期 */
 	@Transient
 	private String shippingTimeEnd;
-	
+
 	/* 流程状态 */
 	@Transient
-	private Integer[] status;
-	
+	private Integer[] statusIds;
+
 	/* 订单编号 */
 	@Transient
 	private Long orderId;
 
 	//
-	
-	
 
 	public Long getId() {
 		return id;
@@ -253,12 +252,12 @@ public class Order implements Serializable {
 		this.orderId = orderId;
 	}
 
-	public Integer[] getStatus() {
-		return status;
+	public Integer[] getStatusIds() {
+		return statusIds;
 	}
 
-	public void setStatus(Integer[] status) {
-		this.status = status;
+	public void setStatusIds(Integer[] statusIds) {
+		this.statusIds = statusIds;
 	}
 
 	public Currency getCurrency() {

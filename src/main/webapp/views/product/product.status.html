@@ -23,7 +23,7 @@
                         <td>
                             <div ng-if="process.type == 1">
                                 <span ng-repeat="step in process.steps | orderBy: 'sequence'"> 
-                                    <button type="button" class="btn btn-xs" ng-class="{'btn-info': step.selected}" style="margin-bottom:5px;" ng-click="selectState(step)">
+                                    <button type="button" class="btn btn-xs" ng-class="{'btn-info': step.selected}" style="margin-bottom:5px;" ng-click="selectStatus(step)">
                                         <span class="glyphicon glyphicon-ok" style="color:white" ng-show="step.selected"></span> {{step.name}}
                                     </button>
                                     <span class="glyphicon glyphicon-circle-arrow-right" ng-show="!$last"></span>
@@ -31,7 +31,7 @@
                             </div>
                             <div ng-if="process.type == 2">
                                 <div class="btn-group btn-group-xs">
-                                    <button type="button" class="btn btn-xs" ng-repeat="step in process.steps | orderBy: 'sequence'" ng-class="{'btn-info': step.selected}" ng-click="selectState(step)">{{step.name}}</button>
+                                    <button type="button" class="btn btn-xs" ng-repeat="step in process.steps | orderBy: 'sequence'" ng-class="{'btn-info': step.selected}" ng-click="selectStatus(step)">{{step.name}}</button>
                                 </div>
                             </div>
                         </td>
