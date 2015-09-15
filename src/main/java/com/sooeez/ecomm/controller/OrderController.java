@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,13 +36,18 @@ public class OrderController {
 	}
 	
 	@RequestMapping(value = "/orders")
-	public Page<Order> getPagedOrders(Pageable pageable, Order order) {
-		return this.orderService.getPagedOrders(pageable, order);
+	public Page<Order> getPagedOrders(Order order, Pageable pageable) {
+		return this.orderService.getPagedOrders(order, pageable);
+	}
+	
+	@RequestMapping(value = "/orders/for/orderdeploy")
+	public Page<Order> getPageOrdersForOrderDeploy(Order order, Pageable pageable) {
+		return this.orderService.getPagedOrdersForOrderDeploy(order, pageable);
 	}
 	
 	@RequestMapping(value = "/orders/get/all")
-	public List<Order> getOrders(Order order) {
-		return this.orderService.getOrders(order);
+	public List<Order> getOrders(Order order, Sort sort) {
+		return this.orderService.getOrders(order, sort);
 	}
 	
 	@RequestMapping(value = "/orders", method = RequestMethod.POST)

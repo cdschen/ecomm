@@ -31,10 +31,7 @@
                                 </span>
                             </div>
                             <div ng-if="process.type == 2">
-                                <span class="label {{forObjectProcesses(step) ? 'label-success' : 'label-info' }}" ng-repeat="step in process.steps | orderBy: 'sequence'" >{{step.name}}</span>
-                                <!-- <div class="btn-group btn-group-xs">
-                                    <button type="button" class="btn btn-xs {{forObjectProcesses(step) ? 'btn-success' : 'btn-info' }}" ng-repeat="step in process.steps | orderBy: 'sequence'">{{step.name}}</button>
-                                </div> -->
+                                <span class="label {{forObjectProcesses(step) ? 'label-success' : 'label-info' }}" ng-repeat="step in process.steps | orderBy: 'sequence'" style="margin: 0 2px;">{{step.name}}</span>
                             </div>
                         </td>
                         <td>
