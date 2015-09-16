@@ -54,7 +54,7 @@ angular.module('ecommApp')
     };
 
     return order;
-}]).
+}])
 
 .factory('OrderItem', ['$resource', '$http', function($resource, $http) {
 
