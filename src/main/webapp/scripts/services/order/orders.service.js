@@ -20,6 +20,8 @@ angular.module('ecommApp')
         $.each(items, function() {
             var item = this;
             if (item.product.shopTunnels.length > 0) {
+                console.log('---------------' + item.product);
+                console.log(item.product);
                 $.each(item.product.shopTunnels, function() {
                     var productShopTunnel = this;
                     if (productShopTunnel.shopId === order.shop.id) {
@@ -41,6 +43,10 @@ angular.module('ecommApp')
                         return false;
                     }
                 })
+            }
+            else
+            {
+                item.assignTunnel = order.shop.defaultTunnel;
             }
         });
     };
