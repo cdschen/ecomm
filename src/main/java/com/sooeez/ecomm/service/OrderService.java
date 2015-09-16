@@ -24,18 +24,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.sooeez.ecomm.domain.OrderItem;
 import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Order;
 import com.sooeez.ecomm.domain.OrderItem;
 import com.sooeez.ecomm.domain.ProductShopTunnel;
 import com.sooeez.ecomm.domain.ShopTunnel;
 import com.sooeez.ecomm.domain.Warehouse;
+import com.sooeez.ecomm.repository.OrderItemRepository;
 import com.sooeez.ecomm.repository.OrderRepository;
 
 @Service
 public class OrderService {
 
 	@Autowired private OrderRepository orderRepository;
+	
+	@Autowired private OrderItemRepository orderItemRepository;
 	
 	@PersistenceContext private EntityManager em;
 
@@ -322,6 +326,28 @@ public class OrderService {
 		};
 	}
 	
-	public void testNativeSQL() {
+	
+	/*
+	 * OrderItem
+	 */
+	
+	public OrderItem saveOrderItem(OrderItem orderItem) {
+		return this.orderItemRepository.save(orderItem);
+	}
+
+	public void deleteOrderItem(Long id) {
+		this.orderItemRepository.delete(id);
+	}
+
+	public OrderItem getOrderItem(Long id) {
+		return this.orderItemRepository.findOne(id);
+	}
+
+	public List<OrderItem> getOrderItems(Sort sort) {
+		return this.orderItemRepository.findAll(sort);
+	}
+
+	public Page<OrderItem> getPagedOrderItems(Pageable pageable) {
+		return this.orderItemRepository.findAll(pageable);
 	}
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sooeez.ecomm.domain.Order;
+import com.sooeez.ecomm.domain.OrderItem;
 import com.sooeez.ecomm.service.OrderService;
 
 @RestController
@@ -58,6 +59,36 @@ public class OrderController {
 	@RequestMapping(value = "/orders/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteOrder(@PathVariable("id") Long id) {
 		this.orderService.deleteOrder(id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	/*
+	 * OrderItem
+	 */
+	
+	@RequestMapping(value = "/orderitems/{id}")
+	public OrderItem getOrderItem(@PathVariable("id") Long id) {
+		return this.orderService.getOrderItem(id);
+	}
+	
+	@RequestMapping(value = "/orderitems")
+	public Page<OrderItem> getPagedOrderItems(Pageable pageable) {
+		return this.orderService.getPagedOrderItems(pageable);
+	}
+	
+	@RequestMapping(value = "/orderitems/get/all")
+	public List<OrderItem> getOrderItems(Sort sort) {
+		return this.orderService.getOrderItems(sort);
+	}
+	
+	@RequestMapping(value = "/orderitems", method = RequestMethod.POST)
+	public OrderItem saveOrderItem(@RequestBody OrderItem orderItem) {
+		return this.orderService.saveOrderItem(orderItem);
+	}
+	
+	@RequestMapping(value = "/orderitems/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteOrderItem(@PathVariable("id") Long id) {
+		this.orderService.deleteOrderItem(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	

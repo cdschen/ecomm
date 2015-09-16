@@ -54,4 +54,21 @@ angular.module('ecommApp')
     };
 
     return order;
+}]).
+
+.factory('OrderItem', ['$resource', '$http', function($resource, $http) {
+
+    var $ = angular.element;
+    var item = $resource('/api/orderitems/:id', {}, {});
+
+    item.getAll = function(params) {
+        return $http.get('/api/orderitems/get/all', {
+            params: params
+        }).then(function(res) {
+            return res.data;
+        });
+    };
+
+    return item;
+
 }]);
