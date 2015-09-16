@@ -49,16 +49,6 @@ angular.module('ecommApp')
             });
         };
 
-        /*.then(function() { // 导入所有流程
-            return Process.getAll({ 
-                deleted: false,
-                objectType: 1
-            }).then(function(processes) {
-                $scope.processes = processes;
-                Process.initStatus(processes);
-            });
-        })*/
-
         Warehouse.getAll({ // 导入所有仓库
             deleted: false,
             sort: ['name']
@@ -86,24 +76,6 @@ angular.module('ecommApp')
                 console.log($scope.inventory);
             });
         }).then(function() {
-            // orderService.get({
-            //     page: 0,
-            //     size: $scope.pageSize,
-            //     sort: ['internalCreateTime,desc'],
-            //     warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
-            //     shopId: $scope.query.shop ? $scope.query.shop.id : null,
-            //     statusIds: Process.refreshStatus($scope.query.statuses),
-            //     deleted: false
-            // }, function(page) {
-            //     console.log('page:');
-            //     console.log(page);
-            //     $scope.page = page;
-            //     $.each(page.content, function() {
-            //         Shop.initShopDefaultTunnel(this.shop);
-            //         orderService.checkItemProductShopTunnel(this);
-            //     });
-            //     $scope.totalPagesList = Utils.setTotalPagesList(page);
-            // });
             orderService.getPagedOrdersForOrderDeploy({
                 page: 0,
                 size: $scope.pageSize,

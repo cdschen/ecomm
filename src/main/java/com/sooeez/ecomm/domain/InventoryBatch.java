@@ -51,6 +51,9 @@ public class InventoryBatch implements Serializable {
 	@Column(name = "memo")
 	private String memo;
 
+	@Column(name = "type")
+	private Integer type;
+
 	/*
 	 * Related Properties
 	 */
@@ -72,6 +75,14 @@ public class InventoryBatch implements Serializable {
 	//
 
 	public InventoryBatch() {
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 
 	public Long getId() {

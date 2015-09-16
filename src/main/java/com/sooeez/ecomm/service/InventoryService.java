@@ -24,6 +24,7 @@ import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Shop;
 import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.domain.WarehousePosition;
+import com.sooeez.ecomm.dto.ProductDTO;
 import com.sooeez.ecomm.repository.InventoryBatchRepository;
 import com.sooeez.ecomm.repository.InventoryRepository;
 import com.sooeez.ecomm.repository.WarehousePositionRepository;
@@ -213,5 +214,21 @@ public class InventoryService {
 		return this.inventoryBatchRepository.findAll(pageable);
 	}
 	
-	
+	public List<Product> refreshInventory(List<Inventory> inventories) {
+		List<Product> products = new ArrayList<>();
+		for (Inventory inventory: inventories) {
+			boolean existInventory = false;
+			for (Product product: products) {
+				if (product.getSku().equals(inventory.getProduct().getSku())) {
+					product.setTotal(product.getTotal().longValue() + inventory.getQuantity().longValue());
+					break;
+				}
+			}
+			if (!existInventory) {
+				inventory.getProduct().setTotal(inventory.getQuantity().longValue());
+				products.add(inventory.getProduct());
+			}
+		}
+		return products;
+	}
 }
