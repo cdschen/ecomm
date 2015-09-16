@@ -57,19 +57,20 @@
             <thead>
                 <tr>
                     <th width="2%">
-                        <input type="checkbox" name="orderId" ng-model="selectAll">
+                        <input type="checkbox" name="orderId" ng-model="is_checked_all" ng-click="checkAllOrder()">
                     </th>
                     <th width="10%">店铺</th>
                     <th width="10%">订单编号</th>
                     <th width="34%">商品信息</th>
                     <th width="34%">配货信息</th>
                     <th width="10%" style="padding: 2px">
-                        <select class="form-control input-sm">
-                            <option selected="selected">批量操作</option>
+                        <select class="form-control input-sm" ng-change="batch_manipulation()" ng-model="batch_manipulation_value">
+                            <option selected="selected" value="batch_manipulation">批量操作</option>
                             <option>批量上架</option>
                             <option>批量下架</option>
                             <option>批量更名</option>
                             <option>批量作废</option>
+                            <option value="generate_shipment">批量生成快递单号</option>
                         </select>
                     </th>
                 </tr>
@@ -77,7 +78,7 @@
             <tbody>
                 <tr ng-repeat="order in page.content" ng-class="{active: order.active}">
                     <td>
-                        <input type="checkbox" name="orderId" ng-checked="selectAll" ng-model="order.id">
+                        <input type="checkbox" ng-model="order.isSelected">
                     </td>
                     <td>
                         {{order.shop.name}}
@@ -104,14 +105,14 @@
                                                 </ui-select-choices>
                                             </ui-select>
                                         </section>
-                                        <section ng-show="!item.assignTunnel">
-                                            <ui-select ng-model="order.shop.defaultTunnel.defaultWarehouse">
-                                                <ui-select-match placeholder="请选择仓库">{{$select.selected.name}}</ui-select-match>
-                                                <ui-select-choices repeat="warehouse in order.shop.defaultTunnel.warehouses | filter: $select.search">
-                                                    <div ng-bind-html="warehouse.name | highlight: $select.search"></div>
-                                                </ui-select-choices>
-                                            </ui-select>
-                                        </section>
+                                        <!--<section ng-show="!item.assignTunnel">-->
+                                            <!--<ui-select ng-model="order.shop.defaultTunnel.defaultWarehouse">-->
+                                                <!--<ui-select-match placeholder="请选择仓库">{{$select.selected.name}}</ui-select-match>-->
+                                                <!--<ui-select-choices repeat="warehouse in order.shop.defaultTunnel.warehouses | filter: $select.search">-->
+                                                    <!--<div ng-bind-html="warehouse.name | highlight: $select.search"></div>-->
+                                                <!--</ui-select-choices>-->
+                                            <!--</ui-select>-->
+                                        <!--</section>-->
                                     </td>
                                 </tr>
                             </tbody>
@@ -120,6 +121,7 @@
                     <td>
                     </td>
                     <td>
+                        <a href="javascript:;" class="btn btn-primary btn-block" ng-click="generateShipment(order)">生成快递单号</a>
                     </td>
                 </tr>
             </tbody>
@@ -154,3 +156,4 @@
     </div>
 </div>
 <section ng-include="template.status.url"></section>
+<section ng-include="template.generateShipment.url"></section>
