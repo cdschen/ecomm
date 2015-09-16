@@ -15,6 +15,14 @@ angular.module('ecommApp')
         });
     };
 
+    order.getPagedOrdersForOrderDeploy = function(params) {
+        return $http.get('/api/orders/for/orderdeploy', {
+            params: params
+        }).then(function(res) {
+            return res.data
+        });
+    };
+
     order.checkItemProductShopTunnel = function(order) {
         var items = order.items;
         $.each(items, function() {
@@ -25,11 +33,11 @@ angular.module('ecommApp')
                 $.each(item.product.shopTunnels, function() {
                     var productShopTunnel = this;
                     if (productShopTunnel.shopId === order.shop.id) {
-                    	console.log('匹配到店铺');
+                        console.log('匹配到店铺');
                         $.each(order.shop.tunnels, function() {
                             var tunnel = this;
                             if (tunnel.id === productShopTunnel.tunnelId) {
-                            	console.log('匹配到通道');
+                                console.log('匹配到通道');
                                 item.assignTunnel = tunnel;
                                 $.each(tunnel.warehouses, function() {
                                     if (item.assignTunnel.defaultWarehouseId === this.id) {
@@ -52,4 +60,21 @@ angular.module('ecommApp')
     };
 
     return order;
+}])
+
+.factory('OrderItem', ['$resource', '$http', function($resource, $http) {
+
+    var $ = angular.element;
+    var item = $resource('/api/orderitems/:id', {}, {});
+
+    item.getAll = function(params) {
+        return $http.get('/api/orderitems/get/all', {
+            params: params
+        }).then(function(res) {
+            return res.data;
+        });
+    };
+
+    return item;
+
 }]);

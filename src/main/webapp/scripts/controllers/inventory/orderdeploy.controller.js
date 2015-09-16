@@ -86,22 +86,35 @@ angular.module('ecommApp')
                 console.log($scope.inventory);
             });
         }).then(function() {
-            orderService.get({
+            // orderService.get({
+            //     page: 0,
+            //     size: $scope.pageSize,
+            //     sort: ['internalCreateTime,desc'],
+            //     warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
+            //     shopId: $scope.query.shop ? $scope.query.shop.id : null,
+            //     statusIds: Process.refreshStatus($scope.query.statuses),
+            //     deleted: false
+            // }, function(page) {
+            //     console.log('page:');
+            //     console.log(page);
+            //     $scope.page = page;
+            //     $.each(page.content, function() {
+            //         Shop.initShopDefaultTunnel(this.shop);
+            //         orderService.checkItemProductShopTunnel(this);
+            //     });
+            //     $scope.totalPagesList = Utils.setTotalPagesList(page);
+            // });
+            orderService.getPagedOrdersForOrderDeploy({
                 page: 0,
                 size: $scope.pageSize,
                 sort: ['internalCreateTime,desc'],
                 warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
                 shopId: $scope.query.shop ? $scope.query.shop.id : null,
-                statusIds: Process.refreshStatus($scope.query.statuses),
                 deleted: false
-            }, function(page) {
+            }).then(function(page) {
                 console.log('page:');
                 console.log(page);
                 $scope.page = page;
-                $.each(page.content, function() {
-                    Shop.initShopDefaultTunnel(this.shop);
-                    orderService.checkItemProductShopTunnel(this);
-                });
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
             });
         });
@@ -110,22 +123,22 @@ angular.module('ecommApp')
             console.clear();
             console.log('search:');
             console.log($scope.query);
-            orderService.get({
+            orderService.getPagedOrdersForOrderDeploy({
                 page: 0,
                 size: $scope.pageSize,
                 sort: ['internalCreateTime,desc'],
                 warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
                 shopId: $scope.query.shop ? $scope.query.shop.id : null,
-                statusIds: Process.refreshStatus($scope.query.statuses),
+                //statusIds: Process.refreshStatus($scope.query.statuses),
                 deleted: false
-            }, function(page) {
+            }).then(function(page) {
                 console.log('page:');
                 console.log(page);
                 $scope.page = page;
-                $.each(page.content, function() {
-                    Shop.initShopDefaultTunnel(this.shop);
-                    orderService.checkItemProductShopTunnel(this);
-                });
+                // $.each(page.content, function() {
+                //     Shop.initShopDefaultTunnel(this.shop);
+                //     orderService.checkItemProductShopTunnel(this);
+                // });
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
             });
         };

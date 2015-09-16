@@ -78,6 +78,10 @@ public class OrderItem implements Serializable {
 	@Column(name = "unit_gst", nullable = false)
 	private BigDecimal unitGst;
 
+	/* item被指定分配的warehouseId */
+	@Column(name = "warehouse_id")
+	private Long warehouseId;
+
 	/*
 	 * Related Properties
 	 */
@@ -91,6 +95,14 @@ public class OrderItem implements Serializable {
 
 	public Long getId() {
 		return id;
+	}
+
+	public Long getWarehouseId() {
+		return warehouseId;
+	}
+
+	public void setWarehouseId(Long warehouseId) {
+		this.warehouseId = warehouseId;
 	}
 
 	public Product getProduct() {

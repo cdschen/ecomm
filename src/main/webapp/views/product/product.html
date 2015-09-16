@@ -57,12 +57,15 @@
                             </div>
                         </td>
                         <td>
-                            <div class="panel panel-default">
-                                <div class="panel-body">
-                                    <a href="" class="btn btn-info btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-repeat="status in selected.statuses" > 
-                                        {{status.name}} <span class="glyphicon glyphicon-remove" sytle="color:white" ng-click="selectStatus(status)"></span>
-                                    </a>
-                                    <a href="" class="btn btn-primary btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-click="loadStatus()">选择状态</a>
+                            <div class="panel panel-default" style="margin-bottom: 0;">
+                                <div class="panel-body" style="padding:3px;">
+                                    <div class="btn-group" ng-repeat="status in selected.statuses" style="margin: 0 3px 3px 0;">
+                                        <a href="javascript:void(0)" class="btn btn-info btn-xs" >{{status.name}}</a>
+                                        <a href="javascript:void(0)" class="btn btn-info btn-xs" ng-click="selectStatus(status)">
+                                            <span class="glyphicon glyphicon-remove" sytle="color:white"></span>
+                                        </a>
+                                    </div>
+                                    <a href="javascript:void(0)" class="btn btn-primary btn-xs" style="margin: 0 3px 3px 0;" ng-click="loadStatus()">选择状态</a>
                                 </div>
                             </div>
                         </td>

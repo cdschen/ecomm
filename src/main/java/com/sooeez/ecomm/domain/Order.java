@@ -205,7 +205,7 @@ public class Order implements Serializable {
 	/*
 	 * Query Params;
 	 */
-	
+
 	/* 下单起始日期 */
 	@Transient
 	private String internalCreateTimeStart;
@@ -230,10 +230,34 @@ public class Order implements Serializable {
 	@Transient
 	private Long orderId;
 
+	/* 订单编号组 */
+	@Transient
+	private List<Long> orderIds;
+
+	/* 仓库ID */
+	@Transient
+	private Long warehouseId;
+
 	//
 
 	public Long getId() {
 		return id;
+	}
+
+	public Long getWarehouseId() {
+		return warehouseId;
+	}
+
+	public void setWarehouseId(Long warehouseId) {
+		this.warehouseId = warehouseId;
+	}
+
+	public List<Long> getOrderIds() {
+		return orderIds;
+	}
+
+	public void setOrderIds(List<Long> orderIds) {
+		this.orderIds = orderIds;
 	}
 
 	public Shop getShop() {
