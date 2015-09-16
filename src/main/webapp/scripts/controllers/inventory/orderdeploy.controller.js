@@ -27,7 +27,7 @@ angular.module('ecommApp')
         $scope.inventory = {}; // 库存对象，里面每一个子属性都是一个仓库，仓库的值是一个归类好的产品数组
         $scope.statusSlideChecked = false;
 
-        $scope.generateShipmentSlideChecked = false;
+        $scope.generateShipmentCheckListSlideChecked = false;
         $scope.couriers = [];
 
         // 将所有店铺过滤，拿出所有配置了配送状态的店铺的ID
@@ -147,12 +147,105 @@ angular.module('ecommApp')
 
         // Generate Shipment
         $scope.closeGenerateShipmentSlide = function() {
-            $scope.generateShipmentSlideChecked = false;
+            $scope.generateShipmentCheckListSlideChecked = false;
         };
 
         $scope.loadGenerateShipment = function() {
-            $scope.generateShipmentSlideChecked = true;
+            $scope.generateShipmentCheckListSlideChecked = true;
         };
+
+        /* 开始：检查表存放的数据 */
+        /**
+         *
+         * checkList = {
+         *      isAllPassLooseCheck : 是否通过宽松检查［ true：当 messageList 所有 type 等于 danger 的 message 的 isPass 为 true 时 ］，［ false：当 messageList 某个 type 等于 danger 的 message 的 isPass 为 false 时 ］,
+         *      isAllPassRestrictCheck : 是否通过约束检查［ true：当 messageList 所有 message 的 isPass 为 true 时 ］，［ false：当 messageList 某个 message 的 isPass 为 false 时 ］,
+         *      successMessageTextColorClass : 检查通过信息的颜色,
+         *      errorMessageTextColorClass : { 检查未通过信息的颜色，根据 message 的 type 来获取颜色
+         *          danger : message 的 type 等于 danger 时提示信息的文字颜色,
+         *          warning : message 的 type 等于 warning 时提示信息的文字颜色
+         *      },
+         *      successMessageIcon : 检查通过信息的图标,
+         *      errorMessageIcon : { 检查未通过信息的图标，根据 message 的 type 来获取图标字体
+         *          danger : message 的 type 等于 danger 时提示信息的图标,
+         *          warning : message 的 type 等于 warning 时提示信息的图标
+         *      },
+         *      totalMessage : 总检查项,
+         *      passMessage : 通过项,
+         *      warningMessage : 警告项,
+         *      dangerMessage : 失败项,
+         *      messageList : [
+         *          {
+         *              name: 检查项名称,
+         *              successMsg: 成功提示信息,
+         *              errorMsg: 错误提示信息,
+         *              triggerScopeMethod: 检查不通过时可以调用的方法，会赋给某个按钮的 ng-click 上,
+         *              actionBtnText: 检查不通过时显示的操作按钮的文字,
+         *              isActionBtnShow: ［ true：显示可以点击执行 triggerScopeMethod 方法的按钮 ］，［ false：隐藏可以点击执行 triggerScopeMethod 方法的按钮 ］,
+         *              type: 错误类型，［ danger：危险，会发生严重些问题 ］，［ warning：警告，不会发生严重问题 ］,
+         *              isPass: 是否通过，［ true：对应检查项通过 ］，［ false：对应检察项不通过 ］
+         *          }
+         *      ]
+         * }
+         */
+        $scope.checkList = {
+            isAllPass : false,
+            isAllPassRestrict : false,
+            successMessageTextColorClass : 'text-success',
+            errorMessageTextColorClass : {
+                danger : 'text-danger',
+                warning : 'text-warning'
+            },
+            successMessageIcon : 'glyphicon glyphicon-ok',
+            errorMessageIcon : {
+                danger : 'glyphicon glyphicon-remove-circle',
+                warning : 'glyphicon glyphicon-warning-sign'
+            },
+            successMessageNonActionBtnClass : 'btn btn-xs btn-success btn-block',
+            errorMessageNonActionBtnClass : 'btn btn-xs btn-danger btn-block',
+            errorMessageBtnClass : {
+                danger : 'btn btn-xs btn-danger btn-block',
+                warning : 'btn btn-xs btn-warning btn-block'
+            },
+            totalMessage : 5,
+            passMessage : 0,
+            warningMessage : 3,
+            dangerMessage : 0,
+            messageList : [
+                {
+                    name : 'check_is_same_warehouse',
+                    successMsg : '订单商品处于同一仓库', errorMsg : '必须同一个仓库',
+                    isActionBtnShow : true, triggerScopeMethod : 'leaveSameWarehouseProductOrder()', actionBtnText : '修复',
+                    type:'danger', isPass: false
+                },
+                {
+                    name : 'check_is_assigned_courier_company',
+                    successMsg : '快递公司已指定', errorMsg : '必须有快递公司，请通过点击［快递公司］下拉菜单来指定一个',
+                    isActionBtnShow : false,
+                    type : 'danger', isPass : false
+                },
+                {
+                    name : 'check_is_duplicate_order_same_warehouse_shipment',
+                    successMsg : '订单在同一仓库没有发货单', errorMsg : '订单已经有同一仓库下的发货单',
+                    isActionBtnShow : true, triggerScopeMethod : 'leaveDifferentWarehouseShipmentOrder()', actionBtnText : '移除',
+                    type : 'warning', isPass : false
+                },
+                {
+                    name : 'check_is_same_order_delivery_method',
+                    successMsg : '订单发货方式相同', errorMsg : '订单的发货方式不同',
+                    isActionBtnShow : true, triggerScopeMethod : 'leaveSameDeliveryMethodOrder()', actionBtnText : '移除',
+                    type : 'warning', isPass : false
+                },
+                {
+                    name : 'check_is_not_empty_order_receive_address',
+                    successMsg: ' 订单收货地址不为空', errorMsg : '订单的收货地址为空',
+                    isActionBtnShow : true, triggerScopeMethod : 'leaveNoEmptyReceiveAddressOrder()', actionBtnText : '移除',
+                    type : 'warning', isPass : false
+                }
+            ]
+        };
+        /* 结束：检查表存放的数据 */
+
 
         // selected orders
         $scope.batch_manipulation_value = 'batch_manipulation';
@@ -239,7 +332,7 @@ angular.module('ecommApp')
             if( ! $scope.isAnyErrorShowMsg() )
             {
                 $scope.shipment_generate_type = 'single';
-                $scope.generateShipmentSlideChecked = true;
+                $scope.generateShipmentCheckListSlideChecked = true;
                 $scope.finalSingleShipment.push(setOrderAndItemsToShipmentAndItemsThenReturn(order));
             }
             /* 重置错误提示信息 */
@@ -251,19 +344,19 @@ angular.module('ecommApp')
             for(var order in $scope.page.content)
             {
                 $scope.page.content[order].isSelected = $scope.is_checked_all;
-                if( $scope.is_checked_all )
-                {
-                    var currentOrder = $scope.page.content[order];
-                    $scope.finalMultipleShipment.push(setOrderAndItemsToShipmentAndItemsThenReturn(currentOrder));
-                }
-                else
-                {
-                    $scope.finalMultipleShipment.length = 0;
-                }
+                //if( $scope.is_checked_all )
+                //{
+                //    var currentOrder = $scope.page.content[order];
+                //    $scope.finalMultipleShipment.push(setOrderAndItemsToShipmentAndItemsThenReturn(currentOrder));
+                //}
+                //else
+                //{
+                //    $scope.finalMultipleShipment.length = 0;
+                //}
             }
         };
 
-        /* 生成多个yundanhao  */
+        /* 生成多个订单的货运单  */
         $scope.batch_manipulation = function()
         {
             $scope.finalMultipleShipment.length = 0;
@@ -282,6 +375,7 @@ angular.module('ecommApp')
                 /* 判断是否有选中订单，没有则显示错误提示信息 */
                 if($scope.finalMultipleShipment && $scope.finalMultipleShipment.length > 0)
                 {
+                    $scope.finalMultipleShipment.length = 0;
                     /* 判断是否有错误提示信息，如果没有则可以生成快递单 */
                     if( ! $scope.isAnyErrorShowMsg() )
                     {
@@ -294,7 +388,7 @@ angular.module('ecommApp')
                             }
                         }
                         $scope.shipment_generate_type = 'multiple';
-                        $scope.generateShipmentSlideChecked = true;
+                        $scope.generateShipmentCheckListSlideChecked = true;
                     }
                 }
                 else
