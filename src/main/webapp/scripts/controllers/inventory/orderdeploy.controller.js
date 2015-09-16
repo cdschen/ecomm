@@ -114,6 +114,10 @@ angular.module('ecommApp')
             }).then(function(page) {
                 console.log('page:');
                 console.log(page);
+                $.each(page.content, function() {
+                    Shop.initShopDefaultTunnel(this.shop);
+                    orderService.checkItemProductShopTunnel(this);
+                });
                 $scope.page = page;
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
             });
