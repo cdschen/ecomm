@@ -202,6 +202,11 @@ public class Order implements Serializable {
 	@JoinColumn(name = "object_id")
 	private List<ObjectProcess> processes;
 
+	/* 一张订单可能有多张与之相连的出库单，但在同一个仓库下，一张订单只可能有一张出库单 */
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_id")
+	private List<OrderBatch> batches;
+
 	/*
 	 * Query Params;
 	 */
@@ -242,6 +247,14 @@ public class Order implements Serializable {
 
 	public Long getId() {
 		return id;
+	}
+
+	public List<OrderBatch> getBatches() {
+		return batches;
+	}
+
+	public void setBatches(List<OrderBatch> batches) {
+		this.batches = batches;
 	}
 
 	public Long getWarehouseId() {

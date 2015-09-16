@@ -179,9 +179,21 @@ public class Product implements Serializable {
 	@Transient
 	private Integer[] statusIds;
 
+	// 产品在某一个仓库的库存量
+	@Transient
+	private Long total;
+
 	//
 
 	public Product() {
+	}
+
+	public Long getTotal() {
+		return total;
+	}
+
+	public void setTotal(Long total) {
+		this.total = total;
 	}
 
 	public Boolean getDeleted() {

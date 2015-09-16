@@ -5,7 +5,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,13 +26,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.sooeez.ecomm.domain.Inventory;
+import com.sooeez.ecomm.domain.OrderBatch;
 import com.sooeez.ecomm.domain.OrderItem;
 import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Order;
 import com.sooeez.ecomm.domain.OrderItem;
+import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.ProductShopTunnel;
 import com.sooeez.ecomm.domain.ShopTunnel;
 import com.sooeez.ecomm.domain.Warehouse;
+import com.sooeez.ecomm.repository.OrderBatchRepository;
 import com.sooeez.ecomm.repository.OrderItemRepository;
 import com.sooeez.ecomm.repository.OrderRepository;
 
@@ -40,6 +46,10 @@ public class OrderService {
 	@Autowired private OrderRepository orderRepository;
 	
 	@Autowired private OrderItemRepository orderItemRepository;
+	
+	@Autowired private OrderBatchRepository orderBatchRepository;
+	
+	@Autowired private InventoryService inventoryService;
 	
 	@PersistenceContext private EntityManager em;
 
@@ -124,6 +134,16 @@ public class OrderService {
 	
 	public Page<Order> getPagedOrdersForOrderDeploy(Order order, Pageable pageable) {
 		
+		findAvailableDeployOrder(order);
+		long assginWarehouseId = order.getWarehouseId() != null ? order.getWarehouseId().longValue() : 0;
+		Page<Order> page = this.orderRepository.findAll(getOrderSpecification(order), pageable);
+		if (page != null && page.getContent() != null && page.getContent().size() > 0 && assginWarehouseId > 0) {
+			filterItemsForOrder(page.getContent(), assginWarehouseId);
+		}
+		return page;
+	}
+	
+	public void findAvailableDeployOrder(Order order) {
 		// 查询出可配货的订单的  id
 		String sqlString = "select distinct(`order`.id) from t_order as `order`, "
 				+ "t_order_item as orderItem, "
@@ -135,7 +155,6 @@ public class OrderService {
 				+ "and `order`.shop_id = shop.id "
 				+ "and shop.deploy_process_step_id = process.step_id "
 				+ "and `order`.deleted = 0 ";
-		long assginWarehouseId = order.getWarehouseId() != null ? order.getWarehouseId().longValue() : 0;
 		if (order.getInternalCreateTimeStart() != null && order.getInternalCreateTimeEnd() != null) {
 			sqlString += "and `order`.internal_create_time between '" + order.getInternalCreateTimeStart() + "' "
 					+ "and '" + order.getInternalCreateTimeEnd() + "'";
@@ -187,91 +206,137 @@ public class OrderService {
 		if (order.getOrderIds().size() == 0) {
 			order.getOrderIds().add(0L);
 		}
-		
-		Page<Order> page = this.orderRepository.findAll(getOrderSpecification(order), pageable);
-		if (page != null && page.getContent() != null && page.getContent().size() > 0 && assginWarehouseId > 0) {
-			for (Order _order: page.getContent()) {
-				System.out.println("order: " + _order.getId());
+	}
+	
+	public void filterItemsForOrder(List<Order> orders, long assginWarehouseId) {
+		for (Order _order: orders) {
+			System.out.println("order: " + _order.getId());
+			
+			List<OrderItem> deletedItems = new ArrayList<>();
+			for (int i = 0, len = _order.getItems().size(); i < len; i++) {
+				OrderItem item = _order.getItems().get(i);
+				System.out.println("item: " + item.getId());
 				
-				List<OrderItem> deletedItems = new ArrayList<>();
-				for (int i = 0, len = _order.getItems().size(); i < len; i++) {
-					OrderItem item = _order.getItems().get(i);
-					System.out.println("item: " + item.getId());
-					
-					// 1.判断item有没有设置指定的warehouseid, 并且是否等于查询的warehouseId
-					if (item.getWarehouseId() != null && item.getWarehouseId().longValue() == assginWarehouseId) {
-						continue;
-					} else {
-						// 2.判断item关联的产品有没有配置产品店铺通道,
-						boolean exit = false;
-						if (item.getProduct().getShopTunnels() != null && item.getProduct().getShopTunnels().size() > 0) {
-							// 如果有，找到配置的产品店铺通道
-							boolean match = false;
-							for (ProductShopTunnel productShopTunnel: item.getProduct().getShopTunnels()) {
-								if (productShopTunnel.getShopId().longValue() == _order.getShopId().longValue()) {
-									match = true;
-									// 匹配到店铺
-									// 循环店铺通道
-									for (ShopTunnel shopTunnel: _order.getShop().getTunnels()) {
-										// 匹配到通道
-										if (shopTunnel.getId().longValue() == productShopTunnel.getTunnelId().longValue()) {
-											if (shopTunnel.getDefaultWarehouseId().longValue() == assginWarehouseId) {
-												break;
-											} else {
-												//deletedItemIndexs.add(item.getId().intValue());
-												//_order.getItems().remove(item);
-												deletedItems.add(item);
-												exit = true;
-												break;
-											}
-										}
-									}
-								}
-								if (exit) {
-									break;
-								}
-							}
-							
-							if (!match) {
-								// 3.判断订单店铺下的默认通道的默认仓库是否和查询的warehouseId相等
+				// 1.判断item有没有设置指定的warehouseid, 并且是否等于查询的warehouseId
+				if (item.getWarehouseId() != null && item.getWarehouseId().longValue() == assginWarehouseId) {
+					continue;
+				} else {
+					// 2.判断item关联的产品有没有配置产品店铺通道,
+					boolean exit = false;
+					if (item.getProduct().getShopTunnels() != null && item.getProduct().getShopTunnels().size() > 0) {
+						// 如果有，找到配置的产品店铺通道
+						boolean match = false;
+						for (ProductShopTunnel productShopTunnel: item.getProduct().getShopTunnels()) {
+							if (productShopTunnel.getShopId().longValue() == _order.getShopId().longValue()) {
+								match = true;
+								// 匹配到店铺
+								// 循环店铺通道
 								for (ShopTunnel shopTunnel: _order.getShop().getTunnels()) {
-									if (shopTunnel.getDefaultOption()) {
+									// 匹配到通道
+									if (shopTunnel.getId().longValue() == productShopTunnel.getTunnelId().longValue()) {
 										if (shopTunnel.getDefaultWarehouseId().longValue() == assginWarehouseId) {
 											break;
 										} else {
-											//deletedItemIndexs.add(item.getId().intValue());
-											//_order.getItems().remove(item);
 											deletedItems.add(item);
+											exit = true;
 											break;
 										}
 									}
 								}
 							}
-						} else {
+							if (exit) {
+								break;
+							}
+						}
+						
+						if (!match) {
 							// 3.判断订单店铺下的默认通道的默认仓库是否和查询的warehouseId相等
 							for (ShopTunnel shopTunnel: _order.getShop().getTunnels()) {
 								if (shopTunnel.getDefaultOption()) {
 									if (shopTunnel.getDefaultWarehouseId().longValue() == assginWarehouseId) {
 										break;
 									} else {
-										//deletedItemIndexs.add(item.getId().intValue());
-										//_order.getItems().remove(item);
 										deletedItems.add(item);
 										break;
 									}
 								}
 							}
 						}
+					} else {
+						// 3.判断订单店铺下的默认通道的默认仓库是否和查询的warehouseId相等
+						for (ShopTunnel shopTunnel: _order.getShop().getTunnels()) {
+							if (shopTunnel.getDefaultOption()) {
+								if (shopTunnel.getDefaultWarehouseId().longValue() == assginWarehouseId) {
+									break;
+								} else {
+									deletedItems.add(item);
+									break;
+								}
+							}
+						}
 					}
 				}
+			}
+			
+			if (deletedItems.size() > 0) {
 				
-				if (deletedItems.size() > 0) {
-					
-					_order.getItems().removeAll(deletedItems);
+				_order.getItems().removeAll(deletedItems);
+			}
+		}
+	}
+	
+	public void confirmOrderWhenGenerateOutInventory(List<Order> orders, Long assginWarehouseId) {
+		boolean sameWarehouse = true;
+		boolean productInventoryEnough = true;
+		boolean orderExistOutInventorySheet = false;
+		boolean noOrders = false;
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("sameWarehouse", true);
+		map.put("productInventoryNotEnough", false);
+		map.put("orderExistOutInventorySheet", false);
+		map.put("noOrders", false);
+		map.put("productInventoryNotEnoughOrders", new ArrayList<Order>());
+		map.put("existOutInventorySheetOrders", new ArrayList<Order>());
+		
+		if (assginWarehouseId != null) {
+			
+		} else {
+			Inventory inventoryQuery = new Inventory();
+			inventoryQuery.setWarehouseId(assginWarehouseId);
+			
+			List<Inventory> inventories = inventoryService.getInventories(inventoryQuery, null);
+			List<Product> products = inventoryService.refreshInventory(inventories);
+			
+			//循环订单
+			for (Order order: orders) {
+				//循环item
+				for (OrderItem item: order.getItems()) {
+					// 循环products,判断当前的item是否就是当前的产品
+					for (Product product: products) {
+						if (item.getProduct().getSku().equals(product.getSku())) {
+							//将当前的item订购的数量和产品在指定仓库下的库存相比较
+							if (product.getTotal().longValue() - item.getQtyOrdered().longValue() < 0) {
+								//库存不足,将订单放入productInventoryNotEnoughOrders列表
+								((List<Order>)map.get("productInventoryNotEnoughOrders")).add(order);
+								map.put("productInventoryNotEnough", true);
+							}
+							break;
+						}
+					}
+				}
+				//循环当前订单下的所有出库单，判断在指定仓库下已有出库单
+				for (OrderBatch orderBatch: order.getBatches()) {
+					if (orderBatch.getWarehouseId().longValue() == assginWarehouseId.longValue()) {
+						// 当前订单在指定仓库中已存在一张出库单
+						((List<Order>)map.get("existOutInventorySheetOrders")).add(order);
+						map.put("productInventoryNotEnough", true);
+						break;
+					}
 				}
 			}
 		}
-		return page;
+		
 	}
 
 	private Specification<Order> getOrderSpecification(Order order) {
@@ -349,5 +414,29 @@ public class OrderService {
 
 	public Page<OrderItem> getPagedOrderItems(Pageable pageable) {
 		return this.orderItemRepository.findAll(pageable);
+	}
+	
+	/*
+	 * OrderBatch
+	 */
+	
+	public OrderBatch saveOrderBatch(OrderBatch orderBatch) {
+		return this.orderBatchRepository.save(orderBatch);
+	}
+
+	public void deleteOrderBatch(Long id) {
+		this.orderBatchRepository.delete(id);
+	}
+
+	public OrderBatch getOrderBatch(Long id) {
+		return this.orderBatchRepository.findOne(id);
+	}
+
+	public List<OrderBatch> getOrderBatches(Sort sort) {
+		return this.orderBatchRepository.findAll(sort);
+	}
+
+	public Page<OrderBatch> getPagedOrderBatches(Pageable pageable) {
+		return this.orderBatchRepository.findAll(pageable);
 	}
 }
