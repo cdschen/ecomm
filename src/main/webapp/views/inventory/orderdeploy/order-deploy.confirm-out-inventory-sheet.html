@@ -15,16 +15,16 @@
                             <div class="panel-body" style="margin-bottom: 5px;">
                                 <h5 class="text-info" style="margin:3px 0 7px"><strong>摘要</strong></h5>
                                 <div class="row" style="margin-bottom: 7px;">
-                                    <div class="col-md-9 col-md-offset-1">操作：</div>
+                                    <div class="col-md-9 col-md-offset-1">操作：生成出库单时复核</div>
                                     <div class="col-md-2"></div>
                                 </div>
                                 <div class="row" style="margin-bottom: 7px;">
-                                    <div class="col-md-9 col-md-offset-1">时间：</div>
+                                    <div class="col-md-9 col-md-offset-1">时间：{{ operateDate | date:'yyyy-MM-dd HH:mm'}}</div>
                                     <div class="col-md-2">
                                     </div>
                                 </div>
                                 <div class="row" style="margin-bottom: 7px;">
-                                    <div class="col-md-9 col-md-offset-1">操作员：</div>
+                                    <div class="col-md-9 col-md-offset-1">操作员：{{user().username}}</div>
                                     <div class="col-md-2">
                                     </div>
                                 </div>
