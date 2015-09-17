@@ -484,6 +484,9 @@ angular.module('ecommApp')
                 });
                 if (orderService.selectedOrders.length > 0) {
                     $scope.toggleOutInventorySheetSlide();
+                    orderService.ordersConfirmOrderDeploy(orderService.selectedOrders).then(function(orders){
+                        console.log(orders);
+                    });
                 } else {
                     toastr.error('请选择至少一个订单!');
                 }

@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -90,12 +91,27 @@ public class OrderItem implements Serializable {
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "product_id")
 	private Product product;
+	
+	@Transient
+	private ShopTunnel assignTunnel;
 
 	//
 
 	public Long getId() {
 		return id;
 	}
+
+	public ShopTunnel getAssignTunnel() {
+		return assignTunnel;
+	}
+
+
+
+	public void setAssignTunnel(ShopTunnel assignTunnel) {
+		this.assignTunnel = assignTunnel;
+	}
+
+
 
 	public Long getWarehouseId() {
 		return warehouseId;

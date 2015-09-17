@@ -1,6 +1,8 @@
 package com.sooeez.ecomm.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,10 +48,12 @@ public class OrderController {
 		return this.orderService.getPagedOrdersForOrderDeploy(order, pageable);
 	}
 	
-//	@RequestMapping(value = "/orders/confirm/orderdeploy")
-//	public Page<Order> getPageOrdersConfirmOrderDeploy(Order order) {
-//		return this.orderService.getPagedOrdersForOrderDeploy(order, pageable);
-//	}
+	@RequestMapping(value = "/orders/confirm/orderdeploy")
+	public Map<String, Object> ordersConfirmOrderDeploy(@RequestBody List<Order> orders) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("orders", orders);
+		return map;
+	}
 	
 	@RequestMapping(value = "/orders/get/all")
 	public List<Order> getOrders(Order order, Sort sort) {

@@ -287,6 +287,69 @@ public class OrderService {
 		}
 	}
 	
+	/* 检查order下的item,是否有指定的默认仓库，如果没有则赋值 */
+	public void checkItemProductShopTunnel(Order order) {
+		// 循环items
+		for (OrderItem item: order.getItems()) {
+			// 判断当前item上是否有指定仓库
+			if (item.getWarehouseId() != null) {
+				boolean exitShopTunnels = false;
+				// 循环当前订单所属店铺的所有通道
+				for (ShopTunnel tunnel: order.getShop().getTunnels()) {
+					// 循环每个通道下的仓库
+					for (Warehouse warehouse: tunnel.getWarehouses()) {
+						// 判断当前仓库id是否和item上指定的仓库id一样
+						if (warehouse.getId().longValue() == item.getWarehouseId().longValue()) {
+							// 设置指定通道，和设置指定通道的默认仓库
+							item.setAssignTunnel(tunnel);
+							item.getAssignTunnel().setDefaultWarehouse(warehouse);
+							exitShopTunnels = true;
+							break;
+						}
+					}
+				}
+				if (!exitShopTunnels) {
+					break;
+				}
+			} else {
+				// 如果item上没有指定仓库，检查item关联的商品上是否有设置商品通道
+				if (item.getProduct().getShopTunnels().size() > 0) {
+					boolean match = false;
+					// 循环item关联商品的设置的通道
+					for (ProductShopTunnel productShopTunnel: item.getProduct().getShopTunnels()) {
+						// 判断当前商品通道的店铺是不是订单的店铺
+						if (productShopTunnel.getShopId().longValue() == order.getShop().getId().longValue()) {
+							match = true;
+							// 循环店铺通道
+							for (ShopTunnel tunnel: order.getShop().getTunnels()) {
+								// 判断店铺通过的id是不是和商品指定通道的id相等
+								if (tunnel.getId().longValue() == productShopTunnel.getTunnelId()) {
+									item.setAssignTunnel(tunnel);
+									for (Warehouse warehouse: tunnel.getWarehouses()) {
+										// 判断当前仓库id是否和item上指定的仓库id一样
+										if (warehouse.getId().longValue() == item.getAssignTunnel().getDefaultWarehouseId().longValue()) {
+											item.getAssignTunnel().setDefaultWarehouse(warehouse);
+											break;
+										}
+									}
+									break;
+								}
+							}
+							break;
+						}
+					}
+					
+					// 如果商品指定的通道没有一个和当前订单店铺的通道吻合
+					if (!match) {
+						item.setAssignTunnel(order.getShop().getDefaultTunnel());
+					}
+				} else { // item没有设置商品通道
+					item.setAssignTunnel(order.getShop().getDefaultTunnel());
+				}
+			}
+		}
+	}
+	
 	/* 验证订单是否都在同一个仓库 */
 	public Map<String, Object> confirmDifferentWarehouse(List<Order> orders, Long assginWarehouseId) {
 		Map<String, Object> map = new HashMap<>();

@@ -47,7 +47,7 @@ public class Shop implements Serializable {
 
 	@Column(name = "init_process_step_id", insertable = false, updatable = false)
 	private Long initProcessStepId;
-	
+
 	@Column(name = "deploy_process_step_id", insertable = false, updatable = false)
 	private Long deployProcessStepId;
 
@@ -82,7 +82,7 @@ public class Shop implements Serializable {
 	@OneToOne
 	@JoinColumn(name = "init_process_step_id")
 	private ProcessStep initStep;
-	
+
 	@OneToOne
 	@JoinColumn(name = "deploy_process_step_id")
 	private ProcessStep deployStep;
@@ -99,9 +99,20 @@ public class Shop implements Serializable {
 	@JoinColumn(name = "shop_id")
 	private List<ShopTunnel> tunnels;
 
+	@Transient
+	private ShopTunnel defaultTunnel;
+
 	//
 
 	public Shop() {
+	}
+
+	public ShopTunnel getDefaultTunnel() {
+		return defaultTunnel;
+	}
+
+	public void setDefaultTunnel(ShopTunnel defaultTunnel) {
+		this.defaultTunnel = defaultTunnel;
 	}
 
 	public Long getDeployProcessStepId() {
