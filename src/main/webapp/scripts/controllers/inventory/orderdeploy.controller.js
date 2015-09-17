@@ -500,6 +500,7 @@ angular.module('ecommApp')
         /* 生成单个发货单 */
         $scope.openGenerateSingleShipmentModal = function(order)
         {
+            console.log('openGenerateSingleShipmentModal');
             $scope.finalSingleShipment.length = 0;
             $scope.finalSingleShipment.push(setOrderAndItemsToShipmentAndItemsThenReturn(order));
 
