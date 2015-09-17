@@ -29,14 +29,6 @@
                         <td width="30%">
                         </td>
                         <td width="32%">
-                            <!-- <div class="panel panel-default">
-                                <div class="panel-body">
-                                    <a href="" class="btn btn-info btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-repeat="status in query.statuses"> 
-                                        {{status.name}} <span class="glyphicon glyphicon-remove" sytle="color:white" ng-click="selectStatus(status)"></span>
-                                    </a>
-                                    <a href="" class="btn btn-primary btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-click="loadStatus()">选择状态</a>
-                                </div>
-                            </div> -->
                         </td>
                         <td width="14%">
                             <div class="form-group pull-right">
@@ -66,10 +58,7 @@
                     <th width="10%" style="padding: 2px">
                         <select class="form-control input-sm" ng-change="batch_manipulation()" ng-model="batch_manipulation_value">
                             <option selected="selected" value="batch_manipulation">批量操作</option>
-                            <option>批量上架</option>
-                            <option>批量下架</option>
-                            <option>批量更名</option>
-                            <option>批量作废</option>
+                            <option value="generate_out_inventory_sheet">生成出库单</option>
                             <option value="generate_shipment">批量生成快递单号</option>
                         </select>
                     </th>
@@ -105,14 +94,6 @@
                                                 </ui-select-choices>
                                             </ui-select>
                                         </section>
-                                        <!--<section ng-show="!item.assignTunnel">-->
-                                            <!--<ui-select ng-model="order.shop.defaultTunnel.defaultWarehouse">-->
-                                                <!--<ui-select-match placeholder="请选择仓库">{{$select.selected.name}}</ui-select-match>-->
-                                                <!--<ui-select-choices repeat="warehouse in order.shop.defaultTunnel.warehouses | filter: $select.search">-->
-                                                    <!--<div ng-bind-html="warehouse.name | highlight: $select.search"></div>-->
-                                                <!--</ui-select-choices>-->
-                                            <!--</ui-select>-->
-                                        <!--</section>-->
                                     </td>
                                 </tr>
                             </tbody>
@@ -157,3 +138,4 @@
 </div>
 <section ng-include="template.status.url"></section>
 <section ng-include="template.generateShipment.url"></section>
+<section ng-include="template.generateOutInventorySheet.url" ng-controller="ConfirmOutInventorySheetController" onload="init()"></section>

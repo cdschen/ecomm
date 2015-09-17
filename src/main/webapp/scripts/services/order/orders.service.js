@@ -27,37 +27,59 @@ angular.module('ecommApp')
         var items = order.items;
         $.each(items, function() {
             var item = this;
-            if (item.product.shopTunnels.length > 0) {
-                console.log('---------------' + item.product);
-                console.log(item.product);
-                $.each(item.product.shopTunnels, function() {
-                    var productShopTunnel = this;
-                    if (productShopTunnel.shopId === order.shop.id) {
-                        console.log('匹配到店铺');
-                        $.each(order.shop.tunnels, function() {
-                            var tunnel = this;
-                            if (tunnel.id === productShopTunnel.tunnelId) {
-                                console.log('匹配到通道');
-                                item.assignTunnel = tunnel;
-                                $.each(tunnel.warehouses, function() {
-                                    if (item.assignTunnel.defaultWarehouseId === this.id) {
-                                        item.assignTunnel.defaultWarehouse = this;
-                                        return false;
-                                    }
-                                });
-                                return false;
-                            }
-                        });
+            if (item.warehouseId) {
+                var exitShopTunnels = false;
+                $.each(order.shop.tunnels, function() {
+                    var tunnel = this;
+                    $.each(tunnel.warehouses, function() {
+                        var warehouse = this;
+                        if (warehouse.id === item.warehouseId) {
+                            item.assignTunnel = angular.copy(tunnel);
+                            item.assignTunnel.defaultWarehouse = angular.copy(this);
+                            exitShopTunnels = true;
+                            return false;
+                        }
+                    });
+                    if (!exitShopTunnels) {
                         return false;
                     }
-                })
-            }
-            else
-            {
-                item.assignTunnel = order.shop.defaultTunnel;
+                });
+            } else {
+                if (item.product.shopTunnels.length > 0) {
+                    var match = false;
+                    $.each(item.product.shopTunnels, function() {
+                        var productShopTunnel = this;
+                        if (productShopTunnel.shopId === order.shop.id) {
+                            match = true;
+                            $.each(order.shop.tunnels, function() {
+                                var tunnel = this;
+                                if (tunnel.id === productShopTunnel.tunnelId) {
+                                    item.assignTunnel = angular.copy(tunnel);
+                                    $.each(tunnel.warehouses, function() {
+                                        if (item.assignTunnel.defaultWarehouseId === this.id) {
+                                            item.assignTunnel.defaultWarehouse = angular.copy(this);
+                                            return false;
+                                        }
+                                    });
+                                    return false;
+                                }
+                            });
+                            return false;
+                        }
+                    });
+
+                    if (!match) {
+                        item.assignTunnel = angular.copy(order.shop.defaultTunnel);
+                    }
+                } else {
+                    item.assignTunnel = angular.copy(order.shop.defaultTunnel);
+                }
             }
         });
     };
+
+    order.selectedOrders = [];
+
 
     return order;
 }])

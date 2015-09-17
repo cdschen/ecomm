@@ -46,6 +46,11 @@ public class OrderController {
 		return this.orderService.getPagedOrdersForOrderDeploy(order, pageable);
 	}
 	
+//	@RequestMapping(value = "/orders/confirm/orderdeploy")
+//	public Page<Order> getPageOrdersConfirmOrderDeploy(Order order) {
+//		return this.orderService.getPagedOrdersForOrderDeploy(order, pageable);
+//	}
+	
 	@RequestMapping(value = "/orders/get/all")
 	public List<Order> getOrders(Order order, Sort sort) {
 		return this.orderService.getOrders(order, sort);

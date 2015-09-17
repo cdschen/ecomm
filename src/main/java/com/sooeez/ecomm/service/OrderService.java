@@ -133,9 +133,11 @@ public class OrderService {
 	}
 	
 	public Page<Order> getPagedOrdersForOrderDeploy(Order order, Pageable pageable) {
+
+		long assginWarehouseId = order.getWarehouseId() != null ? order.getWarehouseId().longValue() : 0;
 		
 		findAvailableDeployOrder(order);
-		long assginWarehouseId = order.getWarehouseId() != null ? order.getWarehouseId().longValue() : 0;
+		
 		Page<Order> page = this.orderRepository.findAll(getOrderSpecification(order), pageable);
 		if (page != null && page.getContent() != null && page.getContent().size() > 0 && assginWarehouseId > 0) {
 			filterItemsForOrder(page.getContent(), assginWarehouseId);
@@ -285,19 +287,34 @@ public class OrderService {
 		}
 	}
 	
+	/* 验证订单是否都在同一个仓库 */
+	public Map<String, Object> confirmDifferentWarehouse(List<Order> orders, Long assginWarehouseId) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("differentWarehouseError", false);
+		map.put("differnetWarehouseErrorOrders", null);
+		
+		List<String> sameWarehouseNames = new ArrayList<>();
+		
+		// 循环order
+		for (Order order: orders) {
+			// 循环 order item
+			for (OrderItem item: order.getItems()) {
+				
+			}
+		}
+		
+		return map;
+	}
+	
 	public void confirmOrderWhenGenerateOutInventory(List<Order> orders, Long assginWarehouseId) {
-		boolean sameWarehouse = true;
-		boolean productInventoryEnough = true;
-		boolean orderExistOutInventorySheet = false;
-		boolean noOrders = false;
 		
 		Map<String, Object> map = new HashMap<>();
-		map.put("sameWarehouse", true);
-		map.put("productInventoryNotEnough", false);
-		map.put("orderExistOutInventorySheet", false);
-		map.put("noOrders", false);
-		map.put("productInventoryNotEnoughOrders", new ArrayList<Order>());
-		map.put("existOutInventorySheetOrders", new ArrayList<Order>());
+		map.put("differentWarehouseError", true);
+		map.put("differnetWarehouseErrorOrders", null);
+		map.put("productInventoryNotEnoughError", false);
+		map.put("productInventoryNotEnoughErrorOrders", new ArrayList<Order>());
+		map.put("orderExistOutInventorySheetError", false);
+		map.put("orderExistOutInventorySheetErrorOrders", new ArrayList<Order>());
 		
 		if (assginWarehouseId != null) {
 			
