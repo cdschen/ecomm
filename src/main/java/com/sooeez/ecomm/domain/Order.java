@@ -3,7 +3,9 @@ package com.sooeez.ecomm.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -243,10 +245,21 @@ public class Order implements Serializable {
 	@Transient
 	private Long warehouseId;
 
+	@Transient
+	Map<String, Object> checkMap = new HashMap<>();
+
 	//
 
 	public Long getId() {
 		return id;
+	}
+
+	public Map<String, Object> getCheckMap() {
+		return checkMap;
+	}
+
+	public void setCheckMap(Map<String, Object> checkMap) {
+		this.checkMap = checkMap;
 	}
 
 	public List<OrderBatch> getBatches() {
