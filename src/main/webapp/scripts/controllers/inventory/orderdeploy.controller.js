@@ -9,6 +9,9 @@ angular.module('ecommApp')
             },
             generateShipment: {
                 url: 'views/inventory/orderdeploy/order-deploy.shipment-generate.html?' + (new Date())
+            },
+            generateOutInventorySheet: {
+                url: 'views/inventory/orderdeploy/order-deploy.confirm-out-inventory-sheet.html?' + (new Date())
             }
         };
 
@@ -30,6 +33,7 @@ angular.module('ecommApp')
         $scope.statusSlideChecked = false;
 
         $scope.generateShipmentCheckListSlideChecked = false;
+        $scope.generateOutInventorySheetCheckListSlideChecked = false;
         $scope.couriers = [];
 
         // 将所有店铺过滤，拿出所有配置了配送状态的店铺的ID
@@ -72,7 +76,7 @@ angular.module('ecommApp')
                 console.log($scope.query.statuses);
             });
         }).then(function() { // 导入所有库存, 按仓库分组
-            return Inventory.getAll({
+            /*return Inventory.getAll({
                 sort: ['productId', 'inventoryBatchId']
             }).then(function(inventories) {
                 $scope.inventory = Inventory.refreshByWarehouse($scope.warehouses, inventories);
@@ -82,7 +86,7 @@ angular.module('ecommApp')
                 });
                 console.log('inventory:');
                 console.log($scope.inventory);
-            });
+            });*/
         }).then(function() {
             orderService.getPagedOrdersForOrderDeploy({
                 page: 0,
@@ -113,16 +117,15 @@ angular.module('ecommApp')
                 sort: ['internalCreateTime,desc'],
                 warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
                 shopId: $scope.query.shop ? $scope.query.shop.id : null,
-                //statusIds: Process.refreshStatus($scope.query.statuses),
                 deleted: false
             }).then(function(page) {
                 console.log('page:');
                 console.log(page);
                 $scope.page = page;
-                // $.each(page.content, function() {
-                //     Shop.initShopDefaultTunnel(this.shop);
-                //     orderService.checkItemProductShopTunnel(this);
-                // });
+                $.each(page.content, function() {
+                    Shop.initShopDefaultTunnel(this.shop);
+                    orderService.checkItemProductShopTunnel(this);
+                });
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
             });
         };
@@ -139,7 +142,6 @@ angular.module('ecommApp')
                 sort: ['internalCreateTime,desc'],
                 warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
                 shopId: $scope.query.shop ? $scope.query.shop.id : null,
-                statusIds: Process.refreshStatus($scope.query.statuses),
                 deleted: false
             }, function(page) {
                 console.log('page:');
@@ -160,6 +162,10 @@ angular.module('ecommApp')
 
         $scope.loadGenerateShipment = function() {
             $scope.generateShipmentCheckListSlideChecked = true;
+        };
+
+        $scope.toggleOutInventorySheetSlide = function(){
+           $scope.generateOutInventorySheetCheckListSlideChecked = !$scope.generateOutInventorySheetCheckListSlideChecked;
         };
 
         /* 开始：检查表存放的数据 */
@@ -347,7 +353,6 @@ angular.module('ecommApp')
             }
         };
 
-
         $scope.generateFinalShipment = function()
         {
             console.log('$scope.shipment_generate_type: ' + $scope.shipment_generate_type);
@@ -357,30 +362,31 @@ angular.module('ecommApp')
             console.log($scope.finalMultipleShipment);
         };
 
-        /* 发货时要改变的字段 */
-        //`create_time` datetime NOT NULL,     #创建时间
-        //`courier_id` varchar(255) NOT NULL,             #快递公司id
-        //`ship_number` varchar(255),          #快递单号
-        //`qty_total_item_shipped` int NOT NULL DEFAULT 0, #已发货商品总件数
-        //`shipping_fee` decimal(14,2) NOT NULL,  #运费金额
-        //`grand_total` decimal(14,2) NOT NULL,  #订单总金额 = 商品金额(subtotal) + 运费(shipping_fee)
-        // `shipping_description` varchar(255),      #店铺要求的发货方式描述， 可以为空， 也未必真的通过这种方式发货
-        // `delivery_method` tinyint,                #发货方式， 1=快递， 2=自提， 3=送货上门
-        //`pickup_time` datetime,              #快递取件时间
-        //`shipfee_cost` decimal(14,2)  NOT NULL,  #运费成本
+        $scope.confirmSameWarehouseBySelectedOrders = function(orders) {
+            var sameWarehouses = [];
+            var differentWarehouseError = false;
+            $.each(orders, function(){
+                var order = this;
+                console.log(order.id);
+                $.each(order.items, function(){
+                    var item = this;
+                    if (item.assignTunnel) {
+                        sameWarehouses.push(item.assignTunnel.defaultWarehouse.name);
+                        $.each(sameWarehouses,function(){
+                            if (this !== item.assignTunnel.defaultWarehouse.name) {
+                                console.log(item.id +':'+item.assignTunnel.defaultWarehouse.name);
+                                differentWarehouseError = true;
+                                return false;
+                            }
+                        });
+                    }
+                });
+            });
 
-        //`last_update` datetime NOT NULL,              #运单最近更新时间
-        //`last_update_time` datetime NOT NULL,   #订单最近更新时间
-
-
-        /* 收货时要改变的字段 */
-        //`ship_status` tinyint NOT NULL,      #发货单状态： 1: 待取件， 2: 已发出， 3： 已签收， 4： 派送异常
-        //`signup_time` datetime,              #签收时间
-        //`last_update` datetime NOT NULL,              #运单最近更新时间
-        //`last_update_time` datetime NOT NULL,   #订单最近更新时间
-
-
-
+            if (differentWarehouseError) {
+                toastr.error('选择的订单中的细目来自不同的仓库，请调整.');
+            }
+        };
 
         /* 将选中订单及其商品数据转成发货单及发货商品数据后返回 */
         function setOrderAndItemsToShipmentAndItemsThenReturn(order)
@@ -467,6 +473,26 @@ angular.module('ecommApp')
 
             }
 
+            if ($scope.batch_manipulation_value === 'generate_out_inventory_sheet') {
+                var orders = $scope.page.content;
+                orderService.selectedOrders.length = 0;
+                $.each(orders, function(){
+                    var order = this;
+                    if (order.isSelected) {
+                        orderService.selectedOrders.push(angular.copy(order));
+                    }
+                });
+                if (orderService.selectedOrders.length > 0) {
+                    $scope.toggleOutInventorySheetSlide();
+                } else {
+                    toastr.error('请选择至少一个订单!');
+                }
+            }
+
+            /* 重置错误提示信息 */
+            $scope.isAnyError = false;
+            $scope.batch_manipulation_value = 'batch_manipulation';
+
             /* 重置错误提示信息 */
             //$scope.isAnyError = false;
         };
@@ -474,6 +500,7 @@ angular.module('ecommApp')
         /* 生成单个发货单 */
         $scope.openGenerateSingleShipmentModal = function(order)
         {
+            console.log('openGenerateSingleShipmentModal');
             $scope.finalSingleShipment.length = 0;
             $scope.finalSingleShipment.push(setOrderAndItemsToShipmentAndItemsThenReturn(order));
 
@@ -570,5 +597,29 @@ angular.module('ecommApp')
             $scope.generateShipmentCheckListSlideChecked = true;
             console.log('---------------结束：生成检查表结果---------------');
         };
+    
+
+     /* 发货时要改变的字段 */
+        //`create_time` datetime NOT NULL,     #创建时间
+        //`courier_id` varchar(255) NOT NULL,             #快递公司id
+        //`ship_number` varchar(255),          #快递单号
+        //`qty_total_item_shipped` int NOT NULL DEFAULT 0, #已发货商品总件数
+        //`shipping_fee` decimal(14,2) NOT NULL,  #运费金额
+        //`grand_total` decimal(14,2) NOT NULL,  #订单总金额 = 商品金额(subtotal) + 运费(shipping_fee)
+        // `shipping_description` varchar(255),      #店铺要求的发货方式描述， 可以为空， 也未必真的通过这种方式发货
+        // `delivery_method` tinyint,                #发货方式， 1=快递， 2=自提， 3=送货上门
+        //`pickup_time` datetime,              #快递取件时间
+        //`shipfee_cost` decimal(14,2)  NOT NULL,  #运费成本
+
+        //`last_update` datetime NOT NULL,              #运单最近更新时间
+        //`last_update_time` datetime NOT NULL,   #订单最近更新时间
+
+
+        /* 收货时要改变的字段 */
+        //`ship_status` tinyint NOT NULL,      #发货单状态： 1: 待取件， 2: 已发出， 3： 已签收， 4： 派送异常
+        //`signup_time` datetime,              #签收时间
+        //`last_update` datetime NOT NULL,              #运单最近更新时间
+        //`last_update_time` datetime NOT NULL,   #订单最近更新时间
+
     }
 ]);

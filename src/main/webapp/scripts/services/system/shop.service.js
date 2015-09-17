@@ -17,10 +17,10 @@ angular.module('ecommApp')
     	$.each(shop.tunnels, function(){
     		var tunnel = this;
     		if (tunnel.defaultOption) {
-    			shop.defaultTunnel = tunnel;
+    			shop.defaultTunnel = angular.copy(tunnel);
     			$.each(tunnel.warehouses, function(){
     				if (shop.defaultTunnel.defaultWarehouseId === this.id) {
-    					shop.defaultTunnel.defaultWarehouse = this;
+    					shop.defaultTunnel.defaultWarehouse = angular.copy(this);
     					return false;
     				}
     			});
