@@ -164,27 +164,27 @@ public class InventoryController {
 	 * Courier
 	 */
 	
-	@RequestMapping(value = "/couerirs/{id}")
+	@RequestMapping(value = "/couriers/{id}")
 	public Courier getCouerirs(@PathVariable("id") Long id) {
 		return this.courierService.getCourier(id);
 	}
 	
-	@RequestMapping(value = "/couerirs")
+	@RequestMapping(value = "/couriers")
 	public Page<Courier> getPagedCouriers(Pageable pageable) {
 		return this.courierService.getPagedCouriers(pageable);
 	}
 	
-	@RequestMapping(value = "/couerirs/get/all")
+	@RequestMapping(value = "/couriers/get/all")
 	public List<Courier> getCouriers() {
 		return this.courierService.getCouriers();
 	}
 	
-	@RequestMapping(value = "/couerirs", method = RequestMethod.POST)
+	@RequestMapping(value = "/couriers", method = RequestMethod.POST)
 	public Courier saveCourier(@RequestBody Courier courier) {
 		return this.courierService.saveCourier(courier);
 	}
 	
-	@RequestMapping(value = "/couerirs/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/couriers/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteCourier(@PathVariable("id") Long id) {
 		this.courierService.deleteCourier(id);
 		return new ResponseEntity<>(HttpStatus.OK);

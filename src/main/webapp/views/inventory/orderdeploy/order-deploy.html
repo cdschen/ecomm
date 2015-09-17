@@ -102,7 +102,7 @@
                     <td>
                     </td>
                     <td>
-                        <a href="javascript:;" class="btn btn-primary btn-block" ng-click="generateShipment(order)">生成快递单号</a>
+                        <a href="javascript:;" class="btn btn-primary btn-block" ng-click="openGenerateSingleShipmentModal(order)">生成发货单</a>
                     </td>
                 </tr>
             </tbody>
@@ -136,6 +136,39 @@
         </div>
     </div>
 </div>
+
+<!-- generateShipment Modal -->
+<div class="modal fade" id="generateShipment">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">请选择一家快递公司</h3>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <ui-select ng-model="courier.selected">
+                        <ui-select-match placeholder="快递公司">{{$select.selected.name}}</ui-select-match>
+                        <ui-select-choices repeat="courier in couriers | filter: $select.search">
+                            <div ng-bind-html="courier.name | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" ng-model="startShipmentNumber" placeholder="起始快递单号" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group">
+                    <button class="btn btn-primary" type="button" ng-click="confirmGenerateShipmentModal()">确认生成</button>
+                    <button class="btn btn-warning" type="button" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <section ng-include="template.status.url"></section>
 <section ng-include="template.generateShipment.url"></section>
 <section ng-include="template.generateOutInventorySheet.url" ng-controller="ConfirmOutInventorySheetController" onload="init()"></section>
+
