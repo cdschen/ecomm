@@ -182,10 +182,22 @@ public class Product implements Serializable {
 	// 产品在某一个仓库的库存量
 	@Transient
 	private Long total;
+	
+	// 产品所在仓库
+	@Transient
+	private List<Warehouse> warehouses = new ArrayList<>();
 
 	//
 
 	public Product() {
+	}
+
+	public List<Warehouse> getWarehouses() {
+		return warehouses;
+	}
+
+	public void setWarehouses(List<Warehouse> warehouses) {
+		this.warehouses = warehouses;
 	}
 
 	public Long getTotal() {

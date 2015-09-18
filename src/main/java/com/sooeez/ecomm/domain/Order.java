@@ -2,6 +2,7 @@ package com.sooeez.ecomm.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -239,7 +240,7 @@ public class Order implements Serializable {
 
 	/* 订单编号组 */
 	@Transient
-	private List<Long> orderIds;
+	private List<Long> orderIds = new ArrayList<>();
 
 	/* 仓库ID */
 	@Transient

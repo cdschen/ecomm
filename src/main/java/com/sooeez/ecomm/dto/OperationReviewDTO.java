@@ -12,7 +12,7 @@ import com.sooeez.ecomm.domain.Order;
 public class OperationReviewDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	/* Action */
 	public static final String VERIFY = "VERIFY";
 	public static final String CONFIRM = "CONFIRM";
@@ -28,13 +28,12 @@ public class OperationReviewDTO implements Serializable {
 	private String action;
 	/* 复核是否全部通过 */
 	private boolean reviewPass = true;
-	
+
 	/* Logic-Related Attributes */
 	/* 订单验证 */
 	private List<Order> orders;
 	/* 选中快递公司验证 */
 	private Courier selectedCourier;
-
 
 	public boolean isReviewPass() {
 		return reviewPass;
@@ -91,6 +90,5 @@ public class OperationReviewDTO implements Serializable {
 	public void setSelectedCourier(Courier selectedCourier) {
 		this.selectedCourier = selectedCourier;
 	}
-	
 
 }
