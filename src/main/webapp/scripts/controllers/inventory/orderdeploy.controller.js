@@ -35,7 +35,7 @@ angular.module('ecommApp')
         $scope.inventory = {}; // 库存对象，里面每一个子属性都是一个仓库，仓库的值是一个归类好的产品数组
         $scope.statusSlideChecked = false;
 
-        $scope.generateShipmentCheckListSlideChecked = false;
+        $scope.generateShipmentSheetCheckListSlideChecked = false;
         $scope.generateOutInventorySheetCheckListSlideChecked = false;
         $scope.couriers = [];
 
