@@ -76,20 +76,8 @@ angular.module('ecommApp')
             }).then(function(shops) {
                 $scope.shops = shops;
                 $scope.selectAllShops(shops);
-                console.log($scope.query.statuses);
+                //console.log($scope.query.statuses);
             });
-        }).then(function() { // 导入所有库存, 按仓库分组
-            /*return Inventory.getAll({
-                sort: ['productId', 'inventoryBatchId']
-            }).then(function(inventories) {
-                $scope.inventory = Inventory.refreshByWarehouse($scope.warehouses, inventories);
-                $.each($scope.inventory, function(key, value) {
-                    var warehouse = value;
-                    warehouse.products = Inventory.refresh(warehouse.inventories);
-                });
-                console.log('inventory:');
-                console.log($scope.inventory);
-            });*/
         }).then(function() {
             orderService.getPagedOrdersForOrderDeploy({
                 page: 0,
@@ -491,8 +479,15 @@ angular.module('ecommApp')
                 });
                 if (orderService.selectedOrders.length > 0) {
                     $scope.toggleOutInventorySheetSlide();
-                    orderService.ordersConfirmOrderDeploy(orderService.selectedOrders).then(function(orders){
-                        console.log(orders);
+                    var params = {
+                        orders: orderService.selectedOrders,
+                        checkMap: {}
+                    };
+                    console.log('params:');
+                    console.log(params);
+                    orderService.confirmOrderWhenGenerateOutInventory(params).then(function(review){
+                        console.log('review:');
+                        console.log(review);
                     });
                 } else {
                     toastr.error('请选择至少一个订单!');
