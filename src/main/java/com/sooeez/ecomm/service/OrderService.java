@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.sooeez.ecomm.domain.Courier;
 import com.sooeez.ecomm.domain.Inventory;
 import com.sooeez.ecomm.domain.OrderBatch;
 import com.sooeez.ecomm.domain.OrderItem;
@@ -383,6 +384,7 @@ public class OrderService {
 			for (Order order: orders) {
 				order.getCheckMap().put("differentWarehouseError", true);
 			}
+			review.setReviewPass(false);
 			review.getCheckMap().put("differentWarehouseError", true);
 		} else {
 			for (Order order: orders) {
@@ -414,6 +416,82 @@ public class OrderService {
 				}
 			}
 		}*/
+	}
+	
+	public OperationReviewDTO confirmOrderWhenGenerateShipment(OperationReviewDTO review)
+	{
+		/* 获取订单列表 */
+		List<Order> orders = review.getOrders();
+		System.out.println("操作类型 ： " + review.getAction());
+			
+		/* 验证 1 ： 是否在统一仓库 */
+		this.confirmDifferentWarehouse(review);
+
+		
+		/* 验证 2 ： 全部订单的发货方式是否相同 */
+		Order lastOrder = review.getOrders().get( review.getOrders().size() - 1 );
+		review.getCheckMap().put("differentDeliveryMethodError", false);
+		for(Order order : orders)
+		{
+			if( ! order.getDeliveryMethod().equals(lastOrder.getDeliveryMethod())  )
+			{
+				/* 不通过 */
+				review.setReviewPass(false);
+				review.getCheckMap().put("differentDeliveryMethodError", true);
+				break;
+			}
+		}
+		
+		
+		/* 验证 3 ： 是否指定快递公司和起始快递单号 */
+		Courier selectedCourier = (Courier) review.getSelectedCourier();
+		String startShipNumber = (String) review.getDataMap().get("startShipNumber");
+		if(selectedCourier != null &&
+		  (startShipNumber != null && ! startShipNumber.equals("")))
+		{
+			review.getCheckMap().put("emptyCourierAndShipNumberError", false);
+		}
+		else
+		{
+			/* 不通过 */
+			review.setReviewPass(false);
+			review.getCheckMap().put("emptyCourierAndShipNumberError", true);
+		}
+		
+		
+		/* 验证 4 ： 订单在同一仓库下是否已存在发货单 */
+		
+		
+		/* 验证 5 ： 订单的收货地址是否为空 */
+		boolean isReceiveAddressEmpty = false;
+		review.getCheckMap().put("emptyReceiveAddressError", false);
+		for(Order order : orders)
+		{
+			if( order.getReceiveAddress() == null || order.getReceiveAddress().trim().equals("")  )
+			{
+				/* 当前订单不通过 */
+				isReceiveAddressEmpty = true;
+				order.getCheckMap().put("emptyReceiveAddressError", true);
+			}
+			else
+			{
+				/* 当前订单通过 */
+				order.getCheckMap().put("emptyReceiveAddressError", false);
+			}
+		}
+		System.out.println("isReceiveAddressEmpty: " + isReceiveAddressEmpty);
+		review.setReviewPass( ! isReceiveAddressEmpty);
+		review.getCheckMap().put("emptyReceiveAddressError", isReceiveAddressEmpty);
+		
+		
+		/* 如果验证全都通过，并且操作类型是 CONFIRM 则执行创建操作 */
+		if(review.isReviewPass() && review.getAction().equals(OperationReviewDTO.CONFIRM));
+		{
+			System.out.println("生成发货单操作复核检查项全部验证通过");
+		}
+		
+		return review;
+		
 	}
 	
 	public OperationReviewDTO confirmOrderWhenGenerateOutInventory(OperationReviewDTO review) {

@@ -1,11 +1,13 @@
 angular.module('ecommApp')
 
-.controller('ConfirmShipmentSheetController', ['$scope',
-    function($scope) {
+.controller('ConfirmShipmentSheetController', ['$scope', 'orderService',
+    function($scope, orderService) {
 
-        $scope.init = function() {
-            $scope.defaultHeight = {
-                height: $(window).height()/2
+        $scope.operateDate = Date.now();
+        $scope.operationReview = orderService.getOperationReview;
+        $scope.defaultHeight = function(){
+            return {
+                height: $(window).height() / 2
             };
         };
 

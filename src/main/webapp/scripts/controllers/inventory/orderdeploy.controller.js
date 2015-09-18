@@ -259,14 +259,11 @@ angular.module('ecommApp')
         // selected orders
         $scope.batch_manipulation_value = 'batch_manipulation';
         $scope.is_checked_all = false;
-        $scope.shipment_generate_type = '';
-        $scope.finalSingleShipment = [];
-        $scope.finalMultipleShipment = [];
         $scope.isAnyError = false;
         $scope.shopNeedToAssignTunnel = [];
         $scope.productNeedToInSameTunnel = [];
         $scope.selectedCourier = {};
-        $scope.startShipmentNumber = '';
+        $scope.startCourierNumber = '';
 
         $scope.checkAnyAvailable = function(order)
         {
@@ -348,15 +345,6 @@ angular.module('ecommApp')
             }
         };
 
-        $scope.generateFinalShipment = function()
-        {
-            console.log('$scope.shipment_generate_type: ' + $scope.shipment_generate_type);
-            console.log('$scope.finalSingleShipment: ');
-            console.log($scope.finalSingleShipment);
-            console.log('$scope.finalMultipleShipment: ');
-            console.log($scope.finalMultipleShipment);
-        };
-
         $scope.confirmSameWarehouseBySelectedOrders = function(orders) {
             var sameWarehouses = [];
             var differentWarehouseError = false;
@@ -429,72 +417,53 @@ angular.module('ecommApp')
         /* 生成多个订单的货运单  */
         $scope.batch_manipulation = function()
         {
-            $scope.finalMultipleShipment.length = 0;
-
-            if($scope.batch_manipulation_value == 'generate_shipment')
+            var orders = $scope.page.content;
+            orderService.selectedOrders.length = 0;
+            $.each(orders, function(){
+                var order = this;
+                if (order.isSelected) {
+                    orderService.selectedOrders.push(angular.copy(order));
+                }
+            });
+            if (orderService.selectedOrders.length > 0)
             {
-                //for(var order in $scope.page.content)
-                //{
-                //    var currentOrder = $scope.page.content[order];
-                //    if( currentOrder.isSelected )
-                //    {
-                //        $scope.finalMultipleShipment.push(setOrderAndItemsToShipmentAndItemsThenReturn(currentOrder));
-                //        //$scope.checkAnyAvailable(currentOrder);
-                //    }
-                //}
-                /* 判断是否有选中订单，没有则显示错误提示信息 */
-                if($scope.finalMultipleShipment && $scope.finalMultipleShipment.length > 0)
+                if($scope.batch_manipulation_value == 'generate_shipment')
                 {
-                    $scope.finalMultipleShipment.length = 0;
-                    /* 判断是否有错误提示信息，如果没有则可以生成快递单 */
-                    //if( ! $scope.isAnyErrorShowMsg() )
-                    //{
-                    for(var order in $scope.page.content)
-                    {
-                        var currentOrder = $scope.page.content[order];
-                        if( currentOrder.isSelected )
-                        {
-                            $scope.finalMultipleShipment.push(setOrderAndItemsToShipmentAndItemsThenReturn(currentOrder));
+                    $('#generateShipment').modal('show');
+                }
+
+                if ($scope.batch_manipulation_value === 'generate_out_inventory_sheet') {
+                    var orders = $scope.page.content;
+                    orderService.selectedOrders.length = 0;
+                    $.each(orders, function(){
+                        var order = this;
+                        if (order.isSelected) {
+                            orderService.selectedOrders.push(angular.copy(order));
                         }
-                    }
-                    $scope.shipment_generate_type = 'multiple';
-                    $scope.generateShipmentCheckListSlideChecked = true;
-                    //}
-                }
-                else
-                {
-                    toastr.error('请选择一到多个订单来继续！');
-                }
-
-            }
-
-            if ($scope.batch_manipulation_value === 'generate_out_inventory_sheet') {
-                var orders = $scope.page.content;
-                orderService.selectedOrders.length = 0;
-                $.each(orders, function(){
-                    var order = this;
-                    if (order.isSelected) {
-                        orderService.selectedOrders.push(angular.copy(order));
-                    }
-                });
-                if (orderService.selectedOrders.length > 0) {
-                    $scope.toggleOutInventorySheetSlide();
-                    var reviewDTO = {
-                        orders: orderService.selectedOrders
-                    };
-                    console.log('reviewDTO:');
-                    console.log(reviewDTO);
-                    orderService.confirmOrderWhenGenerateOutInventory(reviewDTO).then(function(review){
-                        console.log('review:');
-                        console.log(review);
                     });
-                } else {
-                    toastr.error('请选择至少一个订单!');
+                    if (orderService.selectedOrders.length > 0) {
+                        $scope.toggleOutInventorySheetSlide();
+                        var reviewDTO = {
+                            orders: orderService.selectedOrders
+                        };
+                        console.log('reviewDTO:');
+                        console.log(reviewDTO);
+                        orderService.confirmOrderWhenGenerateOutInventory(reviewDTO).then(function(review){
+                            console.log('review:');
+                            console.log(review);
+                        });
+                    } else {
+                        toastr.error('请选择至少一个订单!');
+                    }
                 }
             }
+            else
+            {
+                toastr.error('请选择一到多个订单来继续！');
+            }
+
 
             /* 重置错误提示信息 */
-            $scope.isAnyError = false;
             $scope.batch_manipulation_value = 'batch_manipulation';
 
             /* 重置错误提示信息 */
@@ -504,19 +473,11 @@ angular.module('ecommApp')
         /* 生成单个发货单 */
         $scope.openGenerateSingleShipmentModal = function(order)
         {
-            console.log('openGenerateSingleShipmentModal');
-            $scope.finalSingleShipment.length = 0;
-            $scope.finalSingleShipment.push(setOrderAndItemsToShipmentAndItemsThenReturn(order));
-
-            $scope.shipment_generate_type = 'single';
-            $scope.finalSingleShipment.push(order);
             $('#generateShipment').modal('show');
         };
         /* 生成多个发货单 */
         $scope.openGenerateMultipleShipmentModal = function()
         {
-            $scope.shipment_generate_type = 'multiple';
-            $scope.batch_manipulation();
             $('#generateShipment').modal('show');
         };
 
@@ -552,53 +513,35 @@ angular.module('ecommApp')
         //    type : 'warning', isPass : false
         //}
 
-        /* 生成发货单前判断所有检查项是否通过 */
-        $scope.confirmGenerateShipmentModal = function()
+        function executeShipmentOperationReview(action)
         {
-            console.log('---------------开始：生成检查表结果---------------');
-            $scope.toggleShipmentSheetSlide();
-            /* 复核失败项 */
-            var failledItemsHeader = [
-                '订单', '内容'
-            ];
-            /* 复核项 */
-            var checkers = [
-                {
-                    name : 'check_is_same_warehouse', msg : '所有订单的商品必须在同一个仓库', isPass : false, type : 'danger'
-                },
-            ];
-            ///* 取得快递单号 */
-            //console.log('$scope.startShipmentNumber: ');
-            //console.log($scope.startShipmentNumber);
-            ///* 取得选中快递公司 */
-            //console.log('$scope.selectedCourier: ');
-            //console.log($scope.courier.selected);
+            var reviewDTO = {
+                "action"                    : action,
+                "orders"                    : orderService.selectedOrders,
+                "selectedCourier"           : $scope.courier.selected,
+                "dataMap" : {
+                    "startShipNumber"           : $scope.startShipNumber
+                }
+            };
+            console.log('Before Operation Review:');
+            console.log(reviewDTO);
+            orderService.confirmOrderWhenGenerateShipment(reviewDTO).then(function(review){
+                console.log('After Operation Review:');
+                console.log(review);
+            });
+        }
 
-            /* 是否选中快递公司， */
-            var isCourierSelected = $scope.courier && $scope.courier.selected ? true : false;
-
-            //console.log('是否选中快递公司：' + isCourierSelected);
-
-            if($scope.shipment_generate_type == 'single')
-            {
-                //console.log('       ---------------开始：生成单个发货单检查表---------------');
-                ////$scope.checkAnyAvailable($scope.finalSingleShipment[0]);
-                //console.log('单个发货单信息：');
-                //console.log($scope.finalSingleShipment[0]);
-                //console.log('       ---------------结束：生成单个发货单检查表---------------');
-            }
-            else if($scope.shipment_generate_type == 'multiple')
-            {
-                //console.log('       ---------------开始：生成多个发货单检查表---------------');
-                //console.log('多个发货单信息：');
-                //console.log($scope.finalMultipleShipment);
-                //console.log('       ---------------结束：生成多个发货单检查表---------------');
-            }
-
+        /* 第一次进入生成发货单操作复核 */
+        $scope.checkGenerateShipmentModal = function()
+        {
             /* 隐藏指定快递公司弹出层 */
             $('#generateShipment').modal('hide');
 
-            console.log($scope.generateShipmentSheetCheckListSlideChecked);
+            console.log('---------------开始：生成检查表结果---------------');
+
+            executeShipmentOperationReview('VERIFY');
+
+            $scope.toggleShipmentSheetSlide();
             /* 查看检查结果 */
             console.log('---------------结束：生成检查表结果---------------');
         };

@@ -11,20 +11,20 @@
                 <hr style="margin: 5px 0;">
                 <div class="row">
                     <div class="col-md-5">
-                        <div class="panel panel-info" style="height:130px">
+                        <div class="panel panel-info" style="height:200px">
                             <div class="panel-body" style="margin-bottom: 5px;">
                                 <h5 class="text-info" style="margin:3px 0 7px"><strong>摘要</strong></h5>
                                 <div class="row" style="margin-bottom: 7px;">
-                                    <div class="col-md-9 col-md-offset-1">操作：</div>
+                                    <div class="col-md-9 col-md-offset-1">操作：生成发货单复核</div>
                                     <div class="col-md-2"></div>
                                 </div>
                                 <div class="row" style="margin-bottom: 7px;">
-                                    <div class="col-md-9 col-md-offset-1">时间：</div>
+                                    <div class="col-md-9 col-md-offset-1">时间：{{ operateDate | date:'yyyy-MM-dd HH:mm'}}</div>
                                     <div class="col-md-2">
                                     </div>
                                 </div>
                                 <div class="row" style="margin-bottom: 7px;">
-                                    <div class="col-md-9 col-md-offset-1">操作员：</div>
+                                    <div class="col-md-9 col-md-offset-1">操作员：{{user().username}}</div>
                                     <div class="col-md-2">
                                     </div>
                                 </div>
@@ -32,43 +32,76 @@
                         </div>
                     </div>
                     <div class="col-md-5">
-                        <div class="panel panel-info" style="height:130px">
+                        <div class="panel panel-info" style="height:200px">
                             <div class="panel-body" style="margin-bottom: 5px;">
                                 <h5 class="text-info" style="margin:3px 0 7px"><strong>操作规定</strong></h5>
                                 <div class="row" style="margin-bottom: 7px;">
-                                    <div class="col-md-9 col-md-offset-1">A. 全部订单必须在同一仓库</div>
-                                    <div class="col-md-2"></div>
-                                </div>
-                                <div class="row" style="margin-bottom: 7px;">
-                                    <div class="col-md-9 col-md-offset-1">B. 必须指定一个快递公司</div>
+                                    <div class="col-md-9 col-md-offset-1">
+                                        全部订单商品是否处在同一仓库中
+                                    </div>
                                     <div class="col-md-2">
-                                        <a href="javascript:void(0)" class="btn btn-warning btn-xs pull-right">
-                                            <span class="glyphicon glyphicon-warning-sign"></span> 忽略
+                                        <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.differentWarehouseError">
+                                            <span class="glyphicon glyphicon-ok"></span> 验证通过
+                                        </a>
+                                        <a class="btn btn-danger btn-xs pull-right" ng-disabled="true" ng-show="operationReview().checkMap.differentWarehouseError">
+                                            <span class="glyphicon glyphicon-remove-circle"></span> 验证失败
                                         </a>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-bottom: 7px;">
-                                    <div class="col-md-9 col-md-offset-1">C. 订单在同一仓库下已有发货单</div>
+                                    <div class="col-md-9 col-md-offset-1">
+                                        全部订单的发货方式是否相同
+                                    </div>
                                     <div class="col-md-2">
-                                        <a href="javascript:void(0)" class="btn btn-warning btn-xs pull-right">
-                                            <span class="glyphicon glyphicon-warning-sign"></span> 忽略
+                                        <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.differentDeliveryMethodError">
+                                            <span class="glyphicon glyphicon-ok"></span> 验证通过
+                                        </a>
+                                        <a class="btn btn-warning btn-xs pull-right" ng-show="operationReview().checkMap.differentDeliveryMethodError">
+                                            <span class="glyphicon glyphicon-warning-sign"></span> 点击忽略
                                         </a>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-bottom: 7px;">
-                                    <div class="col-md-9 col-md-offset-1">D. 订单的发货方式不同</div>
+                                    <div class="col-md-9 col-md-offset-1">
+                                        是否指定快递公司和起始快递单号
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.emptyCourierAndShipNumberError">
+                                            <span class="glyphicon glyphicon-ok"></span> 验证通过
+                                        </a>
+                                        <a class="btn btn-warning btn-xs pull-right" ng-show="operationReview().checkMap.emptyCourierAndShipNumberError">
+                                            <span class="glyphicon glyphicon-warning-sign"></span> 点击忽略
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-bottom: 7px;">
+                                    <div class="col-md-9 col-md-offset-1">
+                                        A. 订单在同一仓库下是否已存在发货单
+                                    </div>
                                     <div class="col-md-2">
                                         <a href="javascript:void(0)" class="btn btn-warning btn-xs pull-right">
-                                            <span class="glyphicon glyphicon-warning-sign"></span> 忽略
+                                            <span class="glyphicon glyphicon-warning-sign"></span> 点击忽略
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-bottom: 7px;">
+                                    <div class="col-md-9 col-md-offset-1">
+                                        B. 订单的收货地址是否为空
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.emptyReceiveAddressError">
+                                            <span class="glyphicon glyphicon-ok"></span> 验证通过
+                                        </a>
+                                        <a class="btn btn-warning btn-xs pull-right" ng-show="operationReview().checkMap.emptyReceiveAddressError">
+                                            <span class="glyphicon glyphicon-warning-sign"></span> 点击忽略
                                         </a>
                                     </div>
                                 </div>
                             </div>
-                            订单的收货地址为空
                         </div>
                     </div>
                     <div class="col-md-2">
-                        <div class="panel panel-default" style="height:130px">
+                        <div class="panel panel-default" style="height:200px">
                             <div class="panel-body">
                                 <button type="button" class="btn btn-success btn-lg btn-block">确定</button>
                                 <button type="button" class="btn btn-default btn-lg btn-block">取消</button>
@@ -82,58 +115,59 @@
                 <div style="padding-right:8px;">
                     <table class="table table-bordered table-condensed clear-marginbottom-table">
                         <thead>
-                            <tr>
-                                <th colspan="2" class="text-center">订单详情</th>
-                                <th colspan="4" class="text-center">操作规定复核结果</th>
-                            </tr>
-                            <tr>
-                                <th width="10%">订单编号</th>
-                                <th width="50%">商品信息</th>
-                                <th width="10%" class="text-center">A</th>
-                                <th width="10%" class="text-center">B</th>
-                                <th width="10%" class="text-center">C</th>
-                                <th width="10%" class="text-center">操作</th>
-                            </tr>
+                        <tr>
+                            <th colspan="2" class="text-center">订单详情</th>
+                            <th colspan="4" class="text-center">操作规定复核结果</th>
+                        </tr>
+                        <tr>
+                            <th width="10%">订单编号</th>
+                            <th width="50%">商品信息</th>
+                            <th width="10%" class="text-center">A</th>
+                            <th width="10%" class="text-center">B</th>
+                            <th width="10%" class="text-center">操作</th>
+                        </tr>
                         </thead>
                     </table>
                 </div>
-                <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultHeight">
+                <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultHeight()">
+
                     <table class="table table-bordered table-condensed clear-marginbottom-table">
                         <tbody>
-                            <tr ng-repeat="order in differnetWarehouseErrorOrders">
-                                <td width="10%">
-                                    <strong>{{order.id}}</strong>
-                                </td>
-                                <td width="50%">
-                                    <table class="table table-bordered table-condensed clear-marginbottom-table">
-                                        <tbody>
-                                            <tr ng-repeat="item in order.items">
-                                                <td width="40%">
-                                                    {{item.name}}
-                                                </td>
-                                                <td width="20%">
-                                                    {{item.qtyOrdered}}
-                                                </td>
-                                                <td width="40%">
-                                                    {{item.assignTunnel.defaultWarehouse.name}}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                                <td width="10%" class="text-center">
-                                    <span class="glyphicon glyphicon-ok text-success"></span>
-                                </td>
-                                <td width="10%" class="text-center">
-                                    <span class="glyphicon glyphicon-warning-sign text-warning"></span>
-                                </td>
-                                <td width="10%" class="text-center">
-                                    <span class="glyphicon glyphicon-remove-circle text-danger"></span>
-                                </td>
-                                <td width="10%" class="text-center">
-                                    <button type="button" class="btn btn-danger btn-xs btn-block">移出</button>
-                                </td>
-                            </tr>
+                        <tr ng-repeat="order in operationReview().orders" ng-show="order.checkMap.differentWarehouseError">
+                            <td width="10%">
+                                <strong>{{ order.id }}</strong>
+                            </td>
+                            <td width="10%">
+                                {{ order.deliveryMethod }}
+                            </td>
+                            <td width="50%">
+                                <table class="table table-bordered table-condensed clear-marginbottom-table">
+                                    <tbody>
+                                    <tr ng-repeat="item in order.items">
+                                        <td width="40%">
+                                            {{ item.name }}
+                                        </td>
+                                        <td width="20%">
+                                            {{ item.qtyOrdered }}
+                                        </td>
+                                        <td width="40%">
+                                            {{ item.assignTunnel.defaultWarehouse.name }}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td width="10%" class="text-center">
+                                <span class="glyphicon glyphicon-ok text-success" ng-show="!order.checkMap.emptyReceiveAddressError"></span>
+                                <span class="glyphicon glyphicon-remove-circle text-danger" ng-show="order.checkMap.emptyReceiveAddressError"></span>
+                            </td>
+                            <td width="10%" class="text-center">
+                                <!-- <span class="glyphicon glyphicon-warning-sign text-warning"></span> -->
+                            </td>
+                            <td width="10%" class="text-center">
+                                <button type="button" class="btn btn-danger btn-xs btn-block">移出</button>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>

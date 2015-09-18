@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "t_courier")
@@ -47,6 +48,10 @@ public class Courier implements Serializable {
 	@OneToOne
 	@JoinColumn(name = "shipfee_currency_id")
 	private Currency currency;
+
+	/* 生成发货单时选择快递公司后指定的起始快递单号 */
+	@Transient
+	private Long startCourierId;
 
 	//
 
@@ -104,6 +109,14 @@ public class Courier implements Serializable {
 
 	public void setCurrency(Currency currency) {
 		this.currency = currency;
+	}
+
+	public Long getStartCourierId() {
+		return startCourierId;
+	}
+
+	public void setStartCourierId(Long startCourierId) {
+		this.startCourierId = startCourierId;
 	}
 	
 }

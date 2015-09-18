@@ -24,6 +24,13 @@ angular.module('ecommApp')
         });
     };
 
+    order.confirmOrderWhenGenerateShipment = function(orders) {
+        return $http.post('/api/orders/confirm/shipment', orders)
+            .then(function(res) {
+                return (operationReview = res.data);
+            });
+    }
+
     order.confirmOrderWhenGenerateOutInventory = function(orders) {
         return $http.post('/api/orders/confirm/outinventory', orders)
             .then(function(res) {

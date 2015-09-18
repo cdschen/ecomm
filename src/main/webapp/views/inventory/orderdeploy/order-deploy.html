@@ -57,9 +57,9 @@
                     <th width="34%">配货信息</th>
                     <th width="10%" style="padding: 2px">
                         <select class="form-control input-sm" ng-change="batch_manipulation()" ng-model="batch_manipulation_value">
-                            <option selected="selected" value="batch_manipulation">批量操作</option>
+                            <option selected="selected" value="batch_manipulation">操作</option>
                             <option value="generate_out_inventory_sheet">生成出库单</option>
-                            <option value="generate_shipment">批量生成快递单号</option>
+                            <option value="generate_shipment">生成发货单</option>
                         </select>
                     </th>
                 </tr>
@@ -102,7 +102,7 @@
                     <td>
                     </td>
                     <td>
-                        <a href="javascript:void(0);" class="btn btn-primary btn-block" ng-click="openGenerateSingleShipmentModal(order)">生成发货单</a>
+                        <!--<a href="javascript:void(0);" class="btn btn-primary btn-block" ng-click="openGenerateSingleShipmentModal(order)">生成发货单</a>-->
                     </td>
                 </tr>
             </tbody>
@@ -155,12 +155,12 @@
                     </ui-select>
                 </div>
                 <div class="form-group">
-                    <input class="form-control" ng-model="startShipmentNumber" placeholder="起始快递单号" />
+                    <input class="form-control" ng-model="startShipNumber" placeholder="起始快递单号" />
                 </div>
             </div>
             <div class="modal-footer">
                 <div class="form-group">
-                    <button class="btn btn-primary" type="button" ng-click="confirmGenerateShipmentModal()">继续</button>
+                    <button class="btn btn-primary" type="button" ng-click="checkGenerateShipmentModal()">继续</button>
                     <button class="btn btn-warning" type="button" data-dismiss="modal">取消</button>
                 </div>
             </div>
