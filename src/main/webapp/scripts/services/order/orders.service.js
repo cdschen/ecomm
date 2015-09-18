@@ -23,6 +23,13 @@ angular.module('ecommApp')
         });
     };
 
+    order.ordersConfirmOrderDeploy = function(orders) {
+        return $http.post('/api/orders/confirm/orderdeploy', orders)
+            .then(function(res) {
+                return res.data;
+            });
+    }
+
     order.checkItemProductShopTunnel = function(order) {
         var items = order.items;
         $.each(items, function() {

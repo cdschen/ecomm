@@ -247,7 +247,7 @@ public class Order implements Serializable {
 
 	@Transient
 	Map<String, Object> checkMap = new HashMap<>();
-
+	
 	//
 
 	public Long getId() {

@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "t_shop_tunnel")
@@ -60,9 +61,20 @@ public class ShopTunnel implements Serializable {
 	@JoinTable(name = "t_tunnel_warehouse", joinColumns = { @JoinColumn(name = "tunnel_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "warehouse_id", referencedColumnName = "id") })
 	private List<Warehouse> warehouses;
 
+	@Transient
+	private Warehouse defaultWarehouse;
+
 	//
 
 	public ShopTunnel() {
+	}
+
+	public Warehouse getDefaultWarehouse() {
+		return defaultWarehouse;
+	}
+
+	public void setDefaultWarehouse(Warehouse defaultWarehouse) {
+		this.defaultWarehouse = defaultWarehouse;
 	}
 
 	public Long getDefaultWarehouseId() {

@@ -20,6 +20,7 @@ import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Shop;
 import com.sooeez.ecomm.domain.ShopTunnel;
+import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.repository.ShopRepository;
 import com.sooeez.ecomm.repository.ShopTunnelRepository;
 
@@ -61,6 +62,22 @@ public class ShopService {
 			predicates.add(cb.equal(root.get("deleted"), shop.getDeleted() != null && shop.getDeleted() == true ? true : false));
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
+	}
+	
+	/* 设置店铺的默认通道和下面的默认仓库  */
+	public void initShopDefaultTunnel(Shop shop){
+		for (ShopTunnel tunnel: shop.getTunnels()) {
+			if (tunnel.getDefaultOption()) {
+				shop.setDefaultTunnel(tunnel);
+				for (Warehouse warehouse: tunnel.getWarehouses()) {
+					if (shop.getDefaultTunnel().getDefaultWarehouseId().longValue() == warehouse.getId().longValue()) {
+						shop.getDefaultTunnel().setDefaultWarehouse(warehouse);
+						break;
+					}
+				}
+				break;
+			}
+		}
 	}
 	
 	/*
