@@ -351,24 +351,44 @@ public class OrderService {
 	}
 	
 	/* 验证订单是否都在同一个仓库 */
-	public Map<String, Object> confirmDifferentWarehouse(List<Order> orders, Long assginWarehouseId) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("differentWarehouseError", false);
-		map.put("differnetWarehouseErrorOrders", null);
+	public void confirmDifferentWarehouse(List<Order> orders, Long assginWarehouseId) {
 		
-		List<String> sameWarehouseNames = new ArrayList<>();
-		
-		// 循环order
+		List<Long> sameWarehouseIds = new ArrayList<>();
+		boolean differentWarehouseError = false;
+		// 循环 order
 		for (Order order: orders) {
 			// 循环 order item
 			for (OrderItem item: order.getItems()) {
-				
+				if (item.getAssignTunnel() != null) {
+					sameWarehouseIds.add(item.getAssignTunnel().getDefaultWarehouse().getId());
+					for (Long warehouseId : sameWarehouseIds) {
+						if (warehouseId.longValue() == item.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
+							System.out.println(item.getId() + ":" + item.getAssignTunnel().getDefaultWarehouse().getId());
+							differentWarehouseError = true;
+							break;
+						}
+					}
+				}
+				if (!differentWarehouseError) {
+					break;
+				}
+			}
+			if (!differentWarehouseError) {
+				break;
 			}
 		}
 		
-		return map;
+		if (!differentWarehouseError) {
+			for (Order order: orders) {
+				order.getCheckMap().put("differentWarehouseError", true);
+			}
+		} else {
+			for (Order order: orders) {
+				order.getCheckMap().put("differentWarehouseError", false);
+			}
+		}
 	}
-	
+
 	public void confirmOrderWhenGenerateOutInventory(List<Order> orders, Long assginWarehouseId) {
 		
 		Map<String, Object> map = new HashMap<>();
