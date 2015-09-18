@@ -160,7 +160,7 @@
             </div>
             <div class="modal-footer">
                 <div class="form-group">
-                    <button class="btn btn-primary" type="button" ng-click="confirmGenerateShipmentModal()">确认生成</button>
+                    <button class="btn btn-primary" type="button" ng-click="confirmGenerateShipmentModal()">继续</button>
                     <button class="btn btn-warning" type="button" data-dismiss="modal">取消</button>
                 </div>
             </div>
@@ -171,4 +171,5 @@
 <section ng-include="template.status.url"></section>
 <section ng-include="template.generateShipment.url"></section>
 <section ng-include="template.generateOutInventorySheet.url" ng-controller="ConfirmOutInventorySheetController" onload="init()"></section>
+<section ng-include="template.generateShipmentSheet.url" ng-controller="ConfirmShipmentSheetController" onload="init()"></section>
 
