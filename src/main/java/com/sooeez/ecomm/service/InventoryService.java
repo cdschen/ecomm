@@ -128,8 +128,6 @@ public class InventoryService {
 	public List<Inventory> getInventories(Inventory inventory, Sort sort) {
 		return this.inventoryRepository.findAll(getInventorySpecification(inventory), sort);
 	}
-	
-	//public List<Inventory> getInventories()
 
 	public Page<Inventory> getPagedInventories(Pageable pageable) {
 		return this.inventoryRepository.findAll(pageable);
@@ -146,6 +144,9 @@ public class InventoryService {
 			}
 			if (inventory.getWarehouseId() != null) {
 				predicates.add(cb.equal(root.get("warehouseId"), inventory.getWarehouseId()));
+			}
+			if (inventory.getWarehouseIds() != null && inventory.getWarehouseIds().size() > 0) {
+				predicates.add(cb.in(root.get("warehouseId")).value(inventory.getWarehouseIds()));
 			}
 			
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
@@ -219,15 +220,32 @@ public class InventoryService {
 	public List<Product> refreshInventory(List<Inventory> inventories) {
 		List<Product> products = new ArrayList<>();
 		for (Inventory inventory: inventories) {
-			boolean existInventory = false;
+			boolean existProduct = false;
 			for (Product product: products) {
 				if (product.getSku().equals(inventory.getProduct().getSku())) {
-					product.setTotal(product.getTotal().longValue() + inventory.getQuantity().longValue());
+					existProduct = true;
+					boolean existWarehouse = false;
+					for (Warehouse warehouse: product.getWarehouses()) {
+						if (warehouse.getId() == inventory.getWarehouseId()) {
+							warehouse.setTotal(warehouse.getTotal().longValue() + inventory.getQuantity().longValue());
+							existWarehouse = true;
+							break;
+						}
+					}
+					if (!existWarehouse) {
+						Warehouse warehouse = new Warehouse();
+						warehouse.setId(inventory.getWarehouseId());
+						warehouse.setTotal(inventory.getQuantity());
+						product.getWarehouses().add(warehouse);
+					}
 					break;
 				}
 			}
-			if (!existInventory) {
-				inventory.getProduct().setTotal(inventory.getQuantity().longValue());
+			if (!existProduct) {
+				Warehouse warehouse = new Warehouse();
+				warehouse.setId(inventory.getWarehouseId());
+				warehouse.setTotal(inventory.getQuantity());
+				inventory.getProduct().getWarehouses().add(warehouse);
 				products.add(inventory.getProduct());
 			}
 		}

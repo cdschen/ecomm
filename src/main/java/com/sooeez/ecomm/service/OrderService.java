@@ -43,6 +43,8 @@ import com.sooeez.ecomm.repository.OrderRepository;
 
 @Service
 public class OrderService {
+	
+	// Repository
 
 	@Autowired private OrderRepository orderRepository;
 	
@@ -50,7 +52,11 @@ public class OrderService {
 	
 	@Autowired private OrderBatchRepository orderBatchRepository;
 	
+	// Service
+	
 	@Autowired private InventoryService inventoryService;
+	
+	@Autowired private ShopService shopService;
 	
 	@PersistenceContext private EntityManager em;
 
@@ -77,24 +83,18 @@ public class OrderService {
 		if (order.getItems() != null && order.getItems().size() > 0) {
 
 			for (OrderItem orderItem : order.getItems()) {
-				if (orderItem.getQtyOrdered() != null
-						&& orderItem.getUnitWeight() != null) {
+				if (orderItem.getQtyOrdered() != null && orderItem.getUnitWeight() != null) {
 					/* Accumulate total weight */
-					weight += orderItem.getQtyOrdered()
-							* orderItem.getUnitWeight();
+					weight += orderItem.getQtyOrdered() * orderItem.getUnitWeight();
 				}
 				if (orderItem.getQtyOrdered() != null) {
 					/* Accumulate total items ordered */
 					qtyTotalItemOrdered += orderItem.getQtyOrdered();
 				}
-				if (orderItem.getQtyOrdered() != null
-						&& orderItem.getUnitPrice() != null) {
+				if (orderItem.getQtyOrdered() != null && orderItem.getUnitPrice() != null) {
 					/* Accumulate grand total */
-					grandTotal = grandTotal
-							.add(orderItem.getUnitPrice().multiply(
-									new BigDecimal(orderItem.getQtyOrdered())));
-					subtotal = subtotal.add(orderItem.getUnitPrice().multiply(
-							new BigDecimal(orderItem.getQtyOrdered())));
+					grandTotal = grandTotal.add(orderItem.getUnitPrice().multiply(new BigDecimal(orderItem.getQtyOrdered())));
+					subtotal = subtotal.add(orderItem.getUnitPrice().multiply(new BigDecimal(orderItem.getQtyOrdered())));
 				}
 			}
 
@@ -392,74 +392,150 @@ public class OrderService {
 		}
 	}
 
+	/* 全部订单商品细目必须有库存 */
 	public void confirmProductInventoryNotEnough(OperationReviewDTO review) {
+		Inventory inventoryQuery = new Inventory();
+		List<Order> orders = review.getOrders();
+		List<Long> warehouseIds = new ArrayList<>();
+		for (Order order: orders) {
+			for (OrderItem item: order.getItems()) {
+				boolean exist = false;
+				if (item.getAssignTunnel() != null) {
+					for (Long warehouseId: warehouseIds){
+						if (warehouseId.longValue() == item.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
+							exist = true;
+							break;
+						} else {
+							exist = false;
+						}
+					}
+					if (!exist) {
+						warehouseIds.add(item.getAssignTunnel().getDefaultWarehouse().getId());
+					}
+				}
+			}
+		}
+		System.out.println("confirmDifferentWarehouse; warehouseIds:");
+		warehouseIds.forEach(warehouseId ->{
+			System.out.println(warehouseId);
+		});
+		inventoryQuery.setWarehouseIds(warehouseIds);
 		
-		/*List<Inventory> inventories = inventoryService.getInventories(inventoryQuery, null);
+		List<Inventory> inventories = inventoryService.getInventories(inventoryQuery, null);
 		List<Product> products = inventoryService.refreshInventory(inventories);
+		products.forEach(product -> {
+			System.out.println("product: " + product.getName());
+			product.getWarehouses().forEach(warehouse -> {
+				System.out.println("Warehouse: " + warehouse.getName() + ", " + warehouse.getTotal());
+			});
+		});
+		
+		List<OrderItem> issueItems = new ArrayList<>();
+		
+		// 重置review的productInventoryNotEnoughError为false
+		review.getCheckMap().put("productInventoryNotEnoughError", false);
 		
 		for (Order order: orders) {
-			//循环item
+			// 判断前先把每一个order的productInventoryNotEnoughError设置为false
+			order.getCheckMap().put("productInventoryNotEnoughError", false);
+			// 循环item
 			for (OrderItem item: order.getItems()) {
-				// 循环products,判断当前的item是否就是当前的产品
+				// 循环products
+				boolean exitProductsEach = false;
 				for (Product product: products) {
+					// 判断当前的item是否就是当前的产品
 					if (item.getProduct().getSku().equals(product.getSku())) {
-						//将当前的item订购的数量和产品在指定仓库下的库存相比较
-						if (product.getTotal().longValue() - item.getQtyOrdered().longValue() < 0) {
-							//库存不足,将订单放入productInventoryNotEnoughOrders列表
-							((List<Order>)map.get("productInventoryNotEnoughOrders")).add(order);
-							map.put("productInventoryNotEnough", true);
+						// 循环当前产品的仓库
+						for (Warehouse warehouse: product.getWarehouses()) {
+							// 判断当前item指定的仓库是否在产品所在的仓库中
+							if (item.getAssignTunnel().getDefaultWarehouse().getId().longValue() == warehouse.getId().longValue()) {
+								warehouse.setTotal(warehouse.getTotal().longValue() - item.getQtyOrdered().longValue());
+								System.out.println("orderid:" + order.getId() + ", itemid:" + item.getId() + "," + item.getProduct().getName() + "," + item.getAssignTunnel().getDefaultWarehouse().getName() + "," + warehouse.getTotal());
+								if (warehouse.getTotal().longValue() < 0) { 
+									issueItems.add(item);
+								}
+								exitProductsEach = true;
+								break;
+							}
 						}
+					} 
+					if (exitProductsEach) {
 						break;
 					}
 				}
 			}
-		}*/
+		}
+		
+		for (OrderItem issueItem: issueItems) {
+			for (Order order: orders) {
+				for (OrderItem item: order.getItems()) {
+					if (item.getProduct().getSku().equals(issueItem.getProduct().getSku())
+							&& item.getAssignTunnel().getDefaultWarehouse().getId().longValue() == issueItem.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
+						order.getCheckMap().put("productInventoryNotEnoughError", true);
+						review.getCheckMap().put("productInventoryNotEnoughError", true);
+						break;
+					}
+				}
+			}
+		}
 	}
 	
-	public OperationReviewDTO confirmOrderWhenGenerateOutInventory(OperationReviewDTO review) {
+	/* 订单在同一个仓库只能有一张出库单 */
+	public void confirmOrderExistOutInventorySheet(OperationReviewDTO review) {
 		
-		this.confirmDifferentWarehouse(review);
+		List<Order> orders = review.getOrders();
 		
-		return review;
+		review.getCheckMap().put("orderExistOutInventorySheet", false);
 		
-		/*if (assginWarehouseId != null) {
-			
-		} else {
-			Inventory inventoryQuery = new Inventory();
-			inventoryQuery.setWarehouseId(assginWarehouseId);
-			
-			List<Inventory> inventories = inventoryService.getInventories(inventoryQuery, null);
-			List<Product> products = inventoryService.refreshInventory(inventories);
-			
-			//循环订单
-			for (Order order: orders) {
-				//循环item
-				for (OrderItem item: order.getItems()) {
-					// 循环products,判断当前的item是否就是当前的产品
-					for (Product product: products) {
-						if (item.getProduct().getSku().equals(product.getSku())) {
-							//将当前的item订购的数量和产品在指定仓库下的库存相比较
-							if (product.getTotal().longValue() - item.getQtyOrdered().longValue() < 0) {
-								//库存不足,将订单放入productInventoryNotEnoughOrders列表
-								((List<Order>)map.get("productInventoryNotEnoughOrders")).add(order);
-								map.put("productInventoryNotEnough", true);
-							}
+		// 循环 orders
+		for (Order order: orders) {
+			order.getCheckMap().put("orderExistOutInventorySheetError", false);
+			boolean exitItemsEach = false;
+			for (OrderItem item: order.getItems()) {
+				if (item.getAssignTunnel() != null) {
+					for (OrderBatch orderBatch: order.getBatches()) {
+						if (orderBatch.getWarehouseId().longValue() == item.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
+							order.getCheckMap().put("orderExistOutInventorySheetError", true);
+							exitItemsEach = true;
 							break;
 						}
 					}
 				}
-				//循环当前订单下的所有出库单，判断在指定仓库下已有出库单
-				for (OrderBatch orderBatch: order.getBatches()) {
-					if (orderBatch.getWarehouseId().longValue() == assginWarehouseId.longValue()) {
-						// 当前订单在指定仓库中已存在一张出库单
-						((List<Order>)map.get("existOutInventorySheetOrders")).add(order);
-						map.put("productInventoryNotEnough", true);
-						break;
-					}
+				if (exitItemsEach) {
+					break;
 				}
 			}
-		}*/
+		}
+	}
+	
+	/* 通过orderids重新查询一遍所选的orders */
+	public void refreshOrdersBySelectedOrderIds(OperationReviewDTO review) {
+		// 再次查询选中的orders
+		List<Order> orders = review.getOrders();
+		Order order = new Order();
+		orders.forEach(o -> {
+			order.getOrderIds().add(o.getId());
+		});
+		orders = this.getOrders(order, new Sort(Sort.Direction.DESC, "internalCreateTime"));
+		orders.forEach(o -> {
+			this.shopService.initShopDefaultTunnel(o.getShop());
+			this.checkItemProductShopTunnel(o);
+		});
 		
+		review.setOrders(orders);
+	}
+	
+	public OperationReviewDTO confirmOrderWhenGenerateOutInventory(OperationReviewDTO review) {
+		
+		this.refreshOrdersBySelectedOrderIds(review);
+		
+		this.confirmDifferentWarehouse(review);
+		
+		this.confirmProductInventoryNotEnough(review);
+		
+		this.confirmOrderExistOutInventorySheet(review);
+		
+		return review;
 	}
 
 	private Specification<Order> getOrderSpecification(Order order) {

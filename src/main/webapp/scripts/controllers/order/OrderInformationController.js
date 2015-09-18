@@ -64,7 +64,9 @@ var OrderInformationController = function($scope, $state, $stateParams, orderSer
         if( ! isRepeated )
         {
             var item = {
-                'productId': selectedProduct.id,
+                product: {
+                    id: selectedProduct.id
+                },
                 'externalSku': selectedProduct.sku,
                 'sku': selectedProduct.sku,
                 'external_name': selectedProduct.name,

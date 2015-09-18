@@ -2,6 +2,7 @@ package com.sooeez.ecomm.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "t_inventory")
@@ -56,9 +58,20 @@ public class Inventory implements Serializable {
 	@JoinColumn(name = "warehouse_position_id")
 	private WarehousePosition position;
 
+	@Transient
+	private List<Long> warehouseIds;
+
 	//
 
 	public Inventory() {
+	}
+
+	public List<Long> getWarehouseIds() {
+		return warehouseIds;
+	}
+
+	public void setWarehouseIds(List<Long> warehouseIds) {
+		this.warehouseIds = warehouseIds;
 	}
 
 	public Long getProductId() {
