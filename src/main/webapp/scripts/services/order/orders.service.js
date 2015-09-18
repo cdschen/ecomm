@@ -5,6 +5,7 @@ angular.module('ecommApp')
 .factory('orderService', ['$resource', '$http', function($resource, $http) {
 
     var $ = angular.element;
+    var operationReview = undefined;
     var order = $resource('/api/orders/:id', {}, {});
 
     order.getAll = function(params) {
@@ -19,14 +20,14 @@ angular.module('ecommApp')
         return $http.get('/api/orders/for/orderdeploy', {
             params: params
         }).then(function(res) {
-            return res.data
+            return res.data;
         });
     };
 
-    order.ordersConfirmOrderDeploy = function(orders) {
-        return $http.post('/api/orders/confirm/orderdeploy', orders)
+    order.confirmOrderWhenGenerateOutInventory = function(orders) {
+        return $http.post('/api/orders/confirm/outinventory', orders)
             .then(function(res) {
-                return res.data;
+                return (operationReview = res.data);
             });
     }
 
@@ -83,6 +84,10 @@ angular.module('ecommApp')
                 }
             }
         });
+    };
+
+    order.getOperationReview = function() {
+        return operationReview;
     };
 
     order.selectedOrders = [];

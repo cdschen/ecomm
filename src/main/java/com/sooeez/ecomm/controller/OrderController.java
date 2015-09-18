@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sooeez.ecomm.domain.Order;
 import com.sooeez.ecomm.domain.OrderItem;
+import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.service.OrderService;
 
 @RestController
@@ -48,11 +49,9 @@ public class OrderController {
 		return this.orderService.getPagedOrdersForOrderDeploy(order, pageable);
 	}
 	
-	@RequestMapping(value = "/orders/confirm/orderdeploy")
-	public Map<String, Object> ordersConfirmOrderDeploy(@RequestBody List<Order> orders) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("orders", orders);
-		return map;
+	@RequestMapping(value = "/orders/confirm/outinventory")
+	public OperationReviewDTO confirmOrderWhenGenerateOutInventory(@RequestBody OperationReviewDTO review) {
+		return this.orderService.confirmOrderWhenGenerateOutInventory(review);
 	}
 	
 	@RequestMapping(value = "/orders/get/all")

@@ -36,6 +36,7 @@ import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.ProductShopTunnel;
 import com.sooeez.ecomm.domain.ShopTunnel;
 import com.sooeez.ecomm.domain.Warehouse;
+import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.repository.OrderBatchRepository;
 import com.sooeez.ecomm.repository.OrderItemRepository;
 import com.sooeez.ecomm.repository.OrderRepository;
@@ -351,35 +352,53 @@ public class OrderService {
 	}
 	
 	/* 验证订单是否都在同一个仓库 */
-	public Map<String, Object> confirmDifferentWarehouse(List<Order> orders, Long assginWarehouseId) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("differentWarehouseError", false);
-		map.put("differnetWarehouseErrorOrders", null);
+	public void confirmDifferentWarehouse(OperationReviewDTO review) {
 		
-		List<String> sameWarehouseNames = new ArrayList<>();
-		
-		// 循环order
-		for (Order order: orders) {
+		List<Long> sameWarehouseIds = new ArrayList<>();
+		boolean differentWarehouseError = false;
+		// 循环 order
+		for (Order order: review.getOrders()) {
 			// 循环 order item
 			for (OrderItem item: order.getItems()) {
-				
+				if (item.getAssignTunnel() != null) {
+					sameWarehouseIds.add(item.getAssignTunnel().getDefaultWarehouse().getId());
+					for (Long warehouseId : sameWarehouseIds) {
+						if (warehouseId.longValue() != item.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
+							System.out.println(item.getId() + ":" + item.getAssignTunnel().getDefaultWarehouse().getId());
+							differentWarehouseError = true;
+							break;
+						}
+					}
+				}
+				if (differentWarehouseError) {
+					break;
+				}
+			}
+			if (differentWarehouseError) {
+				break;
 			}
 		}
 		
-		return map;
+		if (differentWarehouseError) {
+			for (Order order: review.getOrders()) {
+				order.getCheckMap().put("differentWarehouseError", true);
+			}
+			review.getCheckMap().put("differentWarehouseError", true);
+		} else {
+			for (Order order: review.getOrders()) {
+				order.getCheckMap().put("differentWarehouseError", false);
+			}
+			review.getCheckMap().put("differentWarehouseError", false);
+		}
 	}
-	
-	public void confirmOrderWhenGenerateOutInventory(List<Order> orders, Long assginWarehouseId) {
+
+	public OperationReviewDTO confirmOrderWhenGenerateOutInventory(OperationReviewDTO review) {
 		
-		Map<String, Object> map = new HashMap<>();
-		map.put("differentWarehouseError", true);
-		map.put("differnetWarehouseErrorOrders", null);
-		map.put("productInventoryNotEnoughError", false);
-		map.put("productInventoryNotEnoughErrorOrders", new ArrayList<Order>());
-		map.put("orderExistOutInventorySheetError", false);
-		map.put("orderExistOutInventorySheetErrorOrders", new ArrayList<Order>());
+		this.confirmDifferentWarehouse(review);
 		
-		if (assginWarehouseId != null) {
+		return review;
+		
+		/*if (assginWarehouseId != null) {
 			
 		} else {
 			Inventory inventoryQuery = new Inventory();
@@ -415,7 +434,7 @@ public class OrderService {
 					}
 				}
 			}
-		}
+		}*/
 		
 	}
 
