@@ -49,10 +49,6 @@ public class Courier implements Serializable {
 	@JoinColumn(name = "shipfee_currency_id")
 	private Currency currency;
 
-	/* 生成发货单时选择快递公司后指定的起始快递单号 */
-	@Transient
-	private Long startCourierId;
-
 	//
 
 	public Long getId() {
@@ -109,14 +105,6 @@ public class Courier implements Serializable {
 
 	public void setCurrency(Currency currency) {
 		this.currency = currency;
-	}
-
-	public Long getStartCourierId() {
-		return startCourierId;
-	}
-
-	public void setStartCourierId(Long startCourierId) {
-		this.startCourierId = startCourierId;
 	}
 	
 }
