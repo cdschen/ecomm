@@ -12,6 +12,9 @@ angular.module('ecommApp')
             },
             generateOutInventorySheet: {
                 url: 'views/inventory/orderdeploy/order-deploy.confirm-out-inventory-sheet.html?' + (new Date())
+            },
+            generateShipmentSheet: {
+                url: 'views/inventory/orderdeploy/order-deploy.confirm-shipment-sheet.html?' + (new Date())
             }
         };
 
@@ -166,6 +169,10 @@ angular.module('ecommApp')
 
         $scope.toggleOutInventorySheetSlide = function(){
            $scope.generateOutInventorySheetCheckListSlideChecked = !$scope.generateOutInventorySheetCheckListSlideChecked;
+        };
+
+        $scope.toggleShipmentSheetSlide = function(){
+            $scope.generateShipmentSheetCheckListSlideChecked = !$scope.generateShipmentSheetCheckListSlideChecked;
         };
 
         /* 开始：检查表存放的数据 */
@@ -551,6 +558,8 @@ angular.module('ecommApp')
         /* 生成发货单前判断所有检查项是否通过 */
         $scope.confirmGenerateShipmentModal = function()
         {
+            console.log('---------------开始：生成检查表结果---------------');
+            $scope.toggleShipmentSheetSlide();
             /* 复核失败项 */
             var failledItemsHeader = [
                 '订单', '内容'
@@ -561,40 +570,39 @@ angular.module('ecommApp')
                     name : 'check_is_same_warehouse', msg : '所有订单的商品必须在同一个仓库', isPass : false, type : 'danger'
                 },
             ];
-            console.log('---------------开始：生成检查表结果---------------');
-            /* 取得快递单号 */
-            console.log('$scope.startShipmentNumber: ');
-            console.log($scope.startShipmentNumber);
-            /* 取得选中快递公司 */
-            console.log('$scope.selectedCourier: ');
-            console.log($scope.courier.selected);
+            ///* 取得快递单号 */
+            //console.log('$scope.startShipmentNumber: ');
+            //console.log($scope.startShipmentNumber);
+            ///* 取得选中快递公司 */
+            //console.log('$scope.selectedCourier: ');
+            //console.log($scope.courier.selected);
 
             /* 是否选中快递公司， */
             var isCourierSelected = $scope.courier && $scope.courier.selected ? true : false;
 
-            console.log('是否选中快递公司：' + isCourierSelected);
+            //console.log('是否选中快递公司：' + isCourierSelected);
 
             if($scope.shipment_generate_type == 'single')
             {
-                console.log('       ---------------开始：生成单个发货单检查表---------------');
-                //$scope.checkAnyAvailable($scope.finalSingleShipment[0]);
-                console.log('单个发货单信息：');
-                console.log($scope.finalSingleShipment[0]);
-                console.log('       ---------------结束：生成单个发货单检查表---------------');
+                //console.log('       ---------------开始：生成单个发货单检查表---------------');
+                ////$scope.checkAnyAvailable($scope.finalSingleShipment[0]);
+                //console.log('单个发货单信息：');
+                //console.log($scope.finalSingleShipment[0]);
+                //console.log('       ---------------结束：生成单个发货单检查表---------------');
             }
             else if($scope.shipment_generate_type == 'multiple')
             {
-                console.log('       ---------------开始：生成多个发货单检查表---------------');
-                console.log('多个发货单信息：');
-                console.log($scope.finalMultipleShipment);
-                console.log('       ---------------结束：生成多个发货单检查表---------------');
+                //console.log('       ---------------开始：生成多个发货单检查表---------------');
+                //console.log('多个发货单信息：');
+                //console.log($scope.finalMultipleShipment);
+                //console.log('       ---------------结束：生成多个发货单检查表---------------');
             }
 
             /* 隐藏指定快递公司弹出层 */
             $('#generateShipment').modal('hide');
 
+            console.log($scope.generateShipmentSheetCheckListSlideChecked);
             /* 查看检查结果 */
-            $scope.generateShipmentCheckListSlideChecked = true;
             console.log('---------------结束：生成检查表结果---------------');
         };
     
