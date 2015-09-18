@@ -479,13 +479,12 @@ angular.module('ecommApp')
                 });
                 if (orderService.selectedOrders.length > 0) {
                     $scope.toggleOutInventorySheetSlide();
-                    var params = {
-                        orders: orderService.selectedOrders,
-                        checkMap: {}
+                    var reviewDTO = {
+                        orders: orderService.selectedOrders
                     };
-                    console.log('params:');
-                    console.log(params);
-                    orderService.confirmOrderWhenGenerateOutInventory(params).then(function(review){
+                    console.log('reviewDTO:');
+                    console.log(reviewDTO);
+                    orderService.confirmOrderWhenGenerateOutInventory(reviewDTO).then(function(review){
                         console.log('review:');
                         console.log(review);
                     });

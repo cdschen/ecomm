@@ -128,6 +128,8 @@ public class InventoryService {
 	public List<Inventory> getInventories(Inventory inventory, Sort sort) {
 		return this.inventoryRepository.findAll(getInventorySpecification(inventory), sort);
 	}
+	
+	//public List<Inventory> getInventories()
 
 	public Page<Inventory> getPagedInventories(Pageable pageable) {
 		return this.inventoryRepository.findAll(pageable);
