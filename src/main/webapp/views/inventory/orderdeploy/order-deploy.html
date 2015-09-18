@@ -148,7 +148,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <ui-select ng-model="courier.selected">
-                        <ui-select-match placeholder="快递公司">{{$select.selected.name}}</ui-select-match>
+                        <ui-select-match placeholder="快递公司(可选)">{{$select.selected.name}}</ui-select-match>
                         <ui-select-choices repeat="courier in couriers | filter: $select.search">
                             <div ng-bind-html="courier.name | highlight: $select.search"></div>
                         </ui-select-choices>
