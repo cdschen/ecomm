@@ -282,7 +282,6 @@ public class OrderService {
 			}
 			
 			if (deletedItems.size() > 0) {
-				
 				_order.getItems().removeAll(deletedItems);
 			}
 		}
@@ -356,8 +355,9 @@ public class OrderService {
 		
 		List<Long> sameWarehouseIds = new ArrayList<>();
 		boolean differentWarehouseError = false;
+		List<Order> orders = review.getOrders();
 		// 循环 order
-		for (Order order: review.getOrders()) {
+		for (Order order: orders) {
 			// 循环 order item
 			for (OrderItem item: order.getItems()) {
 				if (item.getAssignTunnel() != null) {
@@ -380,18 +380,42 @@ public class OrderService {
 		}
 		
 		if (differentWarehouseError) {
-			for (Order order: review.getOrders()) {
+			for (Order order: orders) {
 				order.getCheckMap().put("differentWarehouseError", true);
 			}
 			review.getCheckMap().put("differentWarehouseError", true);
 		} else {
-			for (Order order: review.getOrders()) {
+			for (Order order: orders) {
 				order.getCheckMap().put("differentWarehouseError", false);
 			}
 			review.getCheckMap().put("differentWarehouseError", false);
 		}
 	}
 
+	public void confirmProductInventoryNotEnough(OperationReviewDTO review) {
+		
+		/*List<Inventory> inventories = inventoryService.getInventories(inventoryQuery, null);
+		List<Product> products = inventoryService.refreshInventory(inventories);
+		
+		for (Order order: orders) {
+			//循环item
+			for (OrderItem item: order.getItems()) {
+				// 循环products,判断当前的item是否就是当前的产品
+				for (Product product: products) {
+					if (item.getProduct().getSku().equals(product.getSku())) {
+						//将当前的item订购的数量和产品在指定仓库下的库存相比较
+						if (product.getTotal().longValue() - item.getQtyOrdered().longValue() < 0) {
+							//库存不足,将订单放入productInventoryNotEnoughOrders列表
+							((List<Order>)map.get("productInventoryNotEnoughOrders")).add(order);
+							map.put("productInventoryNotEnough", true);
+						}
+						break;
+					}
+				}
+			}
+		}*/
+	}
+	
 	public OperationReviewDTO confirmOrderWhenGenerateOutInventory(OperationReviewDTO review) {
 		
 		this.confirmDifferentWarehouse(review);

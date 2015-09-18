@@ -246,12 +246,23 @@ public class Order implements Serializable {
 	private Long warehouseId;
 
 	@Transient
-	Map<String, Boolean> checkMap = new HashMap<>();
+	private Map<String, Boolean> checkMap = new HashMap<>();
+
+	@Transient
+	private Boolean igorneCheck = false;
 
 	//
 
 	public Long getId() {
 		return id;
+	}
+
+	public Boolean getIgorneCheck() {
+		return igorneCheck;
+	}
+
+	public void setIgorneCheck(Boolean igorneCheck) {
+		this.igorneCheck = igorneCheck;
 	}
 
 	public Map<String, Boolean> getCheckMap() {
