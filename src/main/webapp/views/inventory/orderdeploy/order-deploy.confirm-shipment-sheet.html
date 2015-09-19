@@ -66,9 +66,14 @@
                                         <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.differentDeliveryMethodError">
                                             <span class="glyphicon glyphicon-ok"></span> 验证通过
                                         </a>
-                                        <a class="btn btn-warning btn-xs pull-right" ng-show="operationReview().checkMap.differentDeliveryMethodError">
-                                            <span class="glyphicon glyphicon-warning-sign"></span> 点击忽略
-                                        </a>
+                                        <div ng-switch on="operationReview().ignoredMap.differentDeliveryMethodError" ng-show="operationReview().checkMap.differentDeliveryMethodError">
+                                            <a class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="ignoreOrNotChecker(operationReview().ignoredMap, 'differentDeliveryMethodError', true)">
+                                                <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
+                                            </a>
+                                            <a class="btn btn-info btn-xs pull-right" ng-switch-when="true" ng-click="ignoreOrNotChecker(operationReview().ignoredMap, 'differentDeliveryMethodError', false)">
+                                                <span class="glyphicon glyphicon-repeat"></span> 恢复验证
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-bottom: 7px;">
@@ -79,9 +84,14 @@
                                         <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.emptyCourierAndShipNumberError">
                                             <span class="glyphicon glyphicon-ok"></span> 验证通过
                                         </a>
-                                        <a class="btn btn-warning btn-xs pull-right" ng-show="operationReview().checkMap.emptyCourierAndShipNumberError">
-                                            <span class="glyphicon glyphicon-warning-sign"></span> 点击忽略
-                                        </a>
+                                        <div ng-switch on="operationReview().ignoredMap.emptyCourierAndShipNumberError" ng-show="operationReview().checkMap.emptyCourierAndShipNumberError">
+                                            <a class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="ignoreOrNotChecker(operationReview().ignoredMap, 'emptyCourierAndShipNumberError', true)">
+                                                <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
+                                            </a>
+                                            <a class="btn btn-info btn-xs pull-right" ng-switch-when="true" ng-click="ignoreOrNotChecker(operationReview().ignoredMap, 'emptyCourierAndShipNumberError', false)">
+                                                <span class="glyphicon glyphicon-repeat"></span> 恢复验证
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-bottom: 7px;">
@@ -92,9 +102,14 @@
                                         <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.warehouseExistOrderShipmentError">
                                             <span class="glyphicon glyphicon-ok"></span> 验证通过
                                         </a>
-                                        <a class="btn btn-warning btn-xs pull-right" ng-show="operationReview().checkMap.warehouseExistOrderShipmentError">
-                                            <span class="glyphicon glyphicon-warning-sign"></span> 点击忽略
-                                        </a>
+                                        <div ng-switch on="operationReview().ignoredMap.warehouseExistOrderShipmentError" ng-show="operationReview().checkMap.warehouseExistOrderShipmentError">
+                                            <a class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="ignoreOrNotChecker(operationReview().ignoredMap, 'warehouseExistOrderShipmentError', true)">
+                                                <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
+                                            </a>
+                                            <a class="btn btn-info btn-xs pull-right" ng-switch-when="true" ng-click="ignoreOrNotChecker(operationReview().ignoredMap, 'warehouseExistOrderShipmentError', false)">
+                                                <span class="glyphicon glyphicon-repeat"></span> 恢复验证
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-bottom: 7px;">
@@ -105,9 +120,14 @@
                                         <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.emptyReceiveAddressError">
                                             <span class="glyphicon glyphicon-ok"></span> 验证通过
                                         </a>
-                                        <a class="btn btn-warning btn-xs pull-right" ng-show="operationReview().checkMap.emptyReceiveAddressError">
-                                            <span class="glyphicon glyphicon-warning-sign"></span> 点击忽略
-                                        </a>
+                                        <div ng-switch on="operationReview().ignoredMap.emptyReceiveAddressError" ng-show="operationReview().checkMap.emptyReceiveAddressError">
+                                            <a class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="ignoreOrNotChecker(operationReview().ignoredMap, 'emptyReceiveAddressError', true)">
+                                                <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
+                                            </a>
+                                            <a class="btn btn-info btn-xs pull-right" ng-switch-when="true" ng-click="ignoreOrNotChecker(operationReview().ignoredMap, 'emptyReceiveAddressError', false)">
+                                                <span class="glyphicon glyphicon-repeat"></span> 恢复验证
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

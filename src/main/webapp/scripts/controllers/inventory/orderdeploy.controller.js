@@ -528,7 +528,13 @@ angular.module('ecommApp')
                 dataMap : {
                     startShipNumber           : $scope.startShipNumber
                 },
-                assiginWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null
+                ignoredMap : {
+                    differentDeliveryMethodError : false,
+                    emptyCourierAndShipNumberError : false,
+                    warehouseExistOrderShipmentError : false,
+                    emptyReceiveAddressError : false
+                },
+                assignWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null
             };
             console.log('Before Operation Review:');
             console.log(reviewDTO);
