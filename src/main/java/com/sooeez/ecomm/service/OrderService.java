@@ -5,20 +5,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,13 +24,14 @@ import org.springframework.util.StringUtils;
 
 import com.sooeez.ecomm.domain.Courier;
 import com.sooeez.ecomm.domain.Inventory;
-import com.sooeez.ecomm.domain.OrderBatch;
-import com.sooeez.ecomm.domain.OrderItem;
 import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Order;
+import com.sooeez.ecomm.domain.OrderBatch;
+import com.sooeez.ecomm.domain.OrderItem;
 import com.sooeez.ecomm.domain.OrderItem;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.ProductShopTunnel;
+import com.sooeez.ecomm.domain.Shipment;
 import com.sooeez.ecomm.domain.ShopTunnel;
 import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
@@ -539,9 +536,59 @@ public class OrderService {
 		
 		return review;
 	}
+	
+	public void confirmWarehouseExistOrderShipment(OperationReviewDTO review)
+	{
+		boolean isWarehouseExistSomeOrderShipment = false;
+		
+		for( Order order : review.getOrders() )
+		{
+			boolean isWarehouseExistOrderShipment = false;
+			
+			/* 订单没有发货单，则订单在同一仓库下存在发货单的条件不成立 */
+			if( order.getShipments() != null && order.getShipments().size() < 1 )
+			{
+				for( Shipment shipment : order.getShipments() )
+				{
+					for( OrderItem item : order.getItems() )
+					{
+						if( shipment.getShipWarehouseId()!= null && shipment.getShipWarehouseId().equals( item.getAssignTunnel().getDefaultWarehouse().getId() ) )
+						{
+							isWarehouseExistOrderShipment = true;
+						}
+					}
+				}
+			}
+
+			/* 订单在同一仓库下存在发货单 */
+			if( isWarehouseExistOrderShipment )
+			{
+				order.getCheckMap().put("warehouseExistOrderShipmentError", true);
+			}
+			else
+			{
+				order.getCheckMap().put("warehouseExistOrderShipmentError", false);
+			}
+			isWarehouseExistSomeOrderShipment = isWarehouseExistOrderShipment;
+		}
+		
+		/* 某订单在同一仓库下存在发货单 */
+		if( isWarehouseExistSomeOrderShipment )
+		{
+			review.getCheckMap().put("warehouseExistOrderShipmentError", true);
+		}
+		else
+		{
+			/* 不通过 */
+			review.setReviewPass(false);
+			review.getCheckMap().put("warehouseExistOrderShipmentError", false);
+		}
+	}
 
 	public OperationReviewDTO confirmOrderWhenGenerateShipment(OperationReviewDTO review)
 	{
+		this.refreshOrdersBySelectedOrderIds(review);
+		
 		/* 获取订单列表 */
 		List<Order> orders = review.getOrders();
 		System.out.println("操作类型 ： " + review.getAction());
@@ -582,11 +629,11 @@ public class OrderService {
 		
 		
 		/* 验证 4 ： 订单在同一仓库下是否已存在发货单 */
+		this.confirmWarehouseExistOrderShipment(review);
 		
 		
 		/* 验证 5 ： 订单的收货地址是否为空 */
 		boolean isReceiveAddressEmpty = false;
-		review.getCheckMap().put("emptyReceiveAddressError", false);
 		for(Order order : orders)
 		{
 			if( order.getReceiveAddress() == null || order.getReceiveAddress().trim().equals("")  )
@@ -601,8 +648,11 @@ public class OrderService {
 				order.getCheckMap().put("emptyReceiveAddressError", false);
 			}
 		}
-		System.out.println("isReceiveAddressEmpty: " + isReceiveAddressEmpty);
-		review.setReviewPass( ! isReceiveAddressEmpty);
+		if( isReceiveAddressEmpty )
+		{
+			/* 不通过 */
+			review.setReviewPass(false);
+		}
 		review.getCheckMap().put("emptyReceiveAddressError", isReceiveAddressEmpty);
 		
 		
