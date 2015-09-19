@@ -35,7 +35,7 @@ public class OperationReviewDTO implements Serializable {
 	/* 选中快递公司验证 */
 	private Courier selectedCourier;
 	// 指定出库的仓库id
-	private Long assginWarehouseId;
+	private Long assignWarehouseId;
 
 	public boolean isReviewPass() {
 		return reviewPass;
@@ -45,12 +45,12 @@ public class OperationReviewDTO implements Serializable {
 		this.reviewPass = reviewPass;
 	}
 
-	public Long getAssginWarehouseId() {
-		return assginWarehouseId;
+	public Long getAssignWarehouseId() {
+		return assignWarehouseId;
 	}
 
-	public void setAssginWarehouseId(Long assginWarehouseId) {
-		this.assginWarehouseId = assginWarehouseId;
+	public void setAssignWarehouseId(Long assignWarehouseId) {
+		this.assignWarehouseId = assignWarehouseId;
 	}
 
 	public List<String> getIgnoredCheckers() {

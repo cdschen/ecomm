@@ -87,7 +87,7 @@
                                     </td>
                                     <td width="40%">
                                         <section ng-show="item.assignTunnel">
-                                            <ui-select ng-model="item.assignTunnel.defaultWarehouse">
+                                            <ui-select ng-model="item.assignTunnel.defaultWarehouse" on-select="selectItemWarehouse(item, $item)">
                                                 <ui-select-match placeholder="请选择仓库">{{$select.selected.name}}</ui-select-match>
                                                 <ui-select-choices repeat="warehouse in item.assignTunnel.warehouses | filter: $select.search">
                                                     <div ng-bind-html="warehouse.name | highlight: $select.search"></div>
