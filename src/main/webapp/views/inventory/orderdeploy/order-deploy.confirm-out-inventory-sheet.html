@@ -44,11 +44,13 @@
                                         <th width="10%">A</th>
                                         <td wdith="60%">全部订单必须在同一仓库</td>
                                         <td wdith="30%">
-                                            <div class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show="!operationReview().checkMap.differentWarehouseError">
-                                                <span class="glyphicon glyphicon-ok"></span> 通过
-                                            </div>
-                                            <div class="btn btn-danger btn-xs pull-right" ng-disabled="true" ng-show="operationReview().checkMap.differentWarehouseError">
-                                                <span class="glyphicon glyphicon-remove-circle"></span> 失败
+                                            <div ng-switch on="operationReview().checkMap.differentWarehouseError">
+                                                <div class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-switch-when="false">
+                                                    <span class="glyphicon glyphicon-ok"></span> 通过
+                                                </div>
+                                                <div class="btn btn-danger btn-xs pull-right" ng-disabled="true" ng-switch-when="true">
+                                                    <span class="glyphicon glyphicon-remove-circle"></span> 失败
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
@@ -56,18 +58,33 @@
                                         <th width="10%">B</th>
                                         <td wdith="60%">全部订单商品细目必须有库存</td>
                                         <td wdith="30%">
-                                            <a href="javascript:void(0)" class="btn btn-warning btn-xs pull-right">
-                                                <span class="glyphicon glyphicon-warning-sign"></span> 忽略
-                                            </a>
+                                            <div ng-switch on="operationReview().checkMap.productInventoryNotEnoughError">
+                                                <div class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-switch-when="false">
+                                                    <span class="glyphicon glyphicon-ok"></span> 通过
+                                                </div>
+                                                <div ng-switch-when="true" ng-switch on="operationReview().ignoredMap.productInventoryNotEnough">
+                                                    <div class="btn btn-warning btn-xs pull-right" ng-switch-when="true" ng-click="recoverConfirm('productInventoryNotEnough')">
+                                                        <span class="glyphicon glyphicon-warning-sign"></span> 回复验证
+                                                    </div>
+                                                    <div class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="cancelConfirm('productInventoryNotEnough')">
+                                                        <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th width="10%">C</th>
                                         <td wdith="60%">订单在同一个仓库只能有一张出库单</td>
                                         <td wdith="30%">
-                                            <a href="javascript:void(0)" class="btn btn-warning btn-xs pull-right">
-                                            <span class="glyphicon glyphicon-warning-sign"></span> 忽略
-                                        </a>
+                                            <div ng-switch on="operationReview().checkMap.orderExistOutInventorySheetError">
+                                                <div class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-switch-when="false">
+                                                    <span class="glyphicon glyphicon-ok"></span> 通过
+                                                </div>
+                                                <div class="btn btn-warning btn-xs pull-right" ng-switch-when="true" ng-click="cancelConfirm('orderExistOutInventorySheet')">
+                                                    <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -107,7 +124,7 @@
                 <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultHeight()">
                     <table class="table table-bordered table-condensed clear-marginbottom-table">
                         <tbody>
-                            <tr ng-class="{'active': order.ignoreCheck}" ng-repeat="order in operationReview().orders" >
+                            <tr ng-class="{'active': order.ignoreCheck}" ng-repeat="order in operationReview().orders">
                                 <td width="10%">
                                     <strong>{{order.id}}</strong>
                                 </td>
@@ -151,7 +168,6 @@
                                         <button type="button" class="btn btn-danger btn-xs btn-block" ng-click="moveOut(order)" ng-switch-when="false">移出</button>
                                         <button type="button" class="btn btn-success btn-xs btn-block" ng-click="recover(order)" ng-switch-when="true">回复</button>
                                     </div>
-                                    
                                 </td>
                             </tr>
                         </tbody>

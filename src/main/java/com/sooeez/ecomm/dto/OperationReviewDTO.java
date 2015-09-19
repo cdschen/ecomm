@@ -19,7 +19,7 @@ public class OperationReviewDTO implements Serializable {
 
 	/* Basic Attributes */
 	/* 忽略规则列表 */
-	private List<String> ignoredCheckers = new ArrayList<>();
+	private Map<String, Boolean> ignoredMap = new HashMap<>();
 	/* 检查项 */
 	private Map<String, Boolean> checkMap = new HashMap<>();
 	/* 额外数据 */
@@ -53,20 +53,12 @@ public class OperationReviewDTO implements Serializable {
 		this.assignWarehouseId = assignWarehouseId;
 	}
 
-	public List<String> getIgnoredCheckers() {
-		return ignoredCheckers;
-	}
-
 	public Map<String, Object> getDataMap() {
 		return dataMap;
 	}
 
 	public void setDataMap(Map<String, Object> dataMap) {
 		this.dataMap = dataMap;
-	}
-
-	public void setIgnoredCheckers(List<String> ignoredCheckers) {
-		this.ignoredCheckers = ignoredCheckers;
 	}
 
 	public List<Order> getOrders() {
@@ -99,6 +91,14 @@ public class OperationReviewDTO implements Serializable {
 
 	public void setSelectedCourier(Courier selectedCourier) {
 		this.selectedCourier = selectedCourier;
+	}
+
+	public Map<String, Boolean> getIgnoredMap() {
+		return ignoredMap;
+	}
+
+	public void setIgnoredMap(Map<String, Boolean> ignoredMap) {
+		this.ignoredMap = ignoredMap;
 	}
 
 }
