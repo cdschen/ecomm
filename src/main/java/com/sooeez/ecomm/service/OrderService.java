@@ -356,25 +356,29 @@ public class OrderService {
 		List<Order> orders = review.getOrders();
 		// 循环 order
 		for (Order order: orders) {
-			// 循环 order item
-			for (OrderItem item: order.getItems()) {
-				if (item.getAssignTunnel() != null) {
-					sameWarehouseIds.add(item.getAssignTunnel().getDefaultWarehouse().getId());
-					for (Long warehouseId : sameWarehouseIds) {
-						if (warehouseId.longValue() != item.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
-							System.out.println(item.getId() + ":" + item.getAssignTunnel().getDefaultWarehouse().getId());
-							differentWarehouseError = true;
-							break;
+			// 当order没有被移出的时候才进行判断
+			if (!order.getIgnoreCheck()) {
+				// 循环 order item
+				for (OrderItem item: order.getItems()) {
+					if (item.getAssignTunnel() != null) {
+						sameWarehouseIds.add(item.getAssignTunnel().getDefaultWarehouse().getId());
+						for (Long warehouseId : sameWarehouseIds) {
+							if (warehouseId.longValue() != item.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
+								System.out.println(item.getId() + ":" + item.getAssignTunnel().getDefaultWarehouse().getId());
+								differentWarehouseError = true;
+								break;
+							}
 						}
+					}
+					if (differentWarehouseError) {
+						break;
 					}
 				}
 				if (differentWarehouseError) {
 					break;
 				}
 			}
-			if (differentWarehouseError) {
-				break;
-			}
+			
 		}
 		
 		if (differentWarehouseError) {
@@ -397,19 +401,21 @@ public class OrderService {
 		List<Order> orders = review.getOrders();
 		List<Long> warehouseIds = new ArrayList<>();
 		for (Order order: orders) {
-			for (OrderItem item: order.getItems()) {
-				boolean exist = false;
-				if (item.getAssignTunnel() != null) {
-					for (Long warehouseId: warehouseIds){
-						if (warehouseId.longValue() == item.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
-							exist = true;
-							break;
-						} else {
-							exist = false;
+			if (!order.getIgnoreCheck()) {
+				for (OrderItem item: order.getItems()) {
+					boolean exist = false;
+					if (item.getAssignTunnel() != null) {
+						for (Long warehouseId: warehouseIds){
+							if (warehouseId.longValue() == item.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
+								exist = true;
+								break;
+							} else {
+								exist = false;
+							}
 						}
-					}
-					if (!exist) {
-						warehouseIds.add(item.getAssignTunnel().getDefaultWarehouse().getId());
+						if (!exist) {
+							warehouseIds.add(item.getAssignTunnel().getDefaultWarehouse().getId());
+						}
 					}
 				}
 			}
@@ -435,46 +441,53 @@ public class OrderService {
 		review.getCheckMap().put("productInventoryNotEnoughError", false);
 		
 		for (Order order: orders) {
-			// 判断前先把每一个order的productInventoryNotEnoughError设置为false
-			order.getCheckMap().put("productInventoryNotEnoughError", false);
-			// 循环item
-			for (OrderItem item: order.getItems()) {
-				// 循环products
-				boolean exitProductsEach = false;
-				for (Product product: products) {
-					// 判断当前的item是否就是当前的产品
-					if (item.getProduct().getSku().equals(product.getSku())) {
-						// 循环当前产品的仓库
-						for (Warehouse warehouse: product.getWarehouses()) {
-							// 判断当前item指定的仓库是否在产品所在的仓库中
-							if (item.getAssignTunnel().getDefaultWarehouse().getId().longValue() == warehouse.getId().longValue()) {
-								warehouse.setTotal(warehouse.getTotal().longValue() - item.getQtyOrdered().longValue());
-								System.out.println("orderid:" + order.getId() + ", itemid:" + item.getId() + "," + item.getProduct().getName() + "," + item.getAssignTunnel().getDefaultWarehouse().getName() + "," + warehouse.getTotal());
-								if (warehouse.getTotal().longValue() < 0) { 
-									issueItems.add(item);
+			
+			if (!order.getIgnoreCheck()) {
+				// 判断前先把每一个order的productInventoryNotEnoughError设置为false
+				order.getCheckMap().put("productInventoryNotEnoughError", false);
+				// 循环item
+				for (OrderItem item: order.getItems()) {
+					// 循环products
+					boolean exitProductsEach = false;
+					for (Product product: products) {
+						// 判断当前的item是否就是当前的产品
+						if (item.getProduct().getSku().equals(product.getSku())) {
+							// 循环当前产品的仓库
+							for (Warehouse warehouse: product.getWarehouses()) {
+								// 判断当前item指定的仓库是否在产品所在的仓库中
+								if (item.getAssignTunnel().getDefaultWarehouse().getId().longValue() == warehouse.getId().longValue()) {
+									warehouse.setTotal(warehouse.getTotal().longValue() - item.getQtyOrdered().longValue());
+									System.out.println("orderid:" + order.getId() + ", itemid:" + item.getId() + "," + item.getProduct().getName() + "," + item.getAssignTunnel().getDefaultWarehouse().getName() + "," + warehouse.getTotal());
+									if (warehouse.getTotal().longValue() < 0) { 
+										issueItems.add(item);
+									}
+									exitProductsEach = true;
+									break;
 								}
-								exitProductsEach = true;
-								break;
 							}
+						} 
+						if (exitProductsEach) {
+							break;
 						}
-					} 
-					if (exitProductsEach) {
-						break;
 					}
 				}
 			}
+			
 		}
 		
 		for (OrderItem issueItem: issueItems) {
 			for (Order order: orders) {
-				for (OrderItem item: order.getItems()) {
-					if (item.getProduct().getSku().equals(issueItem.getProduct().getSku())
-							&& item.getAssignTunnel().getDefaultWarehouse().getId().longValue() == issueItem.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
-						order.getCheckMap().put("productInventoryNotEnoughError", true);
-						review.getCheckMap().put("productInventoryNotEnoughError", true);
-						break;
+				if (!order.getIgnoreCheck()) {
+					for (OrderItem item: order.getItems()) {
+						if (item.getProduct().getSku().equals(issueItem.getProduct().getSku())
+								&& item.getAssignTunnel().getDefaultWarehouse().getId().longValue() == issueItem.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
+							order.getCheckMap().put("productInventoryNotEnoughError", true);
+							review.getCheckMap().put("productInventoryNotEnoughError", true);
+							break;
+						}
 					}
 				}
+				
 			}
 		}
 	}
@@ -488,20 +501,22 @@ public class OrderService {
 		
 		// 循环 orders
 		for (Order order: orders) {
-			order.getCheckMap().put("orderExistOutInventorySheetError", false);
-			boolean exitItemsEach = false;
-			for (OrderItem item: order.getItems()) {
-				if (item.getAssignTunnel() != null) {
-					for (OrderBatch orderBatch: order.getBatches()) {
-						if (orderBatch.getWarehouseId().longValue() == item.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
-							order.getCheckMap().put("orderExistOutInventorySheetError", true);
-							exitItemsEach = true;
-							break;
+			if (!order.getIgnoreCheck()) {
+				order.getCheckMap().put("orderExistOutInventorySheetError", false);
+				boolean exitItemsEach = false;
+				for (OrderItem item: order.getItems()) {
+					if (item.getAssignTunnel() != null) {
+						for (OrderBatch orderBatch: order.getBatches()) {
+							if (orderBatch.getWarehouseId().longValue() == item.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
+								order.getCheckMap().put("orderExistOutInventorySheetError", true);
+								exitItemsEach = true;
+								break;
+							}
 						}
 					}
-				}
-				if (exitItemsEach) {
-					break;
+					if (exitItemsEach) {
+						break;
+					}
 				}
 			}
 		}
@@ -510,18 +525,32 @@ public class OrderService {
 	/* 通过orderids重新查询一遍所选的orders */
 	public void refreshOrdersBySelectedOrderIds(OperationReviewDTO review) {
 		// 再次查询选中的orders
-		List<Order> orders = review.getOrders();
 		Order order = new Order();
-		orders.forEach(o -> {
+		List<Long> moveOutOrderIds = new ArrayList<>();
+		review.getOrders().forEach(o -> {
 			order.getOrderIds().add(o.getId());
+			if (o.getIgnoreCheck()) {
+				moveOutOrderIds.add(o.getId());
+			}
 		});
-		orders = this.getOrders(order, new Sort(Sort.Direction.DESC, "internalCreateTime"));
-		orders.forEach(o -> {
+		List<Order> newOrders = this.getOrders(order, new Sort(Sort.Direction.DESC, "internalCreateTime"));
+		newOrders.forEach(o -> {
+			// 重新设置移出的order
+			for (Long moveOutOrderId: moveOutOrderIds) {
+				if (moveOutOrderId.longValue() == o.getId()) {
+					o.setIgnoreCheck(true);
+					break;
+				}
+			}
 			this.shopService.initShopDefaultTunnel(o.getShop());
 			this.checkItemProductShopTunnel(o);
 		});
 		
-		review.setOrders(orders);
+		if (review.getAssginWarehouseId() != null) {
+			this.filterItemsForOrder(newOrders, review.getAssginWarehouseId());
+		}
+		
+		review.setOrders(newOrders);
 	}
 	
 	public OperationReviewDTO confirmOrderWhenGenerateOutInventory(OperationReviewDTO review) {
