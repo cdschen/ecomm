@@ -13,7 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -31,6 +30,10 @@ public class Shipment implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+
+	/* 订单号 */
+	@Column(name = "order_id")
+	private Long orderId;
 
 	/* 快递单号 */
 	@Column(name = "ship_number")
@@ -124,16 +127,17 @@ public class Shipment implements Serializable {
 	@Column(name = "receive_post")
 	private String receivePost;
 
+	/* 发货仓库编号 */
+	@Column(name = "ship_warehouse_id")
+	private String shipWarehouseId;
+
 	/*
 	 * Related Properties
 	 */
-	@OneToOne
-	@JoinColumn(name = "shipfee_currency_id")
-	private Currency currency;
 	
-	@ManyToOne
-	@JoinColumn(name = "order_id")
-	private Order order;
+//	@OneToOne
+//	@JoinColumn(name = "order_id")
+//	private Order order;
 
 	@OneToOne
 	@JoinColumn(name = "operator_id")
@@ -341,21 +345,13 @@ public class Shipment implements Serializable {
 		this.receivePost = receivePost;
 	}
 
-	public Currency getCurrency() {
-		return currency;
-	}
-
-	public void setCurrency(Currency currency) {
-		this.currency = currency;
-	}
-
-	public Order getOrder() {
-		return order;
-	}
-
-	public void setOrder(Order order) {
-		this.order = order;
-	}
+//	public Order getOrder() {
+//		return order;
+//	}
+//
+//	public void setOrder(Order order) {
+//		this.order = order;
+//	}
 
 	public User getUser() {
 		return user;
@@ -371,6 +367,30 @@ public class Shipment implements Serializable {
 
 	public void setCourier(Courier courier) {
 		this.courier = courier;
+	}
+
+	public String getShipWarehouseId() {
+		return shipWarehouseId;
+	}
+
+	public void setShipWarehouseId(String shipWarehouseId) {
+		this.shipWarehouseId = shipWarehouseId;
+	}
+
+	public List<ShipmentItem> getShipmentItems() {
+		return shipmentItems;
+	}
+
+	public void setShipmentItems(List<ShipmentItem> shipmentItems) {
+		this.shipmentItems = shipmentItems;
+	}
+
+	public Long getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(Long orderId) {
+		this.orderId = orderId;
 	}
 	
 }

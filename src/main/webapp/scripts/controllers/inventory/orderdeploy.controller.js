@@ -540,13 +540,10 @@ angular.module('ecommApp')
             /* 隐藏指定快递公司弹出层 */
             $('#generateShipment').modal('hide');
 
-            console.log('---------------开始：生成检查表结果---------------');
-
             executeShipmentOperationReview('VERIFY');
 
             $scope.toggleShipmentSheetSlide();
             /* 查看检查结果 */
-            console.log('---------------结束：生成检查表结果---------------');
         };
     
 

@@ -28,6 +28,16 @@
                                     <div class="col-md-2">
                                     </div>
                                 </div>
+                                <div class="row" style="margin-bottom: 7px;">
+                                    <div class="col-md-9 col-md-offset-1">指定快递公司：{{courier.selected.name}}</div>
+                                    <div class="col-md-2">
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-bottom: 7px;">
+                                    <div class="col-md-9 col-md-offset-1">起始快递单号：{{startShipNumber}}</div>
+                                    <div class="col-md-2">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -79,7 +89,10 @@
                                         A. 订单在同一仓库下是否已存在发货单
                                     </div>
                                     <div class="col-md-2">
-                                        <a href="javascript:void(0)" class="btn btn-warning btn-xs pull-right">
+                                        <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.warehouseExistOrderShipmentError">
+                                            <span class="glyphicon glyphicon-ok"></span> 验证通过
+                                        </a>
+                                        <a class="btn btn-warning btn-xs pull-right" ng-show="operationReview().checkMap.warehouseExistOrderShipmentError">
                                             <span class="glyphicon glyphicon-warning-sign"></span> 点击忽略
                                         </a>
                                     </div>
@@ -115,59 +128,64 @@
                 <div style="padding-right:8px;">
                     <table class="table table-bordered table-condensed clear-marginbottom-table">
                         <thead>
-                        <tr>
-                            <th colspan="2" class="text-center">订单详情</th>
-                            <th colspan="4" class="text-center">操作规定复核结果</th>
-                        </tr>
-                        <tr>
-                            <th width="10%">订单编号</th>
-                            <th width="50%">商品信息</th>
-                            <th width="10%" class="text-center">A</th>
-                            <th width="10%" class="text-center">B</th>
-                            <th width="10%" class="text-center">操作</th>
-                        </tr>
+                            <tr>
+                                <th colspan="4" class="text-center">订单详情</th>
+                                <th colspan="3" class="text-center">操作规定复核结果</th>
+                            </tr>
+                            <tr>
+                                <th width="10%">订单编号</th>
+                                <th width="10%">发货方式</th>
+                                <th width="10%">收件地址</th>
+                                <th width="30%">商品信息</th>
+                                <th width="10%" class="text-center">A</th>
+                                <th width="10%" class="text-center">B</th>
+                                <th width="20%" class="text-center">操作</th>
+                            </tr>
                         </thead>
                     </table>
                 </div>
                 <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultHeight()">
-
                     <table class="table table-bordered table-condensed clear-marginbottom-table">
                         <tbody>
-                        <tr ng-repeat="order in operationReview().orders" ng-show="order.checkMap.differentWarehouseError">
-                            <td width="10%">
-                                <strong>{{ order.id }}</strong>
-                            </td>
-                            <td width="10%">
-                                {{ order.deliveryMethod }}
-                            </td>
-                            <td width="50%">
-                                <table class="table table-bordered table-condensed clear-marginbottom-table">
-                                    <tbody>
-                                    <tr ng-repeat="item in order.items">
-                                        <td width="40%">
-                                            {{ item.name }}
-                                        </td>
-                                        <td width="20%">
-                                            {{ item.qtyOrdered }}
-                                        </td>
-                                        <td width="40%">
-                                            {{ item.assignTunnel.defaultWarehouse.name }}
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                            <td width="10%" class="text-center">
-                                <span class="glyphicon glyphicon-ok text-success" ng-show="!order.checkMap.emptyReceiveAddressError"></span>
-                                <span class="glyphicon glyphicon-remove-circle text-danger" ng-show="order.checkMap.emptyReceiveAddressError"></span>
-                            </td>
-                            <td width="10%" class="text-center">
-                                <!-- <span class="glyphicon glyphicon-warning-sign text-warning"></span> -->
-                            </td>
-                            <td width="10%" class="text-center">
-                                <button type="button" class="btn btn-danger btn-xs btn-block">移出</button>
-                            </td>
-                        </tr>
+                            <tr ng-repeat="order in operationReview().orders" ng-show="order.checkMap.differentWarehouseError">
+                                <td width="10%">
+                                    <strong>{{ order.id }}</strong>
+                                </td>
+                                <td width="10%">
+                                    {{ order.deliveryMethod == 1 ? '快递' : order.deliveryMethod == 2 ? '自提' : order.deliveryMethod == 3 ? '送货上门' : '' }}
+                                </td>
+                                <td width="10%">
+                                    {{ order.receiveAddress }}
+                                </td>
+                                <td width="30%">
+                                    <table class="table table-bordered table-condensed clear-marginbottom-table">
+                                        <tbody>
+                                            <tr ng-repeat="item in order.items">
+                                                <td width="40%">
+                                                    {{ item.name }}
+                                                </td>
+                                                <td width="20%">
+                                                    {{ item.qtyOrdered }}
+                                                </td>
+                                                <td width="40%">
+                                                    {{ item.assignTunnel.defaultWarehouse.name }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td width="10%" class="text-center">
+                                    <span class="glyphicon glyphicon-ok text-success" ng-show="!order.checkMap.emptyReceiveAddressError"></span>
+                                    <span class="glyphicon glyphicon-remove-circle text-danger" ng-show="order.checkMap.emptyReceiveAddressError"></span>
+                                </td>
+                                <td width="10%" class="text-center">
+                                    <!-- <span class="glyphicon glyphicon-warning-sign text-warning"></span> -->
+                                </td>
+                                <td width="20%" class="text-center">
+                                    <button type="button" class="btn btn-danger btn-xs btn-block" ng-click="ignoreCheckOrderTrue(order)" ng-show=" ! order.ignoreCheck">移除</button>
+                                    <button type="button" class="btn btn-success btn-xs btn-block" ng-click="ignoreCheckOrderFalse(order)" ng-show="order.ignoreCheck">恢复</button>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

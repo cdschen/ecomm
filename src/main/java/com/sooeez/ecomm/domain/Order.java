@@ -137,7 +137,7 @@ public class Order implements Serializable {
 
 	/* 发件人email, 可以为空 */
 	@Column(name = "sender_email")
-	private String sender_email;
+	private String senderEmail;
 
 	/* 发件人邮编，可以为空 */
 	@Column(name = "sender_post")
@@ -205,6 +205,10 @@ public class Order implements Serializable {
 	@JoinColumn(name = "object_id")
 	private List<ObjectProcess> processes;
 
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_id")
+	private List<Shipment> shipments;
+
 	/* 一张订单可能有多张与之相连的出库单，但在同一个仓库下，一张订单只可能有一张出库单 */
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id")
@@ -257,14 +261,17 @@ public class Order implements Serializable {
 	public Long getId() {
 		return id;
 	}
+	
 
 	public Boolean getIgnoreCheck() {
 		return ignoreCheck;
 	}
 
+
 	public void setIgnoreCheck(Boolean ignoreCheck) {
 		this.ignoreCheck = ignoreCheck;
 	}
+
 
 	public Map<String, Boolean> getCheckMap() {
 		return checkMap;
@@ -550,12 +557,20 @@ public class Order implements Serializable {
 		this.senderPhone = senderPhone;
 	}
 
-	public String getSender_email() {
-		return sender_email;
+	public String getSenderEmail() {
+		return senderEmail;
 	}
 
-	public void setSender_email(String sender_email) {
-		this.sender_email = sender_email;
+	public void setSenderEmail(String senderEmail) {
+		this.senderEmail = senderEmail;
+	}
+
+	public List<Shipment> getShipments() {
+		return shipments;
+	}
+
+	public void setShipments(List<Shipment> shipments) {
+		this.shipments = shipments;
 	}
 
 	public String getSenderPost() {
