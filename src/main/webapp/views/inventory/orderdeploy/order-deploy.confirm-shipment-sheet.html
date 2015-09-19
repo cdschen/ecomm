@@ -147,7 +147,7 @@
                 <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultHeight()">
                     <table class="table table-bordered table-condensed clear-marginbottom-table">
                         <tbody>
-                            <tr ng-repeat="order in operationReview().orders" ng-show="order.checkMap.differentWarehouseError">
+                            <tr ng-class="{'active': order.ignoreCheck}" ng-repeat="order in operationReview().orders">
                                 <td width="10%">
                                     <strong>{{ order.id }}</strong>
                                 </td>
@@ -160,7 +160,7 @@
                                 <td width="30%">
                                     <table class="table table-bordered table-condensed clear-marginbottom-table">
                                         <tbody>
-                                            <tr ng-repeat="item in order.items">
+                                            <tr ng-class="{'active': order.ignoreCheck}" ng-repeat="item in order.items">
                                                 <td width="40%">
                                                     {{ item.name }}
                                                 </td>
@@ -175,15 +175,26 @@
                                     </table>
                                 </td>
                                 <td width="10%" class="text-center">
-                                    <span class="glyphicon glyphicon-ok text-success" ng-show="!order.checkMap.emptyReceiveAddressError"></span>
-                                    <span class="glyphicon glyphicon-remove-circle text-danger" ng-show="order.checkMap.emptyReceiveAddressError"></span>
+                                    <div ng-switch on="order.checkMap.warehouseExistOrderShipmentError">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-danger" ng-switch-when="true"></span>
+                                    </div>
                                 </td>
                                 <td width="10%" class="text-center">
-                                    <!-- <span class="glyphicon glyphicon-warning-sign text-warning"></span> -->
+                                    <div ng-switch on="order.checkMap.emptyReceiveAddressError">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true"></span>
+                                    </div>
                                 </td>
                                 <td width="20%" class="text-center">
-                                    <button type="button" class="btn btn-danger btn-xs btn-block" ng-click="ignoreCheckOrderTrue(order)" ng-show=" ! order.ignoreCheck">移除</button>
-                                    <button type="button" class="btn btn-success btn-xs btn-block" ng-click="ignoreCheckOrderFalse(order)" ng-show="order.ignoreCheck">恢复</button>
+                                    <div ng-switch on="order.ignoreCheck">
+                                        <div ng-switch-when="true">
+                                            <button type="button" class="btn btn-success btn-xs btn-block" ng-click="ignoreOrNotCheckOrder(order)" ng-show="order.ignoreCheck">恢复</button>
+                                        </div>
+                                        <div ng-switch-when="false">
+                                            <button type="button" class="btn btn-danger btn-xs btn-block" ng-click="ignoreOrNotCheckOrder(order)" ng-show=" ! order.ignoreCheck">移出</button>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
