@@ -118,6 +118,7 @@ angular.module('ecommApp')
                     orderService.checkItemProductShopTunnel(this);
                 });
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
+                $scope.is_checked_all = false;
             });
         };
 
@@ -143,6 +144,7 @@ angular.module('ecommApp')
                     orderService.checkItemProductShopTunnel(this);
                 });
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
+                $scope.is_checked_all = false;
             });
         };
 
@@ -444,7 +446,8 @@ angular.module('ecommApp')
                     if (orderService.selectedOrders.length > 0) {
                         $scope.toggleOutInventorySheetSlide();
                         var reviewDTO = {
-                            orders: orderService.selectedOrders
+                            orders: orderService.selectedOrders,
+                            assginWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null
                         };
                         console.log('reviewDTO:');
                         console.log(reviewDTO);

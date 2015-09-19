@@ -250,7 +250,7 @@ public class Order implements Serializable {
 	private Map<String, Boolean> checkMap = new HashMap<>();
 
 	@Transient
-	private Boolean igorneCheck = false;
+	private Boolean ignoreCheck = false;
 
 	//
 
@@ -258,12 +258,12 @@ public class Order implements Serializable {
 		return id;
 	}
 
-	public Boolean getIgorneCheck() {
-		return igorneCheck;
+	public Boolean getIgnoreCheck() {
+		return ignoreCheck;
 	}
 
-	public void setIgorneCheck(Boolean igorneCheck) {
-		this.igorneCheck = igorneCheck;
+	public void setIgnoreCheck(Boolean ignoreCheck) {
+		this.ignoreCheck = ignoreCheck;
 	}
 
 	public Map<String, Boolean> getCheckMap() {

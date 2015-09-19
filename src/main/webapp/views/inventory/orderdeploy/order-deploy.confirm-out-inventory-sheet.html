@@ -107,14 +107,14 @@
                 <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultHeight()">
                     <table class="table table-bordered table-condensed clear-marginbottom-table">
                         <tbody>
-                            <tr ng-repeat="order in operationReview().orders" ng-show="order.checkMap.differentWarehouseError || order.checkMap.productInventoryNotEnoughError || order.checkMap.orderExistOutInventorySheetError">
+                            <tr ng-class="{'active': order.ignoreCheck}" ng-repeat="order in operationReview().orders" >
                                 <td width="10%">
                                     <strong>{{order.id}}</strong>
                                 </td>
                                 <td width="70%">
                                     <table class="table table-bordered table-condensed clear-marginbottom-table">
                                         <tbody>
-                                            <tr ng-repeat="item in order.items">
+                                            <tr ng-class="{'active': order.ignoreCheck}" ng-repeat="item in order.items">
                                                 <td width="40%">
                                                     {{item.name}}
                                                 </td>
@@ -129,19 +129,26 @@
                                     </table>
                                 </td>
                                 <td width="5%" class="text-center">
-                                    <span class="glyphicon glyphicon-ok text-success" ng-show="!order.checkMap.differentWarehouseError"></span>
-                                    <span class="glyphicon glyphicon-remove-circle text-danger" ng-show="order.checkMap.differentWarehouseError"></span>
+                                    <div ng-show="!order.ignoreCheck">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-show="!order.checkMap.differentWarehouseError"></span>
+                                        <span class="glyphicon glyphicon-remove-circle text-danger" ng-show="order.checkMap.differentWarehouseError"></span>
+                                    </div>
                                 </td>
                                 <td width="5%" class="text-center">
-                                    <span class="glyphicon glyphicon-ok text-success" ng-show="!order.checkMap.productInventoryNotEnoughError"></span>
-                                    <span class="glyphicon glyphicon-warning-sign text-warning" ng-show="order.checkMap.productInventoryNotEnoughError"></span>
+                                    <div ng-show="!order.ignoreCheck">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-show="!order.checkMap.productInventoryNotEnoughError"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-show="order.checkMap.productInventoryNotEnoughError"></span>
+                                    </div>
                                 </td>
                                 <td width="5%" class="text-center">
-                                    <span class="glyphicon glyphicon-ok text-success" ng-show="!order.checkMap.orderExistOutInventorySheetError"></span>
-                                    <span class="glyphicon glyphicon-warning-sign text-warning" ng-show="order.checkMap.orderExistOutInventorySheetError"></span>
+                                    <div ng-show="!order.ignoreCheck">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-show="!order.checkMap.orderExistOutInventorySheetError"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-show="order.checkMap.orderExistOutInventorySheetError"></span>
+                                    </div>
                                 </td>
                                 <td width="5%" class="text-center">
-                                    <button type="button" class="btn btn-danger btn-xs btn-block">移出</button>
+                                    <button type="button" class="btn btn-danger btn-xs btn-block" ng-click="moveOut(order)" ng-show="!order.ignoreCheck">移出</button>
+                                    <button type="button" class="btn btn-success btn-xs btn-block" ng-click="recover(order)" ng-show="order.ignoreCheck">回复</button>
                                 </td>
                             </tr>
                         </tbody>
