@@ -16,7 +16,7 @@ angular.module('ecommApp')
             order.ignoreCheck = true;
             var reviewDTO = {
                 orders: orderService.getOperationReview().orders,
-                assginWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null
+                assignWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null
             };
             console.log('reviewDTO:');
             console.log(reviewDTO);
@@ -30,7 +30,7 @@ angular.module('ecommApp')
             order.ignoreCheck = false;
             var reviewDTO = {
                 orders: orderService.getOperationReview().orders,
-                assginWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null
+                assignWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null
             };
             console.log('reviewDTO:');
             console.log(reviewDTO);

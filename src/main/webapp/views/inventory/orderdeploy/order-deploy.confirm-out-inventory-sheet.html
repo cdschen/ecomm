@@ -129,26 +129,29 @@
                                     </table>
                                 </td>
                                 <td width="5%" class="text-center">
-                                    <div ng-show="!order.ignoreCheck">
-                                        <span class="glyphicon glyphicon-ok text-success" ng-show="!order.checkMap.differentWarehouseError"></span>
-                                        <span class="glyphicon glyphicon-remove-circle text-danger" ng-show="order.checkMap.differentWarehouseError"></span>
+                                    <div ng-show="!order.ignoreCheck" ng-switch on="order.checkMap.differentWarehouseError">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
+                                        <span class="glyphicon glyphicon-remove-circle text-danger" ng-switch-when="true"></span>
                                     </div>
                                 </td>
                                 <td width="5%" class="text-center">
-                                    <div ng-show="!order.ignoreCheck">
-                                        <span class="glyphicon glyphicon-ok text-success" ng-show="!order.checkMap.productInventoryNotEnoughError"></span>
-                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-show="order.checkMap.productInventoryNotEnoughError"></span>
+                                    <div ng-show="!order.ignoreCheck" ng-switch on="order.checkMap.productInventoryNotEnoughError">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true"></span>
                                     </div>
                                 </td>
                                 <td width="5%" class="text-center">
-                                    <div ng-show="!order.ignoreCheck">
-                                        <span class="glyphicon glyphicon-ok text-success" ng-show="!order.checkMap.orderExistOutInventorySheetError"></span>
-                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-show="order.checkMap.orderExistOutInventorySheetError"></span>
+                                    <div ng-show="!order.ignoreCheck" ng-switch on="order.checkMap.orderExistOutInventorySheetError">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true"></span>
                                     </div>
                                 </td>
                                 <td width="5%" class="text-center">
-                                    <button type="button" class="btn btn-danger btn-xs btn-block" ng-click="moveOut(order)" ng-show="!order.ignoreCheck">移出</button>
-                                    <button type="button" class="btn btn-success btn-xs btn-block" ng-click="recover(order)" ng-show="order.ignoreCheck">回复</button>
+                                    <div ng-switch on="order.ignoreCheck">
+                                        <button type="button" class="btn btn-danger btn-xs btn-block" ng-click="moveOut(order)" ng-switch-when="false">移出</button>
+                                        <button type="button" class="btn btn-success btn-xs btn-block" ng-click="recover(order)" ng-switch-when="true">回复</button>
+                                    </div>
+                                    
                                 </td>
                             </tr>
                         </tbody>

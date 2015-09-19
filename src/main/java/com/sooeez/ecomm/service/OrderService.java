@@ -546,8 +546,8 @@ public class OrderService {
 			this.checkItemProductShopTunnel(o);
 		});
 		
-		if (review.getAssginWarehouseId() != null) {
-			this.filterItemsForOrder(newOrders, review.getAssginWarehouseId());
+		if (review.getAssignWarehouseId() != null) {
+			this.filterItemsForOrder(newOrders, review.getAssignWarehouseId());
 		}
 		
 		review.setOrders(newOrders);

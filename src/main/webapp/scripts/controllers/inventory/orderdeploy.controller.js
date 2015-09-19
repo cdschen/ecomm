@@ -1,7 +1,7 @@
 angular.module('ecommApp')
 
-.controller('OrderDeployController', ['$scope', '$rootScope', 'toastr', '$modal', 'filterFilter', 'Warehouse', 'Shop', 'orderService', 'courierService', 'Process', 'Utils', 'Inventory',
-    function($scope, $rootScope, toastr, $modal, filterFilter, Warehouse, Shop, orderService, courierService, Process, Utils, Inventory) {
+.controller('OrderDeployController', ['$scope', '$rootScope', 'toastr', '$modal', 'filterFilter', 'Warehouse', 'Shop', 'orderService', 'courierService', 'Process', 'Utils', 'Inventory', 'OrderItem',
+    function($scope, $rootScope, toastr, $modal, filterFilter, Warehouse, Shop, orderService, courierService, Process, Utils, Inventory, OrderItem) {
 
         $scope.template = {
             status: {
@@ -148,13 +148,16 @@ angular.module('ecommApp')
             });
         };
 
-        // Generate Shipment
-        $scope.closeGenerateShipmentSlide = function() {
-            $scope.generateShipmentCheckListSlideChecked = false;
-        };
-
-        $scope.loadGenerateShipment = function() {
-            $scope.generateShipmentCheckListSlideChecked = true;
+        $scope.selectItemWarehouse = function(item, $item){
+            console.clear();
+            console.log('selectItemWarehouse');
+            console.log(item);
+            console.log($item);
+            item.warehouseId = $item.id;
+            OrderItem.save({}, item, function(item){
+                console.log('selectItemWarehouse complete');
+                console.log(item);
+            });
         };
 
         $scope.toggleOutInventorySheetSlide = function(){
@@ -447,7 +450,7 @@ angular.module('ecommApp')
                         $scope.toggleOutInventorySheetSlide();
                         var reviewDTO = {
                             orders: orderService.selectedOrders,
-                            assginWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null
+                            assignWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null
                         };
                         console.log('reviewDTO:');
                         console.log(reviewDTO);
