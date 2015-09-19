@@ -14,31 +14,58 @@ angular.module('ecommApp')
 
         $scope.moveOut = function(order) {
             order.ignoreCheck = true;
-            var reviewDTO = {
-                orders: orderService.getOperationReview().orders,
-                assignWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null
-            };
-            console.log('reviewDTO:');
-            console.log(reviewDTO);
-            orderService.confirmOrderWhenGenerateOutInventory(reviewDTO).then(function(review) {
+            console.log('orderService.getOperationReview():');
+            console.log(orderService.getOperationReview());
+            orderService.confirmOrderWhenGenerateOutInventory(orderService.getOperationReview()).then(function(review) {
                 console.log('review:');
                 console.log(review);
             });
         };
 
-        $scope.recover = function(order){
+        $scope.recover = function(order) {
             order.ignoreCheck = false;
-            var reviewDTO = {
-                orders: orderService.getOperationReview().orders,
-                assignWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null
-            };
-            console.log('reviewDTO:');
-            console.log(reviewDTO);
-            orderService.confirmOrderWhenGenerateOutInventory(reviewDTO).then(function(review) {
+            console.log('orderService.getOperationReview():');
+            console.log(orderService.getOperationReview());
+            orderService.confirmOrderWhenGenerateOutInventory(orderService.getOperationReview()).then(function(review) {
+                console.log('review:');
+                console.log(review);
+            });
+        };
+
+        $scope.cancelConfirm = function(name) {
+            orderService.getOperationReview().ignoredMap[name] = true;
+            console.log('cancelConfirm');
+            console.log(orderService.getOperationReview());
+            orderService.confirmOrderWhenGenerateOutInventory(orderService.getOperationReview()).then(function(review) {
+                console.log('review:');
+                console.log(review);
+            });
+        };
+
+        $scope.recoverConfirm = function (name){
+            orderService.getOperationReview().ignoredMap[name] = false;
+            console.log('cancelConfirm');
+            console.log(orderService.getOperationReview());
+            orderService.confirmOrderWhenGenerateOutInventory(orderService.getOperationReview()).then(function(review) {
                 console.log('review:');
                 console.log(review);
             });
         }
+
+        // $scope.existIgnoreItem = function(name) {
+        //     var exist = false;
+        //     if (orderService.getOperationReview() && orderService.getOperationReview().ignoredCheckers) {
+        //         $.each(orderService.getOperationReview().ignoredCheckers, function() {
+        //             var itemName = this;
+        //             if (itemName === name) {
+        //                 exist = true;
+        //                 return false;
+        //             }
+        //         });
+        //     }
+
+        //     return exist;
+        // };
 
     }
 ]);

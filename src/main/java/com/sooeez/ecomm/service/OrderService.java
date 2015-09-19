@@ -497,7 +497,7 @@ public class OrderService {
 		
 		List<Order> orders = review.getOrders();
 		
-		review.getCheckMap().put("orderExistOutInventorySheet", false);
+		review.getCheckMap().put("orderExistOutInventorySheetError", false);
 		
 		// 循环 orders
 		for (Order order: orders) {
@@ -509,6 +509,7 @@ public class OrderService {
 						for (OrderBatch orderBatch: order.getBatches()) {
 							if (orderBatch.getWarehouseId().longValue() == item.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
 								order.getCheckMap().put("orderExistOutInventorySheetError", true);
+								review.getCheckMap().put("orderExistOutInventorySheetError", false);
 								exitItemsEach = true;
 								break;
 							}
@@ -559,9 +560,13 @@ public class OrderService {
 		
 		this.confirmDifferentWarehouse(review);
 		
-		this.confirmProductInventoryNotEnough(review);
+		if (!review.getIgnoredMap().get("productInventoryNotEnough")) {
+			this.confirmProductInventoryNotEnough(review);
+		}
 		
-		this.confirmOrderExistOutInventorySheet(review);
+		if (!review.getIgnoredMap().get("orderExistOutInventorySheet")) {
+			this.confirmOrderExistOutInventorySheet(review);
+		}
 		
 		return review;
 	}

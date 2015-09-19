@@ -450,7 +450,11 @@ angular.module('ecommApp')
                         $scope.toggleOutInventorySheetSlide();
                         var reviewDTO = {
                             orders: orderService.selectedOrders,
-                            assignWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null
+                            assignWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
+                            ignoredMap: {
+                                'productInventoryNotEnough': false,
+                                'orderExistOutInventorySheet': false
+                            }
                         };
                         console.log('reviewDTO:');
                         console.log(reviewDTO);
