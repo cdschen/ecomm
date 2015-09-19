@@ -519,12 +519,13 @@ angular.module('ecommApp')
         function executeShipmentOperationReview(action)
         {
             var reviewDTO = {
-                "action"                    : action,
-                "orders"                    : orderService.selectedOrders,
-                "selectedCourier"           : $scope.courier.selected,
-                "dataMap" : {
-                    "startShipNumber"           : $scope.startShipNumber
-                }
+                action                    : action,
+                orders                    : orderService.selectedOrders,
+                selectedCourier           : $scope.courier.selected,
+                dataMap : {
+                    startShipNumber           : $scope.startShipNumber
+                },
+                assiginWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null
             };
             console.log('Before Operation Review:');
             console.log(reviewDTO);

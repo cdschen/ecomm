@@ -573,30 +573,34 @@ public class OrderService {
 		for( Order order : review.getOrders() )
 		{
 			boolean isWarehouseExistOrderShipment = false;
-			
-			/* 订单没有发货单，则订单在同一仓库下存在发货单的条件不成立 */
-			if( order.getShipments() != null && order.getShipments().size() < 1 )
+
+			/* 没有被忽略 */
+			if( ! order.getIgnoreCheck() )
 			{
-				for( Shipment shipment : order.getShipments() )
+				/* 订单没有发货单，则订单在同一仓库下存在发货单的条件不成立 */
+				if( order.getShipments() != null && order.getShipments().size() < 1 )
 				{
-					for( OrderItem item : order.getItems() )
+					for( Shipment shipment : order.getShipments() )
 					{
-						if( shipment.getShipWarehouseId()!= null && shipment.getShipWarehouseId().equals( item.getAssignTunnel().getDefaultWarehouse().getId() ) )
+						for( OrderItem item : order.getItems() )
 						{
-							isWarehouseExistOrderShipment = true;
+							if( shipment.getShipWarehouseId()!= null && shipment.getShipWarehouseId().equals( item.getAssignTunnel().getDefaultWarehouse().getId() ) )
+							{
+								isWarehouseExistOrderShipment = true;
+							}
 						}
 					}
 				}
-			}
 
-			/* 订单在同一仓库下存在发货单 */
-			if( isWarehouseExistOrderShipment )
-			{
-				order.getCheckMap().put("warehouseExistOrderShipmentError", true);
-			}
-			else
-			{
-				order.getCheckMap().put("warehouseExistOrderShipmentError", false);
+				/* 订单在同一仓库下存在发货单 */
+				if( isWarehouseExistOrderShipment )
+				{
+					order.getCheckMap().put("warehouseExistOrderShipmentError", true);
+				}
+				else
+				{
+					order.getCheckMap().put("warehouseExistOrderShipmentError", false);
+				}
 			}
 			isWarehouseExistSomeOrderShipment = isWarehouseExistOrderShipment;
 		}
@@ -631,12 +635,16 @@ public class OrderService {
 		review.getCheckMap().put("differentDeliveryMethodError", false);
 		for(Order order : orders)
 		{
-			if( ! order.getDeliveryMethod().equals(lastOrder.getDeliveryMethod())  )
+			/* 没有被忽略 */
+			if( ! order.getIgnoreCheck() )
 			{
-				/* 不通过 */
-				review.setReviewPass(false);
-				review.getCheckMap().put("differentDeliveryMethodError", true);
-				break;
+				if( ! order.getDeliveryMethod().equals(lastOrder.getDeliveryMethod())  )
+				{
+					/* 不通过 */
+					review.setReviewPass(false);
+					review.getCheckMap().put("differentDeliveryMethodError", true);
+					break;
+				}
 			}
 		}
 		
@@ -665,16 +673,20 @@ public class OrderService {
 		boolean isReceiveAddressEmpty = false;
 		for(Order order : orders)
 		{
-			if( order.getReceiveAddress() == null || order.getReceiveAddress().trim().equals("")  )
+			/* 没有被忽略 */
+			if( ! order.getIgnoreCheck() )
 			{
-				/* 当前订单不通过 */
-				isReceiveAddressEmpty = true;
-				order.getCheckMap().put("emptyReceiveAddressError", true);
-			}
-			else
-			{
-				/* 当前订单通过 */
-				order.getCheckMap().put("emptyReceiveAddressError", false);
+				if( order.getReceiveAddress() == null || order.getReceiveAddress().trim().equals("")  )
+				{
+					/* 当前订单不通过 */
+					isReceiveAddressEmpty = true;
+					order.getCheckMap().put("emptyReceiveAddressError", true);
+				}
+				else
+				{
+					/* 当前订单通过 */
+					order.getCheckMap().put("emptyReceiveAddressError", false);
+				}
 			}
 		}
 		if( isReceiveAddressEmpty )
