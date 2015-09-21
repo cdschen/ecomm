@@ -28,6 +28,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SelectBeforeUpdate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sooeez.ecomm.dto.InventoryProductDetailDTO;
 
 @Entity
 @Table(name = "t_product")
@@ -182,14 +183,66 @@ public class Product implements Serializable {
 	// 产品在某一个仓库的库存量
 	@Transient
 	private Long total;
-	
+
 	// 产品所在仓库
 	@Transient
 	private List<Warehouse> warehouses = new ArrayList<>();
 
+	// 某仓库产品上的库位列表
+	@Transient
+	private List<WarehousePosition> positions = new ArrayList<>();
+
+	// 某仓库产品上有库位
+	@Transient
+	private Boolean existPosition = false;
+
+	@Transient
+	private List<InventoryProductDetailDTO> details = new ArrayList<>();
+
+	// 某仓库中产品上的所有批次
+	@Transient
+	private List<InventoryBatch> batches = new ArrayList<>();
+
 	//
 
 	public Product() {
+	}
+
+	public List<InventoryBatch> getBatches() {
+		return batches;
+	}
+
+	public void setBatches(List<InventoryBatch> batches) {
+		this.batches = batches;
+	}
+
+	public List<InventoryProductDetailDTO> getDetails() {
+		return details;
+	}
+
+	public void setDetails(List<InventoryProductDetailDTO> details) {
+		this.details = details;
+	}
+
+	public Boolean getExistPosition() {
+		if (positions.size() > 0) {
+			this.existPosition = true;
+		} else {
+			this.existPosition = false;
+		}
+		return existPosition;
+	}
+
+	public void setExistPosition(Boolean existPosition) {
+		this.existPosition = existPosition;
+	}
+
+	public List<WarehousePosition> getPositions() {
+		return positions;
+	}
+
+	public void setPositions(List<WarehousePosition> positions) {
+		this.positions = positions;
 	}
 
 	public List<Warehouse> getWarehouses() {

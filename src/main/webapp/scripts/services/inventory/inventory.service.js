@@ -13,13 +13,20 @@ angular.module('ecommApp')
         });
     };
 
-    inventory.refreshByWarehouse = function(warehouses, inventories){
+    inventory.createOutInventorySheet = function(reviewDTO) {
+        return $http.post('/api/inventories/outinventorysheet/create', reviewDTO)
+            .then(function(res) {
+                return res.data;
+            });
+    };
+
+    inventory.refreshByWarehouse = function(warehouses, inventories) {
         var inventory = {};
-        $.each(warehouses, function(){
+        $.each(warehouses, function() {
             var warehouse = this;
             warehouse.inventories = [];
             inventory[warehouse.id] = warehouse;
-            $.each(inventories, function(){
+            $.each(inventories, function() {
                 if (warehouse.id === this.warehouseId) {
                     warehouse.inventories.push(this);
                 }
@@ -126,8 +133,6 @@ angular.module('ecommApp')
         });
         return products;
     };
-
-
 
     function calculateSelectedBatch(object, item, action) {
         $.each(object.batches, function() {
@@ -252,7 +257,7 @@ angular.module('ecommApp')
                 console.log('outBatch:' + outBatch.id);
                 $.each(product.positions, function() {
                     var position = this;
-                    console.log('position:'+ position.name + ', batches:');
+                    console.log('position:' + position.name + ', batches:');
                     console.log(position.batches);
                     $.each(position.batches, function() {
                         var batch = this;
@@ -345,10 +350,12 @@ angular.module('ecommApp')
 
 .factory('InventoryBatch', ['$resource', '$http', function($resource, $http) {
 
-    var batch = $resource('/api/inventorybatches/:id');
+    var batch = $resource('/api/inventory-batches/:id');
 
-    batch.getAll = function() {
-        return $http.get('/api/inventorybatches/get/all').then(function(res) {
+    batch.getAll = function(params) {
+        return $http.get('/api/inventory-batches/get/all', {
+            params: params
+        }).then(function(res) {
             return res.data;
         });
     };

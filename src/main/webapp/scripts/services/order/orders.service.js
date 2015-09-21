@@ -24,15 +24,15 @@ angular.module('ecommApp')
         });
     };
 
-    order.confirmOrderWhenGenerateShipment = function(orders) {
-        return $http.post('/api/orders/confirm/shipment', orders)
+    order.confirmOrderWhenGenerateShipment = function(reviewDTO) {
+        return $http.post('/api/orders/confirm/shipment', reviewDTO)
             .then(function(res) {
                 return (operationReview = res.data);
             });
     }
 
-    order.confirmOrderWhenGenerateOutInventory = function(orders) {
-        return $http.post('/api/orders/confirm/outinventory', orders)
+    order.confirmOrderWhenGenerateOutInventory = function(reviewDTO) {
+        return $http.post('/api/orders/confirm/outinventory', reviewDTO)
             .then(function(res) {
                 return (operationReview = res.data);
             });
@@ -55,7 +55,7 @@ angular.module('ecommApp')
                             return false;
                         }
                     });
-                    if (!exitShopTunnels) {
+                    if (exitShopTunnels) {
                         return false;
                     }
                 });
@@ -96,9 +96,11 @@ angular.module('ecommApp')
     order.getOperationReview = function() {
         return operationReview;
     };
+    order.setOperationReview = function(reviewDTO) {
+        operationReview = reviewDTO;
+    };
 
     order.selectedOrders = [];
-
 
     return order;
 }])

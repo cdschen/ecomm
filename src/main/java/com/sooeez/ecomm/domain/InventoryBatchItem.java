@@ -3,6 +3,7 @@ package com.sooeez.ecomm.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -38,6 +39,9 @@ public class InventoryBatchItem implements Serializable {
 	@Column(name = "changed_quantity", nullable = false)
 	private Long changedQuantity;
 
+	@Column(name = "actual_quantity")
+	private Long actualQuantity;
+
 	@Lob
 	@Column(name = "inventory_snapshot")
 	private String inventorySnapshot;
@@ -53,27 +57,33 @@ public class InventoryBatchItem implements Serializable {
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "product_id")
-	private Product product;
+	private Product product = new Product();
 
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "warehouse_id")
-	private Warehouse warehouse;
+	private Warehouse warehouse = new Warehouse();
 
 	@OneToOne
+	// (cascade = {CascadeType.ALL})
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "warehouse_position_id")
-	private WarehousePosition position;
+	private WarehousePosition position = new WarehousePosition();
 
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "user_id")
-	private User user;
+	private User user = new User();
+
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "execute_operator_id")
+	private User executeOperator = new User();
 
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "out_batch_id")
-	private InventoryBatch outBatch;
+	private InventoryBatch outBatch = new InventoryBatch();
 
 	//
 
@@ -82,6 +92,22 @@ public class InventoryBatchItem implements Serializable {
 
 	public Long getId() {
 		return id;
+	}
+
+	public Long getActualQuantity() {
+		return actualQuantity;
+	}
+
+	public void setActualQuantity(Long actualQuantity) {
+		this.actualQuantity = actualQuantity;
+	}
+
+	public User getExecuteOperator() {
+		return executeOperator;
+	}
+
+	public void setExecuteOperator(User executeOperator) {
+		this.executeOperator = executeOperator;
 	}
 
 	public void setId(Long id) {
