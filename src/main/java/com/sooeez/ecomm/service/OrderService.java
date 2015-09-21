@@ -535,7 +535,7 @@ public class OrderService {
 						for (OrderBatch orderBatch: order.getBatches()) {
 							if (orderBatch.getWarehouseId().longValue() == item.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
 								order.getCheckMap().put("orderExistOutInventorySheetError", true);
-								review.getCheckMap().put("orderExistOutInventorySheetError", false);
+								review.getCheckMap().put("orderExistOutInventorySheetError", true);
 								exitItemsEach = true;
 								break;
 							}

@@ -1,6 +1,11 @@
 <ol class="breadcrumb">
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">出库单管理</li>
+    <li class="pull-right" id="breadcrumb-li">
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="orderdeploy">订单出库</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="orderdeploy">调整出库</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="orderdeploy">查看库存变动</a>
+    </li>
 </ol>
 <div class="container-fluid">
     <div class="panel panel-default">
@@ -8,9 +13,15 @@
             <table class="table clear-marginbottom-table">
                 <tbody>
                     <tr>
-                        <td>
-                            
+                        <td width="12%">
+                            <ui-select ng-model="query.warehouse" theme="bootstrap">
+                                <ui-select-match placeholder="请选择仓库">{{$select.selected.name}}</ui-select-match>
+                                <ui-select-choices repeat="warehouse in warehouses | filter: $select.search">
+                                    <div ng-bind-html="warehouse.name | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
                         </td>
+                        <td width="74%"></td>
                         <td width="14%">
                             <div class="form-group pull-right">
                                 <button type="reset" class="btn btn-default" ng-click="reset()">
