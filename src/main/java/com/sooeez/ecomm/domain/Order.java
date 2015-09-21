@@ -2,8 +2,11 @@ package com.sooeez.ecomm.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -39,7 +42,7 @@ public class Order implements Serializable {
 	private Long id;
 
 	/* 店铺id */
-	@Column(name = "shop_id", nullable = false)
+	@Column(name = "shop_id", nullable = false, insertable = false, updatable = false)
 	private Long shopId;
 
 	/* 店铺订单号 */
@@ -134,7 +137,7 @@ public class Order implements Serializable {
 
 	/* 发件人email, 可以为空 */
 	@Column(name = "sender_email")
-	private String sender_email;
+	private String senderEmail;
 
 	/* 发件人邮编，可以为空 */
 	@Column(name = "sender_post")
@@ -184,6 +187,16 @@ public class Order implements Serializable {
 	 * Related Properties
 	 */
 
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "shop_id")
+	private Shop shop;
+
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "currency_id")
+	private Currency currency;
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id")
 	private List<OrderItem> items;
@@ -192,34 +205,128 @@ public class Order implements Serializable {
 	@JoinColumn(name = "object_id")
 	private List<ObjectProcess> processes;
 
-	@OneToOne
-	@NotFound(action=NotFoundAction.IGNORE)
-	@JoinColumn(name = "currency_id")
-	private Currency currency;
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_id")
+	private List<Shipment> shipments;
+
+	/* 一张订单可能有多张与之相连的出库单，但在同一个仓库下，一张订单只可能有一张出库单 */
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_id")
+	private List<OrderBatch> batches;
 
 	/*
 	 * Query Params;
 	 */
+
 	/* 下单起始日期 */
 	@Transient
-	private Date internalCreateTimeStart;
+	private String internalCreateTimeStart;
 
 	/* 下单结束日期 */
 	@Transient
-	private Date internalCreateTimeEnd;
+	private String internalCreateTimeEnd;
 
 	/* 发货起始日期 */
 	@Transient
-	private Date shippingTimeStart;
+	private String shippingTimeStart;
 
 	/* 发货结束日期 */
 	@Transient
-	private Date shippingTimeEnd;
+	private String shippingTimeEnd;
+
+	/* 流程状态 */
+	@Transient
+	private Integer[] statusIds;
+
+	/* 订单编号 */
+	@Transient
+	private Long orderId;
+
+	/* 订单编号组 */
+	@Transient
+	private List<Long> orderIds = new ArrayList<>();
+
+	/* 仓库ID */
+	@Transient
+	private Long warehouseId;
+
+	@Transient
+	private Map<String, Boolean> checkMap = new HashMap<>();
+
+	@Transient
+	private Boolean ignoreCheck = false;
 
 	//
 
 	public Long getId() {
 		return id;
+	}
+	
+
+	public Boolean getIgnoreCheck() {
+		return ignoreCheck;
+	}
+
+
+	public void setIgnoreCheck(Boolean ignoreCheck) {
+		this.ignoreCheck = ignoreCheck;
+	}
+
+
+	public Map<String, Boolean> getCheckMap() {
+		return checkMap;
+	}
+
+	public void setCheckMap(Map<String, Boolean> checkMap) {
+		this.checkMap = checkMap;
+	}
+
+	public List<OrderBatch> getBatches() {
+		return batches;
+	}
+
+	public void setBatches(List<OrderBatch> batches) {
+		this.batches = batches;
+	}
+
+	public Long getWarehouseId() {
+		return warehouseId;
+	}
+
+	public void setWarehouseId(Long warehouseId) {
+		this.warehouseId = warehouseId;
+	}
+
+	public List<Long> getOrderIds() {
+		return orderIds;
+	}
+
+	public void setOrderIds(List<Long> orderIds) {
+		this.orderIds = orderIds;
+	}
+
+	public Shop getShop() {
+		return shop;
+	}
+
+	public void setShop(Shop shop) {
+		this.shop = shop;
+	}
+
+	public Long getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(Long orderId) {
+		this.orderId = orderId;
+	}
+
+	public Integer[] getStatusIds() {
+		return statusIds;
+	}
+
+	public void setStatusIds(Integer[] statusIds) {
+		this.statusIds = statusIds;
 	}
 
 	public Currency getCurrency() {
@@ -238,35 +345,35 @@ public class Order implements Serializable {
 		this.processes = processes;
 	}
 
-	public Date getInternalCreateTimeStart() {
+	public String getInternalCreateTimeStart() {
 		return internalCreateTimeStart;
 	}
 
-	public void setInternalCreateTimeStart(Date internalCreateTimeStart) {
+	public void setInternalCreateTimeStart(String internalCreateTimeStart) {
 		this.internalCreateTimeStart = internalCreateTimeStart;
 	}
 
-	public Date getInternalCreateTimeEnd() {
+	public String getInternalCreateTimeEnd() {
 		return internalCreateTimeEnd;
 	}
 
-	public void setInternalCreateTimeEnd(Date internalCreateTimeEnd) {
+	public void setInternalCreateTimeEnd(String internalCreateTimeEnd) {
 		this.internalCreateTimeEnd = internalCreateTimeEnd;
 	}
 
-	public Date getShippingTimeStart() {
+	public String getShippingTimeStart() {
 		return shippingTimeStart;
 	}
 
-	public void setShippingTimeStart(Date shippingTimeStart) {
+	public void setShippingTimeStart(String shippingTimeStart) {
 		this.shippingTimeStart = shippingTimeStart;
 	}
 
-	public Date getShippingTimeEnd() {
+	public String getShippingTimeEnd() {
 		return shippingTimeEnd;
 	}
 
-	public void setShippingTimeEnd(Date shippingTimeEnd) {
+	public void setShippingTimeEnd(String shippingTimeEnd) {
 		this.shippingTimeEnd = shippingTimeEnd;
 	}
 
@@ -450,12 +557,20 @@ public class Order implements Serializable {
 		this.senderPhone = senderPhone;
 	}
 
-	public String getSender_email() {
-		return sender_email;
+	public String getSenderEmail() {
+		return senderEmail;
 	}
 
-	public void setSender_email(String sender_email) {
-		this.sender_email = sender_email;
+	public void setSenderEmail(String senderEmail) {
+		this.senderEmail = senderEmail;
+	}
+
+	public List<Shipment> getShipments() {
+		return shipments;
+	}
+
+	public void setShipments(List<Shipment> shipments) {
+		this.shipments = shipments;
 	}
 
 	public String getSenderPost() {

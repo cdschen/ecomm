@@ -1,21 +1,21 @@
-<div pageslide ps-open="itemsSlideChecked" ps-side="left" ps-speed="0.25" ps-size="100%">
+<div pageslide ps-open="detailSlideChecked" ps-side="left" ps-speed="0.25" ps-size="100%">
     <div id="operator-slider">
         <div class="panel panel-info">
             <div class="panel-body">
-                <button type="button" class="close" ng-click="closeItemsSlide()">
+                <button type="button" class="close" ng-click="closeDetailSlide()">
                     <span aria-hidden="true">×</span>
                 </button>
                 <div>
                     <!-- Nav tabs -->
-                    <ul class="nav nav-tabs" id="orderItemsTabs">
-                        <li class="active"><a href="#order-items">详细信息</a></li>
+                    <ul class="nav nav-tabs" id="orderDetailTabs">
+                        <li class="active"><a href="#order-detail">详细信息</a></li>
                     </ul>
                     <!-- Tab panes -->
                     <div class="tab-content">
                         <!-- 详细信息 -->
-                        <div id="order-items" class="tab-pane fade in active">
+                        <div id="order-detail" class="tab-pane fade in active">
                             <!--<section id="orderItemsScrollbarContainer" scrollbar="{autoUpdate: true}">-->
-                            <section style="overflow-y: scroll; overflow-x:hidden; height:600px;">
+                            <section style="overflow-y: scroll; overflow-x:hidden; height:600px; padding-right: 5px;">
                                 <div class="row" style="margin-top:5px;">
                                     <div class="col-md-4">
                                         <div class="panel panel-info">
@@ -36,7 +36,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td class="active"><strong>店铺编号</strong></td>
-                                                        <td>{{processOrder.shopId}}</td>
+                                                        <td>{{processOrder.shop.name}}</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="active"><strong>店铺订单号</strong></td>
@@ -108,7 +108,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td class="active"><strong>发货方式</strong></td>
-                                                        <td>{{processOrder.deliveryMethod}}</td>
+                                                        <td>{{processOrder.deliveryMethod == 1 ? '快递' : processOrder.deliveryMethod == 2 ? '自提' : processOrder.deliveryMethod == 3 ? '送货上门' : '' }}</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="active"><strong>发件人姓名</strong></td>

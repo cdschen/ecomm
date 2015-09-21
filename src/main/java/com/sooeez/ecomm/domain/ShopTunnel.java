@@ -12,10 +12,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "t_shop_tunnel")
-public class ShopTunnel implements Serializable {
+public class ShopTunnel implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -42,6 +43,12 @@ public class ShopTunnel implements Serializable {
 	@Column(name = "default_option", nullable = false)
 	private Boolean defaultOption;
 
+	@Column(name = "default_warehouse_id")
+	private Long defaultWarehouseId;
+
+	@Column(name = "default_supplier_id")
+	private Long defaultSupplierId;
+
 	/*
 	 * Related Properties
 	 */
@@ -54,9 +61,36 @@ public class ShopTunnel implements Serializable {
 	@JoinTable(name = "t_tunnel_warehouse", joinColumns = { @JoinColumn(name = "tunnel_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "warehouse_id", referencedColumnName = "id") })
 	private List<Warehouse> warehouses;
 
+	@Transient
+	private Warehouse defaultWarehouse;
+
 	//
 
 	public ShopTunnel() {
+	}
+
+	public Warehouse getDefaultWarehouse() {
+		return defaultWarehouse;
+	}
+
+	public void setDefaultWarehouse(Warehouse defaultWarehouse) {
+		this.defaultWarehouse = defaultWarehouse;
+	}
+
+	public Long getDefaultWarehouseId() {
+		return defaultWarehouseId;
+	}
+
+	public void setDefaultWarehouseId(Long defaultWarehouseId) {
+		this.defaultWarehouseId = defaultWarehouseId;
+	}
+
+	public Long getDefaultSupplierId() {
+		return defaultSupplierId;
+	}
+
+	public void setDefaultSupplierId(Long defaultSupplierId) {
+		this.defaultSupplierId = defaultSupplierId;
 	}
 
 	public Long getId() {

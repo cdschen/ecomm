@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "t_warehouse")
@@ -43,6 +44,9 @@ public class Warehouse implements Serializable {
 	@Column(name = "email", nullable = false)
 	private String email;
 
+	@Column(name = "deleted", nullable = false)
+	private Boolean deleted;
+
 	/*
 	 * Related Properties
 	 */
@@ -51,23 +55,37 @@ public class Warehouse implements Serializable {
 	@JoinColumn(name = "warehouse_id")
 	private List<WarehousePosition> positions;
 
+	// 产品在一个仓库下的数量
+	@Transient
+	private Long total;
+
 	//
 	public Warehouse() {
 	}
-	
-	
+
+	public Long getTotal() {
+		return total;
+	}
+
+	public void setTotal(Long total) {
+		this.total = total;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
 
 	public List<WarehousePosition> getPositions() {
 		return positions;
 	}
 
-
-
 	public void setPositions(List<WarehousePosition> positions) {
 		this.positions = positions;
 	}
-
-
 
 	public Long getId() {
 		return id;

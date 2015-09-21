@@ -4,9 +4,9 @@ angular.module('ecommApp')
 
 	var product = $resource('/api/products/:id', {}, {});
 
-	product.getAll = function(product) {
+	product.getAll = function(params) {
         return $http.get('/api/products/get/all', {
-        	params: product
+        	params: params
         }).then(function(res) {
             return res.data;
         });
@@ -34,6 +34,13 @@ angular.module('ecommApp')
 	var member = $resource('/api/productmembers/:id', {}, {});
 
 	return member;
+}])
+
+.factory('ProductShopTunnel', ['$resource', function($resource) {
+
+	var shopTunnel = $resource('/api/productshoptunnels/:id', {}, {});
+
+	return shopTunnel;
 }]);
 
 

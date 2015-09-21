@@ -3,8 +3,6 @@ package com.sooeez.ecomm.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -12,20 +10,23 @@ import javax.persistence.criteria.Subquery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.ProductMember;
-import com.sooeez.ecomm.domain.ProductMultiLanguage;
 import com.sooeez.ecomm.domain.ProductMultiCurrency;
-import com.sooeez.ecomm.domain.ObjectProcess;
+import com.sooeez.ecomm.domain.ProductMultiLanguage;
+import com.sooeez.ecomm.domain.ProductShopTunnel;
 import com.sooeez.ecomm.repository.ProductMemberRepository;
-import com.sooeez.ecomm.repository.ProductMultiLanguageRepository;
 import com.sooeez.ecomm.repository.ProductMultiCurrencyRepository;
+import com.sooeez.ecomm.repository.ProductMultiLanguageRepository;
 import com.sooeez.ecomm.repository.ProductRepository;
+import com.sooeez.ecomm.repository.ProductShopTunnelRepository;
 
 @Service
 public class ProductService {
@@ -37,6 +38,8 @@ public class ProductService {
 	@Autowired private ProductMultiCurrencyRepository productMultiCurrencyRepository;
 	
 	@Autowired private ProductMemberRepository productMemberRepository;
+	
+	@Autowired private ProductShopTunnelRepository productShopTunnelRepository;
 
 	/*
 	 * Product
@@ -56,11 +59,11 @@ public class ProductService {
 		return this.productRepository.findOne(id);
 	}
 
-	public List<Product> getProducts(Product product) {
-		return this.productRepository.findAll(getProductSpecification(product));
+	public List<Product> getProducts(Product product, Sort sort) {
+		return this.productRepository.findAll(getProductSpecification(product), sort);
 	}
 
-	public Page<Product> getPagedProducts(Pageable pageable, Product product) {
+	public Page<Product> getPagedProducts(Product product, Pageable pageable) {
 		return this.productRepository.findAll(getProductSpecification(product), pageable);
 	}
 	
@@ -78,11 +81,11 @@ public class ProductService {
 			if (product.getProductType() != null) {
 				predicates.add(cb.equal(root.get("productType"), product.getProductType()));
 			}
-			if (product.getStatus() != null) {
+			if (product.getStatusIds() != null) {
 				Subquery<ObjectProcess> objectProcessSubquery = query.subquery(ObjectProcess.class);
 				Root<ObjectProcess> objectProcessRoot = objectProcessSubquery.from(ObjectProcess.class);
 				objectProcessSubquery.select(objectProcessRoot.get("objectId"));
-				objectProcessSubquery.where(objectProcessRoot.get("stepId").in(product.getStatus()));
+				objectProcessSubquery.where(objectProcessRoot.get("stepId").in(product.getStatusIds()));
 				predicates.add(cb.in(root.get("id")).value(objectProcessSubquery));
 			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
@@ -165,5 +168,31 @@ public class ProductService {
 
 	public Page<ProductMember> getPagedProductMembers(Pageable pageable) {
 		return this.productMemberRepository.findAll(pageable);
+	}
+	
+	/*
+	 * ProductShopTunnel
+	 */
+
+	@Transactional
+	public ProductShopTunnel saveProductShopTunnel(ProductShopTunnel productShopTunnel) {
+		return this.productShopTunnelRepository.save(productShopTunnel);
+	}
+
+	@Transactional
+	public void deleteProductShopTunnel(Long id) {
+		this.productShopTunnelRepository.delete(id);
+	}
+
+	public ProductShopTunnel getProductShopTunnel(Long id) {
+		return this.productShopTunnelRepository.findOne(id);
+	}
+
+	public List<ProductShopTunnel> getProductShopTunnels() {
+		return this.productShopTunnelRepository.findAll();
+	}
+
+	public Page<ProductShopTunnel> getPagedProductShopTunnels(Pageable pageable) {
+		return this.productShopTunnelRepository.findAll(pageable);
 	}
 }

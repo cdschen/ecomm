@@ -3,17 +3,21 @@ package com.sooeez.ecomm.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "t_inventory_batch_item")
@@ -29,20 +33,18 @@ public class InventoryBatchItem implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@Column(name = "warehouse_id", nullable = false)
-	private Long warehouseId;
-
-	@Column(name = "user_id", nullable = false)
-	private Long userId;
-
-	@Column(name = "inventory_batch_id", insertable = false, updatable = false)
+	@Column(name = "inventory_batch_id")
 	private Long inventoryBatchId;
 
 	@Column(name = "changed_quantity", nullable = false)
 	private Long changedQuantity;
 
+	@Column(name = "actual_quantity")
+	private Long actualQuantity;
+
+	@Lob
 	@Column(name = "inventory_snapshot")
-	private Long inventorySnapshot;
+	private String inventorySnapshot;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "expire_date")
@@ -53,15 +55,35 @@ public class InventoryBatchItem implements Serializable {
 	 */
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "product_id")
-	private Product product;
+	private Product product = new Product();
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "warehouse_id")
+	private Warehouse warehouse = new Warehouse();
+
+	@OneToOne
+	// (cascade = {CascadeType.ALL})
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "warehouse_position_id")
-	private WarehousePosition position;
-	
-	@Transient
-	private InventoryBatch outBatch;
+	private WarehousePosition position = new WarehousePosition();
+
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "user_id")
+	private User user = new User();
+
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "execute_operator_id")
+	private User executeOperator = new User();
+
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "out_batch_id")
+	private InventoryBatch outBatch = new InventoryBatch();
 
 	//
 
@@ -72,40 +94,24 @@ public class InventoryBatchItem implements Serializable {
 		return id;
 	}
 
+	public Long getActualQuantity() {
+		return actualQuantity;
+	}
+
+	public void setActualQuantity(Long actualQuantity) {
+		this.actualQuantity = actualQuantity;
+	}
+
+	public User getExecuteOperator() {
+		return executeOperator;
+	}
+
+	public void setExecuteOperator(User executeOperator) {
+		this.executeOperator = executeOperator;
+	}
+
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getWarehouseId() {
-		return warehouseId;
-	}
-
-	public void setWarehouseId(Long warehouseId) {
-		this.warehouseId = warehouseId;
-	}
-
-	public Product getProduct() {
-		return product;
-	}
-
-	public void setProduct(Product product) {
-		this.product = product;
-	}
-
-	public WarehousePosition getPosition() {
-		return position;
-	}
-
-	public void setPosition(WarehousePosition position) {
-		this.position = position;
-	}
-
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
 	}
 
 	public Long getInventoryBatchId() {
@@ -124,11 +130,11 @@ public class InventoryBatchItem implements Serializable {
 		this.changedQuantity = changedQuantity;
 	}
 
-	public Long getInventorySnapshot() {
+	public String getInventorySnapshot() {
 		return inventorySnapshot;
 	}
 
-	public void setInventorySnapshot(Long inventorySnapshot) {
+	public void setInventorySnapshot(String inventorySnapshot) {
 		this.inventorySnapshot = inventorySnapshot;
 	}
 
@@ -140,6 +146,38 @@ public class InventoryBatchItem implements Serializable {
 		this.expireDate = expireDate;
 	}
 
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
+	public Warehouse getWarehouse() {
+		return warehouse;
+	}
+
+	public void setWarehouse(Warehouse warehouse) {
+		this.warehouse = warehouse;
+	}
+
+	public WarehousePosition getPosition() {
+		return position;
+	}
+
+	public void setPosition(WarehousePosition position) {
+		this.position = position;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 	public InventoryBatch getOutBatch() {
 		return outBatch;
 	}
@@ -147,6 +185,5 @@ public class InventoryBatchItem implements Serializable {
 	public void setOutBatch(InventoryBatch outBatch) {
 		this.outBatch = outBatch;
 	}
-
 
 }

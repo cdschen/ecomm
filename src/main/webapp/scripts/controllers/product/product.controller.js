@@ -3,7 +3,7 @@ angular.module('ecommApp')
 .controller('ProductController', ['$scope', 'Product', 'Utils', 'Process', 'ObjectProcess',
     function($scope, Product, Utils, Process, ObjectProcess) {
 
-        //var $ = angular.element;
+        var $ = angular.element;
         $scope.template = {
             details: {
                 url: 'views/product/product.details.html?' + (new Date())
@@ -13,45 +13,28 @@ angular.module('ecommApp')
             },
             status: {
                 url: 'views/product/product.status.html?' + (new Date())
+            },
+            popover: {
+                url: 'process-tmpl.html'
             }
         };
         $scope.totalPagesList = [];
         $scope.pageSize = 20;
-        $scope.product = {
-            sku: '', 
-            name: ''
+        $scope.defaultQuery = {
+            product: {
+                sku: '',
+                name: ''
+            }
         };
+        $scope.query = angular.copy($scope.defaultQuery);
         $scope.processes = [];
-        $scope.status = [];
         $scope.selected = {
-            status: []
-        };
-        $scope.popover = {
-            url: 'process-tmpl.html'
+            statuses: []
         };
         $scope.detailsSlideChecked = false;
         $scope.processSlideChecked = false;
         $scope.statusSlideChecked = false;
         $scope.processProduct = undefined;
-
-        function initStatus(processes) {
-            angular.forEach(processes, function(process) {
-                angular.forEach(process.steps, function(step) {
-                    step.processName = process.name;
-                    $scope.status.push(step);
-                });
-            });
-            // console.log('$scope.status:');
-            // console.log($scope.status);
-        }
-
-        function refreshStatus(status) {
-            var selectedStatus = [];
-            angular.forEach(status, function(state) {
-                selectedStatus.push(state.id);
-            });
-            return selectedStatus;
-        }
 
         Product.get({
             page: 0,
@@ -69,11 +52,12 @@ angular.module('ecommApp')
                 deleted: false,
                 objectType: 2
             }).then(function(processes) {
+                $scope.processes = processes;
+                Process.initStatus(processes);
                 console.log('Process.getAll:');
                 console.log(processes);
-                $scope.processes = processes;
-                initStatus(processes);
             });
+
         });
 
         $scope.turnPage = function(number) {
@@ -85,10 +69,10 @@ angular.module('ecommApp')
                     page: number,
                     size: $scope.pageSize,
                     sort: ['name'],
-                    sku: $scope.product.sku,
-                    name: $scope.product.name,
+                    sku: $scope.query.product.sku,
+                    name: $scope.query.product.name,
                     deleted: false,
-                    status: refreshStatus($scope.selected.status)
+                    statusIds: Process.refreshStatus($scope.selected.statuses)
                 }, function(page) {
                     $scope.page = page;
                     $scope.totalPagesList = Utils.setTotalPagesList(page);
@@ -99,14 +83,15 @@ angular.module('ecommApp')
         $scope.search = function() {
             console.clear();
             console.log('search:');
-            console.log($scope.product);
+            console.log($scope.query.product);
             Product.get({
                 page: 0,
                 size: $scope.pageSize,
                 sort: ['name'],
-                sku: $scope.product.sku,
-                name: $scope.product.name,
-                status: refreshStatus($scope.selected.status)
+                sku: $scope.query.product.sku,
+                name: $scope.query.product.name,
+                deleted: false,
+                statusIds: Process.refreshStatus($scope.selected.statuses)
             }, function(page) {
                 $scope.page = page;
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
@@ -116,16 +101,14 @@ angular.module('ecommApp')
         $scope.reset = function() {
             console.clear();
             console.log('reset:');
-            $scope.product = {
-                sku: '',
-                name: ''
-            };
-            $scope.selected.status.length = 0;
-            console.log($scope.product);
+            $scope.query = angular.copy($scope.defaultQuery);
+            $scope.selected.statuses.length = 0;
+            console.log($scope.query);
             Product.get({
                 page: 0,
                 size: $scope.pageSize,
-                sort: ['name']
+                sort: ['name'],
+                deleted: false
             }, function(page) {
                 $scope.page = page;
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
@@ -142,21 +125,21 @@ angular.module('ecommApp')
             $scope.statusSlideChecked = true;
         };
 
-        $scope.selectState = function(step) {
+        $scope.selectStatus = function(step) {
             if (step.selected && step.selected === true) {
                 step.selected = false;
-                for (var i = 0, len = $scope.selected.status.length; i < len; i++) {
-                    if ($scope.selected.status[i].id === step.id) {
-                        $scope.selected.status.splice(i, 1);
-                        break;
+                $.each($scope.selected.statuses, function(i){
+                    if (this.id === step.id) {
+                        $scope.selected.statuses.splice(i,1);
+                        return false;
                     }
-                }
+                });
             } else {
                 step.selected = true;
-                $scope.selected.status.push(step);
+                $scope.selected.statuses.push(step);
             }
-            console.log('$scope.selectState():');
-            console.log($scope.selected.status);
+            console.log('selectStatus:');
+            console.log($scope.selected.statuses);
         };
 
         // process
@@ -216,20 +199,19 @@ angular.module('ecommApp')
         $scope.defaultHeight = {
             height: $(window).height() - 100
         };
-        
+
         $('#productDetailsTabs a').click(function(e) {
             e.preventDefault();
             $(this).tab('show');
         });
     };
-
 }])
 
 .controller('ProductProcessController', ['$scope', '$filter', 'Process', 'ObjectProcess',
     function($scope, $filter, Process, ObjectProcess) {
 
         $scope.applyProcess = function(process) {
-            
+
             var objectProcess = {
                 objectId: $scope.processProduct.id,
                 objectType: 2,
@@ -321,10 +303,12 @@ angular.module('ecommApp')
         $scope.appliedProcess = function(process) {
             if ($scope.processProduct) {
                 var objectProcesses = $scope.processProduct.processes;
-                for (var i = 0, len = objectProcesses.length; i < len; i++) {
-                    var objectProcess = objectProcesses[i];
-                    if (process.id === objectProcess.process.id) {
-                        return true;
+                if (objectProcesses) {
+                    for (var i = 0, len = objectProcesses.length; i < len; i++) {
+                        var objectProcess = objectProcesses[i];
+                        if (process.id === objectProcess.process.id) {
+                            return true;
+                        }
                     }
                 }
                 return false;
@@ -333,8 +317,8 @@ angular.module('ecommApp')
     }
 ])
 
-.controller('ProductOperatorController', ['$scope', '$state', '$stateParams', 'Product', 'Brand', 'Category', 'MadeFrom', 'Language', 'Currency', 'Tag',
-    function($scope, $state, $stateParams, Product, Brand, Category, MadeFrom, Language, Currency, Tag) {
+.controller('ProductOperatorController', ['$scope', '$state', '$stateParams', '$filter', 'Product', 'Brand', 'Category', 'MadeFrom', 'Language', 'Currency', 'Tag', 'Shop',
+    function($scope, $state, $stateParams, $filter, Product, Brand, Category, MadeFrom, Language, Currency, Tag, Shop) {
 
         console.clear();
         var $ = angular.element;
@@ -361,6 +345,9 @@ angular.module('ecommApp')
             },
             multicurrency: {
                 url: 'views/product/product.operator.multicurrency.html?' + new Date()
+            },
+            shopTunnel: {
+                url: 'views/product/product.operator.shop_tunnel.html?' + new Date()
             }
         };
 
@@ -372,11 +359,13 @@ angular.module('ecommApp')
             value: 1
         }];
 
+        $scope.shops = [];
         $scope.brands = [];
         $scope.categories = [];
         $scope.madeFroms = [];
         $scope.languages = [];
         $scope.currencies = [];
+        $scope.selectedDefaultTunnelsMap = {};
         $scope.tags = [];
         $scope.members = [];
         $scope.product = {
@@ -394,9 +383,33 @@ angular.module('ecommApp')
             productType: $scope.productTypes[0],
             multiLanguages: [],
             multiCurrencies: [],
-            members: []
+            members: [],
+            shopTunnels: [],
+            deleted: false
         };
         $scope.action = 'create';
+
+        function initDefaultProductShopTunnel(tunnels) {
+            $.each(tunnels, function() {
+                this.selectedDefault = false;
+            });
+        }
+
+        function setDefaultProductShopTunnel(shopTunnels) {
+            $.each(shopTunnels, function() {
+                var shopTunnel = this;
+                $.each($scope.shops, function() {
+                    var shop = this;
+                    $.each(this.tunnels, function() {
+                        if (this.shopId === shopTunnel.shopId && this.id === shopTunnel.tunnelId) {
+                            initDefaultProductShopTunnel(shop.tunnels);
+                            this.selectedDefault = true;
+                            return false;
+                        }
+                    });
+                });
+            });
+        }
 
         Brand.getAll().then(function(brands) {
             $scope.brands = brands;
@@ -421,6 +434,14 @@ angular.module('ecommApp')
                 $scope.tags = tags;
             });
         }).then(function() {
+            return Shop.getAll().then(function(shops) {
+                $scope.shops = shops;
+                $.each(shops, function() {
+                    var shop = this;
+                    initDefaultProductShopTunnel(shop.tunnels);
+                });
+            });
+        }).then(function() {
             if ($stateParams.id && $stateParams.id !== '') {
                 $scope.action = 'update';
                 Product.get({
@@ -431,6 +452,7 @@ angular.module('ecommApp')
                         console.log(product);
                         product.productType = $scope.productTypes[product.productType];
                         $scope.product = product;
+                        setDefaultProductShopTunnel(product.shopTunnels);
                         return product;
                     }).then(function(product) {
                         $scope.title = product.productType.label;
@@ -444,6 +466,7 @@ angular.module('ecommApp')
                                 $scope.members = members;
                             });
                         }
+
                     });
             }
         });
@@ -843,5 +866,72 @@ angular.module('ecommApp')
             }
         };
 
+    }
+])
+
+.controller('ProductShopTunnelController', ['$scope', '$stateParams', 'ProductShopTunnel',
+    function($scope, $stateParams, ProductShopTunnel) {
+
+        var $ = angular.element;
+
+        $scope.setProductDefaultTunnel = function(tunnel, tunnels) {
+            $.each(tunnels, function() {
+                this.selectedDefault = false;
+            });
+            tunnel.selectedDefault = true;
+            $scope.selectedDefaultTunnelsMap[tunnel.shopId] = tunnel;
+            if ($scope.action === 'create') {
+                angular.forEach($scope.selectedDefaultTunnelsMap, function(tunnel) {
+                    var exist = false;
+                    $.each($scope.product.shopTunnels, function() {
+                        var shopTunnel = this;
+                        if (this.shopId === tunnel.shopId) {
+                            shopTunnel = tunnel;
+                            exist = true;
+                            return false;
+                        }
+                    });
+                    if (!exist) {
+                        $scope.product.shopTunnels.push({
+                            shopId: tunnel.shopId,
+                            tunnelId: tunnel.id
+                        });
+                    }
+                });
+            } else if ($scope.action === 'update') {
+                $.each($scope.selectedDefaultTunnelsMap, function(key, value) {
+                    var tunnel = value;
+                    var exist = false;
+                    var updateShopTunnel;
+                    $.each($scope.product.shopTunnels, function() {
+                        var shopTunnel = this;
+                        if (this.shopId === tunnel.shopId) {
+                            shopTunnel.tunnelId = tunnel.id;
+                            exist = true;
+                            updateShopTunnel = shopTunnel;
+                            return false;
+                        }
+                    });
+                    if (exist && updateShopTunnel) {
+                        console.log('exist');
+                        ProductShopTunnel.save({}, updateShopTunnel, function() {
+                            console.log('[' + $scope.action + '] ProductShopTunnel update shopTunnel complete:');
+                            updateShopTunnel = undefined;
+                        });
+                        return false;
+                    } else {
+                        ProductShopTunnel.save({}, {
+                            productId: $scope.product.id,
+                            shopId: tunnel.shopId,
+                            tunnelId: tunnel.id
+                        }, function(shopTunnel) {
+                            console.log('[' + $scope.action + '] ProductShopTunnel create shopTunnel complete:');
+                            $scope.product.shopTunnels.push(shopTunnel);
+                        });
+                        return false;
+                    }
+                });
+            }
+        };
     }
 ]);

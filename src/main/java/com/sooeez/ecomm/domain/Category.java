@@ -1,21 +1,19 @@
 package com.sooeez.ecomm.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "t_category")
@@ -40,33 +38,12 @@ public class Category implements Serializable {
 
 //	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 //	@JoinColumn(name = "parent_id")
-//	private List<Category> categories;
-
-//	@JsonIgnore
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "parent_id")
-//	private Category parent;
+//	private List<Category> categories = new ArrayList<>();
 
 	//
 
 	public Category() {
 	}
-
-//	public List<Category> getCategories() {
-//		return categories;
-//	}
-//
-//	public void setCategories(List<Category> categories) {
-//		this.categories = categories;
-//	}
-
-//	public Category getParent() {
-//		return parent;
-//	}
-//
-//	public void setParent(Category parent) {
-//		this.parent = parent;
-//	}
 
 	public Long getId() {
 		return id;
@@ -83,5 +60,15 @@ public class Category implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+//	public List<Category> getCategories() {
+//		return categories;
+//	}
+//
+//	public void setCategories(List<Category> categories) {
+//		this.categories = categories;
+//	}
+
+	
 
 }

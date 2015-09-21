@@ -8,7 +8,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "t_order_item")
@@ -30,7 +36,7 @@ public class OrderItem implements Serializable {
 	private Long orderId;
 
 	/* 商品id */
-	@Column(name = "product_id", nullable = false)
+	@Column(name = "product_id", nullable = false, insertable = false, updatable = false)
 	private Long productId;
 
 	/* 商品外部SKU(店铺提供的SKU，可以为空) */
@@ -48,7 +54,7 @@ public class OrderItem implements Serializable {
 	/* 商品名称 */
 	@Column(name = "name", nullable = false)
 	private String name;
-	
+
 	/* 商品重量 */
 	@Column(name = "unit_weight", nullable = false)
 	private Integer unitWeight;
@@ -72,11 +78,55 @@ public class OrderItem implements Serializable {
 	/* 单位售价包含的税金 */
 	@Column(name = "unit_gst", nullable = false)
 	private BigDecimal unitGst;
+
+	/* item被指定分配的warehouseId */
+	@Column(name = "warehouse_id")
+	private Long warehouseId;
+
+	/*
+	 * Related Properties
+	 */
+
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "product_id")
+	private Product product;
 	
+	@Transient
+	private ShopTunnel assignTunnel;
+
 	//
 
 	public Long getId() {
 		return id;
+	}
+
+	public ShopTunnel getAssignTunnel() {
+		return assignTunnel;
+	}
+
+
+
+	public void setAssignTunnel(ShopTunnel assignTunnel) {
+		this.assignTunnel = assignTunnel;
+	}
+
+
+
+	public Long getWarehouseId() {
+		return warehouseId;
+	}
+
+	public void setWarehouseId(Long warehouseId) {
+		this.warehouseId = warehouseId;
+	}
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
 	}
 
 	public void setId(Long id) {
@@ -178,7 +228,5 @@ public class OrderItem implements Serializable {
 	public void setUnitGst(BigDecimal unitGst) {
 		this.unitGst = unitGst;
 	}
-	
-	
-	
+
 }

@@ -68,6 +68,12 @@
                             <li>
                                 <a ui-sref="inventory">库存管理</a>
                             </li>
+                            <li>
+                                <a ui-sref="outinventorysheet">出库单管理</a>
+                            </li>
+                            <li>
+                                <a ui-sref="shipment">发货单管理</a>
+                            </li>
                         </ul>
                     </li>
                     <li><a href="">采购</a></li>
@@ -76,8 +82,7 @@
                     <li><a ui-sref="supplier">供应商</a></li>
                 </ul>
                 <p class="navbar-text navbar-right" style="margin-right:0">
-                    <span class="glyphicon glyphicon-user"></span>  
-                    {{ user().username }}
+                    <span class="glyphicon glyphicon-user"></span> {{ user().username }}
                 </p>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
@@ -94,7 +99,6 @@
                             </li>
                         </ul>
                     </li>
-
                 </ul>
             </section>
         </div>

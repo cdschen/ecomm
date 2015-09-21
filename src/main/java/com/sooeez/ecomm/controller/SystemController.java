@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -123,8 +124,8 @@ public class SystemController {
 	}
 	
 	@RequestMapping(value = "/shops/get/all")
-	public List<Shop> getShops(Pageable pageable) {
-		return this.shopService.getShops();
+	public List<Shop> getShops(Shop shop, Sort sort) {
+		return this.shopService.getShops(shop, sort);
 	}
 	
 	@RequestMapping(value = "/shops", method = RequestMethod.POST)

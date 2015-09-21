@@ -2,7 +2,6 @@ package com.sooeez.ecomm.security;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -31,7 +30,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		log.debug("Authenticating {}", username);
-		System.out.println("Authenticating {}" + username);
 		List<GrantedAuthority> grantedAuthorities = new ArrayList<>();;
 		User user = this.userRepository.findOneByUsername(username);
 		user.getRoles()

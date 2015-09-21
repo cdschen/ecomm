@@ -4,21 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import com.sooeez.ecomm.domain.Brand;
-import com.sooeez.ecomm.domain.ObjectProcess;
-import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Shop;
 import com.sooeez.ecomm.domain.ShopTunnel;
+import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.repository.ShopRepository;
 import com.sooeez.ecomm.repository.ShopTunnelRepository;
 
@@ -45,8 +41,8 @@ public class ShopService {
 		return this.shopRepository.findOne(id);
 	}
 	
-	public List<Shop> getShops() {
-		return this.shopRepository.findAll();
+	public List<Shop> getShops(Shop shop, Sort sort) {
+		return this.shopRepository.findAll(getShopSpecification(shop), sort);
 	}
 
 	public Page<Shop> getPagedShops(Pageable pageable, Shop shop) {
@@ -60,6 +56,22 @@ public class ShopService {
 			predicates.add(cb.equal(root.get("deleted"), shop.getDeleted() != null && shop.getDeleted() == true ? true : false));
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
+	}
+	
+	/* 设置店铺的默认通道和下面的默认仓库  */
+	public void initShopDefaultTunnel(Shop shop){
+		for (ShopTunnel tunnel: shop.getTunnels()) {
+			if (tunnel.getDefaultOption()) {
+				shop.setDefaultTunnel(tunnel);
+				for (Warehouse warehouse: tunnel.getWarehouses()) {
+					if (shop.getDefaultTunnel().getDefaultWarehouseId().longValue() == warehouse.getId().longValue()) {
+						shop.getDefaultTunnel().setDefaultWarehouse(warehouse);
+						break;
+					}
+				}
+				break;
+			}
+		}
 	}
 	
 	/*

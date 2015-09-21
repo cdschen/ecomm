@@ -41,7 +41,7 @@ public class ProductApi {
 			Product productQuery = new Product();
 			productQuery.setDeleted(false);
 			
-			productService.getProducts(productQuery).forEach(product -> {
+			productService.getProducts(productQuery, null).forEach(product -> {
 				ProductDTO productDTO = new ProductDTO();
 				productDTO.setSku(product.getSku());
 				productDTO.setName(product.getName());
