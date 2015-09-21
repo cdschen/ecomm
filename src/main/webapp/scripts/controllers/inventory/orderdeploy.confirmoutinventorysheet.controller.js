@@ -1,7 +1,7 @@
 angular.module('ecommApp')
 
-.controller('ConfirmOutInventorySheetController', ['$rootScope', '$scope', 'orderService', 'Inventory',
-    function($rootScope, $scope, orderService, Inventory) {
+.controller('ConfirmOutInventorySheetController', ['$rootScope', '$scope', '$state', 'orderService', 'Inventory',
+    function($rootScope, $scope, $state, orderService, Inventory) {
 
         var $ = angular.element;
         $scope.operateDate = Date.now();
@@ -60,6 +60,7 @@ angular.module('ecommApp')
                 console.log('review:');
                 console.log(review);
                 orderService.setOperationReview(review);
+                $state.go('outinventorysheet');
             })
         };
 
