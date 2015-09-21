@@ -1,7 +1,7 @@
 angular.module('ecommApp')
 
-.controller('ConfirmShipmentSheetController', ['$scope', 'orderService',
-    function($scope, orderService) {
+.controller('ConfirmShipmentSheetController', ['$scope', 'toastr', 'orderService', 'Shop', 'Utils',
+    function($scope, toastr, orderService, Shop, Utils) {
 
         $scope.operateDate = Date.now();
         $scope.operationReview = orderService.getOperationReview;
@@ -11,7 +11,7 @@ angular.module('ecommApp')
             };
         };
 
-        /* 点击将某个订单的 ignoreCheck 标为  ! ignoreCheck，在进行符合验证时不再对该订单进行验证 */
+        /* 点击将某个订单的 ignoreCheck 标为  ! ignoreCheck，在进行复核验证时不再对该订单进行验证 */
         $scope.ignoreOrNotCheckOrder = function(order)
         {
             order.ignoreCheck = ! order.ignoreCheck;
@@ -22,7 +22,8 @@ angular.module('ecommApp')
                 'checkMap' : operationReview.checkMap,
                 'dataMap' : operationReview.dataMap,
                 'ignoredMap' : operationReview.ignoredMap,
-                'selectedCourier' : operationReview.selectedCourier
+                'selectedCourier' : operationReview.selectedCourier,
+                'assignWarehouseId' : operationReview.assignWarehouseId
             };
             orderService.confirmOrderWhenGenerateShipment(reviewDTO).then(function(review){
                 console.log('After Operation Review:');
@@ -42,7 +43,8 @@ angular.module('ecommApp')
                 'checkMap' : operationReview.checkMap,
                 'dataMap' : operationReview.dataMap,
                 'ignoredMap' : operationReview.ignoredMap,
-                'selectedCourier' : operationReview.selectedCourier
+                'selectedCourier' : operationReview.selectedCourier,
+                'assignWarehouseId' : operationReview.assignWarehouseId
             };
             orderService.confirmOrderWhenGenerateShipment(reviewDTO).then(function(review){
                 console.log('After Operation Review:');
@@ -60,12 +62,46 @@ angular.module('ecommApp')
                 'checkMap' : operationReview.checkMap,
                 'dataMap' : operationReview.dataMap,
                 'ignoredMap' : operationReview.ignoredMap,
-                'selectedCourier' : operationReview.selectedCourier
+                'selectedCourier' : operationReview.selectedCourier,
+                'assignWarehouseId' : operationReview.assignWarehouseId
             };
             orderService.confirmOrderWhenGenerateShipment(reviewDTO).then(function(review){
+
+                if( review.confirmable )
+                {
+                    /* 如果没有最终订单  */
+                    if( review.resultMap.isEmptyFinalOrders )
+                    {
+                        toastr.warning('抱歉，没有可以生成发货单的订单！');
+                    }
+                    else
+                    {
+                        toastr.success('成功开出 ' + review.resultMap.generatedShipmentCount + ' 张发货单。');
+                        $scope.$parent.toggleShipmentSheetSlide();
+
+                        orderService.getPagedOrdersForOrderDeploy({
+                            page: 0,
+                            size: $scope.$parent.pageSize,
+                            sort: ['internalCreateTime,desc'],
+                            warehouseId: $scope.$parent.query.warehouse ? $scope.$parent.query.warehouse.id : null,
+                            shopId: $scope.$parent.query.shop ? $scope.$parent.query.shop.id : null,
+                            deleted: false
+                        }).then(function(page) {
+                            console.log('page:');
+                            console.log(page);
+                            $.each(page.content, function() {
+                                Shop.initShopDefaultTunnel(this.shop);
+                                orderService.checkItemProductShopTunnel(this);
+                            });
+                            $scope.$parent.page = page;
+                            $scope.$parent.totalPagesList = Utils.setTotalPagesList(page);
+                        });
+                    }
+                }
+
                 console.log('After Operation Review:');
                 console.log(review);
-                console.log('验证是否全部通过 ：' + review.reviewPass);
+                console.log('验证是否全部通过 ：' + review.confirmable);
             });
         };
 

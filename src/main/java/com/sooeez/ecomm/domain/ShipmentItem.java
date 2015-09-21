@@ -11,6 +11,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 @Entity
 @Table(name = "t_shipment_item")
 public class ShipmentItem implements Serializable {
@@ -25,8 +28,11 @@ public class ShipmentItem implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
-	@Column(name = "shipment_id")
+	@Column(name = "shipment_id", nullable = false)
 	private Long shipmentId;
+	
+	@Column(name = "order_item_id", nullable = false)
+	private Long orderItemId;
 	
 	@Column(name = "qty_shipped")
 	private Integer qtyShipped;
@@ -35,7 +41,8 @@ public class ShipmentItem implements Serializable {
 	 * Related Properties
 	 */
 	@OneToOne
-	@JoinColumn(name = "order_item_id")
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "order_item_id", insertable = false, updatable = false)
 	private OrderItem orderItem;
 
 	//
@@ -70,6 +77,14 @@ public class ShipmentItem implements Serializable {
 
 	public void setOrderItem(OrderItem orderItem) {
 		this.orderItem = orderItem;
+	}
+
+	public Long getOrderItemId() {
+		return orderItemId;
+	}
+
+	public void setOrderItemId(Long orderItemId) {
+		this.orderItemId = orderItemId;
 	}
 	
 }
