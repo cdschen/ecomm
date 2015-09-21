@@ -86,6 +86,20 @@ angular.module('ecommApp')
                     roles: [ROLES.sysadmin],
                     authorities: []
                 }
+            })
+            .state('shipment', {
+                parent: 'site',
+                url: '/shipment',
+                views: {
+                    'content@': {
+                        templateUrl: 'views/inventory/shipment/shipment.html?' + (new Date()),
+                        controller: 'ShipmentController'
+                    }
+                },
+                data: {
+                    roles: [ROLES.sysadmin],
+                    authorities: []
+                }
             });
     }
 ]);

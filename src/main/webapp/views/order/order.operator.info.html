@@ -125,9 +125,9 @@
                 </div>
             </div>
             <div class="form-group has-feedback">
-                <label class="control-label col-md-2">收件地址</label>
+                <label class="control-label col-md-2">收件地址*</label>
                 <div class="col-md-3">
-                    <input class="form-control" type="text" ng-model="order.receiveAddress" placeholder="(选填)" />
+                    <input class="form-control" type="text" ng-model="order.receiveAddress" placeholder="(必填)" />
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -195,7 +195,7 @@
                 <button type="button" class="btn btn-success btn-lg btn-block" ng-click="save(order)"
                         ng-disabled="
                         !orderOperatorForm.$valid || !order.shop || !order.externalSn
-                        || !order.shippingFee || !order.receiveName || !order.receivePhone
+                        || !order.shippingFee || !order.receiveName || !order.receivePhone || !order.receiveAddress
                         ">
                     <span class="glyphicon glyphicon-floppy-saved"></span> 保存
                 </button>

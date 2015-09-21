@@ -1,7 +1,6 @@
 package com.sooeez.ecomm.dto;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,12 +21,14 @@ public class OperationReviewDTO implements Serializable {
 	private Map<String, Boolean> ignoredMap = new HashMap<>();
 	/* 检查项 */
 	private Map<String, Boolean> checkMap = new HashMap<>();
+	/* 检查结果 */
+	private Map<String, Object> resultMap = new HashMap<>();
 	/* 额外数据 */
 	private Map<String, Object> dataMap = new HashMap<>();
 	/* 操作类型，(验证:review / 确认:confirm) */
 	private String action;
-	/* 复核是否全部通过 */
-	private boolean reviewPass = true;
+	/* 复核可确认性 */
+	private boolean confirmable = true;
 
 	/* Logic-Related Attributes */
 	/* 订单验证 */
@@ -36,13 +37,14 @@ public class OperationReviewDTO implements Serializable {
 	private Courier selectedCourier;
 	// 指定出库的仓库id
 	private Long assignWarehouseId;
+	
 
-	public boolean isReviewPass() {
-		return reviewPass;
+	public boolean isConfirmable() {
+		return confirmable;
 	}
 
-	public void setReviewPass(boolean reviewPass) {
-		this.reviewPass = reviewPass;
+	public void setConfirmable(boolean confirmable) {
+		this.confirmable = confirmable;
 	}
 
 	public Long getAssignWarehouseId() {
@@ -99,6 +101,14 @@ public class OperationReviewDTO implements Serializable {
 
 	public void setIgnoredMap(Map<String, Boolean> ignoredMap) {
 		this.ignoredMap = ignoredMap;
+	}
+
+	public Map<String, Object> getResultMap() {
+		return resultMap;
+	}
+
+	public void setResultMap(Map<String, Object> resultMap) {
+		this.resultMap = resultMap;
 	}
 
 }

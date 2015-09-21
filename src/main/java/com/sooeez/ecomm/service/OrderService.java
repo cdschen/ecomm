@@ -32,17 +32,21 @@ import com.sooeez.ecomm.domain.OrderItem;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.ProductShopTunnel;
 import com.sooeez.ecomm.domain.Shipment;
+import com.sooeez.ecomm.domain.ShipmentItem;
 import com.sooeez.ecomm.domain.ShopTunnel;
 import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.repository.OrderBatchRepository;
 import com.sooeez.ecomm.repository.OrderItemRepository;
 import com.sooeez.ecomm.repository.OrderRepository;
+import com.sooeez.ecomm.repository.ShipmentRepository;
 
 @Service
 public class OrderService {
 	
 	// Repository
+	
+	@Autowired private ShipmentRepository shipmentRepository;
 
 	@Autowired private OrderRepository orderRepository;
 	
@@ -385,7 +389,6 @@ public class OrderService {
 			for (Order order: orders) {
 				order.getCheckMap().put("differentWarehouseError", true);
 			}
-			review.setReviewPass(false);
 			review.getCheckMap().put("differentWarehouseError", true);
 		} else {
 			for (Order order: orders) {
@@ -570,26 +573,65 @@ public class OrderService {
 		
 		return review;
 	}
-	
+
+	/* 验证 2 ： 全部订单的发货方式是否相同 */
+	public void confirmOrderDeliveryMethodSame(OperationReviewDTO review)
+	{
+		review.getCheckMap().put("differentDeliveryMethodError", false);
+		List<Order> orders = review.getOrders();
+		
+		Order lastOrder = review.getOrders().get( review.getOrders().size() - 1 );
+		for(Order order : orders)
+		{
+			/* 没有被移出 */
+			if( ! order.getIgnoreCheck() )
+			{
+				if( order.getDeliveryMethod() == null || ! order.getDeliveryMethod().equals(lastOrder.getDeliveryMethod())  )
+				{
+					/* 不通过 */
+					review.getCheckMap().put("differentDeliveryMethodError", true);
+					break;
+				}
+			}
+		}
+	}
+
+	/* 验证 3 ： 是否指定快递公司和起始快递单号 */
+	public void confirmSpecifyCourierAndStartShipNumber(OperationReviewDTO review)
+	{
+		Courier selectedCourier = (Courier) review.getSelectedCourier();
+		String startShipNumber = (String) review.getDataMap().get("startShipNumber");
+		if(selectedCourier != null &&
+		  (startShipNumber != null && ! startShipNumber.equals("")))
+		{
+			review.getCheckMap().put("emptyCourierAndShipNumberError", false);
+		}
+		else
+		{
+			/* 不通过 */
+			review.getCheckMap().put("emptyCourierAndShipNumberError", true);
+		}
+	}
+
+	/* 验证 4 ： 订单在同一仓库下是否已存在发货单 */
 	public void confirmWarehouseExistOrderShipment(OperationReviewDTO review)
 	{
 		boolean isWarehouseExistSomeOrderShipment = false;
-		
 		for( Order order : review.getOrders() )
 		{
 			boolean isWarehouseExistOrderShipment = false;
 
-			/* 没有被忽略 */
+			/* 没有被移出 */
 			if( ! order.getIgnoreCheck() )
 			{
-				/* 订单没有发货单，则订单在同一仓库下存在发货单的条件不成立 */
-				if( order.getShipments() != null && order.getShipments().size() < 1 )
+				/* 订单有发货单，则订单在同一仓库下存在发货单的条件才有可能会成立 */
+				if( order.getShipments() != null && order.getShipments().size() > 0 )
 				{
 					for( Shipment shipment : order.getShipments() )
 					{
 						for( OrderItem item : order.getItems() )
 						{
-							if( shipment.getShipWarehouseId()!= null && shipment.getShipWarehouseId().equals( item.getAssignTunnel().getDefaultWarehouse().getId() ) )
+							if( shipment.getShipWarehouseId().equals( item.getAssignTunnel().getDefaultWarehouse().getId() ) )
 							{
 								isWarehouseExistOrderShipment = true;
 							}
@@ -607,10 +649,15 @@ public class OrderService {
 					order.getCheckMap().put("warehouseExistOrderShipmentError", false);
 				}
 			}
-			isWarehouseExistSomeOrderShipment = isWarehouseExistOrderShipment;
+			
+			/* 如果有一个订单在同一仓库下存在发货单，则有某一个订单在同一仓库下存在发货单成立 */
+			if( isWarehouseExistOrderShipment )
+			{
+				isWarehouseExistSomeOrderShipment = isWarehouseExistOrderShipment;
+			}
 		}
 		
-		/* 某订单在同一仓库下存在发货单 */
+		/* 某订单在同一仓库下存在发货单，并且不取消该验证 */
 		if( isWarehouseExistSomeOrderShipment )
 		{
 			review.getCheckMap().put("warehouseExistOrderShipmentError", true);
@@ -618,67 +665,19 @@ public class OrderService {
 		else
 		{
 			/* 不通过 */
-			review.setReviewPass(false);
 			review.getCheckMap().put("warehouseExistOrderShipmentError", false);
 		}
 	}
 
-	public OperationReviewDTO confirmOrderWhenGenerateShipment(OperationReviewDTO review)
+	/* 验证 5 ： 订单的收货地址是否为空 */
+	public void confirmEmptyReceiveAddress(OperationReviewDTO review)
 	{
-		this.refreshOrdersBySelectedOrderIds(review);
-		
-		/* 获取订单列表 */
 		List<Order> orders = review.getOrders();
-		System.out.println("操作类型 ： " + review.getAction());
-			
-		/* 验证 1 ： 是否在统一仓库 */
-		this.confirmDifferentWarehouse(review);
-
 		
-		/* 验证 2 ： 全部订单的发货方式是否相同 */
-		Order lastOrder = review.getOrders().get( review.getOrders().size() - 1 );
-		review.getCheckMap().put("differentDeliveryMethodError", false);
-		for(Order order : orders)
-		{
-			/* 没有被忽略 */
-			if( ! order.getIgnoreCheck() )
-			{
-				if( ! order.getDeliveryMethod().equals(lastOrder.getDeliveryMethod())  )
-				{
-					/* 不通过 */
-					review.setReviewPass(false);
-					review.getCheckMap().put("differentDeliveryMethodError", true);
-					break;
-				}
-			}
-		}
-		
-		
-		/* 验证 3 ： 是否指定快递公司和起始快递单号 */
-		Courier selectedCourier = (Courier) review.getSelectedCourier();
-		String startShipNumber = (String) review.getDataMap().get("startShipNumber");
-		if(selectedCourier != null &&
-		  (startShipNumber != null && ! startShipNumber.equals("")))
-		{
-			review.getCheckMap().put("emptyCourierAndShipNumberError", false);
-		}
-		else
-		{
-			/* 不通过 */
-			review.setReviewPass(false);
-			review.getCheckMap().put("emptyCourierAndShipNumberError", true);
-		}
-		
-		
-		/* 验证 4 ： 订单在同一仓库下是否已存在发货单 */
-		this.confirmWarehouseExistOrderShipment(review);
-		
-		
-		/* 验证 5 ： 订单的收货地址是否为空 */
 		boolean isReceiveAddressEmpty = false;
 		for(Order order : orders)
 		{
-			/* 没有被忽略 */
+			/* 没有被移出 */
 			if( ! order.getIgnoreCheck() )
 			{
 				if( order.getReceiveAddress() == null || order.getReceiveAddress().trim().equals("")  )
@@ -694,18 +693,226 @@ public class OrderService {
 				}
 			}
 		}
-		if( isReceiveAddressEmpty )
-		{
-			/* 不通过 */
-			review.setReviewPass(false);
-		}
 		review.getCheckMap().put("emptyReceiveAddressError", isReceiveAddressEmpty);
+	}
+
+	/* 设置是否通过 */
+	public void setConfirmable(OperationReviewDTO review)
+	{
+		/* 如果验证全都通过 */
+		if( ! review.getCheckMap().get("differentWarehouseError") &&
+			! review.getCheckMap().get("differentDeliveryMethodError") &&
+			! review.getCheckMap().get("emptyCourierAndShipNumberError") &&
+			! review.getCheckMap().get("warehouseExistOrderShipmentError") &&
+			! review.getCheckMap().get("emptyReceiveAddressError") )
+		{
+			review.setConfirmable( true );
+		}
+		else
+		{
+			/* 否则有不通过的，则再看看有没有不通过但是已取消的验证 */
+			boolean isDifferentWarehouseError = false;
+			boolean isDifferentDeliveryMethodError = false;
+			boolean isEmptyCourierAndShipNumberError = false;
+			boolean isWarehouseExistOrderShipmentError = false;
+			boolean isEmptyReceiveAddressError = false;
+			
+			/* 不在同一仓库，并且没有取消验证 */
+			if( review.getCheckMap().get("differentWarehouseError") && ! review.getIgnoredMap().get("differentWarehouseError") )
+			{
+				isDifferentWarehouseError = true;
+			}
+			/* 发货方式不同，并且没有取消验证 */
+			if( review.getCheckMap().get("differentDeliveryMethodError")  && ! review.getIgnoredMap().get("differentDeliveryMethodError") )
+			{
+				isDifferentDeliveryMethodError = true;
+			}/* 没有指定快递公司或填写起始快递单号，并且没有取消验证 */
+			if( review.getCheckMap().get("emptyCourierAndShipNumberError") && ! review.getIgnoredMap().get("emptyCourierAndShipNumberError") )
+			{
+				isEmptyCourierAndShipNumberError = true;
+			}
+			/* 订单在同一仓库下存在发货单，并且没有取消验证 */
+			if( review.getCheckMap().get("warehouseExistOrderShipmentError") && ! review.getIgnoredMap().get("warehouseExistOrderShipmentError") )
+			{
+				isWarehouseExistOrderShipmentError = true;
+			}
+			/* 订单没有填写收件地址，并且没有取消验证 */
+			if( review.getCheckMap().get("emptyReceiveAddressError") && ! review.getIgnoredMap().get("emptyReceiveAddressError") )
+			{
+				isEmptyReceiveAddressError = true;
+			}
+			
+			/* 如果有一个验证不通过 */
+			if( isDifferentWarehouseError ||
+				isDifferentDeliveryMethodError ||
+				isEmptyCourierAndShipNumberError ||
+				isWarehouseExistOrderShipmentError ||
+				isEmptyReceiveAddressError )
+			{
+				review.setConfirmable( false );
+			}
+			else
+			{
+				/* 否则全都通过 */
+				review.setConfirmable( true );
+			}
+			
+		}
+	}
+
+	/* 如果验证全都通过，并且操作类型是 CONFIRM 则执行创建操作 */
+	public void executeShipmentGeneration(OperationReviewDTO review)
+	{
+		/* 假设有可生成发货单的订单 */
+		review.getResultMap().put("isEmptyFinalOrders", false);
+		
+		List<Order> orders = review.getOrders();
+		List<Order> shipmentGenerableOrders = new ArrayList<Order>();
+		for(Order order : orders)
+		{
+			/* 如果订单没有被移出，则添加到最终订单列表中 */
+			if( ! order.getIgnoreCheck() )
+			{
+				shipmentGenerableOrders.add(order);
+			}
+		}
+		
+		/* 如果有可生成发货单的订单 */
+		if( shipmentGenerableOrders.size() > 0 )
+		{
+			/* 取得操作员信息 */
+			Number operatorId = (Number) review.getDataMap().get("operatorId");
+			Long finalOperatorId = operatorId.longValue();
+			
+			/* 取得快递公司及起始快递单号 */
+			Long courierId = review.getSelectedCourier() != null ? review.getSelectedCourier().getId() : null;
+			String startShipNumber = (String) review.getDataMap().get("startShipNumber");
+			
+
+			Integer initStartShipmentNumber = 0;
+			if( startShipNumber != null && ! startShipNumber.trim().equals("") )
+			{
+				initStartShipmentNumber = Integer.valueOf( startShipNumber );
+			}
+			
+			
+			for( Order order : shipmentGenerableOrders )
+			{
+				/* 给发货单初始化数据 */
+				Shipment shipment = new Shipment();
+
+				/* 给发货单初始化创建人 */
+				shipment.setOperatorId( finalOperatorId );
+				
+				/* 给发货单初始化快递公司编号及起始快递单号 */
+				shipment.setCourierId( courierId );
+				
+				if( startShipNumber != null && ! startShipNumber.trim().equals("") )
+				{
+					shipment.setShipNumber( initStartShipmentNumber.toString() );
+					initStartShipmentNumber ++ ;
+				}
+				
+
+				/* 给发货单初始化余下数据 */
+				shipment.setOrderId( order.getId() );
+				/* 1 : 待取件 */
+				shipment.setShipStatus( 1 );
+				/* 初始化发件人数据 */
+				shipment.setSenderName( order.getSenderName() );
+				shipment.setSenderAddress( order.getSenderAddress() );
+				shipment.setSenderPhone( order.getSenderPhone() );
+				shipment.setSenderEmail( order.getSenderEmail() );
+				shipment.setSenderPost( order.getSenderPost() );
+				/* 初始化收件人数据 */
+				shipment.setReceiveName( order.getReceiveName() );
+				shipment.setReceivePhone( order.getReceivePhone() );
+				shipment.setReceiveEmail( order.getReceiveEmail() );
+				shipment.setReceiveCountry( order.getReceiveCountry() );
+				shipment.setReceiveProvince( order.getReceiveProvince() );
+				shipment.setReceiveCity( order.getReceiveCity() );
+				shipment.setReceiveAddress( order.getReceiveAddress() );
+				shipment.setReceivePost( order.getReceivePost() );
+
+				/* 已发货商品总件数 */
+				/* 商品相关数据初始化 */
+				Integer qtyTotalItemShipped = 0;
+				BigDecimal bigZero = new BigDecimal( 0 );
+				BigDecimal shipFeeCost = new BigDecimal( 0 );
+				Integer totalWeight = 0;
+				/* 初始化发货商品数据 */
+				List<ShipmentItem> shipmentItems = new ArrayList<ShipmentItem>();
+				for( OrderItem orderItem : order.getItems() )
+				{
+					/* 叠加每件商品的数量，成本，重量 */
+					qtyTotalItemShipped += orderItem.getQtyOrdered();
+					shipFeeCost = shipFeeCost.add( orderItem.getUnitCost() != null ? orderItem.getUnitCost() : bigZero );
+					totalWeight += orderItem.getQtyOrdered() * orderItem.getUnitWeight();
+					
+					ShipmentItem shipmentItem = new ShipmentItem();
+					shipmentItem.setOrderItemId( orderItem.getId() );
+					shipmentItem.setQtyShipped( orderItem.getQtyOrdered() );
+					
+					/* 关联发货单和发货详情 */
+					shipmentItems.add( shipmentItem );
+				}
+				shipment.setShipmentItems( shipmentItems );
+				shipment.setQtyTotalItemShipped( qtyTotalItemShipped );
+				shipment.setShipfeeCost( shipFeeCost );
+				shipment.setTotalWeight( totalWeight );
+				
+				/* 获取仓库编号 */
+				Long warehouseId = order.getItems().get(0).getAssignTunnel().getDefaultWarehouse().getId();
+				shipment.setShipWarehouseId( warehouseId );
+				
+				/* 所有数据已准备就绪，初始化［创建时间］和［最后更新时间］并生成发货单 */
+				shipment.setCreateTime( new Date() );
+				shipment.setLastUpdate( new Date() );
+				this.shipmentRepository.save(shipment);
+			}
+			review.getResultMap().put("generatedShipmentCount", shipmentGenerableOrders.size());
+		}
+		else
+		{
+			/* 如果没有最终订单 */
+			review.getResultMap().put("isEmptyFinalOrders", true);
+		}
+	}
+
+	public OperationReviewDTO confirmOrderWhenGenerateShipment(OperationReviewDTO review)
+	{
+		this.refreshOrdersBySelectedOrderIds(review);
+		
+		/* 验证 1 ： 是否在同一仓库 */
+		this.confirmDifferentWarehouse(review);
+
+		
+		/* 验证 2 ： 全部订单的发货方式是否相同 */
+		this.confirmOrderDeliveryMethodSame(review);
+		
+		
+		/* 验证 3 ： 是否指定快递公司和起始快递单号 */
+		this.confirmSpecifyCourierAndStartShipNumber(review);
+		
+		
+		/* 验证 4 ： 订单在同一仓库下是否已存在发货单 */
+		this.confirmWarehouseExistOrderShipment(review);
+		
+		
+		/* 验证 5 ： 订单的收货地址是否为空 */
+		this.confirmEmptyReceiveAddress(review);
+		
+		
+		/* 设置可确认性 */
+		this.setConfirmable(review);
 		
 		
 		/* 如果验证全都通过，并且操作类型是 CONFIRM 则执行创建操作 */
-		if(review.isReviewPass() && review.getAction().equals(OperationReviewDTO.CONFIRM));
+		if( review.isConfirmable() &&
+			review.getAction().equals(OperationReviewDTO.CONFIRM) )
 		{
-			System.out.println("生成发货单操作复核检查项全部验证通过");
+			/* 执行生成发货单操作 */
+			this.executeShipmentGeneration( review );
 		}
 		
 		return review;

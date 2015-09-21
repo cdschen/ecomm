@@ -17,6 +17,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 @Entity
 @Table(name = "t_shipment")
 public class Shipment implements Serializable {
@@ -31,9 +34,17 @@ public class Shipment implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	/* 订单号 */
+	/* 订单编号 */
 	@Column(name = "order_id")
 	private Long orderId;
+
+	/* 操作员编号 */
+	@Column(name = "operator_id")
+	private Long operatorId;
+
+	/* 快递公司编号 */
+	@Column(name = "courier_id")
+	private Long courierId;
 
 	/* 快递单号 */
 	@Column(name = "ship_number")
@@ -129,22 +140,25 @@ public class Shipment implements Serializable {
 
 	/* 发货仓库编号 */
 	@Column(name = "ship_warehouse_id")
-	private String shipWarehouseId;
+	private Long shipWarehouseId;
 
 	/*
 	 * Related Properties
 	 */
 	
 //	@OneToOne
-//	@JoinColumn(name = "order_id")
+//	@NotFound(action = NotFoundAction.IGNORE)
+//	@JoinColumn(name = "order_id", insertable = false, updatable = false)
 //	private Order order;
 
 	@OneToOne
-	@JoinColumn(name = "operator_id")
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "operator_id", insertable = false, updatable = false)
 	private User user;
 
 	@OneToOne
-	@JoinColumn(name = "courier_id")
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "courier_id", insertable = false, updatable = false)
 	private Courier courier;
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -353,13 +367,13 @@ public class Shipment implements Serializable {
 //		this.order = order;
 //	}
 
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
+//	public User getUser() {
+//		return user;
+//	}
+//
+//	public void setUser(User user) {
+//		this.user = user;
+//	}
 
 	public Courier getCourier() {
 		return courier;
@@ -369,11 +383,11 @@ public class Shipment implements Serializable {
 		this.courier = courier;
 	}
 
-	public String getShipWarehouseId() {
+	public Long getShipWarehouseId() {
 		return shipWarehouseId;
 	}
 
-	public void setShipWarehouseId(String shipWarehouseId) {
+	public void setShipWarehouseId(Long shipWarehouseId) {
 		this.shipWarehouseId = shipWarehouseId;
 	}
 
@@ -391,6 +405,38 @@ public class Shipment implements Serializable {
 
 	public void setOrderId(Long orderId) {
 		this.orderId = orderId;
+	}
+
+	public Long getOperatorId() {
+		return operatorId;
+	}
+
+	public void setOperatorId(Long operatorId) {
+		this.operatorId = operatorId;
+	}
+
+	public Long getCourierId() {
+		return courierId;
+	}
+
+	public void setCourierId(Long courierId) {
+		this.courierId = courierId;
+	}
+
+//	public Order getOrder() {
+//		return order;
+//	}
+//
+//	public void setOrder(Order order) {
+//		this.order = order;
+//	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 	
 }
