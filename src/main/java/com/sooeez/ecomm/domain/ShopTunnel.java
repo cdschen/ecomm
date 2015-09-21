@@ -16,7 +16,7 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name = "t_shop_tunnel")
-public class ShopTunnel implements Serializable {
+public class ShopTunnel implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1L;
 

@@ -1,6 +1,8 @@
 package com.sooeez.ecomm.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name="t_warehouse_position")
@@ -29,10 +32,32 @@ public class WarehousePosition implements Serializable {
 	/*
 	 * Related Properties
 	 */
+	
+	@Transient
+	private Long total;
+	
+	@Transient
+	private List<InventoryBatch> batches = new ArrayList<>();
 
 	//
 	
 	public WarehousePosition() {
+	}
+
+	public Long getTotal() {
+		return total;
+	}
+
+	public void setTotal(Long total) {
+		this.total = total;
+	}
+
+	public List<InventoryBatch> getBatches() {
+		return batches;
+	}
+
+	public void setBatches(List<InventoryBatch> batches) {
+		this.batches = batches;
 	}
 
 	public Long getId() {

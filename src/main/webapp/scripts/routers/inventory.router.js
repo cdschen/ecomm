@@ -19,7 +19,7 @@ angular.module('ecommApp')
                 }
             })
             .state('warehouse.operator', {
-                url: '/warehouse/:id',
+                url: '/warehouses/:id',
                 views: {
                     'content@': {
                         templateUrl: 'views/inventory/warehouse/warehouse.operator.html?' + (new Date()),
@@ -87,6 +87,34 @@ angular.module('ecommApp')
                     authorities: []
                 }
             })
+            .state('outinventorysheet', {
+                parent: 'site',
+                url: '/out-inventory-sheets',
+                views: {
+                    'content@': {
+                        templateUrl: 'views/inventory/out-inventory-sheet/out-inventory-sheet.html?' + (new Date()),
+                        controller: 'OutInventorySheetController'
+                    }
+                },
+                data: {
+                    roles: [ROLES.sysadmin],
+                    authorities: []
+                }
+            })
+            .state('outinventorysheet.operator', {
+                parent: 'site',
+                url: '/out-inventory-sheets/:id',
+                views: {
+                    'content@': {
+                        templateUrl: 'views/inventory/out-inventory-sheet/out-inventory-sheet.operator.html?' + (new Date()),
+                        controller: 'OutInventorySheetController'
+                    }
+                },
+                data: {
+                    roles: [ROLES.sysadmin],
+                    authorities: []
+                }
+            })
             .state('shipment', {
                 parent: 'site',
                 url: '/shipment',
@@ -101,5 +129,6 @@ angular.module('ecommApp')
                     authorities: []
                 }
             });
+
     }
 ]);

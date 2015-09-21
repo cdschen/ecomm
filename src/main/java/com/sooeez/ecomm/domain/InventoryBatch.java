@@ -1,6 +1,7 @@
 package com.sooeez.ecomm.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -35,6 +37,9 @@ public class InventoryBatch implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	@Column(name = "warehouse_id", nullable = false, insertable = false, updatable = false)
+	private Long warehouseId;
+
 	@Column(name = "operate", nullable = false)
 	private Integer operate;
 
@@ -47,6 +52,10 @@ public class InventoryBatch implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "operate_time", nullable = false)
 	private Date operateTime;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "out_inventory_time", nullable = false)
+	private Date outInventoryTime;
 
 	@Column(name = "memo")
 	private String memo;
@@ -61,20 +70,73 @@ public class InventoryBatch implements Serializable {
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "warehouse_id")
-	private Warehouse warehouse;
+	private Warehouse warehouse = new Warehouse();
 
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "user_id")
-	private User user;
+	private User user = new User();
+
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "execute_operator_id")
+	private User executeOperator = new User();
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "inventory_batch_id")
-	private List<InventoryBatchItem> items;
+	private List<InventoryBatchItem> items = new ArrayList<>();
+
+	// 一张出库单，在一个仓库，绑定到多张订单
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "batch_id")
+	private List<OrderBatch> orderBatches = new ArrayList<>();
+
+	@Transient
+	private Long total;
 
 	//
 
+	public Long getWarehouseId() {
+		return warehouseId;
+	}
+
+	public List<OrderBatch> getOrderBatches() {
+		return orderBatches;
+	}
+
+	public void setOrderBatches(List<OrderBatch> orderBatches) {
+		this.orderBatches = orderBatches;
+	}
+
+	public Date getOutInventoryTime() {
+		return outInventoryTime;
+	}
+
+	public void setOutInventoryTime(Date outInventoryTime) {
+		this.outInventoryTime = outInventoryTime;
+	}
+
+	public void setWarehouseId(Long warehouseId) {
+		this.warehouseId = warehouseId;
+	}
+
 	public InventoryBatch() {
+	}
+
+	public User getExecuteOperator() {
+		return executeOperator;
+	}
+
+	public void setExecuteOperator(User executeOperator) {
+		this.executeOperator = executeOperator;
+	}
+
+	public Long getTotal() {
+		return total;
+	}
+
+	public void setTotal(Long total) {
+		this.total = total;
 	}
 
 	public Integer getType() {

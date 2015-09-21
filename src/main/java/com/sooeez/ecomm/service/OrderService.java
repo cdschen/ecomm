@@ -13,6 +13,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -291,6 +292,7 @@ public class OrderService {
 	
 	/* 检查order下的item,是否有指定的默认仓库，如果没有则赋值 */
 	public void checkItemProductShopTunnel(Order order) {
+		System.out.println("checkItemProductShopTunnel===========");
 		// 循环items
 		for (OrderItem item: order.getItems()) {
 			// 判断当前item上是否有指定仓库
@@ -303,16 +305,20 @@ public class OrderService {
 						// 判断当前仓库id是否和item上指定的仓库id一样
 						if (warehouse.getId().longValue() == item.getWarehouseId().longValue()) {
 							// 设置指定通道，和设置指定通道的默认仓库
-							item.setAssignTunnel(tunnel);
+							ShopTunnel assignTunnel = new ShopTunnel();
+							BeanUtils.copyProperties(tunnel, assignTunnel);
+							item.setAssignTunnel(assignTunnel);
 							item.getAssignTunnel().setDefaultWarehouse(warehouse);
+							System.out.println("item assign tunnel, orderid:" + order.getId() + ", itemid:" + item.getId() + ", tunnelid:" + tunnel.getId() + ", warehouseId:" + warehouse.getId());
 							exitShopTunnels = true;
 							break;
 						}
 					}
+					if (exitShopTunnels) {
+						break;
+					}
 				}
-				if (!exitShopTunnels) {
-					break;
-				}
+				
 			} else {
 				// 如果item上没有指定仓库，检查item关联的商品上是否有设置商品通道
 				if (item.getProduct().getShopTunnels().size() > 0) {
@@ -350,6 +356,39 @@ public class OrderService {
 				}
 			}
 		}
+	}
+	
+	/* 先收集出，需要出库的item都来自那些仓库  */
+	public Inventory collectWarehouseIds(List<Order> orders) {
+		Inventory inventoryQuery = new Inventory();
+		List<Long> warehouseIds = new ArrayList<>();
+		// 先收集出，需要出库的item都来自那些仓库
+		for (Order order: orders) {
+			if (!order.getIgnoreCheck()) {
+				for (OrderItem item: order.getItems()) {
+					boolean exist = false;
+					if (item.getAssignTunnel() != null) {
+						for (Long warehouseId: warehouseIds){
+							if (warehouseId.longValue() == item.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
+								exist = true;
+								break;
+							} else {
+								exist = false;
+							}
+						}
+						if (!exist) {
+							warehouseIds.add(item.getAssignTunnel().getDefaultWarehouse().getId());
+						}
+					}
+				}
+			}
+		}
+		System.out.println("confirmDifferentWarehouse; warehouseIds:");
+		warehouseIds.forEach(warehouseId -> {
+			System.out.println(warehouseId);
+		});
+		inventoryQuery.setWarehouseIds(warehouseIds);
+		return inventoryQuery;
 	}
 	
 	/* 验证订单是否都在同一个仓库 */
@@ -400,41 +439,18 @@ public class OrderService {
 
 	/* 全部订单商品细目必须有库存 */
 	public void confirmProductInventoryNotEnough(OperationReviewDTO review) {
-		Inventory inventoryQuery = new Inventory();
-		List<Order> orders = review.getOrders();
-		List<Long> warehouseIds = new ArrayList<>();
-		for (Order order: orders) {
-			if (!order.getIgnoreCheck()) {
-				for (OrderItem item: order.getItems()) {
-					boolean exist = false;
-					if (item.getAssignTunnel() != null) {
-						for (Long warehouseId: warehouseIds){
-							if (warehouseId.longValue() == item.getAssignTunnel().getDefaultWarehouse().getId().longValue()) {
-								exist = true;
-								break;
-							} else {
-								exist = false;
-							}
-						}
-						if (!exist) {
-							warehouseIds.add(item.getAssignTunnel().getDefaultWarehouse().getId());
-						}
-					}
-				}
-			}
-		}
-		System.out.println("confirmDifferentWarehouse; warehouseIds:");
-		warehouseIds.forEach(warehouseId ->{
-			System.out.println(warehouseId);
-		});
-		inventoryQuery.setWarehouseIds(warehouseIds);
 		
+		List<Order> orders = review.getOrders();
+		Inventory inventoryQuery = this.collectWarehouseIds(review.getOrders());
+		
+		// 查询出这些仓库的每个商品的库存
 		List<Inventory> inventories = inventoryService.getInventories(inventoryQuery, null);
 		List<Product> products = inventoryService.refreshInventory(inventories);
+		// 循环出每个商品下在每个仓库中的库存
 		products.forEach(product -> {
 			System.out.println("product: " + product.getName());
 			product.getWarehouses().forEach(warehouse -> {
-				System.out.println("Warehouse: " + warehouse.getName() + ", " + warehouse.getTotal());
+				System.out.println("WarehouseId: " + warehouse.getId() + ", " + warehouse.getTotal());
 			});
 		});
 		
@@ -452,13 +468,16 @@ public class OrderService {
 				for (OrderItem item: order.getItems()) {
 					// 循环products
 					boolean exitProductsEach = false;
+					boolean matchItemInventory = false;
 					for (Product product: products) {
 						// 判断当前的item是否就是当前的产品
 						if (item.getProduct().getSku().equals(product.getSku())) {
+							
 							// 循环当前产品的仓库
 							for (Warehouse warehouse: product.getWarehouses()) {
 								// 判断当前item指定的仓库是否在产品所在的仓库中
 								if (item.getAssignTunnel().getDefaultWarehouse().getId().longValue() == warehouse.getId().longValue()) {
+									matchItemInventory = true;
 									warehouse.setTotal(warehouse.getTotal().longValue() - item.getQtyOrdered().longValue());
 									System.out.println("orderid:" + order.getId() + ", itemid:" + item.getId() + "," + item.getProduct().getName() + "," + item.getAssignTunnel().getDefaultWarehouse().getName() + "," + warehouse.getTotal());
 									if (warehouse.getTotal().longValue() < 0) { 
@@ -472,6 +491,10 @@ public class OrderService {
 						if (exitProductsEach) {
 							break;
 						}
+					}
+					// 如果没有匹配到item的库存信息，也是一个问题item
+					if (!matchItemInventory) {
+						issueItems.add(item);
 					}
 				}
 			}

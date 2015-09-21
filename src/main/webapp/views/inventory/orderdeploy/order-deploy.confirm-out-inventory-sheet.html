@@ -94,14 +94,14 @@
                     <div class="col-md-2">
                         <div class="panel panel-default" style="height:135px">
                             <div class="panel-body">
-                                <button type="button" class="btn btn-success btn-lg btn-block">确定</button>
-                                <button type="button" class="btn btn-default btn-lg btn-block">取消</button>
+                                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="createOutInventorySheet()">确定</button>
+                                <button type="button" class="btn btn-default btn-lg btn-block" ng-click="toggleOutInventorySheetSlide()">取消</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <p class="text-danger">
-                    <strong>详情：</strong>
+                    <strong>详情:</strong>
                 </p>
                 <div style="padding-right:8px;">
                     <table class="table table-bordered table-condensed clear-marginbottom-table">
@@ -121,6 +121,7 @@
                         </thead>
                     </table>
                 </div>
+
                 <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultHeight()">
                     <table class="table table-bordered table-condensed clear-marginbottom-table">
                         <tbody>
@@ -152,15 +153,19 @@
                                     </div>
                                 </td>
                                 <td width="5%" class="text-center">
-                                    <div ng-show="!order.ignoreCheck" ng-switch on="order.checkMap.productInventoryNotEnoughError">
-                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
-                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true"></span>
+                                    <div ng-show="!order.ignoredMap.productInventoryNotEnough">
+                                        <div ng-show="!order.ignoreCheck" ng-switch on="order.checkMap.productInventoryNotEnoughError">
+                                            <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
+                                            <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true"></span>
+                                        </div>
                                     </div>
                                 </td>
                                 <td width="5%" class="text-center">
-                                    <div ng-show="!order.ignoreCheck" ng-switch on="order.checkMap.orderExistOutInventorySheetError">
-                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
-                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true"></span>
+                                    <div ng-show="!order.ignoredMap.orderExistOutInventorySheet">
+                                        <div ng-show="!order.ignoreCheck" ng-switch on="order.checkMap.orderExistOutInventorySheetError">
+                                            <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
+                                            <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true"></span>
+                                        </div>
                                     </div>
                                 </td>
                                 <td width="5%" class="text-center">

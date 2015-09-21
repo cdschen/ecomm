@@ -1,7 +1,7 @@
 angular.module('ecommApp')
 
-.controller('ConfirmOutInventorySheetController', ['$scope', 'orderService',
-    function($scope, orderService) {
+.controller('ConfirmOutInventorySheetController', ['$rootScope', '$scope', 'orderService', 'Inventory',
+    function($rootScope, $scope, orderService, Inventory) {
 
         var $ = angular.element;
         $scope.operateDate = Date.now();
@@ -42,7 +42,7 @@ angular.module('ecommApp')
             });
         };
 
-        $scope.recoverConfirm = function (name){
+        $scope.recoverConfirm = function(name) {
             orderService.getOperationReview().ignoredMap[name] = false;
             console.log('cancelConfirm');
             console.log(orderService.getOperationReview());
@@ -52,20 +52,16 @@ angular.module('ecommApp')
             });
         }
 
-        // $scope.existIgnoreItem = function(name) {
-        //     var exist = false;
-        //     if (orderService.getOperationReview() && orderService.getOperationReview().ignoredCheckers) {
-        //         $.each(orderService.getOperationReview().ignoredCheckers, function() {
-        //             var itemName = this;
-        //             if (itemName === name) {
-        //                 exist = true;
-        //                 return false;
-        //             }
-        //         });
-        //     }
-
-        //     return exist;
-        // };
+        $scope.createOutInventorySheet = function() {
+            console.clear();
+            console.log('createOutInventorySheet');
+            orderService.getOperationReview().dataMap.userId = $rootScope.user().id;
+            Inventory.createOutInventorySheet(orderService.getOperationReview()).then(function(review) {
+                console.log('review:');
+                console.log(review);
+                orderService.setOperationReview(review);
+            })
+        };
 
     }
 ]);
