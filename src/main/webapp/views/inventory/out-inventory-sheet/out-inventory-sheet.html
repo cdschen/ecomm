@@ -1,0 +1,117 @@
+<ol class="breadcrumb">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li class="active">出库单管理</li>
+</ol>
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <form name="outInventorySearchForm" novalidate ng-submit="search()">
+            <table class="table clear-marginbottom-table">
+                <tbody>
+                    <tr>
+                        <td>
+                            
+                        </td>
+                        <td width="14%">
+                            <div class="form-group pull-right">
+                                <button type="reset" class="btn btn-default" ng-click="reset()">
+                                    <span class="glyphicon glyphicon-refresh"></span> 重置
+                                </button>
+                                <button type="submit" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-search"></span> 搜索
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <div class="panel-body" style="padding:0"></div>
+        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="page">
+            <thead>
+                <tr>
+                    <th width="2%">
+                        <input type="checkbox" ng-model="selectAll">
+                    </th>
+                    <th width="12%">仓库</th>
+                    <th width="12%">出库单号</th>
+                    <th width="12%">状态</th>
+                    <th width="12%">创建时间</th>
+                    <th width="12%">出库时间</th>
+                    <th width="12%">创建人</th>
+                    <th width="12%">出库人</th>
+                    <th width="14%" style="padding: 2px">
+                        <select class="form-control input-sm">
+                            <option selected="selected">批量操作</option>
+                            <option>批量上架</option>
+                            <option>批量下架</option>
+                            <option>批量更名</option>
+                            <option>批量作废</option>
+                        </select>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr ng-repeat="batch in page.content">
+                    <td>
+                        <input type="checkbox" ng-model="batch.checked" ng-checked="selectAll" >
+                    </td>
+                    <td>
+                        {{batch.warehouse.name}}
+                    </td>
+                    <td>
+                        {{batch.id}}
+                    </td>
+                    <td>
+                        {{batch.type}}
+                    </td>
+                    <td>
+                        {{batch.operateTime | date:'yyyy-MM-dd HH:mm:ss'}}
+                    </td>
+                    <td>
+                        {{batch.outInventoryTime | date:'yyyy-MM-dd HH:mm:ss'}}
+                    </td>
+                    <td>
+                        {{batch.user.username}}
+                    </td>
+                    <td>
+                        {{batch.executeOperator.username}}
+                    </td>
+                    <td>
+                        <a href="javascript:void(0)" class="btn btn-info btn-xs">完成</a>
+                        <a href="javascript:void(0)" class="btn btn-info btn-xs">导出</a>
+                        <a href="javascript:void(0)" class="btn btn-info btn-xs">打印</a>
+                        <a href="javascript:void(0)" class="btn btn-danger btn-xs">作废</a>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="20">
+                        <nav class="page-list">
+                            <ul class="pagination pagination-sm">
+                                <li ng-class="{disabled: page.first}">
+                                    <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
+                                </li>
+                                <li ng-repeat="i in totalPagesList" ng-class="{active: i == page.number}">
+                                    <a href="" ng-click="turnPage(i)">{{i+1}}</a>
+                                </li>
+                                <li ng-class="{disabled: page.last}">
+                                    <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                </li>
+                            </ul>
+                            <div class="page-total">
+                                共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
+                                <select class="form-control" style="display: inline; padding:0" ng-model="pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                </select>
+                            </div>
+                        </nav>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="panel-body" ng-show="page.content.length == 0">
+            <div class="alert alert-warning">没有任何数据被检索到</div>
+        </div>
+    </div>
+</div>
