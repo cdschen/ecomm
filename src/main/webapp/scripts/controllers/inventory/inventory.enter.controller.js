@@ -12,15 +12,18 @@ angular.module('ecommApp')
             memo: '',
             warehouse: undefined,
             user: $rootScope.user(),
+            executeOperator: null,
             items: []
         };
         $scope.defaultItem = {
             product: undefined,
             warehouse: undefined,
-            position: undefined,
+            position: null,
             user: $rootScope.user(),
+            executeOperator: null,
             changedQuantity: 1,
-            expireDate: undefined
+            expireDate: undefined,
+            outBatch: null
         };
 
         $scope.batch = angular.copy($scope.defaultBatch);
