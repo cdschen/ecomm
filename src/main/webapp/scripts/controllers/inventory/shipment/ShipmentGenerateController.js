@@ -1,20 +1,11 @@
 angular.module('ecommApp')
 
-.controller('ShipmentController', ['$scope', '$rootScope', 'toastr', '$modal', 'filterFilter', 'Warehouse', 'Shop', 'orderService', 'courierService', 'Process', 'Utils', 'Inventory', 'OrderItem',
+.controller('ShipmentGenerateController', ['$scope', '$rootScope', 'toastr', '$modal', 'filterFilter', 'Warehouse', 'Shop', 'orderService', 'courierService', 'Process', 'Utils', 'Inventory', 'OrderItem',
     function($scope, $rootScope, toastr, $modal, filterFilter, Warehouse, Shop, orderService, courierService, Process, Utils, Inventory, OrderItem) {
 
         $scope.template = {
-            status: {
-                url: 'views/inventory/orderdeploy/order-deploy.status.html?' + (new Date())
-            },
-            generateShipment: {
-                url: 'views/inventory/orderdeploy/order-deploy.shipment-generate.html?' + (new Date())
-            },
-            generateOutInventorySheet: {
-                url: 'views/inventory/orderdeploy/order-deploy.confirm-out-inventory-sheet.html?' + (new Date())
-            },
-            generateShipmentSheet: {
-                url: 'views/inventory/orderdeploy/order-deploy.confirm-shipment-sheet.html?' + (new Date())
+            shipmentGenerateOperationReview: {
+                url: 'views/inventory/shipment/shipment-generate-operation-review.html?' + (new Date())
             }
         };
 
@@ -33,11 +24,8 @@ angular.module('ecommApp')
         $scope.courier = {};
         $scope.processes = [];
         $scope.inventory = {}; // 库存对象，里面每一个子属性都是一个仓库，仓库的值是一个归类好的产品数组
-        $scope.statusSlideChecked = false;
 
         $scope.generateShipmentSheetCheckListSlideChecked = false;
-        $scope.generateOutInventorySheetCheckListSlideChecked = false;
-        $scope.couriers = [];
 
         // 将所有店铺过滤，拿出所有配置了配送状态的店铺的ID
         $scope.selectAllShops = function(shops) {
@@ -118,7 +106,7 @@ angular.module('ecommApp')
                     orderService.checkItemProductShopTunnel(this);
                 });
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
-                $scope.is_checked_all = false;
+                $scope.isCheckedAll = false;
             });
         };
 
@@ -144,10 +132,11 @@ angular.module('ecommApp')
                     orderService.checkItemProductShopTunnel(this);
                 });
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
-                $scope.is_checked_all = false;
+                $scope.isCheckedAll = false;
             });
         };
 
+        /* 选择仓库用 */
         $scope.selectItemWarehouse = function(item, $item){
             console.clear();
             console.log('selectItemWarehouse');
@@ -160,18 +149,14 @@ angular.module('ecommApp')
             });
         };
 
-        $scope.toggleOutInventorySheetSlide = function(){
-           $scope.generateOutInventorySheetCheckListSlideChecked = !$scope.generateOutInventorySheetCheckListSlideChecked;
-        };
-
         $scope.toggleShipmentSheetSlide = function(){
             $scope.generateShipmentSheetCheckListSlideChecked = !$scope.generateShipmentSheetCheckListSlideChecked;
         };
 
 
         // selected orders
-        $scope.is_checked_all = false;
-        $scope.batch_manipulation_value = 'batch_manipulation';
+        $scope.isCheckedAll = false;
+        $scope.batchManipulationValue = 'batchManipulation';
         $scope.selectedCourier = {};
         $scope.startCourierNumber = '';
 
@@ -179,38 +164,12 @@ angular.module('ecommApp')
         {
             for( var order in $scope.page.content )
             {
-                $scope.page.content[order].isSelected = $scope.is_checked_all;
-            }
-        };
-
-        $scope.confirmSameWarehouseBySelectedOrders = function(orders) {
-            var sameWarehouses = [];
-            var differentWarehouseError = false;
-            $.each(orders, function(){
-                var order = this;
-                console.log(order.id);
-                $.each(order.items, function(){
-                    var item = this;
-                    if (item.assignTunnel) {
-                        sameWarehouses.push(item.assignTunnel.defaultWarehouse.name);
-                        $.each(sameWarehouses,function(){
-                            if (this !== item.assignTunnel.defaultWarehouse.name) {
-                                console.log(item.id +':'+item.assignTunnel.defaultWarehouse.name);
-                                differentWarehouseError = true;
-                                return false;
-                            }
-                        });
-                    }
-                });
-            });
-
-            if (differentWarehouseError) {
-                toastr.error('选择的订单中的细目来自不同的仓库，请调整.');
+                $scope.page.content[order].isSelected = $scope.isCheckedAll;
             }
         };
 
         /* 生成多个订单的货运单  */
-        $scope.batch_manipulation = function()
+        $scope.batchManipulation = function()
         {
             var orders = $scope.page.content;
             orderService.selectedOrders.length = 0;
@@ -222,36 +181,9 @@ angular.module('ecommApp')
             });
             if (orderService.selectedOrders.length > 0)
             {
-                if($scope.batch_manipulation_value == 'generate_shipment')
+                if($scope.batchManipulationValue == 'generateShipment')
                 {
                     $('#generateShipment').modal('show');
-                }
-
-                if ($scope.batch_manipulation_value === 'generate_out_inventory_sheet') {
-                    var orders = $scope.page.content;
-                    orderService.selectedOrders.length = 0;
-                    $.each(orders, function(){
-                        var order = this;
-                        if (order.isSelected) {
-                            orderService.selectedOrders.push(angular.copy(order));
-                        }
-                    });
-
-                    $scope.toggleOutInventorySheetSlide();
-                    var reviewDTO = {
-                        orders: orderService.selectedOrders,
-                        assignWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
-                        ignoredMap: {
-                            'productInventoryNotEnough': false,
-                            'orderExistOutInventorySheet': false
-                        }
-                    };
-                    console.log('reviewDTO:');
-                    console.log(reviewDTO);
-                    orderService.confirmOrderWhenGenerateOutInventory(reviewDTO).then(function(review){
-                        console.log('review:');
-                        console.log(review);
-                    });
                 }
             }
             else
@@ -260,7 +192,7 @@ angular.module('ecommApp')
             }
 
 
-            $scope.batch_manipulation_value = 'batch_manipulation';
+            $scope.batchManipulationValue = 'batchManipulation';
         };
 
 
