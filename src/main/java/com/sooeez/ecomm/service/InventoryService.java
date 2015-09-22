@@ -1,5 +1,7 @@
 package com.sooeez.ecomm.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -229,6 +231,9 @@ public class InventoryService {
 			if (batch.getWarehouseId() != null) {
 				predicates.add(cb.equal(root.get("warehouseId"), batch.getWarehouseId()));
 			}
+			if (batch.getOperateTimeStart() != null && batch.getOperateTimeEnd() != null) {
+				predicates.add(cb.between(root.get("operateTime"), batch.getOperateTimeStart(), batch.getOperateTimeEnd()));
+			}
 			if (batch.getType() != null) {
 				predicates.add(cb.equal(root.get("type"), batch.getType()));
 			}
@@ -370,9 +375,15 @@ public class InventoryService {
 		
 		this.orderService.confirmOrderWhenGenerateOutInventory(review);
 		
+		System.out.println("differentWarehouseError: " + review.getCheckMap().get("differentWarehouseError"));
+		System.out.println("productInventoryNotEnoughError: " + review.getCheckMap().get("productInventoryNotEnoughError"));
+		System.out.println("orderExistOutInventorySheetError: " + review.getCheckMap().get("orderExistOutInventorySheetError"));
+		
 		if (!review.getCheckMap().get("differentWarehouseError") 
-				&& !review.getCheckMap().get("productInventoryNotEnoughError") 
-				&& !review.getCheckMap().get("orderExistOutInventorySheetError")) {
+				&& (!review.getCheckMap().get("productInventoryNotEnoughError") 
+					|| (review.getCheckMap().get("productInventoryNotEnoughError") && review.getIgnoredMap().get("productInventoryNotEnough")))
+				&& (!review.getCheckMap().get("orderExistOutInventorySheetError") 
+					|| (review.getCheckMap().get("orderExistOutInventorySheetError") && review.getIgnoredMap().get("orderExistOutInventorySheet")))) {
 			// 先收集出，需要出库的item都来自那些仓库
 			// 在这里正确情况，是只有一个出库的仓库id
 			Inventory inventoryQuery = new Inventory();

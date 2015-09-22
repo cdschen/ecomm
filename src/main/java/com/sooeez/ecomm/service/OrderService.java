@@ -588,11 +588,16 @@ public class OrderService {
 		
 		if (!review.getIgnoredMap().get("productInventoryNotEnough")) {
 			this.confirmProductInventoryNotEnough(review);
-		}
+		} /*else {
+			review.getCheckMap().put("productInventoryNotEnoughError", false);
+		}*/
+		
 		
 		if (!review.getIgnoredMap().get("orderExistOutInventorySheet")) {
 			this.confirmOrderExistOutInventorySheet(review);
-		}
+		} /*else {
+			review.getCheckMap().put("orderExistOutInventorySheetError", false);
+		}*/
 		
 		return review;
 	}

@@ -6,10 +6,35 @@ angular.module('ecommApp')
         var $ = angular.element;
 
         $scope.page = undefined;
-        $scope.pageSize = 20;
-        $scope.totalPagesList = [];
 
         $scope.warehouses = [];
+        $scope.types = [{
+            label: '作废',
+            value: 0
+        }, {
+            label: '待出库',
+            value: 1
+        }, {
+            label: '已出库',
+            value: 2
+        }];
+
+        $scope.defautlQuery = {
+            pageSize: 20,
+            totalPagesList: [],
+            warehouse: undefined,
+            batch: {
+                operateTimeStart: undefined,
+                operateTimeEnd: undefined,
+                outInventoryTimeStart: undefined,
+                outInventoryTimeEnd: undefined
+            },
+            type: {
+                label: '待出库',
+                value: 1
+            }
+        };
+        $scope.query = angular.copy($scope.defautlQuery);
 
         Warehouse.getAll({
             deleted: false,
@@ -18,38 +43,60 @@ angular.module('ecommApp')
             $scope.warehouses = warehouses;
         });
 
-        InventoryBatch.get({
-            page: 0,
-            size: $scope.pageSize,
-            type: 1 // 已完成
-        }).$promise.then(function(page) {
-            $scope.page = page;
-            $scope.totalPagesList = Utils.setTotalPagesList(page);
-        });
+        $scope.searchData = function(query, number) {
+            InventoryBatch.get({
+                page: number ? number : 0,
+                size: query.pageSize,
+                warehouseId: query.warehouse ? query.warehouse.id : null,
+                operateTimeStart: query.batch.operateTimeStart,
+                operateTimeEnd: query.batch.operateTimeEnd,
+                outInventoryTimeStart: query.batch.outInventoryTimeStart,
+                outInventoryTimeEnd: query.batch.outInventoryTimeEnd,
+                type: query.type ? query.type.value : null
+            }).$promise.then(function(page) {
+                $scope.page = page;
+                query.totalPagesList = Utils.setTotalPagesList(page);
+            });
+        };
+
+        $scope.searchData($scope.query);
 
         $scope.turnPage = function(number) {
             if (number > -1 && number < $scope.page.totalPages) {
-                InventoryBatch.get({
-                    page: number,
-                    size: $scope.pageSize,
-                    type: 1
-                }, function(page) {
-                    $scope.page = page;
-                    $scope.totalPagesList = Utils.setTotalPagesList(page);
-                });
+                $scope.searchData($scope.query, number);
             }
         };
 
-        $scope.initField = function(batch){
-            
+        $scope.search = function(query) {
+            $scope.searchData(query);
         };
+
+        $scope.reset = function() {
+            $scope.query = angular.copy($scope.defautlQuery);
+            $scope.searchData($scope.query);
+        };
+
+        $scope.selectAll = function(page) {
+            $.each(page.content, function(){
+                this.checked = $scope.checkedAll;
+            });
+        };
+
+        $('#sandbox-container-create .input-daterange').datepicker({
+            format: 'yyyy/mm/dd',
+            clearBtn: true,
+            language: 'zh-CN',
+            orientation: 'top left',
+            todayHighlight: true,
+        });
+
+        $('#sandbox-container-out-inventory .input-daterange').datepicker({
+            format: 'yyyy/mm/dd',
+            clearBtn: true,
+            language: 'zh-CN',
+            orientation: 'top left',
+            todayHighlight: true,
+        });
     }
-])
 
-.controller('OutInventorySheetOperatorController', ['$rootScope', '$scope', '$state', '$stateParams', 'Warehouse',
-    function($rootScope, $scope, $state, $stateParams, Warehouse) {
-
-
-
-    }
 ]);
