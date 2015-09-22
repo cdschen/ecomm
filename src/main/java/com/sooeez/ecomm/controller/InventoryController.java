@@ -204,8 +204,8 @@ public class InventoryController {
 	}
 	
 	@RequestMapping(value = "/shipments")
-	public Page<Shipment> getPagedShipments(Pageable pageable) {
-		return this.shipmentService.getPagedShipments(pageable);
+	public Page<Shipment> getPagedShipments(Shipment shipment, Pageable pageable) {
+		return this.shipmentService.getPagedShipments(shipment, pageable);
 	}
 	
 	@RequestMapping(value = "/shipments/get/all")

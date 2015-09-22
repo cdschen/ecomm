@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -145,16 +146,21 @@ public class Shipment implements Serializable {
 	/*
 	 * Related Properties
 	 */
-	
-//	@OneToOne
-//	@NotFound(action = NotFoundAction.IGNORE)
-//	@JoinColumn(name = "order_id", insertable = false, updatable = false)
-//	private Order order;
+
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "ship_warehouse_id", insertable = false, updatable = false)
+	private Warehouse warehouse;
 
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "operator_id", insertable = false, updatable = false)
-	private User user;
+	private User operator;
+
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "execute_operator_id", insertable = false, updatable = false)
+	private User executeOperator;
 
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
@@ -166,6 +172,46 @@ public class Shipment implements Serializable {
 	private List<ShipmentItem> shipmentItems;
 
 	//
+	
+	/* 店铺编号 */
+	@Transient
+	private Long shopId;
+	
+	/* 获取店铺用 */
+	@Transient
+	private Shop shop;
+
+	/* 创建起始日期 */
+	@Transient
+	private String createTimeStart;
+
+	/* 创建结束日期 */
+	@Transient
+	private String createTimeEnd;
+
+	/* 更新起始日期 */
+	@Transient
+	private String lastUpdateStart;
+
+	/* 更新结束日期 */
+	@Transient
+	private String lastUpdateEnd;
+
+	/* 取件起始日期 */
+	@Transient
+	private String pickupTimeStart;
+
+	/* 取件结束日期 */
+	@Transient
+	private String pickupTimeEnd;
+
+	/* 签收起始日期 */
+	@Transient
+	private String signupTimeStart;
+
+	/* 签收结束日期 */
+	@Transient
+	private String signupTimeEnd;
 
 	public Long getId() {
 		return id;
@@ -359,22 +405,6 @@ public class Shipment implements Serializable {
 		this.receivePost = receivePost;
 	}
 
-//	public Order getOrder() {
-//		return order;
-//	}
-//
-//	public void setOrder(Order order) {
-//		this.order = order;
-//	}
-
-//	public User getUser() {
-//		return user;
-//	}
-//
-//	public void setUser(User user) {
-//		this.user = user;
-//	}
-
 	public Courier getCourier() {
 		return courier;
 	}
@@ -423,20 +453,109 @@ public class Shipment implements Serializable {
 		this.courierId = courierId;
 	}
 
-//	public Order getOrder() {
-//		return order;
-//	}
-//
-//	public void setOrder(Order order) {
-//		this.order = order;
-//	}
-
-	public User getUser() {
-		return user;
+	public User getOperator() {
+		return operator;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setOperator(User operator) {
+		this.operator = operator;
 	}
+
+	public User getExecuteOperator() {
+		return executeOperator;
+	}
+
+	public void setExecuteOperator(User executeOperator) {
+		this.executeOperator = executeOperator;
+	}
+
+	public Warehouse getWarehouse() {
+		return warehouse;
+	}
+
+	public void setWarehouse(Warehouse warehouse) {
+		this.warehouse = warehouse;
+	}
+
+	public Shop getShop() {
+		return shop;
+	}
+
+	public void setShop(Shop shop) {
+		this.shop = shop;
+	}
+
+	public Long getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(Long shopId) {
+		this.shopId = shopId;
+	}
+
+	public String getCreateTimeStart() {
+		return createTimeStart;
+	}
+
+	public void setCreateTimeStart(String createTimeStart) {
+		this.createTimeStart = createTimeStart;
+	}
+
+	public String getCreateTimeEnd() {
+		return createTimeEnd;
+	}
+
+	public void setCreateTimeEnd(String createTimeEnd) {
+		this.createTimeEnd = createTimeEnd;
+	}
+
+	public String getLastUpdateStart() {
+		return lastUpdateStart;
+	}
+
+	public void setLastUpdateStart(String lastUpdateStart) {
+		this.lastUpdateStart = lastUpdateStart;
+	}
+
+	public String getLastUpdateEnd() {
+		return lastUpdateEnd;
+	}
+
+	public void setLastUpdateEnd(String lastUpdateEnd) {
+		this.lastUpdateEnd = lastUpdateEnd;
+	}
+
+	public String getPickupTimeStart() {
+		return pickupTimeStart;
+	}
+
+	public void setPickupTimeStart(String pickupTimeStart) {
+		this.pickupTimeStart = pickupTimeStart;
+	}
+
+	public String getPickupTimeEnd() {
+		return pickupTimeEnd;
+	}
+
+	public void setPickupTimeEnd(String pickupTimeEnd) {
+		this.pickupTimeEnd = pickupTimeEnd;
+	}
+
+	public String getSignupTimeStart() {
+		return signupTimeStart;
+	}
+
+	public void setSignupTimeStart(String signupTimeStart) {
+		this.signupTimeStart = signupTimeStart;
+	}
+
+	public String getSignupTimeEnd() {
+		return signupTimeEnd;
+	}
+
+	public void setSignupTimeEnd(String signupTimeEnd) {
+		this.signupTimeEnd = signupTimeEnd;
+	}
+	
 	
 }

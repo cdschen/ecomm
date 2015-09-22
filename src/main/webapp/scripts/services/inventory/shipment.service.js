@@ -1,17 +1,17 @@
 
 angular.module('ecommApp')
 
-.factory('courierService', ['$resource', '$http', function($resource, $http) {
+.factory('shipmentService', ['$resource', '$http', function($resource, $http) {
 
-    var courier = $resource('/api/couriers/:id', {}, {});
+    var shipment = $resource('/api/shipments/:id', {}, {});
 
-    courier.getAll = function(params) {
-        return $http.get('/api/couriers/get/all', {
+        shipment.getAll = function(params) {
+        return $http.get('/api/shipments/get/all', {
             params: params
         }).then(function(res) {
             return res.data;
         });
     };
 
-    return courier;
+    return shipment;
 }]);

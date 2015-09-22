@@ -118,7 +118,7 @@ angular.module('ecommApp')
                     orderService.checkItemProductShopTunnel(this);
                 });
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
-                $scope.is_checked_all = false;
+                $scope.isCheckedAll = false;
             });
         };
 
@@ -144,7 +144,7 @@ angular.module('ecommApp')
                     orderService.checkItemProductShopTunnel(this);
                 });
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
-                $scope.is_checked_all = false;
+                $scope.isCheckedAll = false;
             });
         };
 
@@ -170,7 +170,7 @@ angular.module('ecommApp')
 
 
         // selected orders
-        $scope.is_checked_all = false;
+        $scope.isCheckedAll = false;
         $scope.batch_manipulation_value = 'batch_manipulation';
         $scope.selectedCourier = {};
         $scope.startCourierNumber = '';
@@ -179,7 +179,7 @@ angular.module('ecommApp')
         {
             for( var order in $scope.page.content )
             {
-                $scope.page.content[order].isSelected = $scope.is_checked_all;
+                $scope.page.content[order].isSelected = $scope.isCheckedAll;
             }
         };
 

@@ -128,6 +128,20 @@ angular.module('ecommApp')
                     roles: [ROLES.sysadmin],
                     authorities: []
                 }
+            })
+            .state('shipmentGenerate', {
+                parent: 'site',
+                url: '/shipment-generate',
+                views: {
+                    'content@': {
+                        templateUrl: 'views/inventory/shipment/shipment-generate.html?' + (new Date()),
+                        controller: 'ShipmentGenerateController'
+                    }
+                },
+                data: {
+                    roles: [ROLES.sysadmin],
+                    authorities: []
+                }
             });
 
     }
