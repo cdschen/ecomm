@@ -2,27 +2,53 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">出库单管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="orderdeploy">订单出库</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="outinventorysheet.orderoutinventory">订单出库</a>
         <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="orderdeploy">调整出库</a>
         <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="orderdeploy">查看库存变动</a>
     </li>
 </ol>
 <div class="container-fluid">
     <div class="panel panel-default">
-        <form name="outInventorySearchForm" novalidate ng-submit="search()">
+        <form name="outInventorySearchForm" novalidate ng-submit="search(query)">
             <table class="table clear-marginbottom-table">
                 <tbody>
                     <tr>
-                        <td width="12%">
-                            <ui-select ng-model="query.warehouse" theme="bootstrap">
+                        <td width="15%">
+                            <ui-select ng-model="query.warehouse">
                                 <ui-select-match placeholder="请选择仓库">{{$select.selected.name}}</ui-select-match>
                                 <ui-select-choices repeat="warehouse in warehouses | filter: $select.search">
                                     <div ng-bind-html="warehouse.name | highlight: $select.search"></div>
                                 </ui-select-choices>
                             </ui-select>
                         </td>
-                        <td width="74%"></td>
-                        <td width="14%">
+                        <td width="20%">
+                            <div id="sandbox-container-create">
+                                <div class="input-daterange input-group">
+                                    <input type="text" class="form-control" placeholder="创建起始时间" ng-model="query.batch.operateTimeStart"/>
+                                    <span class="input-group-addon">到</span>
+                                    <input type="text" class="form-control" placeholder="创建结束时间" ng-model="query.batch.operateTimeEnd"/>
+                                </div>
+                            </div>
+                        </td>
+                        <td width="20%">
+                            <div id="sandbox-container-out-inventory">
+                                <div class="input-daterange input-group">
+                                    <input type="text" class="form-control" placeholder="出库起始时间" ng-model="query.batch.outInventoryTimeStart" />
+                                    <span class="input-group-addon">到</span>
+                                    <input type="text" class="form-control" placeholder="出库结束时间" ng-model="query.batch.outInventoryTimeEnd" />
+                                </div>
+                            </div>
+                        </td>
+                        <td width="15%">
+                            <ui-select ng-model="query.type">
+                                <ui-select-match placeholder="请选择状态">{{$select.selected.label}}</ui-select-match>
+                                <ui-select-choices repeat="type in types | filter: $select.search">
+                                    <div ng-bind-html="type.label | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                        </td>
+                        <td width="15%"></td>
+                        <td width="15%">
                             <div class="form-group pull-right">
                                 <button type="reset" class="btn btn-default" ng-click="reset()">
                                     <span class="glyphicon glyphicon-refresh"></span> 重置
@@ -37,11 +63,11 @@
             </table>
         </form>
         <div class="panel-body" style="padding:0"></div>
-        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="page">
+        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="page && page.content.length > 0">
             <thead>
                 <tr>
                     <th width="2%">
-                        <input type="checkbox" ng-model="selectAll">
+                        <input type="checkbox" ng-model="checkedAll" ng-click="selectAll(page)">
                     </th>
                     <th width="12%">仓库</th>
                     <th width="12%">出库单号</th>
@@ -64,7 +90,7 @@
             <tbody>
                 <tr ng-repeat="batch in page.content">
                     <td>
-                        <input type="checkbox" ng-model="batch.checked" ng-checked="selectAll" >
+                        <input type="checkbox" ng-model="batch.checked">
                     </td>
                     <td>
                         {{batch.warehouse.name}}
@@ -72,14 +98,16 @@
                     <td>
                         {{batch.id}}
                     </td>
-                    <td>
-                        {{batch.type}}
+                    <td ng-switch on="batch.type">
+                        <span ng-switch-when="0">作废</span>
+                        <span ng-switch-when="1">待出库</span>
+                        <span ng-switch-when="2">已出库</span>
                     </td>
                     <td>
-                        {{batch.operateTime | date:'yyyy-MM-dd HH:mm:ss'}}
+                        {{batch.operateTime | date:'yyyy/MM/dd HH:mm:ss'}}
                     </td>
                     <td>
-                        {{batch.outInventoryTime | date:'yyyy-MM-dd HH:mm:ss'}}
+                        {{batch.outInventoryTime | date:'yyyy/MM/dd HH:mm:ss'}}
                     </td>
                     <td>
                         {{batch.user.username}}
@@ -88,7 +116,7 @@
                         {{batch.executeOperator.username}}
                     </td>
                     <td>
-                        <a href="javascript:void(0)" class="btn btn-info btn-xs">完成</a>
+                        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="outinventorysheet.operator({id:batch.id})">完成</a>
                         <a href="javascript:void(0)" class="btn btn-info btn-xs">导出</a>
                         <a href="javascript:void(0)" class="btn btn-info btn-xs">打印</a>
                         <a href="javascript:void(0)" class="btn btn-danger btn-xs">作废</a>
@@ -103,7 +131,7 @@
                                 <li ng-class="{disabled: page.first}">
                                     <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
                                 </li>
-                                <li ng-repeat="i in totalPagesList" ng-class="{active: i == page.number}">
+                                <li ng-repeat="i in query.totalPagesList" ng-class="{active: i == page.number}">
                                     <a href="" ng-click="turnPage(i)">{{i+1}}</a>
                                 </li>
                                 <li ng-class="{disabled: page.last}">
@@ -112,7 +140,7 @@
                             </ul>
                             <div class="page-total">
                                 共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
-                                <select class="form-control" style="display: inline; padding:0" ng-model="pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                <select class="form-control" style="display: inline; padding:0" ng-model="query.pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
                                 </select>
                             </div>
                         </nav>
