@@ -122,7 +122,7 @@
             <tbody>
                 <tr ng-repeat="shipment in page.content" class="text-center">
                     <td>
-                        <input type="checkbox" ng-model="order.isSelected">
+                        <input type="checkbox" ng-model="shipment.isSelected">
                     </td>
                     <td>
                         {{ shipment.shop.name }}
@@ -142,7 +142,7 @@
                             shipment.shipStatus == 2 ? '已发出' :
                             shipment.shipStatus == 3 ? '已签收' :
                             shipment.shipStatus == 4 ? '派送异常' :
-                            shipment.shipStatus == 5 ? '作废' : '未指定状态'
+                            shipment.shipStatus == 5 ? '已作废' : '未指定状态'
                         }}
                     </td>
                     <td class="text-left">
@@ -163,7 +163,7 @@
                         <ul style="list-style:none; padding-left:4px; margin:0;">
                             <li><strong>姓名 : </strong>{{ shipment.receiveName }}</li>
                             <li><strong>电话 : </strong>{{ shipment.receivePhone }}</li>
-                            <li><strong>地址 : </strong>{{ shipment.receiveAddress }} 7 Skeates Ave, Mt Roskill, Auckland, New Zealand 1041</li>
+                            <li><strong>地址 : </strong>{{ shipment.receiveAddress }}</li>
                         </ul>
                     </td>
                     <td>
@@ -174,12 +174,10 @@
                         </ul>
                     </td>
                     <td style="text-align: center;">
-                        <a class="btn btn-sm btn-info" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5">编辑</a>
-                        <a class="btn btn-sm btn-success" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5">完成</a>
+                        <a class="btn btn-sm btn-success" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5" ng-click="showShipmentCompleteSlide( shipment )">完成</a>
                         <a class="btn btn-sm btn-warning">导出</a>
                         <a class="btn btn-sm btn-warning">打印</a>
-                        <a class="btn btn-sm btn-danger" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5">作废</a>
-                        <!--<a href="javascript:void(0);" class="btn btn-primary btn-block" ng-click="openGenerateSingleShipmentModal(order)">生成发货单</a>-->
+                        <a class="btn btn-sm btn-danger" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5" ng-click="showObsoleteShipmentModal( shipment )">作废</a>
                     </td>
                 </tr>
             </tbody>
@@ -210,6 +208,48 @@
         </table>
         <div class="panel-body" ng-show="!page || page.content.length == 0">
             <div class="alert alert-warning">没有任何数据被检索到</div>
+        </div>
+    </div>
+</div>
+
+<!-- obsoleteShipments Modal -->
+<div class="modal fade" id="obsoleteShipments">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">作废批量选中的发货单</h3>
+            </div>
+            <div class="modal-body">
+                <p>确定作废批量选中的发货单？注意，该操作不可逆！</p>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group">
+                    <button class="btn btn-primary" type="button" ng-click="obsoleteShipments()">确认作废</button>
+                    <button class="btn btn-warning" type="button" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- obsoleteShipment Modal -->
+<div class="modal fade" id="obsoleteShipment">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">作废该发货单</h3>
+            </div>
+            <div class="modal-body">
+                <p>确定作废该发货单？注意，该操作不可逆！</p>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group">
+                    <button class="btn btn-primary" type="button" ng-click="obsoleteShipment()">确认作废</button>
+                    <button class="btn btn-warning" type="button" data-dismiss="modal">取消</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
