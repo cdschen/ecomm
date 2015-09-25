@@ -31,7 +31,7 @@
                                         </tr>
                                         <tr>
                                             <th width="50%">时间</th>
-                                            <td wdith="50%">{{ operateDate | date:'yyyy-MM-dd HH:mm' }}</td>
+                                            <td wdith="50%">{{ operateDate | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                                         </tr>
                                         <tr>
                                             <th width="50%">操作员</th>
@@ -148,7 +148,7 @@
                         <div class="panel panel-default" style="height:200px">
                             <div class="panel-body">
                                 <button type="button" class="btn btn-success btn-lg btn-block" ng-click="confirmShipmentGeneration()">确定</button>
-                                <button type="button" class="btn btn-default btn-lg btn-block">取消</button>
+                                <button type="button" class="btn btn-default btn-lg btn-block" ng-click="toggleShipmentSheetSlide()">取消</button>
                             </div>
                         </div>
                     </div>

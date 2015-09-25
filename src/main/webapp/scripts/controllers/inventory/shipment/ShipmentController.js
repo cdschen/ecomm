@@ -1,7 +1,7 @@
 angular.module('ecommApp')
 
-.controller('ShipmentController', ['$scope', '$rootScope', 'toastr', '$modal', 'filterFilter', 'Warehouse', 'Shop', 'orderService', 'courierService', 'Process', 'Utils', 'Inventory', 'OrderItem', 'shipmentService',
-    function($scope, $rootScope, toastr, $modal, filterFilter, Warehouse, Shop, orderService, courierService, Process, Utils, Inventory, OrderItem, shipmentService) {
+.controller('ShipmentController', ['$scope', '$rootScope', 'toastr', 'Warehouse', 'Shop', 'courierService', 'Utils', 'shipmentService',
+    function($scope, $rootScope, toastr, Warehouse, Shop, courierService, Utils, shipmentService) {
 
         $scope.template = {
             shipmentComplete: {
@@ -22,6 +22,8 @@ angular.module('ecommApp')
             orientation: 'top left',
             todayHighlight: true,
         });
+
+        $scope.selectedShipment = {};
 
         $scope.totalPagesList = [];
         $scope.pageSize = 20;
@@ -141,24 +143,24 @@ angular.module('ecommApp')
 
         $scope.checkAllOrders = function()
         {
-            for( var order in $scope.page.content )
+            for( var shipment in $scope.page.content )
             {
-                $scope.page.content[order].isSelected = $scope.isCheckedAll;
+                $scope.page.content[shipment].isSelected = $scope.isCheckedAll;
             }
         };
 
         /* 批量操作 */
         $scope.batchManipulation = function()
         {
-            var orders = $scope.page.content;
-            orderService.selectedOrders.length = 0;
-            $.each(orders, function(){
-                var order = this;
-                if (order.isSelected) {
-                    orderService.selectedOrders.push(angular.copy(order));
+            var shipments = $scope.page.content;
+            shipmentService.selectedShipments.length = 0;
+            $.each(shipments, function(){
+                var shipment = this;
+                if (shipment.isSelected) {
+                    shipmentService.selectedShipments.push(angular.copy(shipment));
                 }
             });
-            if (orderService.selectedOrders.length > 0)
+            if (shipmentService.selectedShipments.length > 0)
             {
                 if($scope.batchManipulationValue == 'shipmentExport')
                 {
@@ -170,7 +172,7 @@ angular.module('ecommApp')
                 }
                 else if($scope.batchManipulationValue == 'shipmentObsolete')
                 {
-                    toastr.info('发货单作废！');
+                    $('#obsoleteShipments').modal('show');
                 }
             }
             else
@@ -181,6 +183,102 @@ angular.module('ecommApp')
 
             $scope.batchManipulationValue = 'batchManipulation';
         };
+
+        $scope.showObsoleteShipmentModal = function( shipment )
+        {
+            $scope.selectedShipment = shipment;
+
+            $('#obsoleteShipment').modal('show');
+        };
+
+        /* 将选中发货单作废 */
+        $scope.obsoleteShipment = function()
+        {
+            /* 作废状态 */
+            $scope.selectedShipment.shipStatus = 5;
+
+            shipmentService.save({
+                action: 'update'
+            }, $scope.selectedShipment, function( shipment ) {
+
+                    console.log( shipment );
+
+                    shipmentService.get( getQueryParamJSON(), function(page) {
+                        console.log('page:');
+                        console.log(page);
+                        $scope.page = page;
+                        $scope.totalPagesList = Utils.setTotalPagesList(page);
+                    });
+                });
+
+            $('#obsoleteShipment').modal('hide');
+
+            toastr.error('作废选中发的货单！');
+        };
+
+        /* 将批量选中的货单作废 */
+        $scope.obsoleteShipments = function()
+        {
+            for( var shipmentIndex in shipmentService.selectedShipments )
+            {
+                /* 作废状态 */
+                shipmentService.selectedShipments[shipmentIndex].shipStatus = 5;
+            }
+
+            var shipment = {};
+            shipment.shipments = shipmentService.selectedShipments;
+
+            shipmentService.saveShipments( shipment )
+                .then(function(shipments) {
+
+                    console.log( shipments );
+
+                    shipmentService.get( getQueryParamJSON(), function(page) {
+                        console.log('page:');
+                        console.log(page);
+                        $scope.page = page;
+                        $scope.totalPagesList = Utils.setTotalPagesList(page);
+                    });
+                });
+
+            $('#obsoleteShipments').modal('hide');
+            toastr.error('作废批量选中的发货单！');
+        };
+
+
+        $scope.showShipmentCompleteSlide = function( shipment )
+        {
+            shipmentService.setSelectedShipment( angular.copy( shipment ) );
+
+            executeOperationReviewCompleteShipment('VERIFY');
+
+            $scope.toggleShipmentCompleteSlide();
+        };
+
+
+        function executeOperationReviewCompleteShipment(action)
+        {
+            var reviewDTO = {
+                action                      : action,
+                shipment                    : shipmentService.getSelectedShipment(),
+                dataMap : {
+                    executeOperatorId                : $rootScope.user().id
+                },
+                ignoredMap : {
+                    emptyCourierError : false,
+                    emptyShipNumberError : false,
+                    emptyReceiveNameError : false,
+                    emptyReceivePhoneError : false,
+                    emptyReceiveAddressError : false
+                }
+            };
+            console.log('Before Operation Review:');
+            console.log(reviewDTO);
+            shipmentService.confirmOperationReviewWhenCompleteShipment(reviewDTO).then(function(review){
+                console.log('After Operation Review Complete Shipment:');
+                console.log(review);
+            });
+        }
 
     }
 ]);

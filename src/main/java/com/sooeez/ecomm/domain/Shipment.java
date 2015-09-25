@@ -39,9 +39,13 @@ public class Shipment implements Serializable {
 	@Column(name = "order_id")
 	private Long orderId;
 
-	/* 操作员编号 */
+	/* 创建人编号 */
 	@Column(name = "operator_id")
 	private Long operatorId;
+
+	/* 发货人编号 */
+	@Column(name = "execute_operator_id")
+	private Long executeOperatorId;
 
 	/* 快递公司编号 */
 	@Column(name = "courier_id")
@@ -172,6 +176,10 @@ public class Shipment implements Serializable {
 	private List<ShipmentItem> shipmentItems;
 
 	//
+	
+	/* 发货单集合 */
+	@Transient
+	private List<Shipment> shipments;
 	
 	/* 店铺编号 */
 	@Transient
@@ -555,6 +563,22 @@ public class Shipment implements Serializable {
 
 	public void setSignupTimeEnd(String signupTimeEnd) {
 		this.signupTimeEnd = signupTimeEnd;
+	}
+
+	public List<Shipment> getShipments() {
+		return shipments;
+	}
+
+	public void setShipments(List<Shipment> shipments) {
+		this.shipments = shipments;
+	}
+
+	public Long getExecuteOperatorId() {
+		return executeOperatorId;
+	}
+
+	public void setExecuteOperatorId(Long executeOperatorId) {
+		this.executeOperatorId = executeOperatorId;
 	}
 	
 	
