@@ -90,7 +90,7 @@ angular.module('ecommApp')
                         toastr.warning('以下订单商品已经存在有出库单，可以从列表中移出后继续');
                     }
                 } else {
-                    $state.go('outinventorysheet');
+                    $state.go('outInventorySheet');
                 }
             });
         };

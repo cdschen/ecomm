@@ -77,7 +77,7 @@ angular.module('ecommApp')
         };
 
         $scope.selectAll = function(page) {
-            $.each(page.content, function(){
+            $.each(page.content, function() {
                 this.checked = $scope.checkedAll;
             });
         };
@@ -97,6 +97,25 @@ angular.module('ecommApp')
             orientation: 'top left',
             todayHighlight: true,
         });
+
+        $scope.invalidingBatch = undefined;
+
+        $scope.showInvalidBatch = function(batch) {
+            $scope.invalidingBatch = batch;
+            $('#batchInvalidModal').modal('show');
+        };
+
+        $scope.invalidBatch = function() {
+            console.clear();
+            console.log('invalidBatch');
+            console.log($scope.invalidingBatch);
+            $scope.invalidingBatch.type = 0;
+            $scope.invalidingBatch.orderBatches.length = 0;
+            InventoryBatch.save({}, $scope.invalidingBatch, function() {
+                $('#batchInvalidModal').modal('hide');
+                $scope.searchData($scope.query);
+            });
+        };
     }
 
 ]);

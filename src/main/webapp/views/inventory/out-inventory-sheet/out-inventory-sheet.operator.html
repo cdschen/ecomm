@@ -1,5 +1,133 @@
 <ol class="breadcrumb">
     <li><a ui-sref="dashboard">首页</a></li>
-    <li ui-sref="outinventorysheet">出库单管理</li>
+    <li><a ui-sref="outInventorySheet">出库单管理</a></li>
     <li class="active">出库单</li>
 </ol>
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <form name="batchForm" novalidate ng-submit="">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="panel panel-info" style="height:215px">
+                            <div class="panel-heading" style="padding:5px;">
+                                <h4 class="panel-title"><strong>出库单基本信息</strong></h4>
+                            </div>
+                            <table class="table table-bordered table-condensed clear-marginbottom-table">
+                                <tr>
+                                    <th width="30%">仓库</th>
+                                    <td width="70%">{{batch.warehouse.name}}</td>
+                                </tr>
+                                <tr>
+                                    <th width="30%">创建人</th>
+                                    <td width="70%">{{batch.user.username}}</td>
+                                </tr>
+                                <tr>
+                                    <th width="30%">创建时间</th>
+                                    <td width="70%">{{batch.operateTime | date:'yyyy/MM/dd HH:mm:ss'}}</td>
+                                </tr>
+                                <tr>
+                                    <th width="30%">出库人</th>
+                                    <td width="70%">{{batch.executeOperator.username}}</td>
+                                </tr>
+                                <tr>
+                                    <th width="30%">出库时间</th>
+                                    <td width="70%">{{batch.outInventoryTime | date:'yyyy/MM/dd HH:mm:ss'}}</td>
+                                </tr>
+                                <tr>
+                                    <th width="30%">出库商品总件数</th>
+                                    <td width="70%">{{Math.abs(batch.total)}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="panel panel-info" style="height:215px">
+                            <div class="panel-heading" style="padding:5px;">
+                                <h4 class="panel-title"><strong>备注</strong></h4>
+                            </div>
+                            <div class="panel-body">
+                                <textarea class="form-control" rows="7"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="panel panel-default" style="height:215px">
+                            <div class="panel-body">
+                                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="outInventory()">确定</button>
+                                <a href="javascript:void(0)" class="btn btn-default btn-lg btn-block" ui-sref="outInventorySheet">取消</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="panel panel-default">
+                    <table class="table table-bordered table-condensed clear-marginbottom-table">
+                        <thead>
+                            <tr>
+                                <th width="25%">SKU</th>
+                                <th width="25%">商品名称</th>
+                                <th width="20%">库位</th>
+                                <th width="15%">应出</th>
+                                <th width="15%">实出</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="product in products">
+                                <td>
+                                    {{product.sku}}
+                                </td>
+                                <td>
+                                    {{product.name}}
+                                </td>
+                                <td colspan="3">
+                                    <ng-form name="positionForm" novalidate ng-repeat="position in product.positions">
+                                        <table class="table table-bordered table-condensed clear-marginbottom-table">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="40%">
+                                                        {{position.name}}
+                                                    </td>
+                                                    <td width="30%">
+                                                        {{Math.abs(position.total)}}
+                                                    </td>
+                                                    <td width="30%">
+                                                        <div class="form-group has-feedback" style="margin-bottom: 0" ng-class="{'has-success':(positionForm.actualTotal.$dirty && positionForm.actualTotal.$valid), 'has-warning':(positionForm.actualTotal.$dirty && positionForm.actualTotal.$invalid) }">
+                                                            <input type="number" class="form-control input-sm" name="actualTotal" ng-model="position.actualTotal" required min="1" ng-maxlength="5" />
+                                                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="positionForm.actualTotal.$dirty && positionForm.actualTotal.$valid"></span>
+                                                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="positionForm.actualTotal.$dirty && positionForm.actualTotal.$invalid"></span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </ng-form>
+                                    <ng-form name="productForm" noalidate>
+                                        <table class="table table-bordered table-condensed clear-marginbottom-table">
+                                            <tbody>
+                                                <tr>
+                                                    <th class="success" width="40%">总数</th>
+                                                    <td width="30%">
+                                                        {{Math.abs(product.total)}}
+                                                    </td>
+                                                    <td width="30%">
+                                                        <div class="form-group has-feedback" style="margin-bottom: 0" ng-class="{'has-success':(productForm.actualTotal.$dirty && productForm.actualTotal.$valid), 'has-warning':(productForm.actualTotal.$dirty && productForm.actualTotal.$invalid) }">
+                                                            <input type="number" class="form-control input-sm" name="actualTotal" ng-model="product.actualTotal" required min="1" ng-maxlength="5" />
+                                                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productForm.actualTotal.$dirty && productForm.actualTotal.$valid"></span>
+                                                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productForm.actualTotal.$dirty && productForm.actualTotal.$invalid"></span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </ng-form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -5,7 +5,7 @@ angular.module('ecommApp')
 
         $scope.template = {
             confirmOutInventorySheet: {
-                url: 'views/inventory/out-inventory-sheet/out-inventory-sheet.confirm-out-inventory-sheet.html?' + (new Date())
+                url: 'views/inventory/out-inventory-sheet/order-out-inventory.confirm-out-inventory-sheet.html?' + (new Date())
             }
         };
 
