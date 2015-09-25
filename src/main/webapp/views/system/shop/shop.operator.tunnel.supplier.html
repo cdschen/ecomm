@@ -8,7 +8,7 @@
                 <h3>可选的供应商</h3>
                 <hr>
                 <div class="row">
-                    <div class="col-md-3" ng-repeat="supplier in operateSuppliers">
+                    <div class="col-md-3" ng-repeat="supplier in operateSuppliers" style="margin-bottom:10px;">
                         <button type="button" class="btn btn-block" ng-class="{'btn-info': supplier.selected}" ng-click="selectTunnelDeploySupplier(supplier)">
                             {{supplier.name}} <span class="glyphicon glyphicon-ok" style="color:white" ng-show="supplier.selected"></span>
                         </button>

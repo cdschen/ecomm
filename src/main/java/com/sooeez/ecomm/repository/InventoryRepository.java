@@ -4,19 +4,21 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import com.sooeez.ecomm.domain.Inventory;
 
 public interface InventoryRepository extends JpaRepository<Inventory, Long>, JpaSpecificationExecutor<Inventory> {
 	
 	List<Inventory> findAllByWarehouseId(Long id);
-//	
-//	Inventory findFirstByWarehousePositionIdAndInventoryBatchId(Long warehousePositionId, Long inventoryBatchId);
-//	
-//	Inventory findFirstByWarehousePositionId(Long warehousePositionId); 
-//	
-//	Inventory findFirstByInventoryBatchId(Long inventoryBatchId);
-//	
-//	Inventory findFirstByWarehouseIdAndProductId(Long warehouseId, Long productId); 
+	
+	@Modifying
+	@Query("update Inventory set quantity = quantity + ?1 where productId = ?2 and warehouseId = ?3 and inventoryBatchId = ?4")
+	void updateInventoryByProductIdAndWarehouseIdAndBatchId(Long quantity, Long productId, Long warehouseId, Long inventoryBatchId);
+	
+	@Modifying
+	@Query("update Inventory set quantity = quantity + ?1 where productId = ?2 and warehouseId = ?3 and warehousePositionId = ?4 and inventoryBatchId = ?5")
+	void updateInventoryByProductIdAndWarehouseIdAndPositionIdAndBatchId(Long quantity, Long productId, Long warehouseId, Long warehousePositionId, Long inventoryBatchId);
 
 }

@@ -1,0 +1,88 @@
+<ol class="breadcrumb">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li class="active">库存管理</li>
+</ol>
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form>
+                <div class="row">
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" ng-model="p.sku" placeholder="SKU">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" ng-model="p.name" placeholder="商品名称">
+                    </div>
+                    <div class="col-md-2">
+                        <ui-select ng-model="warehouse.selected" on-select="changeWarehouse($item, $model)">
+                            <ui-select-match placeholder="请选择一个仓库">{{$select.selected.name}}</ui-select-match>
+                            <ui-select-choices repeat="warehouse in warehouses | filter: $select.search">
+                                <div ng-bind-html="warehouse.name | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                    <div class="col-md-2 col-md-offset-4">
+                        <a ui-sref="inventory.enter({id:warehouse.selected.id})" class="btn btn-info">入库</a>
+                        <a ui-sref="inventory.out({id:warehouse.selected.id})" class="btn btn-info">出库</a>
+                        <a class="btn btn-info">移库</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="panel-body" ng-show="products.length == 0">
+            <div class="alert alert-warning">
+                没有任何数据被检索到
+            </div>
+        </div>
+        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="products.length > 0">
+            <thead>
+                <tr>
+                    <th width="15%">SKU</th>
+                    <th width="15%">商品名称</th>
+                    <th width="17.5%">库位</th>
+                    <th width="17.5%">数量</th>
+                    <th width="17.5%">有效期</th>
+                    <th width="17.5%">批次</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="product in products | filter:{sku: p.sku, name: p.name}">
+                    <td>
+                        {{product.sku}}
+                    </td>
+                    <td>
+                        {{product.name}}
+                    </td>
+                    <td colspan="4">
+                        <table class="table table-bordered table-condensed clear-marginbottom-table">
+                            <tbody>
+                                <tr ng-repeat="detail in product.details">
+                                    <td width="25%">
+                                        {{detail.position.name}}
+                                    </td>
+                                    <td width="25%">
+                                        {{detail.quantity}}
+                                    </td>
+                                    <td width="25%">
+                                        {{detail.expireDate | date:'yyyy-MM-dd'}}
+                                    </td>
+                                    <td width="25%">
+                                        {{detail.batchId}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <span class="text-success">总共：{{product.total}}</span>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

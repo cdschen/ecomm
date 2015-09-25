@@ -2,9 +2,9 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">出库单管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="outinventorysheet.orderoutinventory">订单出库</a>
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="orderdeploy">调整出库</a>
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="orderdeploy">查看库存变动</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="orderOutInventory">订单出库</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="orderOutInventory">调整出库</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="orderOutInventory">查看库存变动</a>
     </li>
 </ol>
 <div class="container-fluid">
@@ -63,11 +63,11 @@
             </table>
         </form>
         <div class="panel-body" style="padding:0"></div>
-        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="page && page.content.length > 0">
+        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
             <thead>
                 <tr>
                     <th width="2%">
-                        <input type="checkbox" ng-model="checkedAll" ng-click="selectAll(page)">
+                        <input type="checkbox" ng-model="checkedAll" ng-click="selectAll(page, checkedAll)">
                     </th>
                     <th width="12%">仓库</th>
                     <th width="12%">出库单号</th>
@@ -116,10 +116,10 @@
                         {{batch.executeOperator.username}}
                     </td>
                     <td>
-                        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="outinventorysheet.operator({id:batch.id})">完成</a>
+                        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="outInventorySheet.operator({id:batch.id})" ng-show="batch.type != 0">完成</a>
                         <a href="javascript:void(0)" class="btn btn-info btn-xs">导出</a>
                         <a href="javascript:void(0)" class="btn btn-info btn-xs">打印</a>
-                        <a href="javascript:void(0)" class="btn btn-danger btn-xs">作废</a>
+                        <a href="javascript:void(0)" class="btn btn-danger btn-xs" ng-click="showInvalidBatch(batch)" ng-show="batch.type != 0">作废</a>
                     </td>
                 </tr>
             </tbody>
@@ -153,3 +153,20 @@
         </div>
     </div>
 </div>
+<!-- batch invalid Modal -->
+<div class="modal fade" id="batchInvalidModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-danger">
+                    <span class="glyphicon glyphicon-question-sign"></span> 确定作废
+                </h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" ng-click="invalidBatch()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
