@@ -195,4 +195,39 @@ public class ProductService {
 	public Page<ProductShopTunnel> getPagedProductShopTunnels(Pageable pageable) {
 		return this.productShopTunnelRepository.findAll(pageable);
 	}
+	
+	/*
+	 * API Product
+	 */
+
+	public List<Product> getAPIProduct(Product product, Sort sort) {
+		return this.productRepository.findAll(getProductAPISpecification(product, false), sort);
+	}
+
+	public Page<Product> getPagedAPIProducts(Product product, Pageable pageable) {
+		return this.productRepository.findAll(getProductAPISpecification(product, true), pageable);
+	}
+	
+	private Specification<Product> getProductAPISpecification(Product product, Boolean isList) {
+		
+		return (root, query, cb) -> {
+			List<Predicate> predicates = new ArrayList<>();
+			predicates.add(cb.equal(root.get("deleted"), product.getDeleted()!=null && product.getDeleted()==true ? true : false));
+			if (StringUtils.hasText(product.getSku())) {
+				predicates.add(cb.like(root.get("sku"), "%" + product.getSku() + "%"));
+			}
+			if (StringUtils.hasText(product.getName())) {
+				predicates.add(cb.like(root.get("name"), "%" + product.getName() + "%"));
+			}
+			if (product.getStatusIds() != null) {
+				Subquery<ObjectProcess> objectProcessSubquery = query.subquery(ObjectProcess.class);
+				Root<ObjectProcess> objectProcessRoot = objectProcessSubquery.from(ObjectProcess.class);
+				objectProcessSubquery.select(objectProcessRoot.get("objectId"));
+				objectProcessSubquery.where(objectProcessRoot.get("stepId").in(product.getStatusIds()));
+				predicates.add(cb.in(root.get("id")).value(objectProcessSubquery));
+			}
+			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+		};
+	}
+	
 }
