@@ -11,7 +11,6 @@ angular.module('ecommApp')
         $scope.products = [];
 
         Warehouse.getAll().then(function(warehouses) {
-            console.clear();
             $scope.warehouses = warehouses;
         }).then(function() {
             if ($rootScope.usingWarehouseId) {
@@ -35,8 +34,6 @@ angular.module('ecommApp')
                 sort: ['productId', 'inventoryBatchId']
             }).then(function(inventories) {
                 $scope.products = Inventory.refresh(inventories);
-                console.clear();
-                console.log($scope.products);
             });
         };
     }

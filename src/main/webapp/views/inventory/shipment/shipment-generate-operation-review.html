@@ -31,19 +31,19 @@
                                         </tr>
                                         <tr>
                                             <th width="50%">时间</th>
-                                            <td wdith="50%">{{ operateDate | date:'yyyy-MM-dd HH:mm'}}</td>
+                                            <td wdith="50%">{{ operateDate | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                                         </tr>
                                         <tr>
                                             <th width="50%">操作员</th>
-                                            <td wdith="50%">{{user().username}}</td>
+                                            <td wdith="50%">{{ user().username }}</td>
                                         </tr>
                                         <tr>
                                             <th width="50%">指定快递公司</th>
-                                            <td wdith="50%">{{courier.selected.name}} <span class="glyphicon glyphicon-warning-sign text-warning" ng-hide=" operationReview().selectedCourier ||  operationReview().ignoredMap.emptyCourierAndShipNumberError "></span></td>
+                                            <td wdith="50%">{{ courier.selected.name }}</td>
                                         </tr>
                                         <tr>
                                             <th width="50%">起始快递单号</th>
-                                            <td wdith="50%">{{startShipNumber}} <span class="glyphicon glyphicon-warning-sign text-warning" ng-hide=" operationReview().dataMap.startShipNumber || operationReview().ignoredMap.emptyCourierAndShipNumberError "></span></td>
+                                            <td wdith="50%">{{ startShipNumber }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -58,7 +58,7 @@
                             <div class="panel-body" style="margin-bottom: 5px;">
                                 <div class="row" style="margin-bottom: 7px;">
                                     <div class="col-md-9 col-md-offset-1">
-                                        全部订单商品是否处在同一仓库中
+                                        A. 全部订单商品是否处在同一仓库中
                                     </div>
                                     <div class="col-md-2">
                                         <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.differentWarehouseError">
@@ -71,7 +71,7 @@
                                 </div>
                                 <div class="row" style="margin-bottom: 7px;">
                                     <div class="col-md-9 col-md-offset-1">
-                                        全部订单的发货方式是否相同
+                                        B. 全部订单的发货方式是否相同
                                     </div>
                                     <div class="col-md-2">
                                         <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.differentDeliveryMethodError">
@@ -89,7 +89,7 @@
                                 </div>
                                 <div class="row" style="margin-bottom: 7px;">
                                     <div class="col-md-9 col-md-offset-1">
-                                        是否指定快递公司和起始快递单号
+                                        C. 是否指定快递公司和起始快递单号
                                     </div>
                                     <div class="col-md-2">
                                         <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.emptyCourierAndShipNumberError">
@@ -107,7 +107,7 @@
                                 </div>
                                 <div class="row" style="margin-bottom: 7px;">
                                     <div class="col-md-9 col-md-offset-1">
-                                        A. 订单在同一仓库下是否已存在发货单
+                                        D. 订单在同一仓库下是否已存在发货单
                                     </div>
                                     <div class="col-md-2">
                                         <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.warehouseExistOrderShipmentError">
@@ -125,7 +125,7 @@
                                 </div>
                                 <div class="row" style="margin-bottom: 7px;">
                                     <div class="col-md-9 col-md-offset-1">
-                                        B. 订单的收货地址是否为空
+                                        E. 订单的收货地址是否为空
                                     </div>
                                     <div class="col-md-2">
                                         <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.emptyReceiveAddressError">
@@ -148,7 +148,7 @@
                         <div class="panel panel-default" style="height:200px">
                             <div class="panel-body">
                                 <button type="button" class="btn btn-success btn-lg btn-block" ng-click="confirmShipmentGeneration()">确定</button>
-                                <button type="button" class="btn btn-default btn-lg btn-block">取消</button>
+                                <button type="button" class="btn btn-default btn-lg btn-block" ng-click="toggleShipmentSheetSlide()">取消</button>
                             </div>
                         </div>
                     </div>
@@ -161,16 +161,19 @@
                         <thead>
                             <tr>
                                 <th colspan="4" class="text-center">订单详情</th>
-                                <th colspan="3" class="text-center">操作规定复核结果</th>
+                                <th colspan="6" class="text-center">操作规定复核结果</th>
                             </tr>
                             <tr>
                                 <th width="10%">订单编号</th>
-                                <th width="10%">发货方式 <span class="glyphicon glyphicon-warning-sign text-warning" ng-hide=" ! operationReview().checkMap.differentDeliveryMethodError || operationReview().ignoredMap.differentDeliveryMethodError "></span></th>
+                                <th width="10%">发货方式</th>
                                 <th width="10%">收件地址</th>
                                 <th width="30%">商品信息</th>
-                                <th width="10%" class="text-center">A</th>
-                                <th width="10%" class="text-center">B</th>
-                                <th width="20%" class="text-center">操作</th>
+                                <th width="5%" class="text-center">A</th>
+                                <th width="5%" class="text-center">B</th>
+                                <th width="5%" class="text-center">C</th>
+                                <th width="5%" class="text-center">D</th>
+                                <th width="5%" class="text-center">E</th>
+                                <th width="15%" class="text-center">操作</th>
                             </tr>
                         </thead>
                     </table>
@@ -205,19 +208,37 @@
                                         </tbody>
                                     </table>
                                 </td>
-                                <td width="10%" class="text-center">
-                                    <div ng-switch on="order.checkMap.warehouseExistOrderShipmentError">
+                                <td width="5%" class="text-center">
+                                    <div ng-switch on="operationReview().checkMap.differentWarehouseError">
                                         <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
-                                        <span class="glyphicon glyphicon-warning-sign text-danger" ng-switch-when="true" ng-show="! operationReview().ignoredMap.warehouseExistOrderShipmentError "></span>
+                                        <span class="glyphicon glyphicon-remove-circle text-danger" ng-switch-when="true" ng-show="! operationReview().ignoredMap.differentWarehouseError "></span>
                                     </div>
                                 </td>
-                                <td width="10%" class="text-center">
+                                <td width="5%" class="text-center">
+                                    <div ng-switch on="operationReview().checkMap.differentDeliveryMethodError">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show="! operationReview().ignoredMap.differentDeliveryMethodError "></span>
+                                    </div>
+                                </td>
+                                <td width="5%" class="text-center">
+                                    <div ng-switch on="operationReview().checkMap.emptyCourierAndShipNumberError">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show="! operationReview().ignoredMap.emptyCourierAndShipNumberError "></span>
+                                    </div>
+                                </td>
+                                <td width="5%" class="text-center">
+                                    <div ng-switch on="order.checkMap.warehouseExistOrderShipmentError">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show="! operationReview().ignoredMap.warehouseExistOrderShipmentError "></span>
+                                    </div>
+                                </td>
+                                <td width="5%" class="text-center">
                                     <div ng-switch on="order.checkMap.emptyReceiveAddressError">
                                         <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
                                         <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show=" ! operationReview().ignoredMap.emptyReceiveAddressError "></span>
                                     </div>
                                 </td>
-                                <td width="20%" class="text-center">
+                                <td width="15%" class="text-center">
                                     <div ng-switch on="order.ignoreCheck">
                                         <div ng-switch-when="true">
                                             <button type="button" class="btn btn-success btn-xs btn-block" ng-click="ignoreOrNotCheckOrder( order )" ng-show=" order.ignoreCheck ">恢复</button>

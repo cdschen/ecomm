@@ -36,6 +36,9 @@ public class Inventory implements Serializable {
 	@Column(name = "warehouse_id", nullable = false)
 	private Long warehouseId;
 
+	@Column(name = "warehouse_position_id", nullable = false, insertable = false, updatable = false)
+	private Long warehousePositionId;
+
 	@Column(name = "inventory_batch_id", nullable = false)
 	private Long inventoryBatchId;
 
@@ -64,6 +67,14 @@ public class Inventory implements Serializable {
 	//
 
 	public Inventory() {
+	}
+
+	public Long getWarehousePositionId() {
+		return warehousePositionId;
+	}
+
+	public void setWarehousePositionId(Long warehousePositionId) {
+		this.warehousePositionId = warehousePositionId;
 	}
 
 	public List<Long> getWarehouseIds() {

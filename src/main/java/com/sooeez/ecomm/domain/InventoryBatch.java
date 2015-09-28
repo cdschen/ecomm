@@ -94,10 +94,54 @@ public class InventoryBatch implements Serializable {
 	@Transient
 	private Long total;
 
+	@Transient
+	private Date operateTimeStart;
+
+	@Transient
+	private Date operateTimeEnd;
+
+	@Transient
+	private Date outInventoryTimeStart;
+
+	@Transient
+	private Date outInventoryTimeEnd;
+
 	//
 
 	public Long getWarehouseId() {
 		return warehouseId;
+	}
+
+	public Date getOperateTimeStart() {
+		return operateTimeStart;
+	}
+
+	public void setOperateTimeStart(Date operateTimeStart) {
+		this.operateTimeStart = operateTimeStart;
+	}
+
+	public Date getOperateTimeEnd() {
+		return operateTimeEnd;
+	}
+
+	public void setOperateTimeEnd(Date operateTimeEnd) {
+		this.operateTimeEnd = operateTimeEnd;
+	}
+
+	public Date getOutInventoryTimeStart() {
+		return outInventoryTimeStart;
+	}
+
+	public void setOutInventoryTimeStart(Date outInventoryTimeStart) {
+		this.outInventoryTimeStart = outInventoryTimeStart;
+	}
+
+	public Date getOutInventoryTimeEnd() {
+		return outInventoryTimeEnd;
+	}
+
+	public void setOutInventoryTimeEnd(Date outInventoryTimeEnd) {
+		this.outInventoryTimeEnd = outInventoryTimeEnd;
 	}
 
 	public List<OrderBatch> getOrderBatches() {

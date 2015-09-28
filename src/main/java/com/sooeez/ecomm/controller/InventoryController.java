@@ -22,6 +22,7 @@ import com.sooeez.ecomm.domain.ShipmentItem;
 import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.domain.WarehousePosition;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
+import com.sooeez.ecomm.dto.OperationReviewShipmentDTO;
 import com.sooeez.ecomm.service.CourierService;
 import com.sooeez.ecomm.service.InventoryService;
 import com.sooeez.ecomm.service.ShipmentService;
@@ -204,8 +205,8 @@ public class InventoryController {
 	}
 	
 	@RequestMapping(value = "/shipments")
-	public Page<Shipment> getPagedShipments(Pageable pageable) {
-		return this.shipmentService.getPagedShipments(pageable);
+	public Page<Shipment> getPagedShipments(Shipment shipment, Pageable pageable) {
+		return this.shipmentService.getPagedShipments(shipment, pageable);
 	}
 	
 	@RequestMapping(value = "/shipments/get/all")
@@ -218,10 +219,20 @@ public class InventoryController {
 		return this.shipmentService.saveShipment(shipment);
 	}
 	
+	@RequestMapping(value = "/saveShipments", method = RequestMethod.POST)
+	public List<Shipment> saveShipments(@RequestBody Shipment shipments) {
+		return this.shipmentService.saveShipments( shipments );
+	}
+	
 	@RequestMapping(value = "/shipments/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteShipment(@PathVariable("id") Long id) {
 		this.shipmentService.deleteShipment(id);
 		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/shipments/confirm/complete/operation-review")
+	public OperationReviewShipmentDTO confirmOrderWhenGenerateShipment(@RequestBody OperationReviewShipmentDTO review) {
+		return this.shipmentService.confirmOperationReviewWhenCompleteShipment(review);
 	}
 	
 	/*

@@ -1,15 +1,21 @@
 angular.module('ecommApp')
 
-.controller('ConfirmShipmentSheetController', ['$scope', 'toastr', 'orderService', 'Shop', 'Utils',
-    function($scope, toastr, orderService, Shop, Utils) {
+.controller('ShipmentGenerateOperationReviewController', ['$scope', '$location', '$interval', 'toastr', 'orderService', 'Shop', 'Utils',
+    function($scope, $location, $interval, toastr, orderService, Shop, Utils) {
 
         $scope.operateDate = Date.now();
         $scope.operationReview = orderService.getOperationReview;
         $scope.defaultHeight = function(){
             return {
-                height: $(window).height() / 2
+                height: $(window).height() / 2.3
             };
         };
+
+        function updateCreateTime() {
+            $scope.operateDate = new Date();
+        }
+
+        var createTime = $interval(updateCreateTime, 500);
 
         /* 点击将某个订单的 ignoreCheck 标为  ! ignoreCheck，在进行复核验证时不再对该订单进行验证 */
         $scope.ignoreOrNotCheckOrder = function(order)
@@ -96,12 +102,15 @@ angular.module('ecommApp')
                             $scope.$parent.page = page;
                             $scope.$parent.totalPagesList = Utils.setTotalPagesList(page);
                         });
+
+                        $location.url('/shipment');
                     }
                 }
 
                 console.log('After Operation Review:');
                 console.log(review);
                 console.log('验证是否全部通过 ：' + review.confirmable);
+                $interval.cancel(createTime);
             });
         };
 
