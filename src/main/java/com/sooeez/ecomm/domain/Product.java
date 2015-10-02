@@ -3,6 +3,7 @@ package com.sooeez.ecomm.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -129,6 +132,14 @@ public class Product implements Serializable {
 	@Column(name = "deleted")
 	private Boolean deleted;
 
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "create_time")
+	private Date createTime;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "last_update")
+	private Date lastUpdate;
+
 	/*
 	 * Related Properties
 	 */
@@ -206,6 +217,22 @@ public class Product implements Serializable {
 	//
 
 	public Product() {
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Date getLastUpdate() {
+		return lastUpdate;
+	}
+
+	public void setLastUpdate(Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
 	}
 
 	public List<InventoryBatch> getBatches() {

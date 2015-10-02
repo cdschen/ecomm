@@ -1,20 +1,20 @@
 <ol class="breadcrumb">
     <li><a ui-sref="dashboard">首页</a></li>
     <li><a ui-sref="warehouse">仓库管理</a></li>
-    <li class="active">创建仓库</li>
+    <li class="active">{{actionLabel}}仓库</li>
 </ol>
 <div class="container-fluid">
     <div class="panel panel-default">
         <div class="panel-body">
-            <h4>仓库基本信息</h4>
+            <h4 class="text-success">
+                <strong>仓库基本信息</strong>
+            </h4>
             <hr>
-            <!-- form -->
-            <form name="warehouseOperatorForm" class="form-horizontal" role="form" novalidate ng-submit="save(warehouse)">
-                <!-- name -->
+            <form name="warehouseOperatorForm" class="form-horizontal" novalidate ng-submit="save(warehouse)">
                 <div class="form-group has-feedback" ng-class="{'has-success':(warehouseOperatorForm.name.$dirty && warehouseOperatorForm.name.$valid), 'has-warning':(warehouseOperatorForm.name.$dirty && warehouseOperatorForm.name.$invalid) }">
-                    <label class="control-label col-md-2" for="name">仓库名称 <span class="text-danger">*</span></label>
+                    <label class="control-label col-md-2">仓库名称 <span class="text-danger">*</span></label>
                     <div class="col-md-5">
-                        <input type="text" class="form-control" id="name" name="name" ng-model="warehouse.name" placeholder="仓库名称" required ng-minlength="5" ng-maxlength="50" />
+                        <input type="text" class="form-control" name="name" ng-model="warehouse.name" placeholder="仓库名称" required ng-minlength="1" ng-maxlength="20" />
                         <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="warehouseOperatorForm.name.$dirty && warehouseOperatorForm.name.$valid"></span>
                         <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="warehouseOperatorForm.name.$dirty && warehouseOperatorForm.name.$invalid"></span>
                     </div>
@@ -22,11 +22,10 @@
                         <span ng-messages-include="views/error-messages.html"></span>
                     </span>
                 </div>
-                <!-- address -->
                 <div class="form-group has-feedback" ng-class="{'has-success':(warehouseOperatorForm.address.$dirty && warehouseOperatorForm.address.$valid), 'has-warning':(warehouseOperatorForm.address.$dirty && warehouseOperatorForm.address.$invalid) }">
-                    <label class="control-label col-md-2" for="name">仓库地址 <span class="text-danger">*</span></label>
+                    <label class="control-label col-md-2">仓库地址 <span class="text-danger">*</span></label>
                     <div class="col-md-5">
-                        <input type="text" class="form-control" id="address" name="address" ng-model="warehouse.address" placeholder="仓库地址" required ng-minlength="5" ng-maxlength="50" />
+                        <input type="text" class="form-control" name="address" ng-model="warehouse.address" placeholder="仓库地址" required ng-minlength="1" ng-maxlength="20" />
                         <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="warehouseOperatorForm.address.$dirty && warehouseOperatorForm.address.$valid"></span>
                         <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="warehouseOperatorForm.address.$dirty && warehouseOperatorForm.address.$invalid"></span>
                     </div>
@@ -34,11 +33,10 @@
                         <span ng-messages-include="views/error-messages.html"></span>
                     </span>
                 </div>
-                <!-- phone -->
                 <div class="form-group has-feedback" ng-class="{'has-success':(warehouseOperatorForm.phone.$dirty && warehouseOperatorForm.phone.$valid), 'has-warning':(warehouseOperatorForm.phone.$dirty && warehouseOperatorForm.phone.$invalid) }">
-                    <label class="control-label col-md-2" for="name">联系电话 <span class="text-danger">*</span></label>
+                    <label class="control-label col-md-2" >联系电话 <span class="text-danger">*</span></label>
                     <div class="col-md-5">
-                        <input type="text" class="form-control" id="phone" name="phone" ng-model="warehouse.phone" placeholder="联系电话" required ng-minlength="5" ng-maxlength="50" />
+                        <input type="text" class="form-control" name="phone" ng-model="warehouse.phone" placeholder="联系电话" required ng-minlength="1" ng-maxlength="20" />
                         <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="warehouseOperatorForm.phone.$dirty && warehouseOperatorForm.phone.$valid"></span>
                         <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="warehouseOperatorForm.phone.$dirty && warehouseOperatorForm.phone.$invalid"></span>
                     </div>
@@ -46,11 +44,10 @@
                         <span ng-messages-include="views/error-messages.html"></span>
                     </span>
                 </div>
-                <!-- email -->
                 <div class="form-group has-feedback" ng-class="{'has-success':(warehouseOperatorForm.email.$dirty && warehouseOperatorForm.email.$valid), 'has-warning':(warehouseOperatorForm.email.$dirty && warehouseOperatorForm.email.$invalid) }">
-                    <label class="control-label col-md-2" for="name">联系Email <span class="text-danger">*</span></label>
+                    <label class="control-label col-md-2" >联系Email <span class="text-danger">*</span></label>
                     <div class="col-md-5">
-                        <input type="email" class="form-control" id="email" name="email" ng-model="warehouse.email" placeholder="联系Email" required ng-minlength="5" ng-maxlength="50" />
+                        <input type="email" class="form-control" name="email" ng-model="warehouse.email" placeholder="联系Email" required ng-minlength="1" ng-maxlength="20" />
                         <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="warehouseOperatorForm.email.$dirty && warehouseOperatorForm.email.$valid"></span>
                         <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="warehouseOperatorForm.email.$dirty && warehouseOperatorForm.email.$invalid"></span>
                     </div>
@@ -58,9 +55,8 @@
                         <span ng-messages-include="views/error-messages.html"></span>
                     </span>
                 </div>
-                <!-- enablePosition -->
                 <div class="form-group">
-                    <label class="control-label col-md-2" for="name">是否支持库位 <span class="text-danger">*</span></label>
+                    <label class="control-label col-md-2">是否支持库位 <span class="text-danger">*</span></label>
                     <div class="col-md-10">
                         <div class="checkbox">
                             <label>
@@ -69,14 +65,29 @@
                         </div>
                     </div>
                 </div>
-                <!-- button -->
                 <div class="form-group">
                     <div class="col-md-5 col-md-offset-2">
                         <button type="submit" class="btn btn-success btn-lg" ng-disabled="!warehouseOperatorForm.$valid">保存</button>
-                        <button type="button" class="btn btn-danger btn-lg" ng-click="remove()" ng-if="action=='update'">删除</button>
+                        <button type="button" class="btn btn-danger btn-lg" ng-click="showRemoveWarehouse()" ng-if="action == 'update'">删除</button>
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+<!-- warehouse delete Modal -->
+<div class="modal fade" id="warehouseDeleteModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-danger">
+                    <span class="glyphicon glyphicon-question-sign"></span> 确定删除
+                </h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" ng-click="removeWarehouse()">确定</button>
+            </div>
         </div>
     </div>
 </div>

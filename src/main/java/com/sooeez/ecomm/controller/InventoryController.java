@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sooeez.ecomm.domain.Courier;
 import com.sooeez.ecomm.domain.Inventory;
 import com.sooeez.ecomm.domain.InventoryBatch;
+import com.sooeez.ecomm.domain.InventoryBatchItem;
 import com.sooeez.ecomm.domain.Shipment;
 import com.sooeez.ecomm.domain.ShipmentItem;
 import com.sooeez.ecomm.domain.Warehouse;
@@ -26,6 +27,7 @@ import com.sooeez.ecomm.dto.OperationReviewShipmentDTO;
 import com.sooeez.ecomm.service.CourierService;
 import com.sooeez.ecomm.service.InventoryService;
 import com.sooeez.ecomm.service.ShipmentService;
+import com.sooeez.ecomm.service.WarehouseService;
 
 @RestController
 @RequestMapping("/api")
@@ -34,71 +36,7 @@ public class InventoryController {
 	@Autowired private InventoryService inventoryService;
 	@Autowired private CourierService courierService;
 	@Autowired private ShipmentService shipmentService;
-
-	/*
-	 * Warehouse
-	 */
-	
-	@RequestMapping(value = "/warehouses/{id}")
-	public Warehouse getWarehouse(@PathVariable("id") Long id) {
-		return this.inventoryService.getWarehouse(id);
-	}
-	
-	@RequestMapping(value = "/warehouses")
-	public Page<Warehouse> getPagedWarehouses(Warehouse warehouse, Pageable pageable) {
-		return this.inventoryService.getPagedWarehouses(warehouse, pageable);
-	}
-	
-	@RequestMapping(value = "/warehouses/get/all")
-	public List<Warehouse> getWarehouse(Warehouse warehouse, Sort sort) {
-		return this.inventoryService.getWarehouses(warehouse, sort);
-	}
-	
-	@RequestMapping(value = "/warehouses", method = RequestMethod.POST)
-	public Warehouse saveWarehouse(@RequestBody Warehouse warehouse) {
-		return this.inventoryService.saveWarehouse(warehouse);
-	}
-	
-	@RequestMapping(value = "/warehouses/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteWarehouse(@PathVariable("id") Long id) {
-		this.inventoryService.deleteWarehouse(id);
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
-	
-	/*
-	 * WarehousePosition
-	 */
-	
-	@RequestMapping(value = "/warehousepositions/{id}")
-	public WarehousePosition getWarehousePosition(@PathVariable("id") Long id) {
-		return this.inventoryService.getWarehousePosition(id);
-	}
-	
-	@RequestMapping(value = "/warehousepositions")
-	public Page<WarehousePosition> getPagedWarehousePositions(Pageable pageable) {
-		return this.inventoryService.getPagedWarehousePositions(pageable);
-	}
-	
-	@RequestMapping(value = "/warehousepositions/get/all")
-	public List<WarehousePosition> getWarehousePositions() {
-		return this.inventoryService.getWarehousePositions();
-	}
-	
-	@RequestMapping(value = "/warehousepositions", method = RequestMethod.POST)
-	public WarehousePosition saveWarehousePosition(@RequestBody WarehousePosition position) {
-		return this.inventoryService.saveWarehousePosition(position);
-	}
-	
-	@RequestMapping(value = "/warehousepositions/save/list", method = RequestMethod.POST)
-	public List<WarehousePosition> saveWarehousePositions(@RequestBody List<WarehousePosition> positions) {
-		return this.inventoryService.saveWarehousePositions(positions);
-	}
-	
-	@RequestMapping(value = "/warehousepositions/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteWarehousePosition(@PathVariable("id") Long id) {
-		this.inventoryService.deleteWarehousePosition(id);
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
+	@Autowired private WarehouseService warehouseService;
 	
 	/*
 	 * Inventory
@@ -162,6 +100,36 @@ public class InventoryController {
 	@RequestMapping(value = "/inventory-batches/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteInventoryBatch(@PathVariable("id") Long id) {
 		this.inventoryService.deleteInventoryBatch(id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	/*
+	 * InventoryBatchItem
+	 */
+	
+	@RequestMapping(value = "/inventory-batch-items/{id}")
+	public InventoryBatchItem getInventoryBatchItem(@PathVariable("id") Long id) {
+		return this.inventoryService.getInventoryBatchItem(id);
+	}
+	
+	@RequestMapping(value = "/inventory-batch-items")
+	public Page<InventoryBatchItem> getPagedInventoryBatchItems(InventoryBatchItem inventoryBatchItem, Pageable pageable) {
+		return this.inventoryService.getPagedInventoryBatchItems(inventoryBatchItem, pageable);
+	}
+	
+	@RequestMapping(value = "/inventory-batch-items/get/all")
+	public List<InventoryBatchItem> getInventoryBatchItems(InventoryBatchItem inventoryBatchItem, Sort sort) {
+		return this.inventoryService.getInventoryBatchItems(inventoryBatchItem, sort);
+	}
+	
+	@RequestMapping(value = "/inventory-batch-items", method = RequestMethod.POST)
+	public InventoryBatchItem saveInventoryBatchItem(@RequestBody InventoryBatchItem inventoryBatchItem) {
+		return this.inventoryService.saveInventoryBatchItem(inventoryBatchItem);
+	}
+	
+	@RequestMapping(value = "/inventory-batch-items/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteInventoryBatchItem(@PathVariable("id") Long id) {
+		this.inventoryService.deleteInventoryBatchItem(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	

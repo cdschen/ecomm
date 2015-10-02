@@ -205,7 +205,9 @@ public class OrderService {
 		}
 		
 		order.setOrderIds(new ArrayList<>());
+		System.out.println("查询出来的可用的订单编号:");
 		em.createNativeQuery(sqlString).getResultList().forEach(orderId -> {
+			System.out.print(orderId + ", ");
 			order.getOrderIds().add(Long.parseLong(orderId.toString()));
 		});
 		

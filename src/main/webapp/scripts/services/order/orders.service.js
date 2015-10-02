@@ -5,7 +5,7 @@ angular.module('ecommApp')
 .factory('orderService', ['$resource', '$http', function($resource, $http) {
 
     var $ = angular.element;
-    var operationReview = undefined;
+    var operationReview;
     var order = $resource('/api/orders/:id', {}, {});
 
     order.getAll = function(params) {
@@ -29,14 +29,14 @@ angular.module('ecommApp')
             .then(function(res) {
                 return (operationReview = res.data);
             });
-    }
+    };
 
     order.confirmOrderWhenGenerateOutInventory = function(reviewDTO) {
         return $http.post('/api/orders/confirm/outinventory', reviewDTO)
             .then(function(res) {
                 return (operationReview = res.data);
             });
-    }
+    };
 
     order.checkItemProductShopTunnel = function(order) {
         var items = order.items;
@@ -107,7 +107,7 @@ angular.module('ecommApp')
 
 .factory('OrderItem', ['$resource', '$http', function($resource, $http) {
 
-    var $ = angular.element;
+    //var $ = angular.element;
     var item = $resource('/api/orderitems/:id', {}, {});
 
     item.getAll = function(params) {

@@ -44,7 +44,7 @@ angular.module('ecommApp')
                     roles: [ROLES.sysadmin],
                     authorities: []
                 }
-            })
+            });
             
     }
 ]);

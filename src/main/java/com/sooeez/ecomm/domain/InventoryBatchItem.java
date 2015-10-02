@@ -19,6 +19,8 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "t_inventory_batch_item")
 public class InventoryBatchItem implements Serializable {
@@ -32,6 +34,12 @@ public class InventoryBatchItem implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+
+	@Column(name = "product_id", insertable = false, updatable = false)
+	private Long productId;
+
+	@Column(name = "warehouse_id", insertable = false, updatable = false)
+	private Long warehouseId;
 
 	@Column(name = "inventory_batch_id")
 	private Long inventoryBatchId;
@@ -50,6 +58,20 @@ public class InventoryBatchItem implements Serializable {
 	@Column(name = "expire_date")
 	private Date expireDate;
 
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "create_time")
+	private Date createTime;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "last_time")
+	private Date lastTime;
+
+	@Column(name = "batch_type")
+	private Integer batchType;
+
+	@Column(name = "batch_operate")
+	private Integer batchOperate;
+
 	/*
 	 * Related Properties
 	 */
@@ -65,7 +87,6 @@ public class InventoryBatchItem implements Serializable {
 	private Warehouse warehouse = new Warehouse();
 
 	@OneToOne
-	// (cascade = {CascadeType.ALL})
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "warehouse_position_id")
 	private WarehousePosition position = new WarehousePosition();
@@ -88,6 +109,54 @@ public class InventoryBatchItem implements Serializable {
 	//
 
 	public InventoryBatchItem() {
+	}
+
+	public Integer getBatchOperate() {
+		return batchOperate;
+	}
+
+	public void setBatchOperate(Integer batchOperate) {
+		this.batchOperate = batchOperate;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Date getLastTime() {
+		return lastTime;
+	}
+
+	public void setLastTime(Date lastTime) {
+		this.lastTime = lastTime;
+	}
+
+	public Integer getBatchType() {
+		return batchType;
+	}
+
+	public void setBatchType(Integer batchType) {
+		this.batchType = batchType;
+	}
+
+	public Long getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Long productId) {
+		this.productId = productId;
+	}
+
+	public Long getWarehouseId() {
+		return warehouseId;
+	}
+
+	public void setWarehouseId(Long warehouseId) {
+		this.warehouseId = warehouseId;
 	}
 
 	public Long getId() {

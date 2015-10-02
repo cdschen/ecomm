@@ -33,7 +33,7 @@ angular.module('ecommApp')
             $.each(shops, function() {
                 var shop = this;
                 if (shop.deployStep) {
-                    var exist = false
+                    var exist = false;
                     $.each($scope.query.statuses, function() {
                         if (this.id === shop.deployStep.id) {
                             exist = true;
@@ -182,7 +182,7 @@ angular.module('ecommApp')
             });
             if (orderService.selectedOrders.length > 0)
             {
-                if($scope.batchManipulationValue == 'generateShipment')
+                if($scope.batchManipulationValue === 'generateShipment')
                 {
                     $('#generateShipment').modal('show');
                 }

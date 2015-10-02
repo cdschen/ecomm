@@ -3,7 +3,7 @@ angular.module('ecommApp')
 .controller('ShipmentCompleteController', ['$scope', '$location', '$interval', 'toastr', 'shipmentService', 'courierService', 'Utils',
     function($scope, $location, $interval, toastr, shipmentService, courierService, Utils) {
 
-
+        var $ = angular.element;
         $scope.operatePickupTime = Date.now();
         $scope.operationReviewCompleteShipment = shipmentService.getOperationReviewCompleteShipment;
 

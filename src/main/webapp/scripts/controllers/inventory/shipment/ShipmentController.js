@@ -162,15 +162,15 @@ angular.module('ecommApp')
             });
             if (shipmentService.selectedShipments.length > 0)
             {
-                if($scope.batchManipulationValue == 'shipmentExport')
+                if($scope.batchManipulationValue === 'shipmentExport')
                 {
                     toastr.info('发货单导出！');
                 }
-                else if($scope.batchManipulationValue == 'shipmentPrint')
+                else if($scope.batchManipulationValue === 'shipmentPrint')
                 {
                     toastr.info('发货单打印！');
                 }
-                else if($scope.batchManipulationValue == 'shipmentObsolete')
+                else if($scope.batchManipulationValue === 'shipmentObsolete')
                 {
                     $('#obsoleteShipments').modal('show');
                 }

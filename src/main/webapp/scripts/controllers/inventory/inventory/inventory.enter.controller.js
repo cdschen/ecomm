@@ -4,8 +4,7 @@ angular.module('ecommApp')
     function($rootScope, $scope, $state, $stateParams, Warehouse, Product, InventoryBatch) {
 
         var $ = angular.element;
-        $scope.warehouses = [];
-        $scope.products = [];
+
         $scope.defaultBatch = {
             operate: 1,
             operateTime: undefined,
@@ -51,7 +50,7 @@ angular.module('ecommApp')
                 $.each(warehouses, function() {
                     if (this.id === parseInt($stateParams.id)) {
                         $scope.batch.warehouse = angular.copy(this);
-                        return;
+                        return false;
                     }
                 });
             }
@@ -66,12 +65,13 @@ angular.module('ecommApp')
 
         $scope.saveItem = function(item, itemAddForm) {
             item.warehouse = $scope.batch.warehouse;
+            if (!item.position) {
+                item.position = item.warehouse.positions[0];
+            }
             $scope.batch.items.push(angular.copy(item));
             $scope.item = angular.copy($scope.defaultItem);
             itemAddForm.$setPristine();
         };
-
-        $scope.removingItem = undefined;
 
         $scope.showRemoveItem = function(item, $index) {
             console.clear();

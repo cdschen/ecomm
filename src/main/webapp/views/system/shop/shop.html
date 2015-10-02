@@ -6,8 +6,8 @@
     </li>
 </ol>
 <div class="container-fluid">
-    <div class="panel panel-default" ng-show="page.content.length > 0">
-        <table class="table table-condensed" >
+    <div class="panel panel-default">
+        <table class="table table-condensed" ng-show="page.content.length > 0">
             <thead>
                 <tr>
                     <th width="5%">编号</th>
@@ -47,16 +47,16 @@
                     <td>
                         <div class="row">
                             <div class="col-md-3">
-                                <a href="" class="btn btn-default btn-xs" ng-click="loadProcesses(shop, 'init')">起始状态</a> : <span class="label label-default">{{shop.initStep.name}}</span>
+                                <a href="javascript:void(0)" class="btn btn-default btn-xs" ng-click="toggleProcessSlide(shop, 'init')">起始状态</a> : <span class="label label-default">{{shop.initStep.name}}</span>
                             </div>
                             <div class="col-md-3">
-                                <a href="" class="btn btn-warning btn-xs" ng-click="loadProcesses(shop, 'deploy')">配货状态</a> : <span class="label label-default">{{shop.deployStep.name}}</span>
+                                <a href="javascript:void(0)" class="btn btn-warning btn-xs" ng-click="toggleProcessSlide(shop, 'deploy')">配货状态</a> : <span class="label label-warning">{{shop.deployStep.name}}</span>
                             </div>
                             <div class="col-md-3">
-                                <a href="" class="btn btn-success btn-xs" ng-click="loadProcesses(shop, 'complete')">完成状态</a> : <span class="label label-success">{{shop.completeStep.name}}</span>
+                                <a href="javascript:void(0)" class="btn btn-success btn-xs" ng-click="toggleProcessSlide(shop, 'complete')">完成状态</a> : <span class="label label-success">{{shop.completeStep.name}}</span>
                             </div>
                             <div class="col-md-3">
-                                <a href="" class="btn btn-danger btn-xs" ng-click="loadProcesses(shop, 'error')">错误状态</a> : <span class="label label-danger">{{shop.errorStep.name}}</span>
+                                <a href="javascript:void(0)" class="btn btn-danger btn-xs" ng-click="toggleProcessSlide(shop, 'error')">错误状态</a> : <span class="label label-danger">{{shop.errorStep.name}}</span>
                             </div>
                         </div>
                     </td>
@@ -92,10 +92,11 @@
                 </tr>
             </tfoot>
         </table>
-    </div>
-    <!-- alert -->
-    <div class="alert alert-warning" ng-show="page.content.length == 0">
-        <span class="glyphicon glyphicon-info-sign"></span> 没有检索到任何数据
+        <div class="panel-body" ng-show="page.content.length == 0">
+            <div class="alert alert-warning">
+                <span class="glyphicon glyphicon-info-sign"></span> 没有检索到任何数据
+            </div>
+        </div>
     </div>
 </div>
 <section ng-include="template.process.url"></section>

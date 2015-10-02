@@ -3,6 +3,7 @@ angular.module('ecommApp')
 .controller('ShipmentGenerateOperationReviewController', ['$scope', '$location', '$interval', 'toastr', 'orderService', 'Shop', 'Utils',
     function($scope, $location, $interval, toastr, orderService, Shop, Utils) {
 
+        var $ = angular.element;
         $scope.operateDate = Date.now();
         $scope.operationReview = orderService.getOperationReview;
         $scope.defaultHeight = function(){
