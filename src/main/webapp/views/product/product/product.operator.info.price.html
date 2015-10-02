@@ -1,0 +1,126 @@
+<div class="panel panel-default" style="height:600px">
+    <div class="panel-body">
+        <h4 class="text-success"><strong>{{title}}基本价格</strong></h4>
+        <hr>
+        <!-- product.priceL1 -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productOperatorForm.priceL1.$dirty && productOperatorForm.priceL1.$valid), 'has-warning':(productOperatorForm.priceL1.$dirty && productOperatorForm.priceL1.$invalid) }">
+            <label class="control-label col-md-2">一级价格 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <input type="number" name="priceL1" ng-model="product.priceL1" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productOperatorForm.priceL1.$dirty && productOperatorForm.priceL1.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productOperatorForm.priceL1.$dirty && productOperatorForm.priceL1.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productOperatorForm.priceL1.$error" ng-show="productOperatorForm.priceL1.$dirty && productOperatorForm.priceL1.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
+        <!-- product.priceL2 -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productOperatorForm.priceL2.$dirty && productOperatorForm.priceL2.$valid), 'has-warning':(productOperatorForm.priceL2.$dirty && productOperatorForm.priceL2.$invalid) }">
+            <label class="control-label col-md-2">二级价格 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <input type="number" name="priceL2" ng-model="product.priceL2" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productOperatorForm.priceL2.$dirty && productOperatorForm.priceL2.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productOperatorForm.priceL2.$dirty && productOperatorForm.priceL2.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productOperatorForm.priceL2.$error" ng-show="productOperatorForm.priceL2.$dirty && productOperatorForm.priceL2.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
+        <!-- product.priceL3 -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productOperatorForm.priceL3.$dirty && productOperatorForm.priceL3.$valid), 'has-warning':(productOperatorForm.priceL3.$dirty && productOperatorForm.priceL3.$invalid) }">
+            <label class="control-label col-md-2">三级价格 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <input type="number" name="priceL3" ng-model="product.priceL3" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productOperatorForm.priceL3.$dirty && productOperatorForm.priceL3.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productOperatorForm.priceL3.$dirty && productOperatorForm.priceL3.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productOperatorForm.priceL3.$error" ng-show="productOperatorForm.priceL3.$dirty && productOperatorForm.priceL3.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
+        <!-- product.priceL4 -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productOperatorForm.priceL4.$dirty && productOperatorForm.priceL4.$valid), 'has-warning':(productOperatorForm.priceL4.$dirty && productOperatorForm.priceL4.$invalid) }">
+            <label class="control-label col-md-2">四级价格 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <input type="number" name="priceL4" ng-model="product.priceL4" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productOperatorForm.priceL4.$dirty && productOperatorForm.priceL4.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productOperatorForm.priceL4.$dirty && productOperatorForm.priceL4.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productOperatorForm.priceL4.$error" ng-show="productOperatorForm.priceL4.$dirty && productOperatorForm.priceL4.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
+        <!-- product.priceL5 -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productOperatorForm.priceL5.$dirty && productOperatorForm.priceL5.$valid), 'has-warning':(productOperatorForm.priceL5.$dirty && productOperatorForm.priceL5.$invalid) }">
+            <label class="control-label col-md-2">五级价格 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <input type="number" name="priceL5" ng-model="product.priceL5" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productOperatorForm.priceL5.$dirty && productOperatorForm.priceL5.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productOperatorForm.priceL5.$dirty && productOperatorForm.priceL5.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productOperatorForm.priceL5.$error" ng-show="productOperatorForm.priceL5.$dirty && productOperatorForm.priceL5.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
+        <!-- product.priceL6 -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productOperatorForm.priceL6.$dirty && productOperatorForm.priceL6.$valid), 'has-warning':(productOperatorForm.priceL6.$dirty && productOperatorForm.priceL6.$invalid) }">
+            <label class="control-label col-md-2">六级价格 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <input type="number" name="priceL6" ng-model="product.priceL6" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productOperatorForm.priceL6.$dirty && productOperatorForm.priceL6.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productOperatorForm.priceL6.$dirty && productOperatorForm.priceL6.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productOperatorForm.priceL6.$error" ng-show="productOperatorForm.priceL6.$dirty && productOperatorForm.priceL6.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
+        <!-- product.priceL7 -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productOperatorForm.priceL7.$dirty && productOperatorForm.priceL7.$valid), 'has-warning':(productOperatorForm.priceL7.$dirty && productOperatorForm.priceL7.$invalid) }">
+            <label class="control-label col-md-2">七级价格 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <input type="number" name="priceL7" ng-model="product.priceL7" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productOperatorForm.priceL7.$dirty && productOperatorForm.priceL7.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productOperatorForm.priceL7.$dirty && productOperatorForm.priceL7.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productOperatorForm.priceL7.$error" ng-show="productOperatorForm.priceL7.$dirty && productOperatorForm.priceL7.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
+        <!-- product.priceL8 -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productOperatorForm.priceL8.$dirty && productOperatorForm.priceL8.$valid), 'has-warning':(productOperatorForm.priceL8.$dirty && productOperatorForm.priceL8.$invalid) }">
+            <label class="control-label col-md-2">八级价格 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <input type="number" name="priceL8" ng-model="product.priceL8" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productOperatorForm.priceL8.$dirty && productOperatorForm.priceL8.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productOperatorForm.priceL8.$dirty && productOperatorForm.priceL8.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productOperatorForm.priceL8.$error" ng-show="productOperatorForm.priceL8.$dirty && productOperatorForm.priceL8.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
+        <!-- product.priceL9 -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productOperatorForm.priceL9.$dirty && productOperatorForm.priceL9.$valid), 'has-warning':(productOperatorForm.priceL9.$dirty && productOperatorForm.priceL9.$invalid) }">
+            <label class="control-label col-md-2">九级价格 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <input type="number" name="priceL9" ng-model="product.priceL9" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productOperatorForm.priceL9.$dirty && productOperatorForm.priceL9.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productOperatorForm.priceL9.$dirty && productOperatorForm.priceL9.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productOperatorForm.priceL9.$error" ng-show="productOperatorForm.priceL9.$dirty && productOperatorForm.priceL9.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
+        <!-- product.priceL10 -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productOperatorForm.priceL10.$dirty && productOperatorForm.priceL10.$valid), 'has-warning':(productOperatorForm.priceL10.$dirty && productOperatorForm.priceL10.$invalid) }">
+            <label class="control-label col-md-2">十级价格 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <input type="number" name="priceL10" ng-model="product.priceL10" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productOperatorForm.priceL10.$dirty && productOperatorForm.priceL10.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productOperatorForm.priceL10.$dirty && productOperatorForm.priceL10.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productOperatorForm.priceL10.$error" ng-show="productOperatorForm.priceL10.$dirty && productOperatorForm.priceL9.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,114 @@
+<div class="panel panel-default" style="height:600px">
+    <div class="panel-body">
+        <h4 class="text-success"><strong>{{title}}基本属性</strong></h4>
+        <hr>
+        <!-- product.brand -->
+        <div class="form-group">
+            <label class="control-label col-md-2">品牌 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <ui-select ng-model="product.brand">
+                    <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
+                    <ui-select-choices repeat="brand in brands | filter: $select.search">
+                        <div ng-bind-html="brand.name | highlight: $select.search"></div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+        <!-- product.category -->
+        <div class="form-group">
+            <label class="control-label col-md-2">类别 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <ui-select ng-model="product.category">
+                    <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
+                    <ui-select-choices repeat="category in categories | filter: $select.search">
+                        <div ng-bind-html="category.name | highlight: $select.search"></div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+        <!-- product.madeFrom -->
+        <div class="form-group">
+            <label class="control-label col-md-2">产地 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <ui-select ng-model="product.madeFrom">
+                    <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
+                    <ui-select-choices repeat="madeFrom in madeFroms | filter: $select.search">
+                        <div ng-bind-html="madeFrom.name | highlight: $select.search"></div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+        <!-- product.language -->
+        <div class="form-group">
+            <label class="control-label col-md-2">默认语言 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <ui-select ng-model="product.language">
+                    <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
+                    <ui-select-choices repeat="language in languages | filter: $select.search">
+                        <div ng-bind-html="language.name | highlight: $select.search"></div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+        <!-- product.currency -->
+        <div class="form-group">
+            <label class="control-label col-md-2">默认货币 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <ui-select ng-model="product.currency">
+                    <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
+                    <ui-select-choices repeat="currency in currencies | filter: $select.search">
+                        <div ng-bind-html="currency.name | highlight: $select.search"></div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+        <!-- product.sku -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productOperatorForm.sku.$dirty && productOperatorForm.sku.$valid), 'has-warning':(productOperatorForm.sku.$dirty && productOperatorForm.sku.$invalid) }">
+            <label class="control-label col-md-2">SKU <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <input type="text" name="sku" ng-model="product.sku" placeholder="(必填)" class="form-control" required ng-maxlength="50" />
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productOperatorForm.sku.$dirty && productOperatorForm.sku.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productOperatorForm.sku.$dirty && productOperatorForm.sku.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productOperatorForm.sku.$error" ng-show="productOperatorForm.sku.$dirty && productOperatorForm.sku.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
+        <!-- product.name -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productOperatorForm.name.$dirty && productOperatorForm.name.$valid), 'has-warning':(productOperatorForm.name.$dirty && productOperatorForm.name.$invalid) }">
+            <label class="control-label col-md-2">名称 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <input type="text" name="name" ng-model="product.name" placeholder="(必填)" class="form-control" required ng-maxlength="50" />
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productOperatorForm.name.$dirty && productOperatorForm.name.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productOperatorForm.name.$dirty && productOperatorForm.name.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productOperatorForm.name.$error" ng-show="productOperatorForm.name.$dirty && productOperatorForm.name.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
+        <!-- product.shortName -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productOperatorForm.shortName.$dirty && productOperatorForm.shortName.$valid), 'has-warning':(productOperatorForm.shortName.$dirty && productOperatorForm.shortName.$invalid) }">
+            <label class="control-label col-md-2">简称 <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <input type="text" name="shortName" ng-model="product.shortName" placeholder="(必填)" class="form-control" required ng-maxlength="50" />
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productOperatorForm.shortName.$dirty && productOperatorForm.shortName.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productOperatorForm.shortName.$dirty && productOperatorForm.shortName.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productOperatorForm.shortName.$error" ng-show="productOperatorForm.shortName.$dirty && productOperatorForm.shortName.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
+        <!-- product.weight -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productOperatorForm.weight.$dirty && productOperatorForm.weight.$valid), 'has-warning':(productOperatorForm.weight.$dirty && productOperatorForm.weight.$invalid) }">
+            <label class="control-label col-md-2">重量(克) <span class="text-danger">*</span></label>
+            <div class="col-md-6">
+                <input type="number" name="weight" ng-model="product.weight" placeholder="(必填)" class="form-control" required min="0" ng-maxlength="50" />
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productOperatorForm.weight.$dirty && productOperatorForm.weight.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productOperatorForm.weight.$dirty && productOperatorForm.weight.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productOperatorForm.weight.$error" ng-show="productOperatorForm.weight.$dirty && productOperatorForm.weight.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
+    </div>
+</div>

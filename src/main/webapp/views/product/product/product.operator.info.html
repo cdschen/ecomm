@@ -1,0 +1,83 @@
+<p>&nbsp;</p>
+<form class="form-horizontal" novalidate>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <h4 class="text-success"><strong>商品类型</strong></h4>
+            <hr>
+            <!-- product.productType -->
+            <div class="form-group">
+                <label class="control-label col-md-2">类型 <span class="text-danger">*</span></label>
+                <div class="col-md-6">
+                    <ui-select ng-model="product.productType" on-select="changeProductType($item)">
+                        <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
+                        <ui-select-choices repeat="type in productTypes | filter: $select.search">
+                            <div ng-bind-html="type.label | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="panel panel-default" ng-show="product.productType && product.productType.value == 1" ng-include="template.info.group.url">
+</div>
+<form name="productOperatorForm" class="form-horizontal" novalidate>
+    <div class="row">
+        <div class="col-md-6" ng-include="template.info.attr.url">
+        </div>
+        <div class="col-md-6" ng-include="template.info.price.url">
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <!-- product.shortDescription -->
+            <div class="form-group has-feedback" ng-class="{'has-warning':(productOperatorForm.shortDescription.$dirty && productOperatorForm.shortDescription.$invalid) }">
+                <label class="control-label col-md-2">简单描述</label>
+                <div class="col-md-6">
+                    <textarea name="shortDescription" ng-model="product.shortDescription" rows="10" placeholder="(选填)" class="form-control" ng-maxlength="1000"></textarea>
+                </div>
+                <span class="col-md-4 help-block" ng-messages="productOperatorForm.shortDescription.$error" ng-show="productOperatorForm.shortDescription.$dirty && productOperatorForm.shortDescription.$invalid">
+                    <span ng-messages-include="views/error-messages.html" ></span>
+                </span>
+            </div>
+            <!-- product.fullDescription -->
+            <div class="form-group">
+                <label class="control-label col-md-2">完整描述</label>
+                <div class="col-md-10">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <!-- product.tags -->
+            <div class="form-group">
+                <label class="control-label col-md-2">Tags</label>
+                <div class="col-md-10">
+                    <ui-select multiple ng-model="product.tags" ng-disabled="disabled" sortable="true" close-on-select="false">
+                        <ui-select-match placeholder="选择 Tag...">{{$item.name}}</ui-select-match>
+                        <ui-select-choices repeat="tag in tags | filter:$select.search">
+                            <div ng-bind-html="tag.name | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="alert alert-warning" ng-show="product.productType && product.productType.value == 1 && product.members.length == 0">
+                    <span class="glyphicon glyphicon-info-sign"></span> 此商品为组合商品类型，必须至少附加上一个子商品
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="save(product)" ng-disabled="!productOperatorForm.$valid || !product.productType || !product.brand || !product.category || !product.madeFrom || !product.language || !product.currency || !passed">
+                    <span class="glyphicon glyphicon-floppy-saved"></span> 保存
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,174 @@
+<ol class="breadcrumb">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li class="active">商品管理</li>
+    <li class="pull-right" id="breadcrumb-li">
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="product.operator">创建</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs">导入</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs">导出</a>
+    </li>
+</ol>
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <form name="productSearchForm" novalidate ng-submit="search()">
+            <table class="table clear-marginbottom-table">
+                <tbody>
+                    <tr>
+                        <td width="12%">
+                            <div class="form-group">
+                                <input type="text" ng-model="query.product.sku" class="form-control" placeholder="SKU">
+                            </div>
+                        </td>
+                        <td width="12%">
+                            <div class="form-group">
+                                <input type="text" ng-model="query.product.name" class="form-control" placeholder="商品名称">
+                            </div>
+                        </td>
+                        <td width="12%">
+                            <div class="form-group">
+                                <select class="form-control" ng-disabled="true">
+                                    <option>全部店铺</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td width="12%">
+                            <div class="form-group">
+                                <select class="form-control" ng-disabled="true">
+                                    <option>全部仓库</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td width="12%">
+                            <div class="form-group">
+                                <select class="form-control" ng-disabled="true">
+                                    <option>全部供应商</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="panel panel-default" style="margin-bottom: 0;">
+                                <div class="panel-body" style="padding:3px;">
+                                    <div class="btn-group" ng-repeat="status in query.statuses" style="margin: 0 3px 3px 0;">
+                                        <a href="javascript:void(0)" class="btn btn-info btn-xs">{{status.name}}</a>
+                                        <a href="javascript:void(0)" class="btn btn-info btn-xs" ng-click="selectStatus(status)">
+                                            <span class="glyphicon glyphicon-remove" sytle="color:white"></span>
+                                        </a>
+                                    </div>
+                                    <a href="javascript:void(0)" class="btn btn-primary btn-xs" style="margin: 0 3px 3px 0;" ng-click="toggleStatusSlide()">选择状态</a>
+                                </div>
+                            </div>
+                        </td>
+                        <td width="14%">
+                            <div class="form-group pull-right">
+                                <button type="reset" class="btn btn-default" ng-click="reset()">
+                                    <span class="glyphicon glyphicon-refresh"></span> 重置
+                                </button>
+                                <button type="submit" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-search"></span> 搜索
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <div class="panel-body" ng-show="page.content.length == 0">
+            <div class="alert alert-warning">
+                <span class="glyphicon glyphicon-info-sign"></span> 没有任何数据被检索到
+            </div>
+        </div>
+        <table class="table table-bordered" ng-show="page.content.length > 0">
+            <thead>
+                <tr>
+                    <th width="2%">
+                        <input type="checkbox" ng-model="selectAll">
+                    </th>
+                    <th width="12%">SKU</th>
+                    <th width="12%">商品名称</th>
+                    <th width="20%">销售</th>
+                    <th width="15%">成本</th>
+                    <th width="17%">库存</th>
+                    <th width="14%">状态</th>
+                    <th width="8%" style="padding: 2px">
+                        <select class="form-control input-sm" ng-disabled="true">
+                            <option value="default">批量操作</option>
+                        </select>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="product in page.content" ng-class="{active: product.active}">
+                    <td>
+                        <input type="checkbox" ng-model="product.checked" ng-checked="selectAll">
+                    </td>
+                    <td>
+                        {{product.sku}}
+                    </td>
+                    <td>
+                        <span class="glyphicon glyphicon-th-large text-success" ng-show="product.productType == 1"></span>
+                        <a href="javascript:void(0)" ng-click="toggleDetailsSlide(product)">{{product.name}}</a>
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                    <td>
+                        <a href="javascript:void(0)" popover-template="template.popover.url" popover-title="{{process.process.name}}" ng-click="updateStep(product)" class="btn btn-success btn-xs" ng-repeat="process in product.processes" style="margin:0 5px 5px 0">
+                            {{process.step.name}}
+                        </a>
+                        <a href="javascript:void(0)" class="btn btn-info btn-xs pull-right" ng-click="toggleProcessSlide(product)">...</a>
+                    </td>
+                    <td>
+                        <a ui-sref="product.operator({id:product.id})" class="btn btn-info btn-xs">
+                            <span class="glyphicon glyphicon-edit"></span> 编辑
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="20">
+                        <nav class="page-list">
+                            <ul class="pagination pagination-sm">
+                                <li ng-class="{disabled: page.first}">
+                                    <a href="javascript:void(0)" ng-click="turnPage(page.number - 1)">&laquo;</a>
+                                </li>
+                                <li ng-repeat="i in query.totalPagesList" ng-class="{active: i == page.number}">
+                                    <a href="javascript:void(0)" ng-click="turnPage(i)">{{i+1}}</a>
+                                </li>
+                                <li ng-class="{disabled: page.last}">
+                                    <a href="javascript:void(0)" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                </li>
+                            </ul>
+                            <div class="page-total">
+                                共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
+                                <select class="form-control" style="display: inline; padding:0" ng-model="query.pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                </select>
+                            </div>
+                        </nav>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<section ng-include="template.details.url" onload="initProductDetailsTabs()" ng-controller="ProductDetailsController"></section>
+<section ng-include="template.status.url"></section>
+<section ng-include="template.process.url" ng-controller="ProductProcessController"></section>
+<script type="text/ng-template" id="process-tmpl.html">
+<span ng-switch on="process.process.type">
+    <span ng-switch-when="1">
+        <span ng-repeat="step in process.process.steps | orderBy: 'sequence'" >
+            <button type="button" class="btn btn-xs {{step.sequence > process.step.sequence ? 'btn-info' : 'btn-success'}}" style="margin-bottom:5px;" ng-click="saveUpdateStep(process, step.id)">{{step.name}}</button>
+            <span class="glyphicon glyphicon-circle-arrow-right" ng-show="!$last"></span>
+        </span>
+    </span>
+    <span ng-switch-when="2">
+        <button type="button" class="btn btn-xs {{step.id != process.step.id ? 'btn-info' : 'btn-success'}}" ng-repeat="step in process.process.steps | orderBy: 'sequence'" ng-click="saveUpdateStep(process, step.id)" style="margin: 0 5px 5px 0">{{step.name}}</button>
+    </span>
+</span>
+</script>

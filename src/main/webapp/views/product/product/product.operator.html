@@ -1,0 +1,34 @@
+<ol class="breadcrumb">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li><a ui-sref="product">商品管理</a></li>
+    <li class="active">{{actionLabel}}商品</li>
+</ol>
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div>
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" id="productTabs">
+                    <li class="active"><a href="#product-info">信息</a></li>
+                    <li><a href="#product-img">图片</a></li>
+                    <li><a href="#product-multi-language">多语言</a></li>
+                    <li><a href="#product-multi-currency">多货币</a></li>
+                    <li><a href="#product-shop-tunnel">配货方式</a></li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <!-- 信息 -->
+                    <div id="product-info" ng-controller="ProductInformationController" ng-include="template.info.url" class="tab-pane fade in active"></div>
+                    <!-- 图片 -->
+                    <div id="product-img" ng-controller="ProductImageController" ng-include="template.img.url" onload="initImage()" class="tab-pane fade"></div>
+                    <!-- 多语言 -->
+                    <div id="product-multi-language" ng-controller="ProductMultiLanguageController" ng-include="template.multiLanguage.url" class="tab-pane fade"></div>
+                    <!-- 多货币 -->
+                    <div id="product-multi-currency" ng-controller="ProductMultiCurrencyController" ng-include="template.multiCurrency.url" class="tab-pane fade"></div>
+                    <!-- 配货方式 -->
+                    <div id="product-shop-tunnel" ng-controller="ProductShopTunnelController" ng-include="template.shopTunnel.url" class="tab-pane fade"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
