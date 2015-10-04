@@ -4,10 +4,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
-<<<<<<< HEAD
-import java.util.HashSet;
-=======
->>>>>>> 15ea965f19e4f6b647903a603f219aa5d86c79a2
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -129,17 +125,11 @@ public class Product implements Serializable {
 	@Column(name = "deleted")
 	private Boolean deleted;
 
-<<<<<<< HEAD
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "create_time")
 	private Date createTime;
 
 	@Temporal(TemporalType.TIMESTAMP)
-=======
-	@Column(name = "create_time")
-	private Date createTime;
-
->>>>>>> 15ea965f19e4f6b647903a603f219aa5d86c79a2
 	@Column(name = "last_update")
 	private Date lastUpdate;
 
@@ -220,22 +210,6 @@ public class Product implements Serializable {
 	//
 
 	public Product() {
-	}
-
-	public Date getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
-
-	public Date getLastUpdate() {
-		return lastUpdate;
-	}
-
-	public void setLastUpdate(Date lastUpdate) {
-		this.lastUpdate = lastUpdate;
 	}
 
 	public List<InventoryBatch> getBatches() {
