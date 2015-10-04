@@ -3,9 +3,8 @@ package com.sooeez.ecomm.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,14 +19,9 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.SelectBeforeUpdate;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sooeez.ecomm.dto.InventoryProductDetailDTO;
 
 @Entity
@@ -128,6 +122,12 @@ public class Product implements Serializable {
 
 	@Column(name = "deleted")
 	private Boolean deleted;
+
+	@Column(name = "create_time")
+	private Date createTime;
+
+	@Column(name = "last_update")
+	private Date lastUpdate;
 
 	/*
 	 * Related Properties
@@ -587,6 +587,22 @@ public class Product implements Serializable {
 
 	public void setShopTunnels(List<ProductShopTunnel> shopTunnels) {
 		this.shopTunnels = shopTunnels;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Date getLastUpdate() {
+		return lastUpdate;
+	}
+
+	public void setLastUpdate(Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
 	}
 
 }

@@ -1,10 +1,10 @@
-package com.sooeez.ecomm.dto;
+package com.sooeez.ecomm.dto.api;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class APIDTO_Order implements Serializable
+public class DTO_Order implements Serializable
 {
 
 	/**
@@ -77,9 +77,9 @@ public class APIDTO_Order implements Serializable
 	private String updated_time;
 	
 	// 关联的 DTO
-	private APIDTO_Customer customer;
-	private List<APIDTO_OrderItem> order_items;
-	private List<APIDTO_Shipment> shipments;
+	private DTO_Customer customer;
+	private List<DTO_OrderItem> order_items;
+	private List<DTO_Shipment> shipments;
 
 	public Long getId() {
 		return id;
@@ -337,27 +337,27 @@ public class APIDTO_Order implements Serializable
 		this.updated_time = updated_time;
 	}
 
-	public APIDTO_Customer getCustomer() {
+	public DTO_Customer getCustomer() {
 		return customer;
 	}
 
-	public void setCustomer(APIDTO_Customer customer) {
+	public void setCustomer(DTO_Customer customer) {
 		this.customer = customer;
 	}
 
-	public List<APIDTO_OrderItem> getOrder_items() {
+	public List<DTO_OrderItem> getOrder_items() {
 		return order_items;
 	}
 
-	public void setOrder_items(List<APIDTO_OrderItem> order_items) {
+	public void setOrder_items(List<DTO_OrderItem> order_items) {
 		this.order_items = order_items;
 	}
 
-	public List<APIDTO_Shipment> getShipments() {
+	public List<DTO_Shipment> getShipments() {
 		return shipments;
 	}
 
-	public void setShipments(List<APIDTO_Shipment> shipments) {
+	public void setShipments(List<DTO_Shipment> shipments) {
 		this.shipments = shipments;
 	}
 	

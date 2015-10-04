@@ -1,9 +1,9 @@
-package com.sooeez.ecomm.dto;
+package com.sooeez.ecomm.dto.api;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class APIDTO_OrderItem implements Serializable {
+public class DTO_OrderItem implements Serializable {
 
 	/**
 	 * 

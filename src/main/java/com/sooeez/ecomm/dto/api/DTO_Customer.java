@@ -1,8 +1,8 @@
-package com.sooeez.ecomm.dto;
+package com.sooeez.ecomm.dto.api;
 
 import java.io.Serializable;
 
-public class APIDTO_Customer implements Serializable {
+public class DTO_Customer implements Serializable {
 
 	/**
 	 * 

@@ -1,10 +1,15 @@
-package com.sooeez.ecomm.dto;
+package com.sooeez.ecomm.dto.api;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class API_DTO_Product implements Serializable
+import com.sooeez.ecomm.dto.api.general.DTO_Process_Status;
+
+public class DTO_Product_Self implements Serializable
 {
 
 	/**
@@ -18,31 +23,27 @@ public class API_DTO_Product implements Serializable
 	
 	private String name;
 	
-	private String status;
+	private List<DTO_Process_Status> status;
 	
 	private String description;
 	
 	private String short_description;
 	
-	// 如果是［合作店铺］则返回 price
-	private BigDecimal price;
-	
 	// 如果是［自营店铺］则返回 prices map, 数据结构为 prices : { level_1 : xxx, level_2 : xxx }
-	private Map<String, Object> prices;
+	private Map<String, BigDecimal> prices = new HashMap<String, BigDecimal>();
 	
 	private String currecy;
 	
 	// 通过店铺通道，根据产品编号到库存匹配
-	private Long available_stock;
+	private Integer available_stock;
 	
 	private Integer weight;
 	
-	private String recent_expire_date;
+	private List<String> recent_expire_dates;
 	
-	private String create_time;		// "2014-06-11T17:38:06-0700"
+	private Date create_time;		// "2014-06-11T17:38:06-0700"
 	
-	private String updated_time;	// "2014-06-11T20:09:23-0700"
-	
+	private Date updated_time;	// "2014-06-11T20:09:23-0700"
 
 	public Long getId() {
 		return id;
@@ -68,11 +69,11 @@ public class API_DTO_Product implements Serializable
 		this.name = name;
 	}
 
-	public String getStatus() {
+	public List<DTO_Process_Status> getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(List<DTO_Process_Status> status) {
 		this.status = status;
 	}
 
@@ -92,12 +93,12 @@ public class API_DTO_Product implements Serializable
 		this.short_description = short_description;
 	}
 
-	public BigDecimal getPrice() {
-		return price;
+	public Map<String, BigDecimal> getPrices() {
+		return prices;
 	}
 
-	public void setPrice(BigDecimal price) {
-		this.price = price;
+	public void setPrices(Map<String, BigDecimal> prices) {
+		this.prices = prices;
 	}
 
 	public String getCurrecy() {
@@ -108,11 +109,11 @@ public class API_DTO_Product implements Serializable
 		this.currecy = currecy;
 	}
 
-	public Long getAvailable_stock() {
+	public Integer getAvailable_stock() {
 		return available_stock;
 	}
 
-	public void setAvailable_stock(Long available_stock) {
+	public void setAvailable_stock(Integer available_stock) {
 		this.available_stock = available_stock;
 	}
 
@@ -124,36 +125,27 @@ public class API_DTO_Product implements Serializable
 		this.weight = weight;
 	}
 
-	public String getRecent_expire_date() {
-		return recent_expire_date;
+	public List<String> getRecent_expire_dates() {
+		return recent_expire_dates;
 	}
 
-	public void setRecent_expire_date(String recent_expire_date) {
-		this.recent_expire_date = recent_expire_date;
+	public void setRecent_expire_dates(List<String> recent_expire_dates) {
+		this.recent_expire_dates = recent_expire_dates;
 	}
 
-	public String getCreate_time() {
+	public Date getCreate_time() {
 		return create_time;
 	}
 
-	public void setCreate_time(String create_time) {
+	public void setCreate_time(Date create_time) {
 		this.create_time = create_time;
 	}
 
-	public String getUpdated_time() {
+	public Date getUpdated_time() {
 		return updated_time;
 	}
 
-	public void setUpdated_time(String updated_time) {
+	public void setUpdated_time(Date updated_time) {
 		this.updated_time = updated_time;
 	}
-
-	public Map<String, Object> getPrices() {
-		return prices;
-	}
-
-	public void setPrices(Map<String, Object> prices) {
-		this.prices = prices;
-	}
-
 }

@@ -1,8 +1,9 @@
-package com.sooeez.ecomm.dto;
+package com.sooeez.ecomm.dto.api.general;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
-public class API_DTO_Pagination implements Serializable {
+public class DTO_Pagination implements Serializable {
 
 	/**
 	 * 
@@ -12,27 +13,27 @@ public class API_DTO_Pagination implements Serializable {
 	/***
 	 * Response DTO 基本属性
 	 */
-	private Integer page;
-	private Integer per_page;
-	private Integer total_number;
+	private Long page;
+	private Long per_page;
+	private BigInteger total_number;
 	private Boolean has_more_page;
 	
-	public Integer getPage() {
+	public Long getPage() {
 		return page;
 	}
-	public void setPage(Integer page) {
+	public void setPage(Long page) {
 		this.page = page;
 	}
-	public Integer getPer_page() {
+	public Long getPer_page() {
 		return per_page;
 	}
-	public void setPer_page(Integer per_page) {
+	public void setPer_page(Long per_page) {
 		this.per_page = per_page;
 	}
-	public Integer getTotal_number() {
+	public BigInteger getTotal_number() {
 		return total_number;
 	}
-	public void setTotal_number(Integer total_number) {
+	public void setTotal_number(BigInteger total_number) {
 		this.total_number = total_number;
 	}
 	public Boolean getHas_more_page() {
