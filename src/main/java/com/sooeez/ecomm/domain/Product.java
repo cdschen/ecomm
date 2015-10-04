@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+<<<<<<< HEAD
 import java.util.HashSet;
+=======
+>>>>>>> 15ea965f19e4f6b647903a603f219aa5d86c79a2
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,16 +23,11 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.SelectBeforeUpdate;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sooeez.ecomm.dto.InventoryProductDetailDTO;
 
 @Entity
@@ -132,11 +129,17 @@ public class Product implements Serializable {
 	@Column(name = "deleted")
 	private Boolean deleted;
 
+<<<<<<< HEAD
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "create_time")
 	private Date createTime;
 
 	@Temporal(TemporalType.TIMESTAMP)
+=======
+	@Column(name = "create_time")
+	private Date createTime;
+
+>>>>>>> 15ea965f19e4f6b647903a603f219aa5d86c79a2
 	@Column(name = "last_update")
 	private Date lastUpdate;
 
@@ -614,6 +617,22 @@ public class Product implements Serializable {
 
 	public void setShopTunnels(List<ProductShopTunnel> shopTunnels) {
 		this.shopTunnels = shopTunnels;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Date getLastUpdate() {
+		return lastUpdate;
+	}
+
+	public void setLastUpdate(Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
 	}
 
 }
