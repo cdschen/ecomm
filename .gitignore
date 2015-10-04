@@ -57,3 +57,4 @@ src/main/webapp/.idea
 src/main/webapp/scripts/ecommApp.js
 *.yml
 bin
+*.log

@@ -20,6 +20,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import com.sooeez.ecomm.dto.InventoryProductDetailDTO;
@@ -123,9 +125,11 @@ public class Product implements Serializable {
 	@Column(name = "deleted")
 	private Boolean deleted;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "create_time")
 	private Date createTime;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "last_update")
 	private Date lastUpdate;
 

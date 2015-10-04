@@ -27,11 +27,9 @@ angular.module('ecommApp')
                 operateTimeStart: undefined,
                 operateTimeEnd: undefined,
                 outInventoryTimeStart: undefined,
-                outInventoryTimeEnd: undefined
-            },
-            type: {
-                label: '待出库',
-                value: 1
+                outInventoryTimeEnd: undefined,
+                type: $scope.types[1],
+                operate: 2
             }
         };
         $scope.query = angular.copy($scope.defautlQuery);
@@ -52,7 +50,8 @@ angular.module('ecommApp')
                 operateTimeEnd: query.batch.operateTimeEnd,
                 outInventoryTimeStart: query.batch.outInventoryTimeStart,
                 outInventoryTimeEnd: query.batch.outInventoryTimeEnd,
-                type: query.type ? query.type.value : null
+                type: query.batch.type ? query.batch.type.value : null,
+                operate: query.batch.operate
             }).$promise.then(function(page) {
                 $scope.page = page;
                 query.totalPagesList = Utils.setTotalPagesList(page);
