@@ -1,101 +1,11 @@
 angular.module('ecommApp')
 
-.controller('ShopController', ['$rootScope', '$scope', 'Shop', 'Utils', 'Process',
-    function($rootScope, $scope, Shop, Utils, Process) {
-
-        $scope.totalPagesList = [];
-        $scope.pageSize = 20;
-        $scope.processSlideChecked = false;
-        $scope.processShop = undefined;
-        $scope.action = undefined;
-
-        $scope.template = {
-            process: {
-                url: 'views/system/shop/shop.process.html?' + (new Date())
-            }
-        };
-
-        Shop.get({
-            page: 0,
-            size: $scope.pageSize,
-            sort: ['name']
-        }).$promise.then(function(page) {
-            console.clear();
-            console.log('page:');
-            console.log(page);
-            $scope.page = page;
-            $scope.totalPagesList = Utils.setTotalPagesList(page);
-        }).then(function() {
-            Process.getAll({
-                deleted: false,
-                objectType: 1
-            }).then(function(processes) {
-                console.log('Process.getAll:');
-                console.log(processes);
-                $scope.processes = processes;
-                //initStatus(processes);
-            });
-        });
-
-        $scope.turnPage = function(number) {
-            if (number > -1 && number < $scope.page.totalPages) {
-                Shop.get({
-                    page: number,
-                    size: $scope.pageSize,
-                    sort: ['name']
-                }, function(page) {
-                    $scope.page = page;
-                    $scope.totalPagesList = Utils.setTotalPagesList(page);
-                });
-            }
-        };
-
-        // process
-
-        $scope.colseProcessSlide = function() {
-            $scope.processSlideChecked = false;
-            if ($scope.processShop) {
-                $scope.processShop.active = false;
-            }
-        };
-
-        $scope.loadProcesses = function(shop, action) {
-            console.clear();
-            console.log('loadProcesses:');
-            console.log(shop);
-            $scope.action = action;
-            $scope.processSlideChecked = true;
-            $scope.processShop = shop;
-            $scope.processShop.active = true;
-        };
-
-        $scope.applyState = function(step) {
-            console.clear();
-            console.log('applyState:[' + $scope.action + ']');
-            console.log(step);
-            if ($scope.action === 'init') {
-                $scope.processShop.initStep = angular.copy(step);
-            } else if ($scope.action === 'deploy') {
-                $scope.processShop.deployStep = angular.copy(step);
-            } else if ($scope.action === 'complete') {
-                $scope.processShop.completeStep = angular.copy(step);
-            } else if ($scope.action === 'error') {
-                $scope.processShop.errorStep = angular.copy(step);
-            }
-            console.log($scope.processShop);
-            Shop.save({}, $scope.processShop, function(shop) {
-                console.log('applyState complete:');
-                console.log(shop);
-                $scope.colseProcessSlide();
-            });
-        };
-    }
-])
-
 .controller('ShopOperatorController', ['$rootScope', '$scope', '$state', '$stateParams', 'User', 'Language', 'Currency', 'Shop', 'Supplier', 'Warehouse',
     function($rootScope, $scope, $state, $stateParams, User, Language, Currency, Shop, Supplier, Warehouse) {
 
         var $ = angular.element;
+        $scope.actionLabel = ($stateParams.id && $stateParams.id !== '') ? '编辑' : '创建';
+
         $scope.template = {
             tunnel: {
                 url: 'views/system/shop/shop.operator.tunnel.html?' + (new Date()),
@@ -214,14 +124,14 @@ angular.module('ecommApp')
             tunnel.behavior = $scope.tunnelBehaviors[tunnel.behavior - 1];
             tunnel.defaultOption = $scope.tunnelDefaultOptions[tunnel.defaultOption ? 0 : 1];
             if (tunnel.type.value === 1) {
-                $.each(tunnel.warehouses, function(){
+                $.each(tunnel.warehouses, function() {
                     if (this.id === tunnel.defaultWarehouseId) {
                         this.defaultOption = true;
                         return false;
                     }
                 });
             } else if (tunnel.type.value === 2) {
-                $.each(tunnel.suppliers, function(){
+                $.each(tunnel.suppliers, function() {
                     if (this.id === tunnel.defaultSupplierId) {
                         this.defaultOption = true;
                         return false;
@@ -271,7 +181,6 @@ angular.module('ecommApp')
                     angular.forEach($scope.shop.tunnels, function(tunnel) {
                         initTunnelField(tunnel);
                     });
-                    console.log(shop);
                 });
             } else {
                 initShopField($scope.shop);
@@ -279,17 +188,12 @@ angular.module('ecommApp')
         });
 
         $scope.saveShop = function(shop) {
-            console.clear();
-            console.log('saveShop:');
-            console.log(shop);
 
             refreshShopField(shop);
 
             angular.forEach(shop.tunnels, function(tunnel) {
                 refreshTunnelField(tunnel);
             });
-
-            console.log(shop);
 
             Shop.save({}, shop, function() {
                 $state.go('shop');
@@ -333,9 +237,6 @@ angular.module('ecommApp')
         }
 
         $scope.saveTunnel = function(tunnel, tunnelAddForm) {
-            console.clear();
-            console.log('[' + $scope.action + '] saveTunnel complete:');
-            console.log(tunnel);
 
             if (tunnel.defaultOption.value) {
                 setDefaultToFalse($scope.shop.tunnels);
@@ -348,14 +249,10 @@ angular.module('ecommApp')
         };
 
         $scope.updateTunnel = function(tunnel) {
-            //console.clear();
-            console.log('updateTunnel:');
-            console.log(tunnel);
             tunnel.editable = true;
         };
 
         $scope.saveUpdateTunnel = function(tunnel, tunnelForm) {
-            //console.clear();
             if (tunnel.type.value === 1) {
                 tunnel.suppliers = undefined;
                 $scope.closeTunnelWarehouseSlide();
@@ -364,8 +261,6 @@ angular.module('ecommApp')
                 $scope.closeTunnelSupplierSlide();
             }
             setTunnelDefaultWarehouseIdAndSupplierId(tunnel);
-            console.log('[' + $scope.action + '] saveUpdateTunnel complete:');
-            console.log(tunnel);
 
             if (tunnel.defaultOption.value) {
                 setDefaultToFalse($scope.shop.tunnels);
@@ -378,20 +273,12 @@ angular.module('ecommApp')
         $scope.removingTunnel = undefined;
 
         $scope.showRemoveTunnel = function(tunnel, $index) {
-            console.clear();
-            console.log('showRemoveTunnel $index: ' + $index);
-            console.log(tunnel);
-
             $scope.removingTunnel = tunnel;
             $scope.removingTunnel.$index = $index;
             $('#tunnelDeleteModal').modal('show');
         };
 
         $scope.removeTunnel = function() {
-            console.clear();
-            console.log('removeTunnel:');
-            console.log($scope.removingTunnel);
-
             if (angular.isDefined($scope.removingTunnel)) {
                 $scope.shop.tunnels.splice($scope.removingTunnel.$index, 1);
                 $scope.removingTunnel = undefined;
@@ -446,14 +333,12 @@ angular.module('ecommApp')
                 warehouse.selected = true;
                 $scope.selected.warehouses.push(warehouse);
             }
-            console.log('selectTunnelDeployWarehouse:');
-            console.log($scope.selected.warehouses);
         };
 
         $scope.setTunnelDefaultWarehouse = function(warehouse, tunnel) {
             $.each(tunnel.warehouses, function() {
                 this.defaultOption = false;
-            })
+            });
             warehouse.defaultOption = true;
             tunnel.defaultWarehouseId = warehouse.id;
         };
@@ -496,18 +381,15 @@ angular.module('ecommApp')
                 supplier.selected = true;
                 $scope.selected.suppliers.push(supplier);
             }
-            console.log('selectTunnelDeploySupplier:');
-            console.log($scope.selected.suppliers);
         };
 
         $scope.setTunnelDefaultSupplier = function(supplier, tunnel) {
             $.each(tunnel.suppliers, function() {
                 this.defaultOption = false;
-            })
+            });
             supplier.defaultOption = true;
             tunnel.defaultSupplierId = supplier.id;
         };
-
 
     }
 ]);

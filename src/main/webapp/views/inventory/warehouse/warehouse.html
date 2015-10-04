@@ -7,7 +7,7 @@
 </ol>
 <div class="container-fluid">
     <div class="panel panel-default">
-        <table class="table" ng-show="page">
+        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
             <thead>
                 <tr>
                     <th width="16%">编号</th>
@@ -50,7 +50,7 @@
                                 <li ng-class="{disabled: page.first}">
                                     <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
                                 </li>
-                                <li ng-repeat="i in totalPagesList" ng-class="{active: i == page.number}">
+                                <li ng-repeat="i in query.totalPagesList" ng-class="{active: i == page.number}">
                                     <a href="" ng-click="turnPage(i)">{{i+1}}</a>
                                 </li>
                                 <li ng-class="{disabled: page.last}">
@@ -59,7 +59,7 @@
                             </ul>
                             <div class="page-total">
                                 共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
-                                <select class="form-control" style="display: inline; padding:0" ng-model="pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                <select class="form-control" style="display: inline; padding:0" ng-model="query.pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
                                 </select>
                             </div>
                         </nav>
@@ -67,6 +67,9 @@
                 </tr>
             </tfoot>
         </table>
+        <div class="panel-body" ng-show="page.content.length == 0">
+            <div class="alert alert-warning">没有任何数据被检索到</div>
+        </div>
     </div>
 </div>
 <!-- WarehousePositions Modal -->
@@ -75,13 +78,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">库位管理</h4>
+                <h4 class="modal-title text-success" id="myModalLabel">
+                    <strong>库位管理</strong>
+                </h4>
             </div>
-            <!-- form -->
             <form name="positionsOperatorForm" class="form-horizontal" role="form" novalidate ng-submit="savePositions(positions)">
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-3" ng-repeat="position in positions">
+                        <div class="col-md-3" ng-repeat="position in positions" ng-show="!$first">
                             <div class="form-group has-feedback" ng-class="{'has-success':(positionsOperatorForm.position{{$index}}.$dirty && positionsOperatorForm.position{{$index}}.$valid), 'has-warning':(positionsOperatorForm.position{{$index}}.$dirty && positionsOperatorForm.position{{$index}}.$invalid) }">
                                 <div class="col-md-12">
                                     <input type="text" class="form-control" id="position{{$index}}" name="position{{$index}}" ng-model="position.name" required />

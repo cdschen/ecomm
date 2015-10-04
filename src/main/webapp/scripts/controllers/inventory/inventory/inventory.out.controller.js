@@ -180,7 +180,7 @@ angular.module('ecommApp')
             }
         };
 
-        $scope.saveBatch = function(batch, batchForm) {
+        $scope.saveBatch = function(batch) {
             console.clear();
             console.log('saveBatch:');
             console.log(batch);

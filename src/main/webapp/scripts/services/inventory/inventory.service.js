@@ -44,7 +44,7 @@ angular.module('ecommApp')
             var str = 'Product: (' + product.name + ', ' + product.total + ')';
             console.log(str);
             if (product.positions) {
-                var str = 'Product Positions: ';
+                str = 'Product Positions: ';
                 $.each(product.positions, function() {
                     var position = this;
                     str += '(' + position.name + ', ' + position.total + ')';
@@ -138,7 +138,7 @@ angular.module('ecommApp')
                         });
                     }
                     product.details.push(detail);
-                    existInventory = true;
+                    existProduct = true;
                     return false;
                 }
             });
@@ -152,7 +152,7 @@ angular.module('ecommApp')
                     }];
                     inventory.product.positions.push(inventory.position);
                     inventory.product.existPosition = true;
-                }
+                } 
                 inventory.product.details = [{
                     position: inventory.position,
                     quantity: inventory.quantity,
@@ -495,4 +495,20 @@ angular.module('ecommApp')
     };
 
     return batch;
+}])
+
+.factory('InventoryBatchItem', ['$resource', '$http', function($resource, $http) {
+
+    //var $ = angular.element;
+    var batchItem = $resource('/api/inventory-batch-items/:id');
+
+    batchItem.getAll = function(params) {
+        return $http.get('/api/inventory-batch-items/get/all', {
+            params: params
+        }).then(function(res) {
+            return res.data;
+        });
+    };
+
+    return batchItem;
 }]);

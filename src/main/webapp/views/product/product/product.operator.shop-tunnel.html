@@ -1,0 +1,21 @@
+<p>&nbsp;</p>
+<div class="panel panel-default">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th width="10%">店铺名</th>
+                <th width="90%">配货方式</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="shop in shops">
+                <td>{{ shop.name }}</td>
+                <td>
+                    <button class="btn btn-{{tunnel.selectedDefault ? 'success' : 'info'}}" style="margin: 5px 10px 0 10px;" ng-repeat="tunnel in shop.tunnels" ng-click="setProductDefaultTunnel(tunnel, shop.tunnels)">
+                        {{tunnel.name}} {{tunnel.selectedDefault ? '(默认)' : ''}}
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

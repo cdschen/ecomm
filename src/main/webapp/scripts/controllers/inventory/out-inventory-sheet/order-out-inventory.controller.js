@@ -41,7 +41,7 @@ angular.module('ecommApp')
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
                 $scope.selectAll = false;
             });
-        }
+        };
 
         Warehouse.getAll({ // 导入所有仓库
             deleted: false,
@@ -83,7 +83,7 @@ angular.module('ecommApp')
         $scope.selectAllOrders = function(){
             $.each($scope.page.content, function(){
                 this.checked = $scope.selectAll;
-            })
+            });
         };
 
         $scope.selectOperatorValue = 'default';

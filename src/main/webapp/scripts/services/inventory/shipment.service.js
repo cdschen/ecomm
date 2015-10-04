@@ -3,7 +3,7 @@ angular.module('ecommApp')
 
 .factory('shipmentService', ['$resource', '$http', function($resource, $http) {
 
-    var operationReviewCompleteShipment = undefined;
+    var operationReviewCompleteShipment;
     var shipment = $resource('/api/shipments/:id', {}, {});
 
         shipment.getAll = function(params)
@@ -34,7 +34,7 @@ angular.module('ecommApp')
                 .then(function(res) {
                     return (operationReviewCompleteShipment = res.data);
                 });
-        }
+        };
 
         shipment.getOperationReviewCompleteShipment = function()
         {

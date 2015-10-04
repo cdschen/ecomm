@@ -57,7 +57,7 @@ angular.module('ecommApp')
                 console.log(review);
                 $('#confirmOutInventorySheetWaringModal').modal('hide');
             });
-        }
+        };
 
         $scope.recoverConfirm = function(name) {
             orderService.getOperationReview().ignoredMap[name] = false;
@@ -78,15 +78,15 @@ angular.module('ecommApp')
                 console.log(review);
                 orderService.setOperationReview(review);
 
-                if (review.checkMap['differentWarehouseError'] === true || (review.checkMap['productInventoryNotEnoughError'] === true && !review.ignoredMap['productInventoryNotEnough']) || (review.checkMap['orderExistOutInventorySheetError'] === true && !review.ignoredMap['orderExistOutInventorySheet'])) {
+                if (review.checkMap.differentWarehouseError === true || (review.checkMap.productInventoryNotEnoughError === true && !review.ignoredMap.productInventoryNotEnough) || (review.checkMap.orderExistOutInventorySheetError === true && !review.ignoredMap.orderExistOutInventorySheet)) {
 
-                    if (review.checkMap['differentWarehouseError'] === true) {
+                    if (review.checkMap.differentWarehouseError === true) {
                         toastr.error('必须将"异常"订单从出库订单中删除才能继续');
                     }
-                    if (review.checkMap['productInventoryNotEnoughError'] === true && !review.ignoredMap['productInventoryNotEnough']) {
+                    if (review.checkMap.productInventoryNotEnoughError === true && !review.ignoredMap.productInventoryNotEnough) {
                         toastr.warning('将一些订单从出库订单中移出，保证全部有货，才可继续');
                     }
-                    if (review.checkMap['orderExistOutInventorySheetError'] === true && !review.ignoredMap['orderExistOutInventorySheet']) {
+                    if (review.checkMap.orderExistOutInventorySheetError === true && !review.ignoredMap.orderExistOutInventorySheet) {
                         toastr.warning('以下订单商品已经存在有出库单，可以从列表中移出后继续');
                     }
                 } else {

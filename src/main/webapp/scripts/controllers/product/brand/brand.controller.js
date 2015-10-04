@@ -98,7 +98,6 @@ angular.module('ecommApp')
         };
 
         // operator
-
         $scope.closeBrandSlide = function() {
             $scope.brandSlideChecked = false;
         };

@@ -19,7 +19,7 @@
         </div>
         <form>
             <table class="table table-bordered table-condensed clear-marginbottom-table">
-                <thead>
+                <tbody>
                     <tr>
                         <th width="36%">SKU | 商品名称</th>
                         <th width="16%">入库库位</th>
@@ -27,7 +27,7 @@
                         <th width="16%">保质期</th>
                         <th width="16%">操作</th>
                     </tr>
-                </thead>
+                </tbody>
             </table>
         </form>
         <!-- item table -->
@@ -39,7 +39,9 @@
                             {{item.product.sku + ' : ' + item.product.name}}
                         </td>
                         <td width="16%">
-                            {{item.position.name}}
+                            <span ng-show="item.position.name != 'default'">
+                                {{item.position.name}}
+                            </span>
                         </td>
                         <td width="16%">
                             {{item.changedQuantity}}
@@ -71,9 +73,9 @@
                             </ui-select>
                         </td>
                         <td width="16%">
-                            <ui-select ng-model="item.position" ng-show="batch.warehouse.positions && batch.warehouse.positions.length > 0">
+                            <ui-select ng-model="item.position" ng-show="batch.warehouse.enablePosition">
                                 <ui-select-match placeholder="选择或搜索一个库位">{{$select.selected.name}}</ui-select-match>
-                                <ui-select-choices repeat="position in batch.warehouse.positions | filter: $select.search">
+                                <ui-select-choices repeat="position in batch.warehouse.positions | filter: $select.search | filter: {name: '!default'}">
                                     <div ng-bind-html="position.name | highlight: $select.search"></div>
                                 </ui-select-choices>
                             </ui-select>

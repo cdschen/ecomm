@@ -34,6 +34,7 @@ import com.sooeez.ecomm.domain.WarehousePosition;
 import com.sooeez.ecomm.dto.InventoryProductDetailDTO;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.dto.ProductDTO;
+import com.sooeez.ecomm.repository.InventoryBatchItemRepository;
 import com.sooeez.ecomm.repository.InventoryBatchRepository;
 import com.sooeez.ecomm.repository.InventoryRepository;
 import com.sooeez.ecomm.repository.WarehousePositionRepository;
@@ -47,75 +48,12 @@ public class InventoryService {
 	@Autowired private WarehousePositionRepository warehousePositionRepository;
 	@Autowired private InventoryRepository inventoryRepository;
 	@Autowired private InventoryBatchRepository inventoryBatchRepository;
+	@Autowired private InventoryBatchItemRepository inventoryBatchItemRepository;
 	
 	// Service
 	@Autowired private OrderService orderService;
 
-	/*
-	 * Warehouse
-	 */
-
-	@Transactional
-	public Warehouse saveWarehouse(Warehouse warehouse) {
-		return this.warehouseRepository.save(warehouse);
-	}
-
-	@Transactional
-	public void deleteWarehouse(Long id) {
-		this.warehouseRepository.delete(id);
-	}
-
-	public Warehouse getWarehouse(Long id) {
-		return this.warehouseRepository.findOne(id);
-	}
-
-	public List<Warehouse> getWarehouses(Warehouse warehouse, Sort sort) {
-		return this.warehouseRepository.findAll(getWarehouseSpecification(warehouse), sort);
-	}
-
-	public Page<Warehouse> getPagedWarehouses(Warehouse warehouse, Pageable pageable) {
-		return this.warehouseRepository.findAll(getWarehouseSpecification(warehouse), pageable);
-	}
 	
-	private Specification<Warehouse> getWarehouseSpecification(Warehouse warehouse) {
-
-		return (root, query, cb) -> {
-			List<Predicate> predicates = new ArrayList<>();
-			predicates.add(cb.equal(root.get("deleted"), warehouse.getDeleted() != null && warehouse.getDeleted() == true ? true : false));
-			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-		};
-	}
-
-	/*
-	 * WarehousePosition
-	 */
-
-	@Transactional
-	public WarehousePosition saveWarehousePosition(WarehousePosition warehousePosition) {
-		return this.warehousePositionRepository.save(warehousePosition);
-	}
-
-	@Transactional
-	public List<WarehousePosition> saveWarehousePositions(List<WarehousePosition> positions) {
-		return this.warehousePositionRepository.save(positions);
-	}
-
-	@Transactional
-	public void deleteWarehousePosition(Long id) {
-		this.warehousePositionRepository.delete(id);
-	}
-
-	public WarehousePosition getWarehousePosition(Long id) {
-		return this.warehousePositionRepository.findOne(id);
-	}
-
-	public List<WarehousePosition> getWarehousePositions() {
-		return this.warehousePositionRepository.findAll();
-	}
-
-	public Page<WarehousePosition> getPagedWarehousePositions(Pageable pageable) {
-		return this.warehousePositionRepository.findAll(pageable);
-	}
 
 	/*
 	 * Inventory
@@ -170,11 +108,90 @@ public class InventoryService {
 	@Transactional
 	public InventoryBatch saveInventoryBatch(InventoryBatch batch) {
 		
-		
-
 		if (batch.getOperate().intValue() == 1) { // 正常入库并增加库存
 			
 			batch.setOperateTime(new Date(System.currentTimeMillis()));
+			
+			Inventory inventoryQuery = new Inventory();
+			inventoryQuery.setWarehouseId(batch.getWarehouse().getId());
+			
+			List<Inventory> inventories = this.getInventories(inventoryQuery, new Sort(Sort.Direction.ASC, "productId", "inventoryBatchId"));
+			List<Product> products = this.refreshInventoryWhenOneWarehouse(inventories);
+			
+			for (InventoryBatchItem item: batch.getItems()) {
+				
+				item.setBatchOperate(batch.getOperate());
+				item.setCreateTime(batch.getOperateTime());
+				
+				// 入库的时候判断，入库的商品是否存在库存
+				boolean existProduct = false;
+				for (Product product: products) {
+					if (item.getProduct().getId().longValue() == product.getId().longValue()) {
+						existProduct = true;
+						String snapshot = 
+						"{"
+					    + "\"before\":{"
+						  + "\"total\":" + product.getTotal().longValue() + ","
+						  + "\"positions\":[";
+						for (int i = 0, len = product.getPositions().size() - 1; i < len; i++) {
+							WarehousePosition position = product.getPositions().get(i);
+							snapshot += "{\"" + position.getName() + "\":" + position.getTotal() + "},";
+						}
+						WarehousePosition position = product.getPositions().get(product.getPositions().size()-1);
+						snapshot += "{\"" + position.getName() + "\":" + position.getTotal() + "}";
+				snapshot += "]"
+					    + "},"
+					    + "\"after\":{"
+					      + "\"total\":" + (product.getTotal().longValue() + item.getChangedQuantity().longValue()) + ","
+					      + "\"positions\":[";
+						boolean existPosition = false;
+						for (int i = 0, len = product.getPositions().size() - 1; i < len; i++) {
+							position = product.getPositions().get(i);
+							if (position.getId().longValue() == item.getPosition().getId().longValue()) {
+								snapshot += "{\"" + position.getName() + "\":" + (position.getTotal() + item.getChangedQuantity().longValue()) + "},";
+								existPosition = true;
+							} else {
+								snapshot += "{\"" + position.getName() + "\":" + position.getTotal() + "},";
+							}
+						}
+						position = product.getPositions().get(product.getPositions().size()-1);
+						boolean hasEle = false;
+						if (position.getId().longValue() == item.getPosition().getId().longValue()) {
+							existPosition = true;
+							snapshot += "{\"" + position.getName() + "\":" + (position.getTotal() + item.getChangedQuantity().longValue()) + "}";
+						} else {
+							hasEle = true;
+							snapshot += "{\"" + position.getName() + "\":" + position.getTotal() + "}";
+						}
+						if (!existPosition) {
+							if (hasEle) {
+								snapshot += ",";
+							}
+							snapshot += "{\"" + item.getPosition().getName() + "\":" + item.getChangedQuantity() + "}";
+						}
+				snapshot += "]"
+						+ "}"
+					  + "}";
+						
+						item.setInventorySnapshot(snapshot);
+						break;
+					}
+				}
+				// 如果入库的商品不存在库存
+				if (!existProduct) { 
+					String snapshot = 
+					"{"
+					+ "\"before\": null,"
+					+ "\"after\":{"
+					  + "\"total\":" + item.getChangedQuantity().longValue() + ","
+					  + "\"positions\":[{"
+					    + "\"" + item.getPosition().getName() + "\":" + item.getChangedQuantity()
+					  + "}]"
+					+ "}"
+				  + "}";
+					item.setInventorySnapshot(snapshot);
+				}
+			}
 			
 			this.inventoryBatchRepository.save(batch);
 
@@ -276,11 +293,14 @@ public class InventoryService {
 				predicates.add(cb.between(root.get("outInventoryTime"), batch.getOutInventoryTimeStart(), batch.getOutInventoryTimeEnd()));
 			} else if (batch.getOutInventoryTimeStart() != null) {
 				predicates.add(cb.greaterThanOrEqualTo(root.get("outInventoryTime"), batch.getOutInventoryTimeStart()));
-			} else if (batch.getOperateTimeEnd() != null) {
+			} else if (batch.getOutInventoryTimeEnd() != null) {
 				predicates.add(cb.lessThanOrEqualTo(root.get("outInventoryTime"), batch.getOutInventoryTimeEnd()));
 			}
 			if (batch.getType() != null) {
 				predicates.add(cb.equal(root.get("type"), batch.getType()));
+			}
+			if (batch.getOperate() != null) {
+				predicates.add(cb.equal(root.get("operate"), batch.getOperate()));
 			}
 			
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
@@ -416,10 +436,10 @@ public class InventoryService {
 				batch.setTotal(inventory.getQuantity().longValue());
 				inventory.getProduct().getBatches().add(batch);
 				products.add(inventory.getProduct());
-				System.out.println(inventory.getProduct().getName() 
-						+ "," + inventory.getProduct().getPositions().size()
-						+ "," + inventory.getProduct().getPositions().get(0).getName()
-						+ "," + inventory.getProduct().getPositions().get(0).getTotal());
+//				System.out.println(inventory.getProduct().getName() 
+//						+ "," + inventory.getProduct().getPositions().size()
+//						+ "," + inventory.getProduct().getPositions().get(0).getName()
+//						+ "," + inventory.getProduct().getPositions().get(0).getTotal());
 				
 			}
 		}
@@ -629,5 +649,49 @@ public class InventoryService {
 		}
 		System.out.println("");
 		System.out.println("==============================");
+	}
+	
+	
+	/*
+	 * InventoryBatchItem
+	 */
+
+	@Transactional
+	public InventoryBatchItem saveInventoryBatchItem(InventoryBatchItem inventoryBatchItem) {
+		return this.inventoryBatchItemRepository.save(inventoryBatchItem);
+	}
+
+	@Transactional
+	public void deleteInventoryBatchItem(Long id) {
+		this.inventoryBatchItemRepository.delete(id);
+	}
+
+	public InventoryBatchItem getInventoryBatchItem(Long id) {
+		return this.inventoryBatchItemRepository.findOne(id);
+	}
+
+	public List<InventoryBatchItem> getInventoryBatchItems(InventoryBatchItem inventoryBatchItem, Sort sort) {
+		return this.inventoryBatchItemRepository.findAll(getInventoryBatchItemSpecification(inventoryBatchItem), sort);
+	}
+
+	public Page<InventoryBatchItem> getPagedInventoryBatchItems(InventoryBatchItem inventoryBatchItem, Pageable pageable) {
+		return this.inventoryBatchItemRepository.findAll(getInventoryBatchItemSpecification(inventoryBatchItem), pageable);
+	}
+	
+	private Specification<InventoryBatchItem> getInventoryBatchItemSpecification(InventoryBatchItem inventoryBatchItem) {
+
+		return (root, query, cb) -> {
+			List<Predicate> predicates = new ArrayList<>();
+			if (inventoryBatchItem.getId() != null) {
+				predicates.add(cb.equal(root.get("id"), inventoryBatchItem.getId()));
+			}
+			if (inventoryBatchItem.getProductId() != null) {
+				predicates.add(cb.equal(root.get("productId"), inventoryBatchItem.getProductId()));
+			}
+			if (inventoryBatchItem.getWarehouseId() != null) {
+				predicates.add(cb.equal(root.get("warehouseId"), inventoryBatchItem.getWarehouseId()));
+			}
+			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+		};
 	}
 }
