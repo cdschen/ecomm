@@ -5,6 +5,8 @@ angular.module('ecommApp')
 
         var $ = angular.element;
 
+        $scope.Math = Math;
+
         $scope.template = {
             productSnapshot: {
                 url: 'views/inventory/inventory-snapshot/inventory-snapshot.product-snapshot-slide.html?' + (new Date())

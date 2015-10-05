@@ -42,7 +42,7 @@
                                 </td>
                                 <td width="6%" ng-switch on="item.batchType">
                                     <span ng-switch-when="0">作废</span>
-                                    <span ng-switch-when="1">待出库</span>
+                                    <span ng-switch-when="1" class="text-warning">待出库</span>
                                     <span ng-switch-when="2">已出库</span>
                                 </td>
                                 <td width="6%" ng-switch on="item.batchOperate">
@@ -50,14 +50,14 @@
                                         {{item.changedQuantity}}
                                     </span>
                                     <span ng-switch-when="2">
-                                        {{item.changedQuantity}} / {{item.actualQuantity}}
+                                        {{Math.abs(item.changedQuantity)}} / {{Math.abs(item.actualQuantity)}}
                                     </span>
                                 </td>
                                 <td width="12%">
                                     {{item.createTime | date: 'yyyy/MM/dd hh:mm:ss'}}
                                 </td>
                                 <td width="40%">
-                                    <div class="row">
+                                    <div class="row" ng-show="item.batchType == null || item.batchType == 2">
                                         <div class="col-md-6">
                                             <div class="panel panel-default" style="margin:0">
                                                 <div class="panel-heading" style="padding:3px">

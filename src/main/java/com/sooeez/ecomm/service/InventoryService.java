@@ -1,14 +1,10 @@
 package com.sooeez.ecomm.service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,22 +14,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.sooeez.ecomm.domain.Inventory;
 import com.sooeez.ecomm.domain.InventoryBatch;
 import com.sooeez.ecomm.domain.InventoryBatchItem;
-import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Order;
 import com.sooeez.ecomm.domain.OrderBatch;
 import com.sooeez.ecomm.domain.OrderItem;
 import com.sooeez.ecomm.domain.Product;
-import com.sooeez.ecomm.domain.Shop;
 import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.domain.WarehousePosition;
 import com.sooeez.ecomm.dto.InventoryProductDetailDTO;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
-import com.sooeez.ecomm.dto.ProductDTO;
 import com.sooeez.ecomm.repository.InventoryBatchItemRepository;
 import com.sooeez.ecomm.repository.InventoryBatchRepository;
 import com.sooeez.ecomm.repository.InventoryRepository;
@@ -52,8 +44,6 @@ public class InventoryService {
 	
 	// Service
 	@Autowired private OrderService orderService;
-
-	
 
 	/*
 	 * Inventory
@@ -216,24 +206,100 @@ public class InventoryService {
 				batch.setOutInventoryTime(new Date(System.currentTimeMillis()));
 			}
 			
+			// batch状态为待完成时
+			if (batch.getType().intValue() == 1) {
+
+				List<InventoryBatchItem> batchItems = batch.getItems();
+
+				for (InventoryBatchItem item : batchItems) {
+
+					item.setCreateTime(batch.getOperateTime());
+					item.setBatchType(batch.getType());
+					item.setBatchOperate(batch.getOperate());
+
+				}
+			}
+			
+			if (batch.getType().intValue() == 2) { // 当出库单状态为已完成的时候，修改库存
+				
+				Inventory inventoryQuery = new Inventory();
+				inventoryQuery.setWarehouseId(batch.getWarehouse().getId());
+				
+				List<Inventory> inventories = this.getInventories(inventoryQuery, new Sort(Sort.Direction.ASC, "productId", "inventoryBatchId"));
+				List<Product> products = this.refreshInventoryWhenOneWarehouse(inventories);
+
+				List<InventoryBatchItem> batchItems = batch.getItems();
+
+				for (InventoryBatchItem item : batchItems) {
+
+					item.setBatchType(batch.getType());
+					item.setLastTime(new Date());
+					
+					for (Product product: products) {
+						// 匹配到商品
+						if (product.getId().longValue() == item.getProduct().getId().longValue()) {
+							String snapshot = 
+							"{"
+						    + "\"before\":{"
+							  + "\"total\":" + product.getTotal().longValue() + ","
+							  + "\"positions\":[";
+							for (int i = 0, len = product.getPositions().size() - 1; i < len; i++) {
+								WarehousePosition position = product.getPositions().get(i);
+								snapshot += "{\"" + position.getName() + "\":" + position.getTotal() + "},";
+							}
+							WarehousePosition position = product.getPositions().get(product.getPositions().size()-1);
+							snapshot += "{\"" + position.getName() + "\":" + position.getTotal() + "}";
+					snapshot += "]"
+						    + "},"
+						    + "\"after\":{"
+						      + "\"total\":" + (product.getTotal().longValue() + item.getActualQuantity().longValue()) + ","
+						      + "\"positions\":[";
+							for (int i = 0, len = product.getPositions().size() - 1; i < len; i++) {
+								position = product.getPositions().get(i);
+								if (position.getId().longValue() == item.getPosition().getId().longValue()) {
+									snapshot += "{\"" + position.getName() + "\":" + (position.getTotal() + item.getActualQuantity().longValue()) + "},";
+								} else {
+									snapshot += "{\"" + position.getName() + "\":" + position.getTotal() + "},";
+								}
+							}
+							position = product.getPositions().get(product.getPositions().size()-1);
+							if (position.getId().longValue() == item.getPosition().getId().longValue()) {
+								snapshot += "{\"" + position.getName() + "\":" + (position.getTotal() + item.getChangedQuantity().longValue()) + "}";
+							} else {
+								snapshot += "{\"" + position.getName() + "\":" + position.getTotal() + "}";
+							}
+							
+					snapshot += "]"
+							+ "}"
+						  + "}";
+							
+							item.setInventorySnapshot(snapshot);
+						}
+					}
+
+				}
+			}
+			
 			this.inventoryBatchRepository.save(batch);
 			
-			if (batch.getType().intValue() == 2) { // 当出库单状态为待完成的时候，修改库存
-				
+			if (batch.getType().intValue() == 2) { // 当出库单状态为已完成的时候，修改库存
 				
 				List<InventoryBatchItem> batchItems = batch.getItems();
 				
-				batch.getItems().forEach(item -> {
+				batchItems.forEach(item -> {
 					if (item.getProduct().getId() != null && item.getWarehouse().getId() != null && item.getOutBatch().getId() != null) {
 						if (item.getPosition() != null && item.getPosition().getId() != null) {
 							this.inventoryRepository.updateInventoryByProductIdAndWarehouseIdAndPositionIdAndBatchId(item.getActualQuantity(), item.getProduct().getId(), item.getWarehouse().getId(), item.getPosition().getId(), item.getOutBatch().getId());
 						} else {
 							this.inventoryRepository.updateInventoryByProductIdAndWarehouseIdAndBatchId(item.getActualQuantity(), item.getProduct().getId(), item.getWarehouse().getId(), item.getOutBatch().getId());
 						}
-					} 
+					} else {
+						System.out.println("没有修改库存的item:" + item.getId());
+					}
 				});
+				
 			}
-
+			
 		} else if (batch.getOperate() == 3) { // 调整入库
 
 		} else if (batch.getOperate() == 4) { // 调整出库
