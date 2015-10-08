@@ -1,14 +1,17 @@
 package com.sooeez.ecomm.service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -29,14 +32,19 @@ import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Order;
 import com.sooeez.ecomm.domain.OrderBatch;
 import com.sooeez.ecomm.domain.OrderItem;
-import com.sooeez.ecomm.domain.OrderItem;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.ProductShopTunnel;
 import com.sooeez.ecomm.domain.Shipment;
 import com.sooeez.ecomm.domain.ShipmentItem;
+import com.sooeez.ecomm.domain.Shop;
 import com.sooeez.ecomm.domain.ShopTunnel;
 import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
+import com.sooeez.ecomm.dto.api.DTO_Order;
+import com.sooeez.ecomm.dto.api.DTO_OrderItem;
+import com.sooeez.ecomm.dto.api.DTO_Shipment;
+import com.sooeez.ecomm.dto.api.general.DTO_Pagination;
+import com.sooeez.ecomm.dto.api.general.DTO_Process_Status;
 import com.sooeez.ecomm.repository.OrderBatchRepository;
 import com.sooeez.ecomm.repository.OrderItemRepository;
 import com.sooeez.ecomm.repository.OrderRepository;
@@ -1049,4 +1057,263 @@ public class OrderService {
 	public Page<OrderBatch> getPagedOrderBatches(Pageable pageable) {
 		return this.orderBatchRepository.findAll(pageable);
 	}
+	
+	
+	/*
+	 * BEGIN API Order
+	 */
+	
+	public void setAPIResponseOrderDetail(Shop shop, DTO_Order dtoOrder, Order order)
+	{
+		/* 设置订单基本信息 */
+		dtoOrder.setId( order.getId() );
+		dtoOrder.setShop_id( order.getShopId() );
+		dtoOrder.setOrder_sn( order.getExternalSn() );
+		dtoOrder.setQty_total_item_ordered( order.getQtyTotalItemOrdered() );
+		dtoOrder.setQty_total_item_shipped( order.getQtyTotalItemShipped() );
+		dtoOrder.setGrand_total( order.getGrandTotal() );
+		dtoOrder.setSubtotal( order.getSubtotal() );
+		dtoOrder.setShipping_fee( order.getShippingFee() );
+		dtoOrder.setTax( order.getTax() );
+		dtoOrder.setTotal_invoiced( order.getTotalInvoiced() );
+		dtoOrder.setTotal_paid( order.getTotalPaid() );
+		dtoOrder.setTotal_refunded( order.getTotalRefunded() );
+		dtoOrder.setWeight( order.getWeight() );
+		dtoOrder.setMemo( order.getMemo() );
+		
+		String deliveryMethod = "未知运送方式";
+		if( order.getDeliveryMethod()!=null )
+		{
+			switch ( order.getDeliveryMethod() )
+			{
+				case 1:
+					deliveryMethod = "快递";
+					break;
+				case 2:
+					deliveryMethod = "自提";
+					break;
+				case 3:
+					deliveryMethod = "送货上门";
+					break;
+				default:
+					break;
+			}
+		}
+		dtoOrder.setDelivery_method( deliveryMethod );
+		
+		dtoOrder.setSender_name( order.getSenderName() );
+		dtoOrder.setSender_address( order.getSenderAddress() );
+		dtoOrder.setSender_phone( order.getSenderPhone() );
+		dtoOrder.setSender_email( order.getSenderEmail() );
+		dtoOrder.setSender_post( order.getSenderPost() );
+		dtoOrder.setReceive_name( order.getReceiveName() );
+		dtoOrder.setReceive_phone( order.getReceivePhone() );
+		dtoOrder.setReceive_email( order.getReceiveEmail() );
+		dtoOrder.setReceive_country( order.getReceiveCountry() );
+		dtoOrder.setReceive_province( order.getReceiveProvince() );
+		dtoOrder.setReceive_city( order.getReceiveCity() );
+		dtoOrder.setReceive_address( order.getReceiveAddress() );
+		dtoOrder.setReceive_post( order.getReceivePost() );
+		dtoOrder.setCreated_time( order.getInternalCreateTime().toString() );
+		dtoOrder.setUpdated_time( order.getLastUpdateTime().toString() );
+		
+		/* 获得客户信息，数据库中还未加入客户表 */
+//		String customerSQL = "SELECT id, name, email, phone FROM t_customer " +
+//							 "WHERE id = (" +
+//							 "    SELECT customer_id FROM t_order " +
+//							 "    WHERE id = ?1" +
+//							 ")";
+//		Query customerQuery = em.createNativeQuery( customerSQL );
+//		customerQuery.setParameter( 1, order.getId() );
+//		DTO_Customer customer =  (DTO_Customer) customerQuery.getSingleResult();
+//		dtoOrder.setCustomer( customer );
+		
+		/* 获得货币名称 */
+		dtoOrder.setCurrency( order.getCurrency().getName() );
+		
+		
+		/* 获得订单详情 */
+		List<DTO_OrderItem> dtoOrderItems = new ArrayList<DTO_OrderItem>();
+		for(OrderItem orderItem : order.getItems())
+		{
+			DTO_OrderItem dtoOrderItem = new DTO_OrderItem();
+			dtoOrderItem.setId( orderItem.getId() );
+			dtoOrderItem.setSku( orderItem.getSku() );
+			dtoOrderItem.setShop_product_sku( orderItem.getExternalSku() );
+			dtoOrderItem.setName( orderItem.getName() );
+			dtoOrderItem.setShop_product_name( orderItem.getExternal_name() );
+			dtoOrderItem.setUnit_weight( orderItem.getUnitWeight() );
+			dtoOrderItem.setQty_ordered( orderItem.getQtyOrdered() );
+			dtoOrderItem.setQty_shipped( orderItem.getQtyShipped() );
+			dtoOrderItem.setUnit_price( orderItem.getUnitPrice() );
+			
+			dtoOrderItems.add( dtoOrderItem );
+		}
+		dtoOrder.setOrder_items( dtoOrderItems );
+		
+		
+		/* 获得发货单 */
+		List<DTO_Shipment> dtoShipments = new ArrayList<DTO_Shipment>();
+		for (Shipment shipment : order.getShipments())
+		{
+			DTO_Shipment dtoShipment = new DTO_Shipment();
+			dtoShipment.setId( shipment.getId() );
+			dtoShipment.setCourier_name( shipment.getCourier()!=null ? shipment.getCourier().getName() : null );
+			dtoShipment.setCreator( shipment.getOperator()!=null ? shipment.getOperator().getUsername() : null );
+			dtoShipment.setExecutor( shipment.getExecuteOperator()!=null ? shipment.getExecuteOperator().getUsername() : null );
+			dtoShipment.setCourier_name( shipment.getCourier()!=null ? shipment.getCourier().getName() : null );
+			dtoShipment.setShip_number( shipment.getShipNumber() );
+			
+			String shipStatus = "未知状态";
+			if( shipment.getShipStatus()!=null )
+			{
+				switch ( shipment.getShipStatus() )
+				{
+					case 1: shipStatus="待取件"; break;
+					case 2: shipStatus="已发出"; break;
+					case 3: shipStatus="已签收"; break;
+					case 4: shipStatus="派送异常"; break;
+					case 5: shipStatus="作废"; break;
+		
+					default: shipStatus="未知状态"; break;
+				}
+			}
+			dtoShipment.setShip_status( shipStatus );
+			
+			dtoShipment.setQty_total_item_shipped( shipment.getQtyTotalItemShipped() );
+			dtoShipment.setTotal_weight( shipment.getTotalWeight() );
+			dtoShipment.setShipfee_cost( shipment.getShipfeeCost() );
+			dtoShipment.setCreate_time( shipment.getCreateTime()!=null ? shipment.getCreateTime().toString() : null );
+			dtoShipment.setLast_update( shipment.getLastUpdate()!=null ? shipment.getLastUpdate().toString() : null );
+			dtoShipment.setPickup_time( shipment.getPickupTime()!=null ? shipment.getPickupTime().toString() : null );
+			dtoShipment.setSignup_time( shipment.getSignupTime()!=null ? shipment.getSignupTime().toString() : null );
+			dtoShipment.setMemo( shipment.getMemo() );
+			dtoShipment.setSender_name( shipment.getSenderName() );
+			dtoShipment.setSender_phone( shipment.getSenderPhone() );
+			dtoShipment.setSender_email( shipment.getSenderEmail() );
+			dtoShipment.setSender_address( shipment.getSenderAddress() );
+			dtoShipment.setSender_address( shipment.getSenderAddress() );
+			dtoShipment.setSender_post( shipment.getSenderPost() );
+			dtoShipment.setReceive_name( shipment.getReceiveName() );
+			dtoShipment.setReceive_phone( shipment.getReceivePhone() );
+			dtoShipment.setReceive_email( shipment.getReceiveEmail() );
+			dtoShipment.setReceive_country( shipment.getReceiveCountry() );
+			dtoShipment.setReceive_province( shipment.getReceiveProvince() );
+			dtoShipment.setReceive_city( shipment.getReceiveCity() );
+			dtoShipment.setReceive_address( shipment.getReceiveAddress() );
+			dtoShipment.setReceive_post( shipment.getReceivePost() );
+			
+			dtoShipments.add( dtoShipment );
+		}
+		dtoOrder.setShipments( dtoShipments );
+		
+		
+		/* 获得流程状态 */
+		List<DTO_Process_Status> dtoProcessStatus = new ArrayList<DTO_Process_Status>();
+		for ( ObjectProcess objProcess : order.getProcesses() )
+		{
+			DTO_Process_Status processingState = new DTO_Process_Status();
+			processingState.setName( objProcess.getProcess().getName() );
+			processingState.setValue( objProcess.getStep().getName() );
+			dtoProcessStatus.add( processingState );
+		}
+		dtoOrder.setProcessing_status( dtoProcessStatus );
+		
+	}
+
+	@SuppressWarnings("unchecked")
+	public void setAPIRespondOrders(Shop shop, List<DTO_Order> dtoOrders, DTO_Pagination page_context)
+	{
+		/* 1. 获得订单总数 */
+		String sqlCount = "SELECT COUNT(*) FROM t_order " +
+						  "WHERE shop_id = ?1 " +
+						  "AND deleted = false";
+		Query queryCount = em.createNativeQuery(sqlCount);
+		queryCount.setParameter(1, shop.getId());
+		BigInteger total_number = (BigInteger) queryCount.getSingleResult();
+		page_context.setTotal_number( total_number );
+
+		/* 2. 获得订单信息 */
+		String sql = "SELECT * FROM t_order " +
+					 "WHERE shop_id = ?1 " +
+					 "AND deleted = false " +
+					 "LIMIT ?2, ?3";
+		Query query =  em.createNativeQuery( sql, Order.class );
+		query.setParameter(1, shop.getId());
+		query.setParameter(2, (page_context.getPage() <=1 ? 0 : page_context.getPage() - 1) * page_context.getPer_page());
+		query.setParameter(3, page_context.getPer_page());
+
+		
+		/* 3. 是否有续页 */
+		if( page_context.getPage() * page_context.getPer_page() >= page_context.getTotal_number().longValue() )
+		{
+			page_context.setHas_more_page( false );
+		}
+		else
+		{
+			page_context.setHas_more_page( true );
+		}
+		
+		if( !query.getResultList().isEmpty() )
+		{
+			List<Order> resultList = query.getResultList();
+			
+			for (Order order : resultList)
+			{
+				DTO_Order dtoOrder = new DTO_Order();
+				
+				setAPIResponseOrderDetail(shop, dtoOrder, order);
+				
+				dtoOrders.add( dtoOrder );
+			}
+		}
+	}
+
+	public void setAPIRespondOrder(Shop shop, Long orderId, String orderSn, DTO_Order dtoOrder)
+	{
+		/* 2. 获得订单信息 */
+		String sql = "SELECT * FROM t_order " +
+					 "WHERE shop_id = ?1 " +
+					 "AND (id = ?2 OR external_sn = ?3) " +
+					 "AND deleted = false " +
+					 "LIMIT 1";
+		Query query =  em.createNativeQuery( sql, Order.class );
+		query.setParameter(1, shop.getId());
+		query.setParameter(2, orderId);
+		query.setParameter(3, orderSn);
+
+		if( !query.getResultList().isEmpty() )
+		{
+			Order order = (Order) query.getSingleResult();
+			
+			setAPIResponseOrderDetail(shop, dtoOrder, order);
+		}
+	}
+	
+	public void deleteAPIRespondOrders(Shop shop, Long orderId, String orderSn, Map<String, Object> map)
+	{
+		/* 2. 获得订单信息 */
+		String sql = "SELECT * FROM t_order " +
+					 "WHERE shop_id = ?1 " +
+					 "AND (id = ?2 OR external_sn = ?3) " +
+					 "AND deleted = false " +
+					 "LIMIT 1";
+		Query query =  em.createNativeQuery( sql, Order.class );
+		query.setParameter(1, shop.getId());
+		query.setParameter(2, orderId);
+		query.setParameter(3, orderSn);
+
+		if( !query.getResultList().isEmpty() )
+		{
+			map.put("message", "The order has been deleted.");
+		}
+		else
+		{
+			map.put("message", "Could not find order by specified id or sn.");
+		}
+	}
+	
+	/*
+	 * END API Order
+	 */
 }

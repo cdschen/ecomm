@@ -43,11 +43,11 @@ public class DTO_Shipment implements Serializable {
 
 	private String sender_name;
 
-	private String sender_address;
-
 	private String sender_phone;
 
 	private String sender_email;
+
+	private String sender_address;
 
 	private String sender_post;
 
@@ -187,14 +187,6 @@ public class DTO_Shipment implements Serializable {
 		this.sender_name = sender_name;
 	}
 
-	public String getSender_address() {
-		return sender_address;
-	}
-
-	public void setSender_address(String sender_address) {
-		this.sender_address = sender_address;
-	}
-
 	public String getSender_phone() {
 		return sender_phone;
 	}
@@ -209,6 +201,14 @@ public class DTO_Shipment implements Serializable {
 
 	public void setSender_email(String sender_email) {
 		this.sender_email = sender_email;
+	}
+
+	public String getSender_address() {
+		return sender_address;
+	}
+
+	public void setSender_address(String sender_address) {
+		this.sender_address = sender_address;
 	}
 
 	public String getSender_post() {
