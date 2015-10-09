@@ -202,7 +202,8 @@ public class OrderService {
 					+ "t_shop_tunnel as shopTunnel1 "
 					+ "where shopTunnel1.default_warehouse_id = " + order.getWarehouseId()
 					+ " and shopTunnel1.id = productShopTunnel.tunnel_id "
-					+ "and productShopTunnel.product_id = orderItem.product_id) "
+					+ "and productShopTunnel.product_id = orderItem.product_id "
+					+ "and productShopTunnel.`shop_id` = shop.id) "
 					+ "or "
 					+ "exists(select 1 from t_shop_tunnel as shopTunnel2 "
 					+ "where shopTunnel2.shop_id = shop.id "
