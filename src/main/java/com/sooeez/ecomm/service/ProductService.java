@@ -217,13 +217,6 @@ public class ProductService {
 	@SuppressWarnings("unchecked")
 	public void setAPIResponseProductDetail(Shop shop, Product product, DTO_Product_Self productSelf, DTO_Product_Partner productPartner)
 	{
-		/* 获得货币名称 */
-		String currencyNameSQL = "SELECT name FROM t_currency " +
-								 "WHERE id = ?1";
-		Query currencyNameQuery = em.createNativeQuery( currencyNameSQL );
-		currencyNameQuery.setParameter( 1, product.getCurrency().getId() );
-		String currencyName = (String) currencyNameQuery.getSingleResult();
-		
 		/* 获得库存数量 */
 		String inventoryQuantitySQL = "SELECT SUM(quantity) FROM t_inventory " +
 									  "WHERE product_id = ?1";
@@ -239,16 +232,6 @@ public class ProductService {
 		inventoryExpireDateQuery.setParameter( 1, product.getId() );
 		List<String> expire_string_dates = (List<String>) inventoryExpireDateQuery.getResultList();
 		
-		/* 获得流程状态 */
-		String processStatusSQL = "SELECT p.name name, ps.name value " +
-								  "FROM t_object_process op, t_process p, t_process_step ps " +
-								  "WHERE op.process_id = p.id " +
-								  "AND op.step_id = ps.id " +
-								  "AND op.object_id = ?1 " +
-								  "AND op.object_type = 2";
-		Query processStatusQuery = em.createNativeQuery( processStatusSQL );
-		processStatusQuery.setParameter( 1, product.getId() );
-		List<DTO_Process_Status> process_status = (List<DTO_Process_Status>) processStatusQuery.getResultList();
 		
 		/* 是否自营店 */
 		Boolean isSelfRunShop = shop.getType() == 0 ? true : false;
@@ -265,11 +248,19 @@ public class ProductService {
 			productSelf.setCreate_time( product.getCreateTime() );
 			productSelf.setUpdated_time( product.getLastUpdate() );
 
-			/* 设置流程状态 */
-			productSelf.setStatus( process_status );;
+			/* 获得流程状态 */
+			List<DTO_Process_Status> dtoProcessStatus = new ArrayList<DTO_Process_Status>();
+			for ( ObjectProcess objProcess : product.getProcesses() )
+			{
+				DTO_Process_Status processingState = new DTO_Process_Status();
+				processingState.setName( objProcess.getProcess().getName() );
+				processingState.setValue( objProcess.getStep().getName() );
+				dtoProcessStatus.add( processingState );
+			}
+			productSelf.setStatus( dtoProcessStatus );
 
 			/* 设置货币名称 */
-			productSelf.setCurrecy( currencyName );
+			productSelf.setCurrecy( product.getCurrency()!=null ? product.getCurrency().getName() : null );
 			
 			/* 设置库存数量 */
 			productSelf.setAvailable_stock( quantity.intValue() );
@@ -300,11 +291,19 @@ public class ProductService {
 			productPartner.setCreate_time( product.getCreateTime() );
 			productPartner.setUpdated_time( product.getLastUpdate() );
 
-			/* 设置流程状态 */
-			productPartner.setStatus( process_status );;
+			/* 获得流程状态 */
+			List<DTO_Process_Status> dtoProcessStatus = new ArrayList<DTO_Process_Status>();
+			for ( ObjectProcess objProcess : product.getProcesses() )
+			{
+				DTO_Process_Status processingState = new DTO_Process_Status();
+				processingState.setName( objProcess.getProcess().getName() );
+				processingState.setValue( objProcess.getStep().getName() );
+				dtoProcessStatus.add( processingState );
+			}
+			productPartner.setStatus( dtoProcessStatus );
 
 			/* 设置货币名称 */
-			productPartner.setCurrecy( currencyName );
+			productPartner.setCurrecy( product.getCurrency()!=null ? product.getCurrency().getName() : null );
 			
 			/* 设置库存数量 */
 			productPartner.setAvailable_stock( quantity.intValue() );
@@ -399,7 +398,7 @@ public class ProductService {
 	public void setAPIRespondProduct(Shop shop, Long id, String sku, DTO_Product_Self productSelf, DTO_Product_Partner productPartner)
 	{
 		String sql = "SELECT * FROM t_product " +
-					 "WHERE id = ?2 OR sku = ?3 " +
+					 "WHERE (id = ?2 OR sku = ?3) " +
 					 "AND id IN (" +
 						 "SELECT product_id FROM t_inventory " +
 						 "WHERE warehouse_id IN (" +
@@ -407,9 +406,11 @@ public class ProductService {
 							 "WHERE tunnel_id IN (" +
 								 "SELECT id FROM t_shop_tunnel " +
 								 "WHERE shop_id = ?1 " +
-							 ")" +
-						 ")" +
-					 ") AND deleted = false";
+							 ") " +
+						 ") " +
+					 ") " +
+					 "AND deleted = false " +
+					 "LIMIT 1";
 		Query query =  em.createNativeQuery( sql , Product.class);
 		query.setParameter(1, shop.getId());
 		query.setParameter(2, id);
@@ -422,5 +423,9 @@ public class ProductService {
 			setAPIResponseProductDetail(shop, product, productSelf, productPartner);
 		}
 	}
+	
+	/*
+	 * END API Product
+	 */
 	
 }

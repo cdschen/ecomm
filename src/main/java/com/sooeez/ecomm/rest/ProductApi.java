@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,14 +26,14 @@ public class ProductApi {
 	@Autowired ShopService shopService;
 	@Autowired ProductService productService;
 	
-	@RequestMapping("/v1/products")
+	@RequestMapping(value = "/v1/products", method = RequestMethod.GET)
 	public Map<String, Object> getProducts(
 			@RequestHeader("authorization") String authorization,
 			@RequestHeader("ecomm-shopId") Long shopId,
 			@RequestParam( value = "page", required = false ) Long currentPage,
 			@RequestParam( value = "per_page", required = false ) Long perPage,
-			@RequestParam( value = "product_id", required = false ) Long productId,
-			@RequestParam( value = "product_sku", required = false ) String productSku)
+			@RequestParam( value = "id", required = false ) Long productId,
+			@RequestParam( value = "sku", required = false ) String productSku)
 	{
 		
 		Map<String, Object> map = new HashMap<>();
