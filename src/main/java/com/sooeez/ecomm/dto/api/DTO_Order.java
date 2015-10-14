@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.sooeez.ecomm.dto.api.general.DTO_Process_Status;
+
 public class DTO_Order implements Serializable
 {
 
@@ -70,7 +72,7 @@ public class DTO_Order implements Serializable
 	
 	private String receive_post;
 	
-	private String processing_status;
+	private List<DTO_Process_Status> processing_status;
 	
 	private String created_time;
 	
@@ -313,11 +315,11 @@ public class DTO_Order implements Serializable
 		this.receive_post = receive_post;
 	}
 
-	public String getProcessing_status() {
+	public List<DTO_Process_Status> getProcessing_status() {
 		return processing_status;
 	}
 
-	public void setProcessing_status(String processing_status) {
+	public void setProcessing_status(List<DTO_Process_Status> processing_status) {
 		this.processing_status = processing_status;
 	}
 

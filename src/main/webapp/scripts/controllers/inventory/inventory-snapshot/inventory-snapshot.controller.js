@@ -5,13 +5,6 @@ angular.module('ecommApp')
 
         var $ = angular.element;
 
-        $scope.template = {
-            productSnapshot: {
-                url: 'views/inventory/inventory-snapshot/inventory-snapshot.product-snapshot-slide.html?' + (new Date())
-            }
-        };
-
-        $scope.page = undefined;
         $scope.Math = Math;
 
         $scope.warehouses = [];
@@ -22,26 +15,20 @@ angular.module('ecommApp')
             label: '出库',
             value: 2
         }];
-        // $scope.types = [{
-        //     label: '作废',
-        //     value: 0
-        // }, {
-        //     label: '待出库',
-        //     value: 1
-        // }, {
-        //     label: '已出库',
-        //     value: 2
-        // }];
 
         $scope.defautlQuery = {
             pageSize: 50,
             totalPagesList: [],
-            sort: ['operateTime,desc'],
+            sort: ['createTime,desc'],
             warehouse: undefined,
-            batch: {
-                operateTimeStart: undefined,
-                operateTimeEnd: undefined,
-                operate: undefined
+            product: {
+                sku: '',
+                name: ''
+            },
+            batchItem: {
+                createTimeStart: undefined,
+                createTimeEnd: undefined,
+                batchOperate: undefined,
             }
         };
         $scope.query = angular.copy($scope.defautlQuery);
@@ -54,17 +41,22 @@ angular.module('ecommApp')
         });
 
         $scope.searchData = function(query, number) {
-            InventoryBatch.get({
+            InventoryBatchItem.get({
                 page: number ? number : 0,
                 size: query.pageSize,
                 sort: query.sort,
+                productSKU: query.product.sku,
+                productName: query.product.name,
                 warehouseId: query.warehouse ? query.warehouse.id : null,
-                operateTimeStart: query.batch.operateTimeStart,
-                operateTimeEnd: query.batch.operateTimeEnd,
-                operate: query.batch.operate ? query.batch.operate.value : null
-            }).$promise.then(function(page) {
+                createTimeStart: query.batchItem.createTimeStart,
+                createTimeEnd: query.batchItem.createTimeEnd,
+                batchOperate: query.batchItem.batchOperate ? query.batchItem.batchOperate.value : null
+            }, function(page) {
                 console.log(page);
                 $scope.page = page;
+                $.each(page.content, function() {
+                    this.inventorySnapshot = angular.fromJson(this.inventorySnapshot);
+                });
                 query.totalPagesList = Utils.setTotalPagesList(page);
             });
         };
@@ -93,41 +85,6 @@ angular.module('ecommApp')
             orientation: 'top left',
             todayHighlight: true,
         });
-
-        $scope.toggleItemDetailsChecked = function(batch) {
-            if (batch.itemDetailsChecked !== 'undefined') {
-                batch.itemDetailsChecked = !batch.itemDetailsChecked;
-            } else {
-                batch.itemDetailsChecked = true;
-            }
-        };
-
-        $scope.productSnapshotSlideChecked = false;
-        $scope.productBatchItems = undefined;
-
-        $scope.defaultHeight = function() {
-            return {
-                height: $(window).height() / 1.3
-            };
-        };
-
-        $scope.toggleProductSnapshotSlide = function(item) {
-            console.log(item);
-            $scope.productSnapshotSlideChecked = !$scope.productSnapshotSlideChecked;
-            if ($scope.productSnapshotSlideChecked) {
-                InventoryBatchItem.getAll({
-                    productId: item.productId,
-                    warehouseId: item.warehouseId,
-                    sort: ['createTime,desc']
-                }).then(function(items){
-                    $scope.productBatchItems = items;
-                    $.each(items, function(){
-                        this.inventorySnapshot = angular.fromJson(this.inventorySnapshot);
-                    });
-                    console.log(items);
-                });
-            }
-        };
 
     }
 

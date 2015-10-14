@@ -40,7 +40,7 @@ public class SupplierService {
 		return this.supplierRepository.findAll(getSupplierSpecification(suipplier));
 	}
 
-	public Page<Supplier> getPagedSuppliers(Pageable pageable, Supplier suipplier) {
+	public Page<Supplier> getPagedSuppliers(Supplier suipplier, Pageable pageable) {
 		return this.supplierRepository.findAll(getSupplierSpecification(suipplier), pageable);
 	}
 	

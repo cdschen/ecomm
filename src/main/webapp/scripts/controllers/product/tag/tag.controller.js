@@ -3,111 +3,81 @@ angular.module('ecommApp')
 .controller('TagController', ['$rootScope', '$scope', 'Tag', 'Utils',
     function($rootScope, $scope, Tag, Utils) {
 
-    	var $ = angular.element;
+    	var $ = angular.element,
+            t = new Date().getTime();
         
         $scope.template = {
             operator: {
-                url: 'views/product/tag/tag.operator.html?' + (new Date())
+                url: 'views/product/tag/tag.operator-slide.html?' + t
             }
         };
 
-    	$scope.totalPagesList = [];
-        $scope.pageSize = 20;
+    	$scope.defaultQuery = {
+            pageSize: 20,
+            totalPagesList: [],
+            sort: ['id,desc']
+        };
+        $scope.query = angular.copy($scope.defaultQuery);
+
         $scope.tagSlideChecked = false;
 
-        $scope.refresh = function() {
+        $scope.searchData = function(query, number) {
             Tag.get({
-                page: 0,
-                size: $scope.pageSize,
-                sort: ['id,desc']
+                page: number ? number : 0,
+                size: query.pageSize,
+                sort: query.sort
             }, function(page) {
-                console.clear();
-                console.log('page:');
-                console.log(page);
                 $scope.page = page;
-                $scope.totalPagesList = Utils.setTotalPagesList(page);
-                $scope.closeTagSlide();
+                query.totalPagesList = Utils.setTotalPagesList(page);
+                $scope.tagSlideChecked = false;
             });
         };
 
-        $scope.refresh();
+        $scope.searchData($scope.query);
 
         $scope.turnPage = function(number) {
             if (number > -1 && number < $scope.page.totalPages) {
-                Tag.get({
-                    page: number,
-                    size: $scope.pageSize,
-                    sort: ['id,desc']
-                }, function(page) {
-                    console.clear();
-                    console.log('turnPage:');
-                    console.log(page);
-                    $scope.page = page;
-                    $scope.totalPagesList = Utils.setTotalPagesList(page);
-                });
+                $scope.searchData($scope.query, number);
             }
         };
        
         $scope.updateTag = function(tag) {
-            console.clear();
-            console.log('updateTag:');
-            console.log(tag);
-            $scope.tag = tag;
-            $scope.operateTag();
+            $scope.tag = angular.copy(tag);
+            $scope.toggleTagSlide('edit');
         };
 
-        $scope.removingTag = undefined;
-
-        $scope.showRemoveTag = function(tag, $index) {
-            console.clear();
-            console.log('showRemoveTag $index: ' + $index);
-            console.log(tag);
-
+        $scope.showRemoveTag = function(tag) {
             $scope.removingTag = tag;
             $('#tagDeleteModal').modal('show');
         };
 
         $scope.removeTag = function() {
-            console.clear();
-            console.log('removeTag:');
-            console.log($scope.removingTag);
-
             if (angular.isDefined($scope.removingTag)) {
                 Tag.remove({
                     id: $scope.removingTag.id
                 }, {}, function() {
                     $scope.removingTag = undefined;
                     $('#tagDeleteModal').modal('hide');
-                    $scope.refresh();
+                    $scope.searchData($scope.query);
                 });
             }
         };
 
         $scope.saveTag = function(tagForm, tag) {
-            console.clear();
-            console.log('saveTag:');
-            console.log(tag);
-
-            Tag.save({}, tag, function(tag) {
-                console.log('saveTag complete:');
-                console.log(tag);
+            Tag.save({}, tag, function() {
                 tagForm.$setPristine();
-                $scope.tag = angular.copy($scope.defaultTag);
-                $scope.refresh();
+                $scope.searchData($scope.query);
             });
         };
 
-        // operator
-
-        $scope.closeTagSlide = function() {
-            $scope.tagSlideChecked = false;
-        };
-
-        $scope.operateTag = function(action) {
+        $scope.toggleTagSlide = function(action) {
             if (action === 'create') {
+                $scope.title = '创建';
                 $scope.tag = {};
+            } else if (action === 'edit') {
+                $scope.title = '编辑';
             }
-            $scope.tagSlideChecked = true;
+            $scope.tagSlideChecked = !$scope.tagSlideChecked;
         };
     }
 ]);

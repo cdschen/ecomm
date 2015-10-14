@@ -2,13 +2,14 @@
     <div id="operator-slider">
         <div class="panel panel-default">
             <div class="panel-body">
-                <button type="button" class="close" ng-click="closeBrandSlide()">
+                <button type="button" class="close" ng-click="toggleBrandSlide()">
                     <span aria-hidden="true">×</span>
                 </button>
-                <h3>{{title}}品牌</h3>
+                <h3 class="text-success">
+                    <strong>{{title}}品牌</strong>
+                </h3>
                 <hr>
                 <form name="brandForm" class="form-horizontal" novalidate ng-submit="saveBrand(brandForm, brand)">
-                    <!-- name -->
                     <div class="form-group has-feedback" ng-class="{'has-success':(brandForm.name.$dirty && brandForm.name.$valid), 'has-warning':(brandForm.name.$dirty && brandForm.name.$invalid) }">
                         <label class="control-label col-md-2">品牌名称 <span class="text-danger">*</span></label>
                         <div class="col-md-5">
@@ -20,7 +21,6 @@
                             <span ng-messages-include="views/error-messages.html"></span>
                         </span>
                     </div>
-                     <!-- button -->
                     <div class="form-group">
                         <div class="col-md-5 col-md-offset-2">
                             <button type="submit" class="btn btn-success btn-lg" ng-disabled="!brandForm.$valid">保存</button>

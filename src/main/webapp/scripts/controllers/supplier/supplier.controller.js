@@ -3,119 +3,85 @@ angular.module('ecommApp')
 .controller('SupplierController', ['$rootScope', '$scope', 'Supplier', 'Utils',
     function($rootScope, $scope, Supplier, Utils) {
 
-    	var $ = angular.element;
-        
+        var $ = angular.element;
+
         $scope.template = {
             operator: {
-                url: 'views/supplier/supplier.operator.html?' + (new Date())
+                url: 'views/supplier/supplier.operator-slide.html?' + (new Date())
             }
         };
 
-    	$scope.totalPagesList = [];
-        $scope.pageSize = 20;
+        $scope.defaultQuery = {
+            pageSize: 20,
+            totalPagesList: [],
+            sort: ['id,desc']
+        };
+        $scope.query = angular.copy($scope.defaultQuery);
+
         $scope.defaultSupplier = {
             deleted: false
         };
         $scope.supplier = angular.copy($scope.defaultSupplier);
-        $scope.supplierSlideChecked = false;
-        $scope.title = '';
 
-        $scope.refresh = function() {
+        $scope.supplierSlideChecked = false;
+
+        $scope.searchData = function(query, number) {
             Supplier.get({
-                page: 0,
-                size: $scope.pageSize,
-                sort: ['id,desc'],
+                page: number ? number : 0,
+                size: query.pageSize,
+                sort: query.sort,
                 deleted: false
             }, function(page) {
-                console.clear();
-                console.log('page:');
-                console.log(page);
                 $scope.page = page;
-                $scope.totalPagesList = Utils.setTotalPagesList(page);
-                $scope.closeSupplierSlide();
+                query.totalPagesList = Utils.setTotalPagesList(page);
+                $scope.supplierSlideChecked = false;
             });
         };
 
-        $scope.refresh();
+        $scope.searchData($scope.query);
 
         $scope.turnPage = function(number) {
             if (number > -1 && number < $scope.page.totalPages) {
-                Supplier.get({
-                    page: number,
-                    size: $scope.pageSize,
-                    sort: ['id,desc'],
-                    deleted: false
-                }, function(page) {
-                    console.clear();
-                    console.log('turnPage:');
-                    console.log(page);
-                    $scope.page = page;
-                    $scope.totalPagesList = Utils.setTotalPagesList(page);
-                });
+                $scope.searchData($scope.query, number);
             }
         };
-       
+
         $scope.updateSupplier = function(supplier) {
-            console.clear();
-            console.log('updateSupplier:');
-            console.log(supplier);
-            $scope.supplier = supplier;
-            $scope.operateSupplier();
+            $scope.supplier = angular.copy(supplier);
+            $scope.toggleSupplierSlide('edit');
         };
 
-        $scope.removingSupplier = undefined;
-
-        $scope.showRemoveSupplier = function(supplier, $index) {
-            console.clear();
-            console.log('showRemoveSupplier $index: ' + $index);
-            console.log(supplier);
-
+        $scope.showRemoveSupplier = function(supplier) {
             $scope.removingSupplier = supplier;
             $('#supplierDeleteModal').modal('show');
         };
 
         $scope.removeSupplier = function() {
-            console.clear();
-            console.log('removeSupplier:');
-            console.log($scope.removingSupplier);
-
             if (angular.isDefined($scope.removingSupplier)) {
                 $scope.removingSupplier.deleted = true;
                 Supplier.save({}, $scope.removingSupplier, function() {
                     $scope.removingSupplier = undefined;
                     $('#supplierDeleteModal').modal('hide');
-                    $scope.refresh();
+                    $scope.searchData($scope.query);
                 });
             }
         };
 
         $scope.saveSupplier = function(supplierForm, supplier) {
-            console.clear();
-            console.log('saveSupplier:');
-            console.log(supplier);
-
-            Supplier.save({}, supplier, function(supplier) {
-                console.log('saveSupplier complete:');
-                console.log(supplier);
+            Supplier.save({}, supplier, function() {
                 supplierForm.$setPristine();
-                $scope.supplier = angular.copy($scope.defaultSupplier);
-                $scope.refresh();
+                $scope.searchData($scope.query);
             });
         };
 
-        // operator
-
-        $scope.closeSupplierSlide = function() {
-            $scope.supplierSlideChecked = false;
-        };
-
-        $scope.operateSupplier = function(action) {
-            $scope.title = '编辑';
+        $scope.toggleSupplierSlide = function(action) {
             if (action === 'create') {
                 $scope.title = '创建';
                 $scope.supplier = angular.copy($scope.defaultSupplier);
+            } else if (action === 'edit') {
+                $scope.title = '编辑';
             }
-            $scope.supplierSlideChecked = true;
+            $scope.supplierSlideChecked = !$scope.supplierSlideChecked;
         };
     }
 ]);

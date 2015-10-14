@@ -3,27 +3,23 @@ angular.module('ecommApp')
 .controller('ProductController', ['$scope', 'Product', 'Utils', 'Process', 'ObjectProcess',
     function($scope, Product, Utils, Process, ObjectProcess) {
 
-        var $ = angular.element;
+        var $ = angular.element,
+            t = new Date().getTime();
 
         $scope.template = {
             details: {
-                url: 'views/product/product/product.details-slide.html?' + (new Date())
+                url: 'views/product/product/product.details-slide.html?' + t
             },
             process: {
-                url: 'views/product/product/product.process-slide.html?' + (new Date())
+                url: 'views/product/product/product.process-slide.html?' + t
             },
             status: {
-                url: 'views/product/product/product.status-slide.html?' + (new Date())
+                url: 'views/product/product/product.status-slide.html?' + t
             },
             popover: {
                 url: 'process-tmpl.html'
             }
         };
-
-        $scope.page = undefined;
-
-        $scope.processes = [];
-        $scope.processProduct = undefined;
 
         $scope.defaultQuery = {
             pageSize: 20,
@@ -38,6 +34,7 @@ angular.module('ecommApp')
         };
         $scope.query = angular.copy($scope.defaultQuery);
 
+        $scope.processes = [];
         $scope.detailsSlideChecked = false;
         $scope.processSlideChecked = false;
         $scope.statusSlideChecked = false;
@@ -78,7 +75,7 @@ angular.module('ecommApp')
         };
 
         $scope.reset = function() {
-            $scope.query = angular.copy($scope.defautlQuery);
+            $scope.query = angular.copy($scope.defaultQuery);
             $scope.searchData($scope.query);
         };
 

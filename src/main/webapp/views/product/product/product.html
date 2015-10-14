@@ -9,9 +9,9 @@
 </ol>
 <div class="container-fluid">
     <div class="panel panel-default">
-        <form name="productSearchForm" novalidate ng-submit="search()">
+        <form name="productSearchForm" novalidate ng-submit="search(query)">
             <table class="table clear-marginbottom-table">
-                <tbody>
+                <thead>
                     <tr>
                         <td width="12%">
                             <div class="form-group">
@@ -68,7 +68,7 @@
                             </div>
                         </td>
                     </tr>
-                </tbody>
+                </thead>
             </table>
         </form>
         <div class="panel-body" ng-show="page.content.length == 0">
