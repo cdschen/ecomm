@@ -2,13 +2,14 @@
     <div id="operator-slider">
         <div class="panel panel-default">
             <div class="panel-body">
-                <button type="button" class="close" ng-click="closeMadeFromSlide()">
+                <button type="button" class="close" ng-click="toggleMadeFromSlide()">
                     <span aria-hidden="true">×</span>
                 </button>
-                <h3>{{title}}产地</h3>
+                <h3 class="text-success">
+                    <strong>{{title}}产地</strong>
+                </h3>
                 <hr>
                 <form name="madeFromForm" class="form-horizontal" novalidate ng-submit="saveMadeFrom(madeFromForm, madeFrom)">
-                    <!-- name -->
                     <div class="form-group has-feedback" ng-class="{'has-success':(madeFromForm.name.$dirty && madeFromForm.name.$valid), 'has-warning':(madeFromForm.name.$dirty && madeFromForm.name.$invalid) }">
                         <label class="control-label col-md-2">产地名称 <span class="text-danger">*</span></label>
                         <div class="col-md-5">
@@ -20,7 +21,6 @@
                             <span ng-messages-include="views/error-messages.html"></span>
                         </span>
                     </div>
-                     <!-- button -->
                     <div class="form-group">
                         <div class="col-md-5 col-md-offset-2">
                             <button type="submit" class="btn btn-success btn-lg" ng-disabled="!madeFromForm.$valid">保存</button>

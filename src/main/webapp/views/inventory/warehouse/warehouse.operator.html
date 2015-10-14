@@ -14,7 +14,7 @@
                 <div class="form-group has-feedback" ng-class="{'has-success':(warehouseOperatorForm.name.$dirty && warehouseOperatorForm.name.$valid), 'has-warning':(warehouseOperatorForm.name.$dirty && warehouseOperatorForm.name.$invalid) }">
                     <label class="control-label col-md-2">仓库名称 <span class="text-danger">*</span></label>
                     <div class="col-md-5">
-                        <input type="text" class="form-control" name="name" ng-model="warehouse.name" placeholder="仓库名称" required ng-minlength="1" ng-maxlength="20" />
+                        <input type="text" class="form-control" name="name" ng-model="warehouse.name" placeholder="(必填)" required ng-minlength="1" ng-maxlength="20" />
                         <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="warehouseOperatorForm.name.$dirty && warehouseOperatorForm.name.$valid"></span>
                         <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="warehouseOperatorForm.name.$dirty && warehouseOperatorForm.name.$invalid"></span>
                     </div>
@@ -25,7 +25,7 @@
                 <div class="form-group has-feedback" ng-class="{'has-success':(warehouseOperatorForm.address.$dirty && warehouseOperatorForm.address.$valid), 'has-warning':(warehouseOperatorForm.address.$dirty && warehouseOperatorForm.address.$invalid) }">
                     <label class="control-label col-md-2">仓库地址 <span class="text-danger">*</span></label>
                     <div class="col-md-5">
-                        <input type="text" class="form-control" name="address" ng-model="warehouse.address" placeholder="仓库地址" required ng-minlength="1" ng-maxlength="20" />
+                        <input type="text" class="form-control" name="address" ng-model="warehouse.address" placeholder="(必填)" required ng-minlength="1" ng-maxlength="20" />
                         <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="warehouseOperatorForm.address.$dirty && warehouseOperatorForm.address.$valid"></span>
                         <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="warehouseOperatorForm.address.$dirty && warehouseOperatorForm.address.$invalid"></span>
                     </div>
@@ -36,7 +36,7 @@
                 <div class="form-group has-feedback" ng-class="{'has-success':(warehouseOperatorForm.phone.$dirty && warehouseOperatorForm.phone.$valid), 'has-warning':(warehouseOperatorForm.phone.$dirty && warehouseOperatorForm.phone.$invalid) }">
                     <label class="control-label col-md-2" >联系电话 <span class="text-danger">*</span></label>
                     <div class="col-md-5">
-                        <input type="text" class="form-control" name="phone" ng-model="warehouse.phone" placeholder="联系电话" required ng-minlength="1" ng-maxlength="20" />
+                        <input type="text" class="form-control" name="phone" ng-model="warehouse.phone" placeholder="(必填)" required ng-minlength="1" ng-maxlength="20" />
                         <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="warehouseOperatorForm.phone.$dirty && warehouseOperatorForm.phone.$valid"></span>
                         <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="warehouseOperatorForm.phone.$dirty && warehouseOperatorForm.phone.$invalid"></span>
                     </div>
@@ -47,7 +47,7 @@
                 <div class="form-group has-feedback" ng-class="{'has-success':(warehouseOperatorForm.email.$dirty && warehouseOperatorForm.email.$valid), 'has-warning':(warehouseOperatorForm.email.$dirty && warehouseOperatorForm.email.$invalid) }">
                     <label class="control-label col-md-2" >联系Email <span class="text-danger">*</span></label>
                     <div class="col-md-5">
-                        <input type="email" class="form-control" name="email" ng-model="warehouse.email" placeholder="联系Email" required ng-minlength="1" ng-maxlength="20" />
+                        <input type="email" class="form-control" name="email" ng-model="warehouse.email" placeholder="(必填)" required ng-minlength="1" ng-maxlength="20" />
                         <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="warehouseOperatorForm.email.$dirty && warehouseOperatorForm.email.$valid"></span>
                         <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="warehouseOperatorForm.email.$dirty && warehouseOperatorForm.email.$invalid"></span>
                     </div>
@@ -56,7 +56,7 @@
                     </span>
                 </div>
                 <div class="form-group">
-                    <label class="control-label col-md-2">是否支持库位 <span class="text-danger">*</span></label>
+                    <label class="control-label col-md-2">是否支持库位 </label>
                     <div class="col-md-10">
                         <div class="checkbox">
                             <label>
@@ -82,7 +82,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title text-danger">
-                    <span class="glyphicon glyphicon-question-sign"></span> 确定删除
+                    <span class="glyphicon glyphicon-question-sign"></span> <strong>确定删除</strong>
                 </h4>
             </div>
             <div class="modal-footer">

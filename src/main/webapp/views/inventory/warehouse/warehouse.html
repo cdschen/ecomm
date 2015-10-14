@@ -6,16 +6,19 @@
     </li>
 </ol>
 <div class="container-fluid">
-    <div class="panel panel-default">
-        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h3 class="panel-title">仓库列表</h3>
+        </div>
+        <table class="table table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
             <thead>
                 <tr>
                     <th width="16%">编号</th>
                     <th width="16%">名字</th>
                     <th width="16%">地址</th>
                     <th width="16%">电话</th>
-                    <th width="16%">Email</th>
-                    <th width="20%">支持库位</th>
+                    <th width="26%">Email</th>
+                    <th width="10%">支持库位</th>
                 </tr>
             </thead>
             <tbody>
@@ -48,13 +51,13 @@
                         <nav class="page-list">
                             <ul class="pagination pagination-sm">
                                 <li ng-class="{disabled: page.first}">
-                                    <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
+                                    <a href="javascript:void(0)" ng-click="turnPage(page.number - 1)">&laquo;</a>
                                 </li>
                                 <li ng-repeat="i in query.totalPagesList" ng-class="{active: i == page.number}">
-                                    <a href="" ng-click="turnPage(i)">{{i+1}}</a>
+                                    <a href="javascript:void(0)" ng-click="turnPage(i)">{{i+1}}</a>
                                 </li>
                                 <li ng-class="{disabled: page.last}">
-                                    <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                    <a href="javascript:void(0)" ng-click="turnPage(page.number + 1)">&raquo;</a>
                                 </li>
                             </ul>
                             <div class="page-total">
@@ -68,7 +71,9 @@
             </tfoot>
         </table>
         <div class="panel-body" ng-show="page.content.length == 0">
-            <div class="alert alert-warning">没有任何数据被检索到</div>
+            <div class="alert alert-warning">
+                <span class="glyphicon glyphicon-info-sign"></span> 没有任何数据被检索到
+            </div>
         </div>
     </div>
 </div>
@@ -78,9 +83,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title text-success" id="myModalLabel">
+                <h3 class="modal-title text-success" id="myModalLabel">
                     <strong>库位管理</strong>
-                </h4>
+                </h3>
             </div>
             <form name="positionsOperatorForm" class="form-horizontal" role="form" novalidate ng-submit="savePositions(positions)">
                 <div class="modal-body">

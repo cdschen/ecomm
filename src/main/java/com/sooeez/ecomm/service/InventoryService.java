@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +16,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.sooeez.ecomm.domain.Inventory;
 import com.sooeez.ecomm.domain.InventoryBatch;
 import com.sooeez.ecomm.domain.InventoryBatchItem;
+import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Order;
 import com.sooeez.ecomm.domain.OrderBatch;
 import com.sooeez.ecomm.domain.OrderItem;
@@ -202,17 +206,13 @@ public class InventoryService {
 			
 			batch.setOperateTime(new Date(System.currentTimeMillis()));
 			
-			if (batch.getType().intValue() == 2) {
-				batch.setOutInventoryTime(new Date(System.currentTimeMillis()));
-			}
-			
 			// batch状态为待完成时
 			if (batch.getType().intValue() == 1) {
 
 				List<InventoryBatchItem> batchItems = batch.getItems();
 
 				for (InventoryBatchItem item : batchItems) {
-
+					
 					item.setCreateTime(batch.getOperateTime());
 					item.setBatchType(batch.getType());
 					item.setBatchOperate(batch.getOperate());
@@ -222,6 +222,7 @@ public class InventoryService {
 			
 			if (batch.getType().intValue() == 2) { // 当出库单状态为已完成的时候，修改库存
 				
+				batch.setOutInventoryTime(new Date(System.currentTimeMillis()));
 				Inventory inventoryQuery = new Inventory();
 				inventoryQuery.setWarehouseId(batch.getWarehouse().getId());
 				
@@ -233,7 +234,8 @@ public class InventoryService {
 				for (InventoryBatchItem item : batchItems) {
 
 					item.setBatchType(batch.getType());
-					item.setLastTime(new Date());
+					item.setLastTime(batch.getOutInventoryTime());
+					item.setExecuteOperator(batch.getExecuteOperator());
 					
 					for (Product product: products) {
 						// 匹配到商品
@@ -723,8 +725,8 @@ public class InventoryService {
 	 */
 
 	@Transactional
-	public InventoryBatchItem saveInventoryBatchItem(InventoryBatchItem inventoryBatchItem) {
-		return this.inventoryBatchItemRepository.save(inventoryBatchItem);
+	public InventoryBatchItem saveInventoryBatchItem(InventoryBatchItem item) {
+		return this.inventoryBatchItemRepository.save(item);
 	}
 
 	@Transactional
@@ -736,26 +738,49 @@ public class InventoryService {
 		return this.inventoryBatchItemRepository.findOne(id);
 	}
 
-	public List<InventoryBatchItem> getInventoryBatchItems(InventoryBatchItem inventoryBatchItem, Sort sort) {
-		return this.inventoryBatchItemRepository.findAll(getInventoryBatchItemSpecification(inventoryBatchItem), sort);
+	public List<InventoryBatchItem> getInventoryBatchItems(InventoryBatchItem item, Sort sort) {
+		return this.inventoryBatchItemRepository.findAll(getInventoryBatchItemSpecification(item), sort);
 	}
 
-	public Page<InventoryBatchItem> getPagedInventoryBatchItems(InventoryBatchItem inventoryBatchItem, Pageable pageable) {
-		return this.inventoryBatchItemRepository.findAll(getInventoryBatchItemSpecification(inventoryBatchItem), pageable);
+	public Page<InventoryBatchItem> getPagedInventoryBatchItems(InventoryBatchItem item, Pageable pageable) {
+		return this.inventoryBatchItemRepository.findAll(getInventoryBatchItemSpecification(item), pageable);
 	}
 	
-	private Specification<InventoryBatchItem> getInventoryBatchItemSpecification(InventoryBatchItem inventoryBatchItem) {
+	private Specification<InventoryBatchItem> getInventoryBatchItemSpecification(InventoryBatchItem item) {
 
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			if (inventoryBatchItem.getId() != null) {
-				predicates.add(cb.equal(root.get("id"), inventoryBatchItem.getId()));
+			if (item.getId() != null) {
+				predicates.add(cb.equal(root.get("id"), item.getId()));
 			}
-			if (inventoryBatchItem.getProductId() != null) {
-				predicates.add(cb.equal(root.get("productId"), inventoryBatchItem.getProductId()));
+			if (item.getProductId() != null) {
+				predicates.add(cb.equal(root.get("productId"), item.getProductId()));
 			}
-			if (inventoryBatchItem.getWarehouseId() != null) {
-				predicates.add(cb.equal(root.get("warehouseId"), inventoryBatchItem.getWarehouseId()));
+			if (item.getWarehouseId() != null) {
+				predicates.add(cb.equal(root.get("warehouseId"), item.getWarehouseId()));
+			}
+			if (item.getBatchOperate() != null) {
+				predicates.add(cb.equal(root.get("batchOperate"), item.getBatchOperate()));
+			}
+			if (item.getCreateTimeStart() != null && item.getCreateTimeEnd() != null) {
+				predicates.add(cb.between(root.get("createTime"), item.getCreateTimeStart(), item.getCreateTimeEnd()));
+			} else if (item.getCreateTimeStart() != null) {
+				predicates.add(cb.greaterThanOrEqualTo(root.get("createTime"), item.getCreateTimeStart()));
+			} else if (item.getCreateTimeEnd() != null) {
+				predicates.add(cb.lessThanOrEqualTo(root.get("createTime"), item.getCreateTimeEnd()));
+			}
+			
+			if (StringUtils.hasText(item.getProductSKU()) || StringUtils.hasText(item.getProductName())) {
+				Subquery<Product> productSubquery = query.subquery(Product.class);
+				Root<Product> productRoot = productSubquery.from(Product.class);
+				productSubquery.select(productRoot.get("id"));
+				if (StringUtils.hasText(item.getProductSKU())) {
+					productSubquery.where(cb.like(productRoot.get("sku"), "%" + item.getProductSKU() + "%"));
+				}
+				if (StringUtils.hasText(item.getProductName())) {
+					productSubquery.where(cb.like(productRoot.get("name"), "%" + item.getProductName() + "%"));
+				}
+				predicates.add(cb.in(root.get("productId")).value(productSubquery));
 			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};

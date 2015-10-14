@@ -2,13 +2,14 @@
     <div id="operator-slider">
         <div class="panel panel-default">
             <div class="panel-body">
-                <button type="button" class="close" ng-click="closeSupplierSlide()">
+                <button type="button" class="close" ng-click="toggleSupplierSlide()">
                     <span aria-hidden="true">×</span>
                 </button>
-                <h3>{{title}}供应商</h3>
+                <h3 class="text-success">
+                    <strong>{{title}}供应商</strong>
+                </h3>
                 <hr>
                 <form name="supplierForm" class="form-horizontal" novalidate ng-submit="saveSupplier(supplierForm, supplier)">
-                    <!-- name -->
                     <div class="form-group has-feedback" ng-class="{'has-success':(supplierForm.name.$dirty && supplierForm.name.$valid), 'has-warning':(supplierForm.name.$dirty && supplierForm.name.$invalid) }">
                         <label class="control-label col-md-2">供应商名称 <span class="text-danger">*</span></label>
                         <div class="col-md-5">
@@ -20,7 +21,6 @@
                             <span ng-messages-include="views/error-messages.html"></span>
                         </span>
                     </div>
-                    <!-- phone -->
                     <div class="form-group has-feedback" ng-class="{'has-success':(supplierForm.phone.$dirty && supplierForm.phone.$valid), 'has-warning':(supplierForm.phone.$dirty && supplierForm.phone.$invalid) }">
                         <label class="control-label col-md-2">电话 <span class="text-danger">*</span></label>
                         <div class="col-md-5">
@@ -32,7 +32,6 @@
                             <span ng-messages-include="views/error-messages.html"></span>
                         </span>
                     </div>
-                    <!-- email -->
                     <div class="form-group has-feedback" ng-class="{'has-success':(supplierForm.email.$dirty && supplierForm.email.$valid), 'has-warning':(supplierForm.email.$dirty && supplierForm.email.$invalid) }">
                         <label class="control-label col-md-2">Email <span class="text-danger">*</span></label>
                         <div class="col-md-5">
@@ -44,7 +43,6 @@
                             <span ng-messages-include="views/error-messages.html"></span>
                         </span>
                     </div>
-                    <!-- address -->
                     <div class="form-group has-feedback" ng-class="{'has-success':(supplierForm.address.$dirty && supplierForm.address.$valid), 'has-warning':(supplierForm.address.$dirty && supplierForm.address.$invalid) }">
                         <label class="control-label col-md-2">地址 <span class="text-danger">*</span></label>
                         <div class="col-md-5">
@@ -56,7 +54,6 @@
                             <span ng-messages-include="views/error-messages.html"></span>
                         </span>
                     </div>
-                     <!-- button -->
                     <div class="form-group">
                         <div class="col-md-5 col-md-offset-2">
                             <button type="submit" class="btn btn-success btn-lg" ng-disabled="!supplierForm.$valid">保存</button>
