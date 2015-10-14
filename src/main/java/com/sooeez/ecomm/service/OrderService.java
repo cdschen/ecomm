@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Order;
 import com.sooeez.ecomm.domain.OrderBatch;
 import com.sooeez.ecomm.domain.OrderItem;
+import com.sooeez.ecomm.domain.ProcessStep;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.ProductShopTunnel;
 import com.sooeez.ecomm.domain.Shipment;
@@ -62,6 +64,8 @@ public class OrderService {
 	@Autowired private OrderItemRepository orderItemRepository;
 	
 	@Autowired private OrderBatchRepository orderBatchRepository;
+	
+	@Autowired private ProcessService processServiceRepository;
 	
 	// Service
 	
@@ -1064,11 +1068,11 @@ public class OrderService {
 	 * BEGIN API Order
 	 */
 	
-	public void setAPIResponseOrderDetail(Shop shop, DTO_Order dtoOrder, Order order)
+	public void getAPIRespondOrderDetail(Shop shop, DTO_Order dtoOrder, Order order)
 	{
 		/* 设置订单基本信息 */
 		dtoOrder.setId( order.getId() );
-		dtoOrder.setShop_id( order.getShopId() );
+		dtoOrder.setShop_id( order.getShop().getId() );
 		dtoOrder.setOrder_sn( order.getExternalSn() );
 		dtoOrder.setQty_total_item_ordered( order.getQtyTotalItemOrdered() );
 		dtoOrder.setQty_total_item_shipped( order.getQtyTotalItemShipped() );
@@ -1155,75 +1159,81 @@ public class OrderService {
 		
 		/* 获得发货单 */
 		List<DTO_Shipment> dtoShipments = new ArrayList<DTO_Shipment>();
-		for (Shipment shipment : order.getShipments())
+		if( order.getShipments() != null )
 		{
-			DTO_Shipment dtoShipment = new DTO_Shipment();
-			dtoShipment.setId( shipment.getId() );
-			dtoShipment.setCourier_name( shipment.getCourier()!=null ? shipment.getCourier().getName() : null );
-			dtoShipment.setCreator( shipment.getOperator()!=null ? shipment.getOperator().getUsername() : null );
-			dtoShipment.setExecutor( shipment.getExecuteOperator()!=null ? shipment.getExecuteOperator().getUsername() : null );
-			dtoShipment.setCourier_name( shipment.getCourier()!=null ? shipment.getCourier().getName() : null );
-			dtoShipment.setShip_number( shipment.getShipNumber() );
-			
-			String shipStatus = "未知状态";
-			if( shipment.getShipStatus()!=null )
+			for (Shipment shipment : order.getShipments())
 			{
-				switch ( shipment.getShipStatus() )
+				DTO_Shipment dtoShipment = new DTO_Shipment();
+				dtoShipment.setId( shipment.getId() );
+				dtoShipment.setCourier_name( shipment.getCourier()!=null ? shipment.getCourier().getName() : null );
+				dtoShipment.setCreator( shipment.getOperator()!=null ? shipment.getOperator().getUsername() : null );
+				dtoShipment.setExecutor( shipment.getExecuteOperator()!=null ? shipment.getExecuteOperator().getUsername() : null );
+				dtoShipment.setCourier_name( shipment.getCourier()!=null ? shipment.getCourier().getName() : null );
+				dtoShipment.setShip_number( shipment.getShipNumber() );
+				
+				String shipStatus = "未知状态";
+				if( shipment.getShipStatus()!=null )
 				{
-					case 1: shipStatus="待取件"; break;
-					case 2: shipStatus="已发出"; break;
-					case 3: shipStatus="已签收"; break;
-					case 4: shipStatus="派送异常"; break;
-					case 5: shipStatus="作废"; break;
-		
-					default: shipStatus="未知状态"; break;
+					switch ( shipment.getShipStatus() )
+					{
+						case 1: shipStatus="待取件"; break;
+						case 2: shipStatus="已发出"; break;
+						case 3: shipStatus="已签收"; break;
+						case 4: shipStatus="派送异常"; break;
+						case 5: shipStatus="作废"; break;
+			
+						default: shipStatus="未知状态"; break;
+					}
 				}
+				dtoShipment.setShip_status( shipStatus );
+				
+				dtoShipment.setQty_total_item_shipped( shipment.getQtyTotalItemShipped() );
+				dtoShipment.setTotal_weight( shipment.getTotalWeight() );
+				dtoShipment.setShipfee_cost( shipment.getShipfeeCost() );
+				dtoShipment.setCreate_time( shipment.getCreateTime()!=null ? shipment.getCreateTime().toString() : null );
+				dtoShipment.setLast_update( shipment.getLastUpdate()!=null ? shipment.getLastUpdate().toString() : null );
+				dtoShipment.setPickup_time( shipment.getPickupTime()!=null ? shipment.getPickupTime().toString() : null );
+				dtoShipment.setSignup_time( shipment.getSignupTime()!=null ? shipment.getSignupTime().toString() : null );
+				dtoShipment.setMemo( shipment.getMemo() );
+				dtoShipment.setSender_name( shipment.getSenderName() );
+				dtoShipment.setSender_phone( shipment.getSenderPhone() );
+				dtoShipment.setSender_email( shipment.getSenderEmail() );
+				dtoShipment.setSender_address( shipment.getSenderAddress() );
+				dtoShipment.setSender_address( shipment.getSenderAddress() );
+				dtoShipment.setSender_post( shipment.getSenderPost() );
+				dtoShipment.setReceive_name( shipment.getReceiveName() );
+				dtoShipment.setReceive_phone( shipment.getReceivePhone() );
+				dtoShipment.setReceive_email( shipment.getReceiveEmail() );
+				dtoShipment.setReceive_country( shipment.getReceiveCountry() );
+				dtoShipment.setReceive_province( shipment.getReceiveProvince() );
+				dtoShipment.setReceive_city( shipment.getReceiveCity() );
+				dtoShipment.setReceive_address( shipment.getReceiveAddress() );
+				dtoShipment.setReceive_post( shipment.getReceivePost() );
+				
+				dtoShipments.add( dtoShipment );
 			}
-			dtoShipment.setShip_status( shipStatus );
-			
-			dtoShipment.setQty_total_item_shipped( shipment.getQtyTotalItemShipped() );
-			dtoShipment.setTotal_weight( shipment.getTotalWeight() );
-			dtoShipment.setShipfee_cost( shipment.getShipfeeCost() );
-			dtoShipment.setCreate_time( shipment.getCreateTime()!=null ? shipment.getCreateTime().toString() : null );
-			dtoShipment.setLast_update( shipment.getLastUpdate()!=null ? shipment.getLastUpdate().toString() : null );
-			dtoShipment.setPickup_time( shipment.getPickupTime()!=null ? shipment.getPickupTime().toString() : null );
-			dtoShipment.setSignup_time( shipment.getSignupTime()!=null ? shipment.getSignupTime().toString() : null );
-			dtoShipment.setMemo( shipment.getMemo() );
-			dtoShipment.setSender_name( shipment.getSenderName() );
-			dtoShipment.setSender_phone( shipment.getSenderPhone() );
-			dtoShipment.setSender_email( shipment.getSenderEmail() );
-			dtoShipment.setSender_address( shipment.getSenderAddress() );
-			dtoShipment.setSender_address( shipment.getSenderAddress() );
-			dtoShipment.setSender_post( shipment.getSenderPost() );
-			dtoShipment.setReceive_name( shipment.getReceiveName() );
-			dtoShipment.setReceive_phone( shipment.getReceivePhone() );
-			dtoShipment.setReceive_email( shipment.getReceiveEmail() );
-			dtoShipment.setReceive_country( shipment.getReceiveCountry() );
-			dtoShipment.setReceive_province( shipment.getReceiveProvince() );
-			dtoShipment.setReceive_city( shipment.getReceiveCity() );
-			dtoShipment.setReceive_address( shipment.getReceiveAddress() );
-			dtoShipment.setReceive_post( shipment.getReceivePost() );
-			
-			dtoShipments.add( dtoShipment );
+			dtoOrder.setShipments( dtoShipments );
 		}
-		dtoOrder.setShipments( dtoShipments );
 		
 		
 		/* 获得流程状态 */
 		List<DTO_Process_Status> dtoProcessStatus = new ArrayList<DTO_Process_Status>();
-		for ( ObjectProcess objProcess : order.getProcesses() )
+		if( order.getProcesses() != null )
 		{
-			DTO_Process_Status processingState = new DTO_Process_Status();
-			processingState.setName( objProcess.getProcess().getName() );
-			processingState.setValue( objProcess.getStep().getName() );
-			dtoProcessStatus.add( processingState );
+			for ( ObjectProcess objProcess : order.getProcesses() )
+			{
+				DTO_Process_Status processingState = new DTO_Process_Status();
+				processingState.setName( objProcess.getProcess().getName() );
+				processingState.setValue( objProcess.getStep().getName() );
+				dtoProcessStatus.add( processingState );
+			}
+			dtoOrder.setProcessing_status( dtoProcessStatus );
 		}
-		dtoOrder.setProcessing_status( dtoProcessStatus );
 		
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setAPIRespondOrders(Shop shop, List<DTO_Order> dtoOrders, DTO_Pagination page_context)
+	public void getAPIRespondOrders(Shop shop, List<DTO_Order> dtoOrders, DTO_Pagination page_context)
 	{
 		/* 1. 获得订单总数 */
 		String sqlCount = "SELECT COUNT(*) FROM t_order " +
@@ -1263,14 +1273,14 @@ public class OrderService {
 			{
 				DTO_Order dtoOrder = new DTO_Order();
 				
-				setAPIResponseOrderDetail(shop, dtoOrder, order);
+				getAPIRespondOrderDetail(shop, dtoOrder, order);
 				
 				dtoOrders.add( dtoOrder );
 			}
 		}
 	}
 
-	public void setAPIRespondOrder(Shop shop, Long orderId, String orderSn, DTO_Order dtoOrder)
+	public void getAPIRespondOrder(Shop shop, Long orderId, String orderSn, DTO_Order dtoOrder)
 	{
 		/* 2. 获得订单信息 */
 		String sql = "SELECT * FROM t_order " +
@@ -1287,11 +1297,552 @@ public class OrderService {
 		{
 			Order order = (Order) query.getSingleResult();
 			
-			setAPIResponseOrderDetail(shop, dtoOrder, order);
+			getAPIRespondOrderDetail(shop, dtoOrder, order);
 		}
 	}
 	
-	public void deleteAPIRespondOrders(Shop shop, Long orderId, String orderSn, Map<String, Object> map)
+	public void createAPIRespondOrder(Shop shop, DTO_Order dtoOrder, Map<String, Object> map)
+	{
+		/* 是否自营店 */
+		Boolean isSelfRunShop = shop.getType() == 0 ? true : false;
+		
+		Boolean isSkuMatched = true;
+		
+		/* 订购总数量 */
+		int qtyOrdered = 0;
+		/* 订购总重量 */
+		int weight = 0;
+		/* 商品总金额 */
+		BigDecimal subtotal = new BigDecimal( 0 );
+		
+		List<OrderItem> orderItems = new ArrayList<OrderItem>();
+
+		/* 如果有传入订单详情 */
+		if( dtoOrder.getOrder_items() != null && dtoOrder.getOrder_items().size() > 0 )
+		{
+			for( DTO_OrderItem dtoOrderItem : dtoOrder.getOrder_items() )
+			{
+				OrderItem orderItem = new OrderItem();
+				
+				orderItem.setSku( dtoOrderItem.getSku() );
+				orderItem.setExternalSku( dtoOrderItem.getShop_product_sku() );
+				orderItem.setExternal_name( dtoOrderItem.getShop_product_name() );
+				orderItem.setQtyOrdered( dtoOrderItem.getQty_ordered() );
+				
+				orderItems.add( orderItem );
+				
+				/* 2. 获得产品信息 */
+				String sql = "SELECT * FROM t_product " +
+						 "WHERE sku = ?2 " +
+						 "AND id IN (" +
+							 "SELECT product_id FROM t_inventory " +
+							 "WHERE warehouse_id IN (" +
+								 "SELECT warehouse_id FROM t_tunnel_warehouse " +
+								 "WHERE tunnel_id IN (" +
+									 "SELECT id FROM t_shop_tunnel " +
+									 "WHERE shop_id = ?1 " +
+								 ") " +
+							 ") " +
+						 ") " +
+						 "AND deleted = false " +
+						 "LIMIT 1";
+				Query query =  em.createNativeQuery( sql , Product.class);
+				query.setParameter(1, shop.getId());
+				query.setParameter(2, dtoOrderItem.getSku());
+
+				if( ! query.getResultList().isEmpty() )
+				{
+					Product product = (Product) query.getSingleResult();
+					
+					orderItem.setName( product.getName() );
+					orderItem.setProduct( product );
+					orderItem.setUnitWeight( product.getWeight() );
+					
+					// 如果 Item 没有指定价格，根据 sku 查对应的 product，没有找到对应的 product 则返回错误信息并停止处理，如果在产品表里找到多个价位？
+					if( dtoOrderItem.getUnit_price() == null || dtoOrderItem.getUnit_price().equals( 0 ) )
+					{
+						/* 是否自营 */
+						if( isSelfRunShop )
+						{
+							/***
+							 * 
+							 * 		暂时这样 Hardcode，以后要改
+							 * 
+							 */
+							dtoOrderItem.setUnit_price( product.getPriceL1() );
+						}
+						else
+						{
+							/* 给订单详情指定合作店铺所对应的产品价位 */
+							switch ( shop.getPriceLevel() )
+							{
+								case 1: dtoOrderItem.setUnit_price( product.getPriceL1() );  break;
+								case 2: dtoOrderItem.setUnit_price( product.getPriceL2() );  break;
+								case 3: dtoOrderItem.setUnit_price( product.getPriceL3() );  break;
+								case 4: dtoOrderItem.setUnit_price( product.getPriceL4() );  break;
+								case 5: dtoOrderItem.setUnit_price( product.getPriceL5() );  break;
+								case 6: dtoOrderItem.setUnit_price( product.getPriceL6() );  break;
+								case 7: dtoOrderItem.setUnit_price( product.getPriceL7() );  break;
+								case 8: dtoOrderItem.setUnit_price( product.getPriceL8() );  break;
+								case 9: dtoOrderItem.setUnit_price( product.getPriceL9() );  break;
+								case 10: dtoOrderItem.setUnit_price( product.getPriceL10() );  break;
+							}
+						}
+					}
+					
+					orderItem.setUnitPrice( dtoOrderItem.getUnit_price() );
+					/***
+					 * 
+					 * 		每个国家的销售税不是一样的，15% 属于Hardcode
+					 * 
+					 */
+					orderItem.setUnitGst( dtoOrderItem.getUnit_price().subtract( dtoOrderItem.getUnit_price().multiply( new BigDecimal( 0.15 ) ) ) );
+				}
+				else
+				{
+					isSkuMatched = false;
+					break;
+				}
+				
+				/* 商品总金额（含税) */
+				subtotal = subtotal.add( dtoOrderItem.getUnit_price() );
+				qtyOrdered++;
+				weight += dtoOrderItem.getUnit_weight() != null ? dtoOrderItem.getUnit_weight() : 0;
+			}
+		}
+		
+		if( isSkuMatched )
+		{
+			dtoOrder.setWeight( weight );
+			/* 订单总金额 = 商品金额(subtotal) + 运费(shipping_fee) */
+			dtoOrder.setGrand_total( subtotal );
+			/***
+			 * 
+			 * 		每个国家的销售税不是一样的，15% 属于Hardcode
+			 * 
+			 */
+			/* 商品包含的税金 */
+			dtoOrder.setTax( subtotal.subtract( subtotal.multiply( new BigDecimal( 0.15 ) ) ) );
+			/* 商品总件数 */
+			dtoOrder.setQty_total_item_ordered( qtyOrdered );
+			
+			Order order = new Order();
+			order.setItems( orderItems );
+			order.setShop( shop );
+			order.setExternalSn( dtoOrder.getOrder_sn() );
+			order.setInternalCreateTime( new Date() );
+			order.setLastUpdateTime( new Date() );
+			order.setQtyTotalItemOrdered( dtoOrder.getQty_total_item_ordered() );
+			order.setQtyTotalItemShipped( 0 );
+			order.setMemo( dtoOrder.getMemo() );
+			order.setGrandTotal( dtoOrder.getGrand_total() );
+			order.setSubtotal( dtoOrder.getSubtotal() );
+			order.setTax( dtoOrder.getTax() );
+			order.setTotalInvoiced( dtoOrder.getTotal_invoiced() );
+			order.setCurrency( shop.getCurrency() );
+			order.setWeight( dtoOrder.getWeight() );
+			order.setSenderName( dtoOrder.getSender_name() );
+			order.setSenderAddress( dtoOrder.getSender_address() );
+			order.setSenderPhone( dtoOrder.getSender_phone() );
+			order.setSenderEmail( dtoOrder.getSender_email() );
+			order.setSenderPost( dtoOrder.getSender_post() );
+			order.setReceiveName( dtoOrder.getReceive_name() );
+			order.setReceivePhone( dtoOrder.getReceive_phone() );
+			order.setReceiveEmail( dtoOrder.getReceive_email() );
+			order.setReceiveCountry( dtoOrder.getReceive_country() );
+			order.setReceiveProvince( dtoOrder.getReceive_province() );
+			order.setReceiveCity( dtoOrder.getReceive_city() );
+			order.setReceiveAddress( dtoOrder.getReceive_address() );
+			order.setReceivePost( dtoOrder.getReceive_post() );
+			
+			switch ( dtoOrder.getDelivery_method() )
+			{
+				case "快递": order.setDeliveryMethod( 1 ); break;
+				case "自提": order.setDeliveryMethod( 2 ); break;
+				case "送货上门": order.setDeliveryMethod( 3 ); break;
+			}
+			
+			com.sooeez.ecomm.domain.Process process = new com.sooeez.ecomm.domain.Process();
+			ProcessStep processStep = new ProcessStep();
+			
+			process.setId( shop.getInitStep().getProcessId() );
+			processStep.setId( shop.getInitStep().getId() );
+
+			ObjectProcess objectProcess = new ObjectProcess();
+			objectProcess.setProcess( process );
+			objectProcess.setStep( processStep );
+			objectProcess.setObjectType( 1 );
+			
+			List<ObjectProcess> processes = new ArrayList<ObjectProcess>();
+			processes.add( objectProcess );
+			
+			order.setProcesses( processes );
+			
+			this.saveOrder( order );
+			
+			this.getAPIRespondOrderDetail(shop, dtoOrder, order);
+			
+			/* 获得订单初始流程状态 */
+			String processName = "";
+			String processStepName = "";
+			process = this.processServiceRepository.getProcess( order.getProcesses().get(0).getProcess().getId() );
+			processName = process.getName();
+			for( ProcessStep ps : process.getSteps() )
+			{
+				if( ps.getId().equals( order.getProcesses().get(0).getStep().getId() ) )
+				{
+					processStepName = ps.getName();
+				}
+			}
+			
+			/* 将获得的订单初始流程状态赋值给 DTO */
+			List<DTO_Process_Status> dtoProcessStatus = new ArrayList<DTO_Process_Status>();
+			DTO_Process_Status dtoProcessState = new DTO_Process_Status();
+			dtoProcessState.setName( processName );
+			dtoProcessState.setValue( processStepName );
+			dtoProcessStatus.add( dtoProcessState );
+			
+			dtoOrder.setProcessing_status( dtoProcessStatus );
+			
+			map.put("order", dtoOrder);
+			
+			map.put("message", "New order has been created.");
+		}
+		else
+		{
+			map.put("message", "Item sku not find in product.");
+		}
+	}
+	
+	public void updateAPIRespondOrder(Shop shop, DTO_Order dtoOrder, Long orderId, String orderSn, Map<String, Object> map)
+	{
+		/* 2. 获得订单信息 */
+		String orderSQL = "SELECT * FROM t_order " +
+					 "WHERE shop_id = ?1 " +
+					 "AND (id = ?2 OR external_sn = ?3) " +
+					 "AND deleted = false " +
+					 "LIMIT 1";
+		Query orderQuery =  em.createNativeQuery( orderSQL, Order.class );
+		orderQuery.setParameter(1, shop.getId());
+		orderQuery.setParameter(2, orderId);
+		orderQuery.setParameter(3, orderSn);
+
+		/* 如果通过 id 或 sn 找到对应订单 */
+		if( ! orderQuery.getResultList().isEmpty() )
+		{
+			/* 获取订单详细信息 */
+			Order order = (Order) orderQuery.getSingleResult();
+			
+			/***
+			 * 
+			 * 		可能需要做改动，因为再第一位的有可能不是流程状态？
+			 * 
+			 */
+			/* 如果订单流程状态处在初始化阶段，也就是未处理阶段，那么就可以进行删改操作 */
+			if( order.getProcesses().get(0).getStep().getId().equals( shop.getInitStep().getId() ) )
+			{
+				/* 是否自营店 */
+				Boolean isSelfRunShop = shop.getType() == 0 ? true : false;
+				
+				Boolean isSkuMatched = true;
+				
+				/* 订购总数量 */
+				int qtyOrdered = 0;
+				/* 订购总重量 */
+				int weight = 0;
+				/* 商品总金额 */
+				BigDecimal subtotal = new BigDecimal( 0 );
+				
+				/* 如果指定了订购数量为 0 则意思是删除现有订单详情，就不需要获取传入的订单详情的信息 */
+				if( dtoOrder.getQty_total_item_ordered() == null ||
+				(dtoOrder.getQty_total_item_ordered() != null && dtoOrder.getQty_total_item_ordered() != 0) )
+				{
+					/* 如果有传入订单详情 */
+					if( dtoOrder.getOrder_items() != null && dtoOrder.getOrder_items().size() > 0 )
+					{
+						/* 如果订单本身没有详情 */
+						if( order.getItems() == null )
+						{
+							order.setItems( new ArrayList<OrderItem>() );
+						}
+						/* 如果订单本身有详情，则与传入的订单详情做匹配，如果有 sku 匹配，则将传入的详情的数据更新至数据库获取的订单详情，并将对应的传入订单详情从 list 中移除 */
+						else if( order.getItems().size() > 0 )
+						{
+							for( OrderItem orderItem : order.getItems() )
+							{
+								Iterator<DTO_OrderItem> dtoOrderItem = dtoOrder.getOrder_items().iterator();
+								while ( dtoOrderItem.hasNext() )
+								{
+									DTO_OrderItem dtoOrderItemIter = dtoOrderItem.next();
+									if( dtoOrderItemIter.getSku().equals( orderItem.getSku() ) )
+									{
+										orderItem.setExternalSku( dtoOrderItemIter.getShop_product_sku() );
+										orderItem.setExternal_name( dtoOrderItemIter.getShop_product_name() );
+										orderItem.setQtyOrdered( dtoOrderItemIter.getQty_ordered() );
+										
+										dtoOrderItem.remove();
+									}
+								}
+							}
+						}
+						
+						for( DTO_OrderItem dtoOrderItem : dtoOrder.getOrder_items() )
+						{
+							OrderItem orderItem = new OrderItem();
+							
+							orderItem.setSku( dtoOrderItem.getSku() );
+							orderItem.setExternalSku( dtoOrderItem.getShop_product_sku() );
+							orderItem.setExternal_name( dtoOrderItem.getShop_product_name() );
+							orderItem.setQtyOrdered( dtoOrderItem.getQty_ordered() );
+							
+							order.getItems().add( orderItem );
+							
+							/* 2. 获得订单信息 */
+							String sql = "SELECT * FROM t_product " +
+									 "WHERE sku = ?2 " +
+									 "AND id IN (" +
+										 "SELECT product_id FROM t_inventory " +
+										 "WHERE warehouse_id IN (" +
+											 "SELECT warehouse_id FROM t_tunnel_warehouse " +
+											 "WHERE tunnel_id IN (" +
+												 "SELECT id FROM t_shop_tunnel " +
+												 "WHERE shop_id = ?1 " +
+											 ") " +
+										 ") " +
+									 ") " +
+									 "AND deleted = false " +
+									 "LIMIT 1";
+							Query query =  em.createNativeQuery( sql , Product.class);
+							query.setParameter(1, shop.getId());
+							query.setParameter(2, dtoOrderItem.getSku());
+				
+							if( ! query.getResultList().isEmpty() )
+							{
+								Product product = (Product) query.getSingleResult();
+								
+								orderItem.setName( product.getName() );
+								orderItem.setProduct( product );
+								orderItem.setUnitWeight( product.getWeight() );
+								
+								// 如果 Item 没有指定价格，根据 sku 查对应的 product，没有找到对应的 product 则返回错误信息并停止处理，如果在产品表里找到多个价位？
+								if( dtoOrderItem.getUnit_price() == null || dtoOrderItem.getUnit_price().equals( 0 ) )
+								{
+									/* 是否自营 */
+									if( isSelfRunShop )
+									{
+										/***
+										 * 
+										 * 		暂时这样 Hardcode，以后要改
+										 * 
+										 */
+										dtoOrderItem.setUnit_price( product.getPriceL1() );
+									}
+									else
+									{
+										/* 给订单详情指定合作店铺所对应的产品价位 */
+										switch ( shop.getPriceLevel() )
+										{
+											case 1: dtoOrderItem.setUnit_price( product.getPriceL1() );  break;
+											case 2: dtoOrderItem.setUnit_price( product.getPriceL2() );  break;
+											case 3: dtoOrderItem.setUnit_price( product.getPriceL3() );  break;
+											case 4: dtoOrderItem.setUnit_price( product.getPriceL4() );  break;
+											case 5: dtoOrderItem.setUnit_price( product.getPriceL5() );  break;
+											case 6: dtoOrderItem.setUnit_price( product.getPriceL6() );  break;
+											case 7: dtoOrderItem.setUnit_price( product.getPriceL7() );  break;
+											case 8: dtoOrderItem.setUnit_price( product.getPriceL8() );  break;
+											case 9: dtoOrderItem.setUnit_price( product.getPriceL9() );  break;
+											case 10: dtoOrderItem.setUnit_price( product.getPriceL10() );  break;
+										}
+									}
+								}
+								
+								orderItem.setUnitPrice( dtoOrderItem.getUnit_price() );
+								/***
+								 * 
+								 * 		每个国家的销售税不是一样的，15% 属于Hardcode
+								 * 
+								 */
+								orderItem.setUnitGst( dtoOrderItem.getUnit_price().subtract( dtoOrderItem.getUnit_price().multiply( new BigDecimal( 0.15 ) ) ) );
+							}
+							else
+							{
+								isSkuMatched = false;
+								break;
+							}
+							
+							/* 商品总金额（含税) */
+							subtotal = subtotal.add( dtoOrderItem.getUnit_price() );
+							qtyOrdered++;
+							weight += dtoOrderItem.getUnit_weight() != null ? dtoOrderItem.getUnit_weight() : 0;
+						}
+					}
+					
+					if( isSkuMatched )
+					{
+						dtoOrder.setWeight( weight );
+						/* 订单总金额 = 商品金额(subtotal) + 运费(shipping_fee) */
+						dtoOrder.setGrand_total( subtotal );
+						/***
+						 * 
+						 * 		每个国家的销售税不是一样的，15% 属于Hardcode
+						 * 
+						 */
+						/* 商品包含的税金 */
+						dtoOrder.setTax( subtotal.subtract( subtotal.multiply( new BigDecimal( 0.15 ) ) ) );
+						/* 商品总件数 */
+						dtoOrder.setQty_total_item_ordered( qtyOrdered );
+					}
+					else
+					{
+						map.put("message", "Item sku not find in product.");
+						
+						return;
+					}
+				}
+				else
+				{
+					order.getItems().clear();
+				}
+				
+				order.setShop( shop );
+				order.setCurrency( shop.getCurrency() );
+				order.setLastUpdateTime( new Date() );
+				order.setQtyTotalItemOrdered( dtoOrder.getQty_total_item_ordered() );
+				
+				/* 将所有从API传入的非空值更新到数据库取出的订单中 */
+				if( dtoOrder.getOrder_sn() != null && ! dtoOrder.getOrder_sn().trim().equals("") )
+				{
+					order.setExternalSn( dtoOrder.getOrder_sn() );
+				}
+				if( dtoOrder.getMemo() != null && ! dtoOrder.getMemo().trim().equals("") )
+				{
+					order.setMemo( dtoOrder.getMemo() );
+				}
+				if( dtoOrder.getGrand_total() != null && ( dtoOrder.getGrand_total().compareTo(BigDecimal.ZERO) > 0 ) )
+				{
+					order.setGrandTotal( dtoOrder.getGrand_total() );
+				}
+				if( dtoOrder.getSubtotal() != null && ( dtoOrder.getSubtotal().compareTo(BigDecimal.ZERO) > 0 ) )
+				{
+					order.setSubtotal( dtoOrder.getSubtotal() );
+				}
+				if( dtoOrder.getTax() != null && ( dtoOrder.getTax().compareTo(BigDecimal.ZERO) > 0 ) )
+				{
+					order.setTax( dtoOrder.getTax() );
+				}
+				if( dtoOrder.getTotal_invoiced() != null && ( dtoOrder.getTotal_invoiced().compareTo(BigDecimal.ZERO) > 0 ) )
+				{
+					order.setTotalInvoiced( dtoOrder.getTotal_invoiced() );
+				}
+				if( dtoOrder.getWeight() != null && dtoOrder.getWeight() > 0 )
+				{
+					order.setWeight( dtoOrder.getWeight() );
+				}
+				if( dtoOrder.getSender_name() != null && ! dtoOrder.getSender_name().trim().equals("") )
+				{
+					order.setSenderName( dtoOrder.getSender_name() );
+				}
+				if( dtoOrder.getSender_address() != null && ! dtoOrder.getSender_address().trim().equals("") )
+				{
+					order.setSenderAddress( dtoOrder.getSender_address() );
+				}
+				if( dtoOrder.getSender_phone() != null && ! dtoOrder.getSender_phone().trim().equals("") )
+				{
+					order.setSenderPhone( dtoOrder.getSender_phone() );
+				}
+				if( dtoOrder.getSender_email() != null && ! dtoOrder.getSender_email().trim().equals("") )
+				{
+					order.setSenderEmail( dtoOrder.getSender_email() );
+				}
+				if( dtoOrder.getSender_post() != null && ! dtoOrder.getSender_post().trim().equals("") )
+				{
+					order.setSenderPost( dtoOrder.getSender_post() );
+				}
+				if( dtoOrder.getReceive_name() != null && ! dtoOrder.getReceive_name().trim().equals("") )
+				{
+					order.setReceiveName( dtoOrder.getReceive_name() );
+				}
+				if( dtoOrder.getReceive_phone() != null && ! dtoOrder.getReceive_phone().trim().equals("") )
+				{
+					order.setReceivePhone( dtoOrder.getReceive_phone() );
+				}
+				if( dtoOrder.getReceive_email() != null && ! dtoOrder.getReceive_email().trim().equals("") )
+				{
+					order.setReceiveEmail( dtoOrder.getReceive_email() );
+				}
+				if( dtoOrder.getReceive_country() != null && ! dtoOrder.getReceive_country().trim().equals("") )
+				{
+					order.setReceiveCountry( dtoOrder.getReceive_country() );
+				}
+				if( dtoOrder.getReceive_province() != null && ! dtoOrder.getReceive_province().trim().equals("") )
+				{
+					order.setReceiveProvince( dtoOrder.getReceive_province() );
+				}
+				if( dtoOrder.getReceive_city() != null && ! dtoOrder.getReceive_city().trim().equals("") )
+				{
+					order.setReceiveCity( dtoOrder.getReceive_city() );
+				}
+				if( dtoOrder.getReceive_address() != null && ! dtoOrder.getReceive_address().trim().equals("") )
+				{
+					order.setReceiveAddress( dtoOrder.getReceive_address() );
+				}
+				if( dtoOrder.getReceive_post() != null && ! dtoOrder.getReceive_post().trim().equals("") )
+				{
+					order.setReceivePost( dtoOrder.getReceive_post() );
+				}
+				if( dtoOrder.getDelivery_method() != null && ! dtoOrder.getDelivery_method().trim().equals("") )
+				{
+					switch ( dtoOrder.getDelivery_method() )
+					{
+						case "快递": order.setDeliveryMethod( 1 ); break;
+						case "自提": order.setDeliveryMethod( 2 ); break;
+						case "送货上门": order.setDeliveryMethod( 3 ); break;
+					}
+				}
+				
+				this.saveOrder( order );
+				
+				this.getAPIRespondOrderDetail(shop, dtoOrder, order);
+				
+				/* 获得订单初始流程状态 */
+				String processName = "";
+				String processStepName = "";
+				com.sooeez.ecomm.domain.Process process = this.processServiceRepository.getProcess( order.getProcesses().get(0).getProcess().getId() );
+				processName = process.getName();
+				for( ProcessStep ps : process.getSteps() )
+				{
+					if( ps.getId().equals( order.getProcesses().get(0).getStep().getId() ) )
+					{
+						processStepName = ps.getName();
+					}
+				}
+				
+				/* 将获得的订单初始流程状态赋值给 DTO */
+				List<DTO_Process_Status> dtoProcessStatus = new ArrayList<DTO_Process_Status>();
+				DTO_Process_Status dtoProcessState = new DTO_Process_Status();
+				dtoProcessState.setName( processName );
+				dtoProcessState.setValue( processStepName );
+				dtoProcessStatus.add( dtoProcessState );
+				
+				dtoOrder.setProcessing_status( dtoProcessStatus );
+				
+				map.put("order", dtoOrder);
+				
+				map.put("message", "The order has been updated.");
+			}
+			/* 否则订单流程状态不处在初始化阶段，也就是处在已处理阶段，那么就不可以进行删改操作 */
+			else
+			{
+				map.put("message", "The order has been processed, please contact your client manager for help.");
+			}
+		}
+		else
+		{
+			map.put("message", "Could not find order by specified id or sn, or it has been deleted.");
+		}
+	}
+	
+	public void deleteAPIRespondOrder(Shop shop, Long orderId, String orderSn, Map<String, Object> map)
 	{
 		/* 2. 获得订单信息 */
 		String sql = "SELECT * FROM t_order " +
@@ -1304,13 +1855,34 @@ public class OrderService {
 		query.setParameter(2, orderId);
 		query.setParameter(3, orderSn);
 
-		if( !query.getResultList().isEmpty() )
+		if( ! query.getResultList().isEmpty() )
 		{
-			map.put("message", "The order has been deleted.");
+			Order order = (Order) query.getSingleResult();
+			
+			/***
+			 * 
+			 * 		可能需要做改动，因为再第一位的有可能不是流程状态？
+			 * 
+			 */
+			/* 如果订单流程状态处在初始化阶段，也就是未处理阶段，那么就可以进行删改操作 */
+			if( order.getProcesses().get(0).getStep().getId().equals( shop.getInitStep().getId() ) )
+			{
+				/* 将订单是否删除更新成 true */
+				order.setDeleted( true );
+				this.saveOrder( order );
+				
+				map.put("code", "0");
+				map.put("message", "The order has been deleted.");
+			}
+			/* 否则订单流程状态不处在初始化阶段，也就是处在已处理阶段，那么就不可以进行删改操作 */
+			else
+			{
+				map.put("message", "The order has been processed, please contact your client manager for help.");
+			}
 		}
 		else
 		{
-			map.put("message", "Could not find order by specified id or sn.");
+			map.put("message", "Could not find order by specified id or sn, or it has been deleted.");
 		}
 	}
 	
