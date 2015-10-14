@@ -21,6 +21,7 @@ angular.module('ecommApp')
             sort: ['name'],
             deleted: false
         }).$promise.then(function(page) {
+            console.log(page);
             $scope.page = page;
             $scope.totalPagesList = Utils.setTotalPagesList(page);
         }).then(function() {

@@ -3,113 +3,81 @@ angular.module('ecommApp')
 .controller('MadeFromController', ['$rootScope', '$scope', 'MadeFrom', 'Utils',
     function($rootScope, $scope, MadeFrom, Utils) {
 
-        var $ = angular.element;
+        var $ = angular.element,
+            t = new Date().getTime();
 
         $scope.template = {
             operator: {
-                url: 'views/product/madefrom/madefrom.operator.html?' + (new Date())
+                url: 'views/product/madefrom/madefrom.operator-slide.html?' + t
             }
         };
 
-        $scope.totalPagesList = [];
-        $scope.pageSize = 20;
-        $scope.madeFromSlideChecked = false;
-        $scope.title = '';
+        $scope.defaultQuery = {
+            pageSize: 20,
+            totalPagesList: [],
+            sort: ['id,desc']
+        };
+        $scope.query = angular.copy($scope.defaultQuery);
 
-        $scope.refresh = function() {
+        $scope.madeFromSlideChecked = false;
+
+        $scope.searchData = function(query, number) {
             MadeFrom.get({
-                page: 0,
-                size: $scope.pageSize,
-                sort: ['id,desc']
+                page: number ? number : 0,
+                size: query.pageSize,
+                sort: query.sort
             }, function(page) {
-                console.clear();
-                console.log('page:');
-                console.log(page);
                 $scope.page = page;
-                $scope.totalPagesList = Utils.setTotalPagesList(page);
-                $scope.closeMadeFromSlide();
+                query.totalPagesList = Utils.setTotalPagesList(page);
+                $scope.madeFromSlideChecked = false;
             });
         };
 
-        $scope.refresh();
+        $scope.searchData($scope.query);
 
         $scope.turnPage = function(number) {
             if (number > -1 && number < $scope.page.totalPages) {
-                MadeFrom.get({
-                    page: number,
-                    size: $scope.pageSize,
-                    sort: ['id,desc']
-                }, function(page) {
-                    console.clear();
-                    console.log('turnPage:');
-                    console.log(page);
-                    $scope.page = page;
-                    $scope.totalPagesList = Utils.setTotalPagesList(page);
-                });
+                $scope.searchData($scope.query, number);
             }
         };
 
         $scope.updateMadeFrom = function(madeFrom) {
-            console.clear();
-            console.log('updateMadeFrom:');
-            console.log(madeFrom);
-            $scope.madeFrom = madeFrom;
-            $scope.operateMadeFrom();
+            $scope.madeFrom = angular.copy(madeFrom);
+            $scope.toggleMadeFromSlide('edit');
         };
 
-        $scope.removingMadeFrom = undefined;
-
-        $scope.showRemoveMadeFrom = function(madeFrom, $index) {
-            console.clear();
-            console.log('showRemoveMadeFrom $index: ' + $index);
-            console.log(madeFrom);
-
+        $scope.showRemoveMadeFrom = function(madeFrom) {
             $scope.removingMadeFrom = madeFrom;
             $('#madeFromDeleteModal').modal('show');
         };
 
         $scope.removeMadeFrom = function() {
-            console.clear();
-            console.log('removeMadeFrom:');
-            console.log($scope.removingMadeFrom);
-
             if (angular.isDefined($scope.removingMadeFrom)) {
                 MadeFrom.remove({
                     id: $scope.removingMadeFrom.id
                 }, {}, function() {
                     $scope.removingMadeFrom = undefined;
                     $('#madeFromDeleteModal').modal('hide');
-                    $scope.refresh();
+                    $scope.searchData($scope.query);
                 });
             }
         };
 
         $scope.saveMadeFrom = function(madeFromForm, madeFrom) {
-            console.clear();
-            console.log('saveMadeFrom:');
-            console.log(madeFrom);
-
-            MadeFrom.save({}, madeFrom, function(madeFrom) {
-                console.log('saveMadeFrom complete:');
-                console.log(madeFrom);
+            MadeFrom.save({}, madeFrom, function() {
                 madeFromForm.$setPristine();
-                $scope.refresh();
+                $scope.searchData($scope.query);
             });
         };
 
-        // operator
-
-        $scope.closeMadeFromSlide = function() {
-            $scope.madeFromSlideChecked = false;
-        };
-
-        $scope.operateMadeFrom = function(action) {
-            $scope.title = '编辑';
+        $scope.toggleMadeFromSlide = function(action) {
             if (action === 'create') {
                 $scope.title = '创建';
                 $scope.madeFrom = {};
+            } else if (action === 'edit') {
+                $scope.title = '编辑';
             }
-            $scope.madeFromSlideChecked = true;
+            $scope.madeFromSlideChecked = !$scope.madeFromSlideChecked;
         };
     }
 ]);

@@ -6,9 +6,19 @@
     <div class="panel panel-default">
         <form name="outInventorySearchForm" novalidate ng-submit="search(query)">
             <table class="table clear-marginbottom-table">
-                <tbody>
+                <thead>
                     <tr>
-                        <td width="15%">
+                         <td width="12%">
+                            <div class="form-group">
+                                <input type="text" ng-model="query.product.sku" class="form-control" placeholder="SKU">
+                            </div>
+                        </td>
+                        <td width="12%">
+                            <div class="form-group">
+                                <input type="text" ng-model="query.product.name" class="form-control" placeholder="商品名称">
+                            </div>
+                        </td>
+                        <td width="12%">
                             <ui-select ng-model="query.warehouse">
                                 <ui-select-match placeholder="请选择仓库">{{$select.selected.name}}</ui-select-match>
                                 <ui-select-choices repeat="warehouse in warehouses | filter: $select.search">
@@ -16,24 +26,24 @@
                                 </ui-select-choices>
                             </ui-select>
                         </td>
-                        <td width="15%">
-                            <ui-select ng-model="query.batch.operate">
+                        <td width="12%">
+                            <ui-select ng-model="query.batchItem.batchOperate">
                                 <ui-select-match placeholder="请选择操作类型">{{$select.selected.label}}</ui-select-match>
                                 <ui-select-choices repeat="operate in operates | filter: $select.search">
                                     <div ng-bind-html="operate.label | highlight: $select.search"></div>
                                 </ui-select-choices>
                             </ui-select>
                         </td>
-                        <td width="20%">
+                        <td width="22%">
                             <div id="sandbox-container-create">
                                 <div class="input-daterange input-group">
-                                    <input type="text" class="form-control" placeholder="创建起始时间" ng-model="query.batch.operateTimeStart"/>
+                                    <input type="text" class="form-control" placeholder="创建起始时间" ng-model="query.batchItem.createTimeStart" />
                                     <span class="input-group-addon">到</span>
-                                    <input type="text" class="form-control" placeholder="创建结束时间" ng-model="query.batch.operateTimeEnd"/>
+                                    <input type="text" class="form-control" placeholder="创建结束时间" ng-model="query.batchItem.createTimeEnd" />
                                 </div>
                             </div>
                         </td>
-                        <td width="50%">
+                        <td width="30%">
                             <div class="form-group pull-right">
                                 <button type="reset" class="btn btn-default" ng-click="reset()">
                                     <span class="glyphicon glyphicon-refresh"></span> 重置
@@ -44,11 +54,149 @@
                             </div>
                         </td>
                     </tr>
-                </tbody>
+                </thead>
             </table>
         </form>
         <div class="panel-body" style="padding:0"></div>
         <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
+            <thead>
+                <tr>
+                    <th width="15%">商品 &amp; SKU</th>
+                    <th width="10%">仓库</th>
+                    <th width="8%">库位</th>
+                    <th width="8%">操作</th>
+                    <th width="8%">状态</th>
+                    <th width="8%">数量</th>
+                    <th width="10%">操作员</th>
+                    <th width="10%">入库 | 出库 时间</th>
+                    <th width="28%">库存快照</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in page.content">
+                    <td>
+                        <p>
+                            {{item.product.name}}
+                        </p>
+                        <p>
+                            {{item.product.sku}}
+                        </p>
+                    </td>
+                    <td>
+                        {{item.warehouse.name}}
+                    </td>
+                    <td>
+                        <span ng-show="item.position.name != 'default'"> {{item.position.name}}</span>
+                    </td>
+                    <td ng-switch on="item.batchOperate">
+                        <span ng-switch-when="1">入库</span>
+                        <span ng-switch-when="2">出库</span>
+                    </td>
+                    <td ng-switch on="item.batchType">
+                        <span ng-switch-when="0">作废</span>
+                        <span ng-switch-when="1" class="text-warning">待出库</span>
+                        <span ng-switch-when="2">已出库</span>
+                    </td>
+                    <td ng-switch on="item.batchOperate">
+                        <span ng-switch-when="1">{{item.changedQuantity}}</span>
+                        <span ng-switch-when="2">{{Math.abs(item.changedQuantity)}} / {{Math.abs(item.actualQuantity)}}</span>
+                    </td>
+                    <td ng-switch on="item.batchOperate">
+                        <span ng-switch-when="1">{{item.user.username}}</span>
+                        <span ng-switch-when="2">{{item.executeOperator.username}}</span>
+                    </td>
+                    <td ng-switch on="item.batchOperate">
+                        <span ng-switch-when="1">{{item.createTime | date: 'yyyy/MM/dd hh:mm:ss'}}</span>
+                        <span ng-switch-when="2">{{item.lastTime | date: 'yyyy/MM/dd hh:mm:ss'}}</span>
+                    </td>
+                    <td>
+                        <div class="row" ng-show="item.batchType == null || item.batchType == 2">
+                            <div class="col-md-6">
+                                <div class="panel panel-default" style="margin:0">
+                                    <div class="panel-heading" style="padding:3px">
+                                        <h3 class="panel-title" style="font-size:12px">操作之前</h3>
+                                    </div>
+                                    <table class="table table-bordered table-condensed clear-marginbottom-table" style="font-size:12px" ng-show="item.inventorySnapshot.before != null">
+                                        <thead>
+                                            <tr>
+                                                <th class="active" width="50%">总数</th>
+                                                <td width="50%">{{item.inventorySnapshot.before.total}}</td>
+                                            </tr>
+                                        </thead>
+                                        <thead ng-repeat="position in item.inventorySnapshot.before.positions">
+                                            <tr ng-repeat="(name, quantity) in position">
+                                                <th class="active" width="50%">
+                                                    <span ng-show="name != 'default'">{{name}}</span>
+                                                </th>
+                                                <td width="50%">{{quantity}}</td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="panel-body" ng-show="item.inventorySnapshot.before == null" style="padding:3px">
+                                        <div class="alert alert-warning" style="font-size:12px;margin:0;padding:3px">
+                                            没有任何记录
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="panel panel-default" style="margin:0">
+                                    <div class="panel-heading" style="padding:3px">
+                                        <h3 class="panel-title" style="font-size:12px">操作之后</h3>
+                                    </div>
+                                    <table class="table table-bordered table-condensed clear-marginbottom-table" style="font-size:12px" ng-show="item.inventorySnapshot.after != null">
+                                        <thead>
+                                            <tr>
+                                                <th class="active" width="50%">总数</th>
+                                                <td width="50%">{{item.inventorySnapshot.after.total}}</td>
+                                            </tr>
+                                        </thead>
+                                        <thead ng-repeat="position in item.inventorySnapshot.after.positions">
+                                            <tr ng-repeat="(name, quantity) in position">
+                                                <th class="active" width="50%">
+                                                    <span ng-show="name != 'default'">{{name}}</span>
+                                                </th>
+                                                <td width="50%">{{quantity}}</td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="panel-body" ng-show="item.inventorySnapshot.after == null" style="padding:3px">
+                                        <div class="alert alert-warning" style="font-size:12px;margin:0;padding:3px">
+                                            没有任何记录
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="20">
+                        <nav class="page-list">
+                            <ul class="pagination pagination-sm">
+                                <li ng-class="{disabled: page.first}">
+                                    <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
+                                </li>
+                                <li ng-repeat="i in query.totalPagesList" ng-class="{active: i == page.number}">
+                                    <a href="" ng-click="turnPage(i)">{{i+1}}</a>
+                                </li>
+                                <li ng-class="{disabled: page.last}">
+                                    <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                </li>
+                            </ul>
+                            <div class="page-total">
+                                共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
+                                <select class="form-control" style="display: inline; padding:0" ng-model="query.pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                </select>
+                            </div>
+                        </nav>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <!-- <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
             <thead>
                 <tr>
                     <th width="11%">仓库</th>
@@ -62,7 +210,7 @@
                     <th width="12%">备注</th>
                 </tr>
             </thead>
-            <tbody ng-repeat="batch in page.content" >
+            <tbody ng-repeat="batch in page.content">
                 <tr ng-class="{success: batch.operate == 1, 'danger': batch.operate == 2}">
                     <td>
                         {{batch.warehouse.name}}
@@ -71,8 +219,8 @@
                         {{batch.id}}
                     </td>
                     <td ng-switch on="batch.operate">
-                        <span ng-switch-when="1">入库</span> 
-                        <span ng-switch-when="2">出库</span> 
+                        <span ng-switch-when="1">入库</span>
+                        <span ng-switch-when="2">出库</span>
                         <a href="javascript:void(0)" ng-click="toggleItemDetailsChecked(batch)"><span class="glyphicon {{batch.itemDetailsChecked ? 'glyphicon glyphicon-eye-close' : 'glyphicon-eye-open'}}"></span></a>
                     </td>
                     <td ng-switch on="batch.type">
@@ -98,7 +246,7 @@
                 </tr>
                 <tr ng-show="batch.itemDetailsChecked">
                     <td colspan="20" ng-switch on="batch.operate">
-                        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-switch-when="1" >
+                        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-switch-when="1">
                             <thead>
                                 <tr>
                                     <th width="20%">商品</th>
@@ -147,7 +295,7 @@
                                     <td>
                                         <span ng-show="item.position.name != 'default'"> {{item.position.name}}</span>
                                     </td>
-                                     <td>
+                                    <td>
                                         {{item.outBatch.id}}
                                     </td>
                                     <td>
@@ -167,31 +315,7 @@
                     </td>
                 </tr>
             </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="20">
-                        <nav class="page-list">
-                            <ul class="pagination pagination-sm">
-                                <li ng-class="{disabled: page.first}">
-                                    <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
-                                </li>
-                                <li ng-repeat="i in query.totalPagesList" ng-class="{active: i == page.number}">
-                                    <a href="" ng-click="turnPage(i)">{{i+1}}</a>
-                                </li>
-                                <li ng-class="{disabled: page.last}">
-                                    <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
-                                </li>
-                            </ul>
-                            <div class="page-total">
-                                共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
-                                <select class="form-control" style="display: inline; padding:0" ng-model="query.pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
-                                </select>
-                            </div>
-                        </nav>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
+        </table> -->
         <div class="panel-body" ng-show="page.content.length == 0">
             <div class="alert alert-warning">没有任何数据被检索到</div>
         </div>

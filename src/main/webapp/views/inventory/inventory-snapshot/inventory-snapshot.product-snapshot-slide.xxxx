@@ -1,0 +1,126 @@
+<div pageslide ps-open="productSnapshotSlideChecked" ps-side="left" ps-speed="0.25" ps-size="100%">
+    <div id="operator-slider">
+        <div class="panel panel-info">
+            <div class="panel-body" style="padding: 3px 15px;">
+                <button type="button" class="close" ng-click="toggleProductSnapshotSlide()">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="panel-body">
+                <div style="padding-right:8px;">
+                    <table class="table table-bordered table-condensed clear-marginbottom-table">
+                        <tbody>
+                            <tr>
+                                <th width="10%">商品</th>
+                                <th width="10%">仓库</th>
+                                <th width="10%">库位</th>
+                                <th width="6%">操作</th>
+                                <th width="6%">状态</th>
+                                <th width="6%">数量</th>
+                                <th width="12%">时间</th>
+                                <th width="40%">库存快照</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultHeight()">
+                    <table class="table table-bordered table-condensed clear-marginbottom-table">
+                        <tbody>
+                            <tr ng-repeat="item in productBatchItems">
+                                <td width="10%">
+                                    {{item.product.name}}
+                                </td>
+                                <td width="10%">
+                                    {{item.warehouse.name}}
+                                </td>
+                                <td width="10%">
+                                    <span ng-show="item.position.name != 'default'"> {{item.position.name}}</span>
+                                </td>
+                                <td width="6%" ng-switch on="item.batchOperate">
+                                    <span ng-switch-when="1">入库</span>
+                                    <span ng-switch-when="2">出库</span>
+                                </td>
+                                <td width="6%" ng-switch on="item.batchType">
+                                    <span ng-switch-when="0">作废</span>
+                                    <span ng-switch-when="1" class="text-warning">待出库</span>
+                                    <span ng-switch-when="2">已出库</span>
+                                </td>
+                                <td width="6%" ng-switch on="item.batchOperate">
+                                    <span ng-switch-when="1">
+                                        {{item.changedQuantity}}
+                                    </span>
+                                    <span ng-switch-when="2">
+                                        {{Math.abs(item.changedQuantity)}} / {{Math.abs(item.actualQuantity)}}
+                                    </span>
+                                </td>
+                                <td width="12%">
+                                    {{item.createTime | date: 'yyyy/MM/dd hh:mm:ss'}}
+                                </td>
+                                <td width="40%">
+                                    <div class="row" ng-show="item.batchType == null || item.batchType == 2">
+                                        <div class="col-md-6">
+                                            <div class="panel panel-default" style="margin:0">
+                                                <div class="panel-heading" style="padding:3px">
+                                                    <h3 class="panel-title" style="font-size:12px">操作之前</h3>
+                                                </div>
+                                                <div class="panel-body" ng-show="item.inventorySnapshot.before == null" style="padding:3px">
+                                                    <div class="alert alert-warning" style="font-size:12px;margin:0;padding:3px">
+                                                        没有任何记录
+                                                    </div>
+                                                </div>
+                                                <table class="table table-bordered table-condensed clear-marginbottom-table" style="font-size:12px" ng-show="item.inventorySnapshot.before != null">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th class="active" width="50%">总数</th>
+                                                            <td width="50%">{{item.inventorySnapshot.before.total}}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                    <tbody ng-repeat="position in item.inventorySnapshot.before.positions">
+                                                        <tr ng-repeat="(name, quantity) in position">
+                                                            <th class="active" width="50%">
+                                                                <span ng-show="name != 'default'">{{name}}</span>
+                                                            </th>
+                                                            <td width="50%">{{quantity}}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="panel panel-default" style="margin:0">
+                                                <div class="panel-heading" style="padding:3px">
+                                                    <h3 class="panel-title" style="font-size:12px">操作之后</h3>
+                                                </div>
+                                                <div class="panel-body" ng-show="item.inventorySnapshot.after == null" style="padding:3px">
+                                                    <div class="alert alert-warning" style="font-size:12px;margin:0;padding:3px">
+                                                        没有任何记录
+                                                    </div>
+                                                </div>
+                                                <table class="table table-bordered table-condensed clear-marginbottom-table" style="font-size:12px" ng-show="item.inventorySnapshot.after != null">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th class="active" width="50%">总数</th>
+                                                            <td width="50%">{{item.inventorySnapshot.after.total}}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                    <tbody ng-repeat="position in item.inventorySnapshot.after.positions">
+                                                        <tr ng-repeat="(name, quantity) in position">
+                                                            <th class="active" width="50%">
+                                                                <span ng-show="name != 'default'">{{name}}</span>
+                                                            </th>
+                                                            <td width="50%">{{quantity}}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

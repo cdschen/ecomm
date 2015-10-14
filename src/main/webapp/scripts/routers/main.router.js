@@ -3,6 +3,8 @@ angular.module('ecommApp')
 .config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ROLES',
     function($httpProvider, $stateProvider, $urlRouterProvider, ROLES) {
 
+        var t = new Date().getTime();
+
         $httpProvider.interceptors.push('authExpiredInterceptor');
 
         $urlRouterProvider.otherwise('/login');
@@ -12,7 +14,7 @@ angular.module('ecommApp')
                 abstract: true,
                 views: {
                     'navbar@': {
-                        templateUrl: 'views/navbar.html?' + (new Date()),
+                        templateUrl: 'views/navbar.html?' + t,
                         controller: 'NavbarController'
                     }
                 },
@@ -28,7 +30,7 @@ angular.module('ecommApp')
                 url: '/login',
                 views: {
                     'content@': {
-                        templateUrl: 'views/login.html',
+                        templateUrl: 'views/login.html?' + t,
                         controller: 'LoginController'
                     }
                 },
@@ -42,7 +44,7 @@ angular.module('ecommApp')
                 url: '/dashboard',
                 views: {
                     'content@': {
-                        templateUrl: 'views/dashboard.html'
+                        templateUrl: 'views/dashboard.html?' + t,
                     }
                 },
                 data: {
@@ -55,7 +57,7 @@ angular.module('ecommApp')
                 url: '/accessdenied',
                 views: {
                     'content@': {
-                        templateUrl: 'views/accessdenied.html'
+                        templateUrl: 'views/accessdenied.html?' + t,
                     }
                 },
                 data: {

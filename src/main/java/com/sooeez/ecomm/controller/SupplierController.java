@@ -32,8 +32,8 @@ public class SupplierController {
 	}
 	
 	@RequestMapping(value = "/suppliers")
-	public Page<Supplier> getPagedSuppliers(Pageable pageable, Supplier supplier) {
-		return this.supplierService.getPagedSuppliers(pageable, supplier);
+	public Page<Supplier> getPagedSuppliers(Supplier supplier, Pageable pageable) {
+		return this.supplierService.getPagedSuppliers(supplier, pageable);
 	}
 	
 	@RequestMapping(value = "/suppliers/get/all")

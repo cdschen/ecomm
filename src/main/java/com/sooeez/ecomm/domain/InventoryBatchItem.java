@@ -15,6 +15,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -106,9 +107,53 @@ public class InventoryBatchItem implements Serializable {
 	@JoinColumn(name = "out_batch_id")
 	private InventoryBatch outBatch = new InventoryBatch();
 
+	@Transient
+	private Date createTimeStart;
+
+	@Transient
+	private Date createTimeEnd;
+
+	@Transient
+	private String productSKU;
+
+	@Transient
+	private String productName;
+
 	//
 
 	public InventoryBatchItem() {
+	}
+
+	public String getProductSKU() {
+		return productSKU;
+	}
+
+	public void setProductSKU(String productSKU) {
+		this.productSKU = productSKU;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public Date getCreateTimeStart() {
+		return createTimeStart;
+	}
+
+	public void setCreateTimeStart(Date createTimeStart) {
+		this.createTimeStart = createTimeStart;
+	}
+
+	public Date getCreateTimeEnd() {
+		return createTimeEnd;
+	}
+
+	public void setCreateTimeEnd(Date createTimeEnd) {
+		this.createTimeEnd = createTimeEnd;
 	}
 
 	public Integer getBatchOperate() {
