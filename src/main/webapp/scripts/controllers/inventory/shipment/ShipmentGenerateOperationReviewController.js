@@ -104,8 +104,12 @@ angular.module('ecommApp')
                             $scope.$parent.totalPagesList = Utils.setTotalPagesList(page);
                         });
 
-                        $location.url('/shipment');
+                        $location.url('/shipments');
                     }
+                }
+                else
+                {
+                    toastr.warning('确认之前请确保验证全部通过，或者您可以选择点击［取消验证］之后再确认！');
                 }
 
                 console.log('After Operation Review:');
