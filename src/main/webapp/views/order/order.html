@@ -13,106 +13,68 @@
             <table class="table" style="margin:0">
                 <tbody>
                     <tr>
-                        <td width="12%">
+                        <td width="8%">
                             <div class="form-group" style="margin-bottom:0; margin-top:5px;">
                                 <input type="text" ng-model="order.orderId" class="form-control" placeholder="订单编号" />
                             </div>
                         </td>
-                        <td width="12%">
+                        <td width="8%">
                             <div class="form-group" style="margin-bottom:0; margin-top:5px;">
                                 <input type="text" class="form-control" placeholder="快递单号" />
                             </div>
                         </td>
-                        <td width="12%">
+                        <td width="8%">
                             <div class="form-group" style="margin-bottom:0; margin-top:5px;">
                                 <input type="text" ng-model="order.receiveName" class="form-control" placeholder="收件人姓名" />
                             </div>
                         </td>
-                        <td width="12%">
+                        <td width="9%">
                             <div class="form-group" style="margin-bottom:0; margin-top:5px;">
-                                <div class="input-group">
-                                    <ui-select ng-model="shop.selected">
-                                        <ui-select-match placeholder="店铺">{{$select.selected.name}}</ui-select-match>
-                                        <ui-select-choices repeat="shop in shops | filter: $select.search">
-                                            <div ng-bind-html="shop.name | highlight: $select.search"></div>
-                                        </ui-select-choices>
-                                    </ui-select>
-                                    <span class="input-group-btn">
-                                        <button type="button" ng-click="shop.selected = undefined" class="btn btn-default">
-                                            <span class="glyphicon glyphicon-trash"></span>
-                                        </button>
-                                    </span>
+                                <ui-select ng-model="shop.selected">
+                                    <ui-select-match placeholder="店铺">{{$select.selected.name}}</ui-select-match>
+                                    <ui-select-choices repeat="shop in shops | filter: $select.search">
+                                        <div ng-bind-html="shop.name | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </td>
+                        <td width="19%">
+                            <div class="form-group" style="margin-bottom:0; margin-top:5px;">
+                                <div class="input-daterange input-group">
+                                    <input type="text" class="form-control ng-pristine ng-valid ng-touched" placeholder="下单起始日期" ng-model="order.internalCreateTimeStart" style="">
+                                    <span class="input-group-addon">到</span>
+                                    <input type="text" class="form-control ng-pristine ng-untouched ng-valid" placeholder="下单结束日期" ng-model="order.internalCreateTimeEnd">
                                 </div>
                             </div>
                         </td>
-                        <td rowspan="2">
-                            <div class="panel panel-default" style="height:100px;">
-                                <div class="panel-body">
+                        <td width="19%">
+                            <div class="form-group" style="margin-bottom:0; margin-top:5px;">
+                                <div class="input-daterange input-group">
+                                    <input type="text" class="form-control ng-pristine ng-valid ng-touched" placeholder="发货起始日期" ng-model="order.shippingTimeStart" style="">
+                                    <span class="input-group-addon">到</span>
+                                    <input type="text" class="form-control ng-pristine ng-untouched ng-valid" placeholder="发货结束日期" ng-model="order.shippingTimeEnd">
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="panel panel-default" style="margin-top:5px;">
+                                <div class="panel-body" style="padding:5px;">
                                     <a href="" class="btn btn-info btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-repeat="state in selected.status"> 
                                         {{state.name}} <span class="glyphicon glyphicon-remove" sytle="color:white" ng-click="selectState(state)"></span>
                                     </a>
-                                    <a href="" class="btn btn-primary btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-click="loadStatus()">选择状态</a>
+                                    <a href="" class="btn btn-primary btn-xs" style="margin-right:5px;" ng-click="loadStatus()">选择状态</a>
                                 </div>
                             </div>
                         </td>
-                        <td width="12%" rowspan="2">
+                        <td width="14%">
                             <div class="form-group text-center">
-                                <button type="reset" class="btn btn-default btn-block" ng-click="reset()" style="margin-top:6px;">
-                                    <span class="glyphicon glyphicon-refresh"></span>&nbsp;重置
-                                </button>
-                                <br/>
-                                <button type="submit" class="btn btn-default btn-block">
-                                    <span class="glyphicon glyphicon-search"></span>&nbsp;搜索
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="12%" style="border:none;">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <input type="text" ng-model="order.internalCreateTimeStart" class="form-control" placeholder="下单起始日期" />
-                                    <span class="input-group-btn">
-                                        <button type="button" ng-click="order.internalCreateTimeStart = undefined" class="btn btn-default">
-                                            <span class="glyphicon glyphicon-trash"></span>
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-                        </td>
-                        <td width="12%" style="border:none;">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <input type="text" ng-model="order.internalCreateTimeEnd" class="form-control" placeholder="下单结束日期" />
-                                    <span class="input-group-btn">
-                                        <button type="button" ng-click="order.internalCreateTimeEnd = undefined" class="btn btn-default">
-                                            <span class="glyphicon glyphicon-trash"></span>
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-                        </td>
-                        <td width="12%" style="border:none;">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <input type="text" ng-model="order.shippingTimeStart" class="form-control" placeholder="发货起始日期" />
-                                    <span class="input-group-btn">
-                                        <button type="button" ng-click="order.shippingTimeStart = undefined" class="btn btn-default">
-                                            <span class="glyphicon glyphicon-trash"></span>
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-                        </td>
-                        <td width="12%" style="border:none;">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <input type="text" ng-model="order.shippingTimeEnd" class="form-control" placeholder="发货结束日期" />
-                                    <span class="input-group-btn">
-                                        <button type="button" ng-click="order.shippingTimeEnd = undefined" class="btn btn-default">
-                                            <span class="glyphicon glyphicon-trash"></span>
-                                        </button>
-                                    </span>
+                                <div class="col-md-12">
+                                    <button type="reset" class="btn btn-default" ng-click="reset()">
+                                        <span class="glyphicon glyphicon-refresh"></span>&nbsp;重置
+                                    </button>
+                                    <button type="submit" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-search"></span>&nbsp;搜索
+                                    </button>
                                 </div>
                             </div>
                         </td>
@@ -130,7 +92,7 @@
                     <th width="10%">订单编号</th>
                     <th width="10%">店铺</th>
                     <th width="10%">店铺单号</th>
-                    <th width="14%">时间（下单，导入，发货）</th>
+                    <th width="14%">时间（下单，导入，发出）</th>
                     <th width="6%">总金额</th>
                     <th width="10%">收件人</th>
                     <th width="10%">商品信息</th>
@@ -162,14 +124,14 @@
                         {{order.externalSn}}
                     </td>
                     <td>
-                        <div ng-show="order.externalCreateTime">
-                            下单 : {{order.externalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}
-                        </div>
                         <div ng-show="order.internalCreateTime">
-                            导入 : {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}
+                            下单 : {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}
                         </div>
-                        <div ng-show="order.internalCreateTime">
-                            发货 : {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}
+                        <!--<div ng-show="order.internalCreateTime">-->
+                            <!--导入 : {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}-->
+                        <!--</div>-->
+                        <div ng-show="order.pickupTime">
+                            发出 : {{order.pickupTime | date : 'yyyy-MM-dd HH:mm:ss'}}
                         </div>
 
                     </td>
