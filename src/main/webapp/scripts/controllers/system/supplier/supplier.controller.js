@@ -8,7 +8,7 @@ angular.module('ecommApp')
 
         $scope.template = {
             operator: {
-                url: 'views/supplier/supplier.operator-slide.html?' + t
+                url: 'views/system/supplier/supplier.operator-slide.html?' + t
             }
         };
 

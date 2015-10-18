@@ -34,7 +34,6 @@ import com.sooeez.ecomm.service.ProductService;
 public class ProductController {
 
 	@Autowired private Environment env;
-	
 	@Autowired private ProductService productService;
 	
 	/*
@@ -61,7 +60,7 @@ public class ProductController {
 		if ("create".equals(action)) {
 			String directory = env.getProperty("ecomm.resource.directory");
 			System.out.println("directory:" + directory);
-			this.productService.saveProduct(product);
+			//this.productService.saveProduct(product);
 			if (product.getThumbnailUrl() != null) {
 				File file = new File(directory + product.getThumbnailUrl());
 				product.setThumbnailUrl(product.getId() + "-" + product.getThumbnailUrl());

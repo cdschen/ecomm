@@ -1,0 +1,59 @@
+<ol class="breadcrumb">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li class="active">用户管理</li>
+    <li class="pull-right" id="breadcrumb-li">
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="user.operator">创建</a>
+    </li>
+</ol>
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <table class="table" ng-show="page">
+            <thead>
+                <tr>
+                    <th width="25%">编号</th>
+                    <th width="25%">用户名</th>
+                    <th width="25%">邮箱</th>
+                    <th width="25%">角色</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="user in page.content">
+                    <td>
+                        {{user.id}}
+                    </td>
+                    <td>
+                        <a ui-sref="user.operator({id:user.id})">{{user.username}}</a>
+                    </td>
+                    <td>
+                        {{user.email}}
+                    </td>
+                    <td>
+                        {{user.roleString}}
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="20">
+                        <nav class="page-list">
+                            <ul class="pagination">
+                                <li ng-class="{disabled: page.first}">
+                                    <a href="javascript:void(0)" ng-click="turnPage(page.number - 1)">&laquo;</a>
+                                </li>
+                                <li ng-repeat="i in totalPagesList" ng-class="{active: i == page.number}" >
+                                    <a href="javascript:void(0)" ng-click="turnPage(i)">{{i+1}}</a>
+                                </li>
+                                <li ng-class="{disabled: page.last}">
+                                    <a href="javascript:void(0)" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                </li>
+                            </ul>
+                            <div class="page-total">
+                                共 <strong>{{ page.totalElements }}</strong> 条
+                            </div>
+                        </nav>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>

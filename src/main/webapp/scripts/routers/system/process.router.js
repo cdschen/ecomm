@@ -3,14 +3,16 @@ angular.module('ecommApp')
 .config(['$stateProvider', 'ROLES',
     function($stateProvider, ROLES) {
 
+        var t = new Date().getTime();
+
         $stateProvider
-            .state('supplier', {
+            .state('process', {
                 parent: 'site',
-                url: '/suppliers',
+                url: '/processes',
                 views: {
                     'content@': {
-                        templateUrl: 'views/supplier/supplier.html?' + (new Date()),
-                        controller: 'SupplierController'
+                        templateUrl: 'views/system/process/process.html?' + t,
+                        controller: 'ProcessController'
                     }
                 },
                 data: {

@@ -22,12 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.sooeez.ecomm.domain.ObjectProcess;
+import com.sooeez.ecomm.domain.ProcessStep;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.ProductMember;
 import com.sooeez.ecomm.domain.ProductMultiCurrency;
 import com.sooeez.ecomm.domain.ProductMultiLanguage;
 import com.sooeez.ecomm.domain.ProductShopTunnel;
 import com.sooeez.ecomm.domain.Shop;
+import com.sooeez.ecomm.domain.Process;
 import com.sooeez.ecomm.dto.api.DTO_Product_Partner;
 import com.sooeez.ecomm.dto.api.DTO_Product_Self;
 import com.sooeez.ecomm.dto.api.general.DTO_Pagination;
@@ -42,15 +44,11 @@ import com.sooeez.ecomm.repository.ProductShopTunnelRepository;
 public class ProductService {
 
 	@Autowired private ProductRepository productRepository;
-
 	@Autowired private ProductMultiLanguageRepository productMultiLanguageRepository;
-	
 	@Autowired private ProductMultiCurrencyRepository productMultiCurrencyRepository;
-	
 	@Autowired private ProductMemberRepository productMemberRepository;
-	
 	@Autowired private ProductShopTunnelRepository productShopTunnelRepository;
-	
+	@Autowired private ProcessService processService;
 	@PersistenceContext private EntityManager em;
 
 	/*
@@ -59,6 +57,31 @@ public class ProductService {
 
 	@Transactional
 	public Product saveProduct(Product product) {
+		
+		if (product.getId() == null) {
+			Process processQuery = new Process();
+			processQuery.setObjectType(2);
+			processQuery.setDeleted(false);
+			List<Process> processes = processService.getProcesses(processQuery, null);
+			if (processes != null && processes.size() > 0) {
+				for (Process process : processes) {
+					if (process.getAutoApply() == true) {
+						ObjectProcess objectProcess = new ObjectProcess();
+						objectProcess.setObjectType(2);
+						objectProcess.setProcess(process);
+						ProcessStep step = new ProcessStep();
+						if (process.getDefaultStepId() != null) {
+							step.setId(process.getDefaultStepId());
+						} else {
+							step.setId(process.getSteps().get(0).getId());
+						}
+						objectProcess.setStep(step);
+						product.getProcesses().add(objectProcess);
+					}
+				}
+			}
+		}
+
 		return this.productRepository.save(product);
 	}
 

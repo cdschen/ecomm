@@ -1,6 +1,11 @@
 <ol class="breadcrumb">
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">库存管理</li>
+    <li class="pull-right" id="breadcrumb-li">
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="inventory.enter({id:warehouse.selected.id})">入库</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="inventory.out({id:warehouse.selected.id})">出库</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" >移库</a>
+    </li>
 </ol>
 <div class="container-fluid">
     <div class="panel panel-default">
@@ -20,11 +25,6 @@
                                 <div ng-bind-html="warehouse.name | highlight: $select.search"></div>
                             </ui-select-choices>
                         </ui-select>
-                    </div>
-                    <div class="col-md-2 col-md-offset-4">
-                        <a ui-sref="inventory.enter({id:warehouse.selected.id})" class="btn btn-info">入库</a>
-                        <a ui-sref="inventory.out({id:warehouse.selected.id})" class="btn btn-info">出库</a>
-                        <a class="btn btn-info">移库</a>
                     </div>
                 </div>
             </form>

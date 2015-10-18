@@ -51,7 +51,9 @@ angular.module('ecommApp')
 .controller('UserOperatorController', ['$rootScope', '$scope', '$state', '$stateParams', '$q', 'User', 'Role',
     function($rootScope, $scope, $state, $stateParams, $q, User, Role) {
 
-        $scope.user = {};
+        $scope.user = {
+            enabled: true
+        };
         $scope.roles = {};
         $scope.action = 'create';
         var oldpassword = '';

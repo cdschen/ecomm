@@ -1,6 +1,7 @@
 package com.sooeez.ecomm.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -15,8 +16,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 @Table(name = "t_process")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
 public class Process implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -38,6 +43,9 @@ public class Process implements Serializable {
 	@Column(name = "object_type", nullable = false)
 	private Integer objectType;
 
+	@Column(name = "auto_apply")
+	private Boolean autoApply;
+
 	@Column(name = "default_step_id")
 	private Long defaultStepId;
 
@@ -50,10 +58,11 @@ public class Process implements Serializable {
 	/*
 	 * Related Properties
 	 */
-
+	
+	// mappedBy = "process",
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "process_id")
-	private List<ProcessStep> steps;
+	private List<ProcessStep> steps = new ArrayList<>();
 
 	@Transient
 	private String defaultStepName;
@@ -61,7 +70,14 @@ public class Process implements Serializable {
 	//
 
 	public Process() {
+	}
 
+	public Boolean getAutoApply() {
+		return autoApply;
+	}
+
+	public void setAutoApply(Boolean autoApply) {
+		this.autoApply = autoApply;
 	}
 
 	public String getDefaultStepName() {

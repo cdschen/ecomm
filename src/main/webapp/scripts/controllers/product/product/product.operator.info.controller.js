@@ -41,7 +41,7 @@ angular.module('ecommApp')
             Product.save({
                 action: $scope.action
             }, product, function() {
-                $state.go('product');
+                //$state.go('product');
             });
         };
 

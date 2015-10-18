@@ -9,6 +9,9 @@ angular.module('ecommApp')
 
         $scope.warehouses = [];
         $scope.types = [{
+            label: '全部',
+            value: null
+        }, {
             label: '作废',
             value: 0
         }, {
@@ -28,7 +31,7 @@ angular.module('ecommApp')
                 operateTimeEnd: undefined,
                 outInventoryTimeStart: undefined,
                 outInventoryTimeEnd: undefined,
-                type: $scope.types[1],
+                type: $scope.types[0],
                 operate: 2
             }
         };
