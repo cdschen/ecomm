@@ -2,7 +2,9 @@ angular.module('ecommApp')
 
 .controller('ProcessController', ['$scope', '$timeout', 'Process', 'ProcessStep',
     function($scope, $timeout, Process, ProcessStep) {
+
         var $ = angular.element;
+
         var defaultProcess = {
             type: {
                 label: '线性流程',
@@ -17,17 +19,19 @@ angular.module('ecommApp')
             deleted: false,
             editable: true
         };
+
         var defaultStep = {
             id: null,
             processId: null,
             name: '',
             sequence: 0,
             type: 1,
-            $index: 't' + Date.parse(Date()),
+            $index: 't' + $.now(),
             editable: true
         };
+
         defaultProcess.steps.push(angular.copy(defaultStep));
-        $scope.processes = [];
+
         $scope.types = [{
             label: '线性流程',
             value: 1
@@ -59,16 +63,16 @@ angular.module('ecommApp')
         function initField(process) {
             process.type = $scope.types[process.type - 1];
             process.objectType = $scope.objectTypes[process.objectType - 1];
-            if (process.defaultStepId !== null) {
-                for (var i = 0, len = process.steps.length; i < len; i++) {
-                    var step = process.steps[i];
-                    if (process.defaultStepId === step.id) {
-                        process.defaultStep = angular.copy(step);
-                        break;
-                    }
-                }
-            }
+            process.autoApply = $scope.isorno[process.autoApply ? 0 : 1];
             process.hideWhenComplete = $scope.isorno[process.hideWhenComplete ? 0 : 1];
+            if (process.defaultStepId !== null) {
+                $.each(process.steps, function() {
+                    if (process.defaultStepId === this.id) {
+                        process.defaultStep = angular.copy(this);
+                        return false;
+                    }
+                });
+            }
         }
 
         function refreshField(process) {
@@ -76,17 +80,16 @@ angular.module('ecommApp')
             process.objectType = process.objectType.value;
             process.defaultStepId = process.defaultStep && process.defaultStep.id;
             process.defaultStepName = process.defaultStep && process.defaultStep.name;
+            process.autoApply = process.autoApply.value;
             process.hideWhenComplete = process.hideWhenComplete.value;
         }
 
         Process.getAll({
             deleted: false
         }).then(function(processes) {
-            console.log('Process.getAll():');
-            console.log(processes);
             $scope.processes = processes;
-            angular.forEach($scope.processes, function(process) {
-                initField(process);
+            $.each(processes, function() {
+                initField(this);
             });
         });
 
@@ -101,60 +104,40 @@ angular.module('ecommApp')
         };
 
         $scope.saveProcess = function(process, processForm, $index) {
-
-            console.log('saveProcess:');
-            console.log(process);
-
             refreshField(process);
-
-            Process.save({}, process).$promise.then(function(process) {
-                console.log('saveProcess complete:');
-                angular.forEach(process.steps, function(step) {
-                    step.processId = process.id;
-                });
-                console.log(process);
+            Process.save({}, process, function(process) {
                 processForm.$setPristine();
-
                 initField(process);
-
                 $scope.processes[$index] = angular.copy(process);
-
-                console.log('$scope.processes:');
-                console.log($scope.processes);
-
             });
         };
 
-        var removingProcess;
-
         $scope.showRemoveProcess = function(process, $index) {
-            removingProcess = process;
-            removingProcess.$index = $index;
+            $scope.removingProcess = process;
+            $scope.removingProcess.$index = $index;
             $('#processDeleteModal').modal('show');
         };
 
         $scope.removeProcess = function() {
-            if (removingProcess.id) {
-
-                refreshField(removingProcess);
-                removingProcess.deleted = true;
-
-                Process.save({}, removingProcess).$promise.then(function() {
-                    $scope.processes.splice(removingProcess.$index, 1);
+            if ($scope.removingProcess.id) {
+                refreshField($scope.removingProcess);
+                $scope.removingProcess.deleted = true;
+                Process.save({}, $scope.removingProcess, function() {
+                    $scope.processes.splice($scope.removingProcess.$index, 1);
                     $('#processDeleteModal').modal('hide');
-                    removingProcess = undefined;
+                    $scope.removingProcess = undefined;
                 });
             } else {
-                $scope.processes.splice(removingProcess.$index, 1);
+                $scope.processes.splice($scope.removingProcess.$index, 1);
                 $('#processDeleteModal').modal('hide');
-                removingProcess = undefined;
+                $scope.removingProcess = undefined;
             }
         };
 
         // step
 
         $scope.addStep = function(process, step, $index) {
-            defaultStep.$index = 't' + $index + Date.parse(Date());
+            defaultStep.$index = 't' + $index + $.now();
             process.steps.push(angular.copy(defaultStep));
             process.steps = ProcessStep.refresh(process.steps);
         };
@@ -172,8 +155,6 @@ angular.module('ecommApp')
 
         $scope.drop = function(e, ui, process) {
             process.steps = ProcessStep.refresh(process.steps);
-            console.log('drop:');
-            console.log(process.steps);
         };
 
     }

@@ -27,7 +27,7 @@ angular.module('ecommApp')
                 ObjectProcess.getAll({
                     objectId: objectProcess.objectId
                 }).then(function(objectProcesses) {
-                    $scope.processProduct.processes = angular.copy(objectProcesses);
+                    $scope.processProduct.processes = objectProcesses;
                     $scope.toggleProcessSlide();
                 });
             });

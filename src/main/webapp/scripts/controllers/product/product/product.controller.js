@@ -4,7 +4,7 @@ angular.module('ecommApp')
     function($scope, Product, Utils, Process, ObjectProcess) {
 
         var $ = angular.element,
-            t = new Date().getTime();
+            t = $.now();
 
         $scope.template = {
             details: {
@@ -114,6 +114,8 @@ angular.module('ecommApp')
 
         $scope.updateStep = function(product) {
             $scope.processProduct = product;
+            console.log('updateStep');
+            console.log(product);
         };
 
         $scope.saveUpdateStep = function(process, stepId) {

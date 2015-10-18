@@ -42,19 +42,28 @@ public class User implements Serializable {
 	@Size(min = 5, max = 100)
 	private String password;
 
+	@Column(name = "enabled", nullable = false)
+	private Boolean enabled;
+
 	/*
 	 * Related Properties
 	 */
-	
+
 	@ManyToMany
-	@JoinTable(name = "t_user_role", 
-		joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") }, 
-		inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
+	@JoinTable(name = "t_user_role", joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
 	private Set<Role> roles = new HashSet<>();
 
 	//
-	
+
 	public User() {
+	}
+
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public Long getId() {

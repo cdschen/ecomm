@@ -78,6 +78,10 @@
     padding: 2px;
 }
 
+.popover-content {
+    padding: 0;
+}
+
 
 /*jquery.file.upload
 ==================================================================*/
