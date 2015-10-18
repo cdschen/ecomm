@@ -9,7 +9,6 @@ angular.module('ecommApp')
         $scope.template = {
             operator: {
                 url: 'views/supplier/supplier.operator-slide.html?' + t
-            }
         };
 
         $scope.defaultQuery = {
