@@ -104,6 +104,11 @@ public class ProcessController {
 		return this.processService.getObjectProcesses(objectProcess);
 	}
 	
+	@RequestMapping(value = "/objectprocesses/get/count")
+	public long getObjectProcessCount(ObjectProcess objectProcess) {
+		return this.processService.getObjectProcessCount(objectProcess);
+	}
+	
 	@RequestMapping(value = "/objectprocesses", method = RequestMethod.POST)
 	public ObjectProcess saveObjectProcess(@RequestBody ObjectProcess objectProcess) {
 		return this.processService.saveObjectProcess(objectProcess);

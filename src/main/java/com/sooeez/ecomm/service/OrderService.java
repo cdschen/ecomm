@@ -56,23 +56,15 @@ import com.sooeez.ecomm.repository.ShipmentRepository;
 public class OrderService {
 	
 	// Repository
-	
 	@Autowired private ShipmentRepository shipmentRepository;
-
 	@Autowired private OrderRepository orderRepository;
-	
 	@Autowired private OrderItemRepository orderItemRepository;
-	
 	@Autowired private OrderBatchRepository orderBatchRepository;
-	
 	@Autowired private ProcessService processServiceRepository;
 	
 	// Service
-	
 	@Autowired private InventoryService inventoryService;
-	
 	@Autowired private ShopService shopService;
-	
 	@PersistenceContext private EntityManager em;
 
 	/*

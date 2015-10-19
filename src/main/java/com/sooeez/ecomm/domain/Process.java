@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "t_process")
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
+// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
 public class Process implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -58,7 +58,7 @@ public class Process implements Serializable {
 	/*
 	 * Related Properties
 	 */
-	
+
 	// mappedBy = "process",
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "process_id")

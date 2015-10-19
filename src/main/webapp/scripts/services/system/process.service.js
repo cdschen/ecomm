@@ -66,5 +66,13 @@ angular.module('ecommApp')
         });
     };
 
+    objectProcess.getCount = function(params) {
+        return $http.get('/api/objectprocesses/get/count', {
+            params: params
+        }).then(function(res) {
+            return res.data;
+        });
+    };
+
     return objectProcess;
 }]);

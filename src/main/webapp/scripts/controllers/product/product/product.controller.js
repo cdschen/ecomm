@@ -114,8 +114,6 @@ angular.module('ecommApp')
 
         $scope.updateStep = function(product) {
             $scope.processProduct = product;
-            console.log('updateStep');
-            console.log(product);
         };
 
         $scope.saveUpdateStep = function(process, stepId) {
