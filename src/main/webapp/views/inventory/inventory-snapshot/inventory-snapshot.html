@@ -5,7 +5,7 @@
 <div class="container-fluid">
     <div class="panel panel-default">
         <form name="outInventorySearchForm" novalidate ng-submit="search(query)">
-            <table class="table clear-marginbottom-table">
+            <table class="table table-condensed clear-marginbottom-table">
                 <thead>
                     <tr>
                          <td width="12%">
@@ -58,7 +58,7 @@
             </table>
         </form>
         <div class="panel-body" style="padding:0"></div>
-        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
+        <table class="table table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
             <thead>
                 <tr>
                     <th width="15%">商品 &amp; SKU</th>
@@ -196,126 +196,6 @@
                 </tr>
             </tfoot>
         </table>
-        <!-- <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
-            <thead>
-                <tr>
-                    <th width="11%">仓库</th>
-                    <th width="11%">单号</th>
-                    <th width="11%">操作类型</th>
-                    <th width="11%">状态</th>
-                    <th width="11%">创建人</th>
-                    <th width="11%">创建时间</th>
-                    <th width="11%">出库人</th>
-                    <th width="11%">出库时间</th>
-                    <th width="12%">备注</th>
-                </tr>
-            </thead>
-            <tbody ng-repeat="batch in page.content">
-                <tr ng-class="{success: batch.operate == 1, 'danger': batch.operate == 2}">
-                    <td>
-                        {{batch.warehouse.name}}
-                    </td>
-                    <td>
-                        {{batch.id}}
-                    </td>
-                    <td ng-switch on="batch.operate">
-                        <span ng-switch-when="1">入库</span>
-                        <span ng-switch-when="2">出库</span>
-                        <a href="javascript:void(0)" ng-click="toggleItemDetailsChecked(batch)"><span class="glyphicon {{batch.itemDetailsChecked ? 'glyphicon glyphicon-eye-close' : 'glyphicon-eye-open'}}"></span></a>
-                    </td>
-                    <td ng-switch on="batch.type">
-                        <span ng-switch-when="0" class="text-danger">作废</span>
-                        <span ng-switch-when="1" class="text-warning">待出库</span>
-                        <span ng-switch-when="2">已出库</span>
-                    </td>
-                    <td>
-                        {{batch.user.username}}
-                    </td>
-                    <td>
-                        {{batch.operateTime | date:'yyyy/MM/dd HH:mm:ss'}}
-                    </td>
-                    <td>
-                        {{batch.executeOperator.username}}
-                    </td>
-                    <td>
-                        {{batch.outInventoryTime | date:'yyyy/MM/dd HH:mm:ss'}}
-                    </td>
-                    <td>
-                        {{batch.memo}}
-                    </td>
-                </tr>
-                <tr ng-show="batch.itemDetailsChecked">
-                    <td colspan="20" ng-switch on="batch.operate">
-                        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-switch-when="1">
-                            <thead>
-                                <tr>
-                                    <th width="20%">商品</th>
-                                    <th width="20%">库位</th>
-                                    <th width="20%">数量</th>
-                                    <th width="20%">保质期</th>
-                                    <th width="20%"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="item in batch.items">
-                                    <td>
-                                        {{item.product.name}}
-                                    </td>
-                                    <td>
-                                        <span ng-show="item.position.name != 'default'"> {{item.position.name}}</span>
-                                    </td>
-                                    <td>
-                                        {{item.changedQuantity}}
-                                    </td>
-                                    <td>
-                                        {{item.expireDate | date:'yyyy/MM/dd'}}
-                                    </td>
-                                    <td>
-                                        <a href="javascript:void(0)" class="btn btn-info btn-xs" ng-click="toggleProductSnapshotSlide(item)">商品库存快照</a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-switch-when="2">
-                            <thead>
-                                <tr>
-                                    <th width="16%">商品</th>
-                                    <th width="16%">库位</th>
-                                    <th width="16%">针对的入库单号</th>
-                                    <th width="16%">应出</th>
-                                    <th width="16%">实出</th>
-                                    <th width="20%"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="item in batch.items">
-                                    <td>
-                                        {{item.product.name}}
-                                    </td>
-                                    <td>
-                                        <span ng-show="item.position.name != 'default'"> {{item.position.name}}</span>
-                                    </td>
-                                    <td>
-                                        {{item.outBatch.id}}
-                                    </td>
-                                    <td>
-                                        {{Math.abs(item.changedQuantity)}}
-                                    </td>
-                                    <td>
-                                        <span ng-show="batch.type == 2">
-                                            {{Math.abs(item.actualQuantity)}}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <a href="javascript:void(0)" class="btn btn-info btn-xs" ng-click="toggleProductSnapshotSlide(item)">商品库存快照</a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-            </tbody>
-        </table> -->
         <div class="panel-body" ng-show="page.content.length == 0">
             <div class="alert alert-warning">没有任何数据被检索到</div>
         </div>
