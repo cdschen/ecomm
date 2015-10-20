@@ -26,12 +26,12 @@
                         <td>
                             <div ng-if="process.type == 1">
                                 <span ng-repeat="step in process.steps | orderBy: 'sequence'">
-                                    <span class="label {{forObjectProcesses(step) ? 'label-success' : 'label-info' }}" style="margin-bottom:5px;">{{step.name}}</span>
+                                    <span class="label {{forObjectProcesses(step) ? 'label-success' : 'label-default' }}" style="margin-bottom:5px;">{{step.name}}</span>
                                     <span class="glyphicon glyphicon-circle-arrow-right" ng-show="!$last"></span>
                                 </span>
                             </div>
                             <div ng-if="process.type == 2">
-                                <span class="label {{forObjectProcesses(step) ? 'label-success' : 'label-info' }}" ng-repeat="step in process.steps | orderBy: 'sequence'" >{{step.name}}</span>
+                                <span class="label {{forObjectProcesses(step) ? 'label-success' : 'label-default' }}" ng-repeat="step in process.steps | orderBy: 'sequence'" >{{step.name}}</span>
                                 <!-- <div class="btn-group btn-group-xs">
                                     <button type="button" class="btn btn-xs {{forObjectProcesses(step) ? 'btn-success' : 'btn-info' }}" ng-repeat="step in process.steps | orderBy: 'sequence'">{{step.name}}</button>
                                 </div> -->

@@ -31,7 +31,7 @@
                             </div>
                             <div ng-if="process.type == 2">
                                 <div class="btn-group btn-group-xs">
-                                    <button type="button" class="btn btn-xs" ng-repeat="step in process.steps | orderBy: 'sequence'" ng-class="{'btn-info': step.selected}" ng-click="selectState(step)">{{step.name}}</button>
+                                    <button type="button" class="btn btn-xs" ng-repeat="step in process.steps | orderBy: 'sequence'" ng-class="{'btn-default': step.selected}" ng-click="selectState(step)">{{step.name}}</button>
                                 </div>
                             </div>
                         </td>
