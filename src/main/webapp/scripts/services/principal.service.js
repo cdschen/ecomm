@@ -3,7 +3,7 @@ angular.module('ecommApp')
 .factory('Principal', ['$q', 'Account', function($q, Account) {
     var _identity,
         _authenticated = false,
-        _authorities = [],
+        //_authorities = [],
         _roles = [];
 
     return {
@@ -17,12 +17,12 @@ angular.module('ecommApp')
             return _authenticated;
         },
         isInRole: function(role) {
-            //console.log('[DEBUG][principal.service.js]---[Principal.isInRole(role)]---[' + role + ']');
+            // console.log('[DEBUG][principal.service.js]---[Principal.isInRole(role)]---[' + role + ']');
             if (!_authenticated || !_identity || !_identity.roles) {
                 return false;
             }
-            //console.log('[DEBUG][principal.service.js]---[Principal.isInRole(role), _roles]---[' + JSON.stringify(_roles) + ']');
-            //console.log('[DEBUG][principal.service.js]---[Principal.isInRole(role), _roles.indexOf(role)]---[' + (_roles.indexOf(role) !== -1) + ']');
+            // console.log('[DEBUG][principal.service.js]---[Principal.isInRole(role), _roles]---[' + JSON.stringify(_roles) + ']');
+            // console.log('[DEBUG][principal.service.js]---[Principal.isInRole(role), _roles.indexOf(role)]---[' + (_roles.indexOf(role) !== -1) + ']');
             return _roles.indexOf(role) !== -1;
         },
         isInAnyRole: function(roles) {
@@ -58,11 +58,9 @@ angular.module('ecommApp')
                     //console.log(JSON.stringify(user));
                     _identity = user;
                     _authenticated = true;
-                    angular.forEach(user.roles, function(role) {
-                        _roles.push(role.name);
-                        angular.forEach(role.authorities, function(authority) {
-                            _authorities.push(authority.name);
-                        });
+                    _roles.length = 0;
+                    $.each(user.roles, function() {
+                        _roles.push(this.code);
                     });
                     deferred.resolve(_identity);
                 })

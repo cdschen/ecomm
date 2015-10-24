@@ -3,8 +3,7 @@ angular.module('ecommApp')
 .controller('ProductOperatorController', ['$scope', '$state', '$stateParams', '$filter', 'Product', 'Brand', 'Category', 'MadeFrom', 'Language', 'Currency', 'Tag', 'Shop',
     function($scope, $state, $stateParams, $filter, Product, Brand, Category, MadeFrom, Language, Currency, Tag, Shop) {
 
-        var $ = angular.element,
-            t = $.now();
+        var t = $.now();
         $scope.actionLabel = ($stateParams.id && $stateParams.id !== '') ? '编辑' : '创建';
 
         $scope.template = {

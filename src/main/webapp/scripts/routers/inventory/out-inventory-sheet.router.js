@@ -15,8 +15,7 @@ angular.module('ecommApp')
                 }
             },
             data: {
-                roles: [ROLES.sysadmin],
-                authorities: []
+                roles: [ROLES.SYSTEM_ADMIN, ROLES.OUT_INVENTORY_SHEET_ADMIN]
             }
         })
         .state('outInventorySheet.operator', {
@@ -28,8 +27,7 @@ angular.module('ecommApp')
                 }
             },
             data: {
-                roles: [ROLES.sysadmin],
-                authorities: []
+                roles: [ROLES.SYSTEM_ADMIN, ROLES.OUT_INVENTORY_SHEET_ADMIN]
             }
         })
         .state('outInventorySheet.orderOutInventory', {
@@ -41,8 +39,7 @@ angular.module('ecommApp')
                 }
             },
             data: {
-                roles: [ROLES.sysadmin],
-                authorities: []
+                roles: [ROLES.SYSTEM_ADMIN, ROLES.OUT_INVENTORY_SHEET_ADMIN]
             }
         });
 

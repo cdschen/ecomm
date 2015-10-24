@@ -1,75 +1,180 @@
 <ol class="breadcrumb">
     <li><a ui-sref="dashboard">首页</a></li>
     <li><a ui-sref="user">用户管理</a></li>
-    <li class="active">创建用户</li>
+    <li class="active">{{actionLabel}}用户</li>
 </ol>
 <div class="container-fluid">
     <div class="panel panel-default">
         <div class="panel-body">
-            <h4>用户基本信息</h4>
-            <hr>
-            <!-- form -->
-            <form name="userOperatorForm" class="form-horizontal" role="form" novalidate ng-submit="save(user)">
-                <!-- username -->
-                <div class="form-group has-feedback" ng-class="{'has-success':(userOperatorForm.username.$dirty && userOperatorForm.username.$valid), 'has-warning':(userOperatorForm.username.$dirty && userOperatorForm.username.$invalid) }">
-                    <label class="control-label col-md-2" for="username">用户名 <span class="text-danger">*</span></label>
-                    <div class="col-md-5">
-                        <input type="text" class="form-control" id="username" name="username" ng-model="user.username"  placeholder="用户名" required ng-minlength="5" ng-maxlength="50" ensure-unique="/api/users/check-unique/" check-id="{{user.id}}"/>
-                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="userOperatorForm.username.$dirty && userOperatorForm.username.$valid"></span>
-                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="userOperatorForm.username.$dirty && userOperatorForm.username.$invalid"></span>
-                    </div>
-                    <span class="col-md-5 help-block" ng-messages="userOperatorForm.username.$error" ng-show="userOperatorForm.username.$dirty && userOperatorForm.username.$invalid">
-                        <span ng-messages-include="views/error-messages.html?1" ></span>
-                    </span>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h4 class="text-success">
+                        <strong>用户基本信息</strong>
+                    </h4>
+                    <hr>
+                    <form name="userForm" class="form-horizontal" novalidate>
+                        <div class="form-group has-feedback" ng-class="{'has-success':(userForm.username.$dirty && userForm.username.$valid), 'has-warning':(userForm.username.$dirty && userForm.username.$invalid) }">
+                            <label class="control-label col-md-2">用户名 <span class="text-danger">*</span></label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" name="username" ng-model="user.username" placeholder="(必填)" required ng-minlength="5" ng-maxlength="20" ensure-unique="/api/users/check-unique/" check-id="{{user.id}}" />
+                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="userForm.username.$dirty && userForm.username.$valid"></span>
+                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="userForm.username.$dirty && userForm.username.$invalid"></span>
+                            </div>
+                            <span class="col-md-5 help-block" ng-messages="userForm.username.$error" ng-show="userForm.username.$dirty && userForm.username.$invalid">
+                                <span ng-messages-include="views/error-messages.html" ></span>
+                            </span>
+                        </div>
+                        <div ng-switch on="action" class="form-group has-feedback" ng-class="{'has-success':(userForm.password.$dirty && userForm.password.$valid), 'has-warning':(userForm.password.$dirty && userForm.password.$invalid) }">
+                            <label class="control-label col-md-2">密码 <span class="text-danger">*</span></label>
+                            <div class="col-md-4" ng-switch-when="create">
+                                <input type="password" class="form-control" name="password" ng-model="user.password" placeholder="(必填)" required ng-minlength="5" ng-maxlength="20" />
+                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="userForm.password.$dirty && userForm.password.$valid"></span>
+                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="userForm.password.$dirty && userForm.password.$invalid"></span>
+                            </div>
+                            <div class="col-md-4" ng-switch-when="update">
+                                <button type="button" class="btn btn-info" ng-click="showUpdatePassword()">修改密码</button>
+                            </div>
+                            <span class="col-md-5 help-block" ng-messages="userForm.password.$error" ng-show="userForm.password.$dirty && userForm.password.$invalid">
+                                <span ng-messages-include="views/error-messages.html" ></span>
+                            </span>
+                        </div>
+                        <div class="form-group has-feedback" ng-class="{'has-success':(userForm.email.$dirty && userForm.email.$valid), 'has-warning':(userForm.email.$dirty && userForm.email.$invalid) }">
+                            <label class="control-label col-md-2">邮箱 <span class="text-danger">*</span></label>
+                            <div class="col-md-4">
+                                <input type="email" class="form-control" name="email" ng-model="user.email" placeholder="(必填)" required ng-maxlength="30" />
+                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="userForm.email.$dirty && userForm.email.$valid"></span>
+                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="userForm.email.$dirty && userForm.email.$invalid"></span>
+                            </div>
+                            <span class="col-md-5 help-block" ng-messages="userForm.email.$error" ng-show="userForm.email.$dirty && userForm.email.$invalid">
+                                <span ng-messages-include="views/error-messages.html"></span>
+                            </span>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2">是否启用 </label>
+                            <div class="col-md-2">
+                                <ui-select ng-model="user.enabled">
+                                    <ui-select-match placeholder="">{{$select.selected.label}}</ui-select-match>
+                                    <ui-select-choices repeat="opt in isorno | filter: $select.search">
+                                        <div ng-bind-html="opt.label | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                <!-- password -->
-                <div class="form-group has-feedback" ng-class="{'has-success':(userOperatorForm.password.$dirty && userOperatorForm.password.$valid), 'has-warning':(userOperatorForm.password.$dirty && userOperatorForm.password.$invalid) }">
-                    <label class="control-label col-md-2" for="password">密码 <span class="text-danger">*</span></label>
-                    <div class="col-md-5">
-                        <input type="password" class="form-control" id="password" name="password" ng-model="user.password"  placeholder="密码" required ng-minlength="5" ng-maxlength="50" ng-focus="clean()"/>
-                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="userOperatorForm.password.$dirty && userOperatorForm.password.$valid"></span>
-                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="userOperatorForm.password.$dirty && userOperatorForm.password.$invalid"></span>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h4 class="text-success">
+                        <strong>用户权限</strong>
+                    </h4>
+                    <hr>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <button type="class" class="btn btn-{{checkedRole(systemAdminRole) ? 'success' : 'default'}} btn-lg" ng-click="toggleRole(systemAdminRole)">
+                                <span class="glyphicon glyphicon-record" ng-show="checkedRole(systemAdminRole)"></span> {{systemAdminRole.name}}
+                            </button>
+                        </div>
                     </div>
-                    <span class="col-md-5 help-block" ng-messages="userOperatorForm.password.$error" ng-show="userOperatorForm.password.$dirty && userOperatorForm.password.$invalid">
-                        <span ng-messages-include="views/error-messages.html" ></span>
-                    </span>
-                </div>
-                <!-- email -->
-                <div class="form-group has-feedback" ng-class="{'has-success':(userOperatorForm.email.$dirty && userOperatorForm.email.$valid), 'has-warning':(userOperatorForm.email.$dirty && userOperatorForm.email.$invalid) }">
-                    <label class="control-label col-md-2" for="email">邮箱 <span class="text-danger">*</span></label>
-                    <div class="col-md-5">
-                        <input type="email" class="form-control" id="email" name="email" ng-model="user.email"  placeholder="邮箱 e.g.: ecomm@gamil.com" required ng-minlength="5" ng-maxlength="50" />
-                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="userOperatorForm.email.$dirty && userOperatorForm.email.$valid"></span>
-                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="userOperatorForm.email.$dirty && userOperatorForm.email.$invalid"></span>
-                    </div>
-                    <span class="col-md-5 help-block" ng-messages="userOperatorForm.email.$error" ng-show="userOperatorForm.email.$dirty && userOperatorForm.email.$invalid">
-                        <span ng-messages-include="views/error-messages.html" ></span>
-                    </span>
-                </div>
-                <!-- roles -->
-                <div class="form-group">
-                    <label class="control-label col-md-2" for="name">所有角色 <span class="text-danger">*</span></label>
-                    <div class="col-md-10">
-                        <ul class="list-unstyled">
-                            <li ng-repeat="role in roles">
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" name="role" ng-model="role.done"> {{role.name}}
-                                    </label>
+                    <div class="row" ng-show="!checkedRole(systemAdminRole)">
+                        <div class="col-md-2" ng-repeat="module in modules | orderBy: 'sequence'">
+                            <div class="panel panel-success" style="height:230px">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">{{module.name}}</h3>
                                 </div>
-                            </li>
-                        </ul>
-                        <p class="text-warning" ng-show="rolesDoneWarning">请选择至少一个角色</p>
+                                <div class="panel-body">
+                                    <ul class="list-unstyled">
+                                        <li ng-repeat="role in module.roles" style="margin-bottom: 5px">
+                                            <button type="class" class="btn btn-{{checkedRole(role) ? 'success' : 'default'}} btn-xs" ng-click="toggleRole(role)">
+                                                <span class="glyphicon glyphicon-record" ng-show="checkedRole(role)"></span> {{role.name}}
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2" >
+                            <div class="panel panel-info" style="height:230px">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">所有可管理的店铺</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <ul class="list-unstyled">
+                                        <li ng-repeat="shop in shops" style="margin-bottom: 5px">
+                                            <button type="class" class="btn btn-{{checkedShop(shop) ? 'info' : 'default'}} btn-xs" ng-click="toggleShop(shop)">
+                                                <span class="glyphicon glyphicon-record" ng-show="checkedShop(shop)"></span> {{shop.name}}
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2" >
+                            <div class="panel panel-info" style="height:230px">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">所有可管理的仓库</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <ul class="list-unstyled">
+                                        <li ng-repeat="warehouse in warehouses" style="margin-bottom: 5px">
+                                            <button type="class" class="btn btn-{{checkedWarehouse(warehouse) ? 'info' : 'default'}} btn-xs" ng-click="toggleWarehouse(warehouse)">
+                                                <span class="glyphicon glyphicon-record" ng-show="checkedWarehouse(warehouse)"></span> {{warehouse.name}}
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <!-- button -->
-                <div class="form-group">
-                    <div class="col-md-5 col-md-offset-2">
-                        <button type="submit" class="btn btn-success btn-lg" ng-disabled="!userOperatorForm.$valid">保存</button>
-                        <button type="button" class="btn btn-danger btn-lg" ng-click="remove()" ng-if="action=='update'">删除</button>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="alert alert-warning" ng-show="product.productType && product.productType.value == 1 && product.members.length == 0">
+                                <span class="glyphicon glyphicon-info-sign"></span> 此商品为组合商品类型，必须至少附加上一个子商品
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-success btn-lg btn-block" ng-click="saveUser(user)" ng-disabled="!userForm.$valid ">
+                                <span class="glyphicon glyphicon-floppy-saved"></span> 保存
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- password update modal -->
+<div class="modal fade" id="passwordUpdateModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-success">
+                    <span class="glyphicon glyphicon-question-sign"></span> 修改密码
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form name="passwordForm" class="form-horizontal" novalidate>
+                    <div class="form-group has-feedback" ng-class="{'has-success':(passwordForm.password.$dirty && passwordForm.password.$valid), 'has-warning':(passwordForm.password.$dirty && passwordForm.password.$invalid) }">
+                        <label class="control-label col-md-3">新密码 <span class="text-danger">*</span></label>
+                        <div class="col-md-5">
+                            <input type="password" class="form-control" name="password" ng-model="password" placeholder="(必填)" required ng-minlength="5" ng-maxlength="20" />
+                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="passwordForm.password.$dirty && passwordForm.password.$valid"></span>
+                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="passwordForm.password.$dirty && passwordForm.password.$invalid"></span>
+                        </div>
+                        <span class="col-md-4 help-block" ng-messages="passwordForm.password.$error" ng-show="passwordForm.password.$dirty && passwordForm.password.$invalid">
+                            <span ng-messages-include="views/error-messages.html" ></span>
+                        </span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" ng-disabled="!passwordForm.$valid" ng-click="updatePassword(password, user.id, passwordForm)">确定</button>
+            </div>
         </div>
     </div>
 </div>

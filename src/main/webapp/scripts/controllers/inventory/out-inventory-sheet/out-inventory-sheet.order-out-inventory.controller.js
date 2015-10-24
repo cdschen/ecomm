@@ -1,10 +1,9 @@
 angular.module('ecommApp')
 
-.controller('OrderOutInventoryController', ['$rootScope', '$scope', 'toastr', 'Warehouse', 'Shop', 'orderService', 'Utils', 'OrderItem',
-    function($rootScope, $scope, toastr, Warehouse, Shop, orderService, Utils, OrderItem) {
+.controller('OrderOutInventoryController', ['$rootScope', '$scope', 'toastr', 'Warehouse', 'Shop', 'orderService', 'Utils', 'OrderItem', 'Auth',
+    function($rootScope, $scope, toastr, Warehouse, Shop, orderService, Utils, OrderItem, Auth) {
 
-        var $ = angular.element,
-            t = $.now();
+        var t = $.now();
 
         $scope.template = {
             confirmOutInventorySheet: {
@@ -12,7 +11,6 @@ angular.module('ecommApp')
             }
         };
 
-        $scope.page = undefined;
         $scope.pageSize = 20;
         $scope.totalPagesList = [];
 
@@ -31,7 +29,9 @@ angular.module('ecommApp')
                 size: $scope.pageSize,
                 sort: ['internalCreateTime,desc'],
                 warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
+                warehouseIds: Auth.refreshManaged('warehouse'),
                 shopId: $scope.query.shop ? $scope.query.shop.id : null,
+                shopIds: Auth.refreshManaged('shop'),
                 deleted: false
             }).then(function(page) {
                 $.each(page.content, function() {
@@ -46,13 +46,15 @@ angular.module('ecommApp')
 
         Warehouse.getAll({ // 导入所有仓库
             deleted: false,
-            sort: ['name']
+            sort: ['name'],
+            warehouseIds: Auth.refreshManaged('warehouse')
         }).then(function(warehouses) {
             $scope.warehouses = warehouses;
         }).then(function() { // 导入所有店铺
             return Shop.getAll({
                 deleted: false,
-                sort: ['name']
+                sort: ['name'],
+                shopIds: Auth.refreshManaged('shop')
             }).then(function(shops) {
                 $scope.shops = shops;
             });

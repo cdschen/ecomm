@@ -19,8 +19,27 @@ angular.module('ecommApp')
                 return $http.post('/api/logout').success(function() {
                     Principal.authenticate(null);
                     localStorageService.clearAll(); // 清楚本地存储
-                    $http.get('/api/csrf'); // 到服务器拉取新的 csrf token
+                    //$http.get('/api/csrf'); // 到服务器拉取新的 csrf token
                 });
+            },
+            refreshManaged: function(thing) {
+                if (Principal.isInRole('SYSTEM_ADMIN')) {
+                    return null;
+                } else {
+                    if (thing === 'warehouse') {
+                        if (Principal.get().managedWarehouses.length > 0) {
+                            return [Principal.get().managedWarehouses];
+                        } else {
+                            return [0];
+                        }
+                    } else if (thing === 'shop') {
+                        if (Principal.get().managedShops.length > 0) {
+                            return [Principal.get().managedShops];
+                        } else {
+                            return [0];
+                        }
+                    }
+                }
             },
             identify: function(force) {
                 return Principal.identify(force)
@@ -32,7 +51,7 @@ angular.module('ecommApp')
                         if ($rootScope.toState.data.roles && $rootScope.toState.data.roles.length > 0 && !Principal.isInAnyRole($rootScope.toState.data.roles)) {
                             if (isAuthenticated) {
                                 //console.log('[DEBUG][auth.service.js]---[Auth.identify(force).then(), state.go(accessdenied)]');
-                                $state.go('accessdenied');
+                                $state.go('accessDenied');
                             } else {
                                 //console.log('[DEBUG][auth.service.js]---[Auth.identify(force).then(), state.go(login)]');
                                 $rootScope.returnToState = $rootScope.toState;

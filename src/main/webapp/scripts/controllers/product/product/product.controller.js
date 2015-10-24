@@ -3,8 +3,7 @@ angular.module('ecommApp')
 .controller('ProductController', ['$scope', 'Product', 'Utils', 'Process', 'ObjectProcess',
     function($scope, Product, Utils, Process, ObjectProcess) {
 
-        var $ = angular.element,
-            t = $.now();
+        var t = $.now();
 
         $scope.template = {
             details: {

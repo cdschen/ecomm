@@ -3,7 +3,24 @@
 angular.module('ecommApp', ['toastr', 'ngTinyScrollbar', 'LocalStorageModule', 'ui.router', 'ngResource', 'ngMessages', 'ngCookies', 'ui.select', 'ngSanitize', 'ngAnimate', 'ngDragDrop', 'pageslide-directive', 'ui.bootstrap'])
 
 .constant('ROLES', {
-    sysadmin: 'sysadmin'
+    SYSTEM_ADMIN: 'SYSTEM_ADMIN',
+    TASK_ADMIN: 'TASK_ADMIN',
+    ORDER_ADMIN: 'ORDER_ADMIN',
+    PRODUCT_ADMIN: 'PRODUCT_ADMIN',
+    BRAND_ADMIN: 'BRAND_ADMIN',
+    SOURCE_ADMIN: 'SOURCE_ADMIN',
+    TAG_ADMIN: 'TAG_ADMIN',
+    INVENTORY_ADMIN: 'INVENTORY_ADMIN',
+    INVENTORY_SNAPSHOT_ADMIN: 'INVENTORY_SNAPSHOT_ADMIN',
+    OUT_INVENTORY_SHEET_ADMIN: 'OUT_INVENTORY_SHEET_ADMIN',
+    SHIPMENT_ADMIN: 'SHIPMENT_ADMIN',
+    PURCHASE_ADMIN: 'PURCHASE_ADMIN',
+    CUSTOMER_ADMIN: 'CUSTOMER_ADMIN',
+    USER_ADMIN: 'USER_ADMIN',
+    SHOP_ADMIN: 'SHOP_ADMIN',
+    WAREHOUSE_ADMIN: 'WAREHOUSE_ADMIN',
+    PROCESS_ADMIN: 'PROCESS_ADMIN',
+    SUPPLIER_ADMIN: 'SUPPLIER_ADMIN'
 })
 
 .run(['$rootScope', '$state', '$window', 'Auth', 'Principal', 'Resource',

@@ -3,8 +3,7 @@ angular.module('ecommApp')
 .controller('BrandController', ['$rootScope', '$scope', 'Brand', 'Utils',
     function($rootScope, $scope, Brand, Utils) {
 
-        var $ = angular.element,
-            t = new Date().getTime();
+        var t = $.now();
 
         $scope.template = {
             operator: {

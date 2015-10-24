@@ -29,23 +29,57 @@ public class Role implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	@Column(name = "code", nullable = false)
+	private String code;
+
 	@Column(name = "name", nullable = false)
 	private String name;
-	
+
+	@Column(name = "desc")
+	private String desc;
+
+	@Column(name = "module")
+	private String module;
+
+	@Column(name = "module_code")
+	private String moduleCode;
+
+	@Column(name = "module_sequence")
+	private Integer moduleSequence;
+
 	/*
 	 * Related Properties
 	 */
-	
-	@ManyToMany
-	@JoinTable(name = "t_role_authority", 
-		joinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") }, 
-		inverseJoinColumns = { @JoinColumn(name = "authority_id", referencedColumnName = "id") })
-	private Set<Authority> authorities = new HashSet<>();
+
+	/*
+	 * @ManyToMany
+	 * 
+	 * @JoinTable(name = "t_role_authority", joinColumns = { @JoinColumn(name =
+	 * "role_id", referencedColumnName = "id") }, inverseJoinColumns = {
+	 * 
+	 * @JoinColumn(name = "authority_id", referencedColumnName = "id") })
+	 * private Set<Authority> authorities = new HashSet<>();
+	 */
 
 	//
 
 	public Role() {
-		// TODO Auto-generated constructor stub
+	}
+
+	public String getModuleCode() {
+		return moduleCode;
+	}
+
+	public void setModuleCode(String moduleCode) {
+		this.moduleCode = moduleCode;
+	}
+
+	public Integer getModuleSequence() {
+		return moduleSequence;
+	}
+
+	public void setModuleSequence(Integer moduleSequence) {
+		this.moduleSequence = moduleSequence;
 	}
 
 	public Long getId() {
@@ -56,6 +90,14 @@ public class Role implements Serializable {
 		this.id = id;
 	}
 
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -64,16 +106,20 @@ public class Role implements Serializable {
 		this.name = name;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	public String getDesc() {
+		return desc;
 	}
 
-	public Set<Authority> getAuthorities() {
-		return authorities;
+	public void setDesc(String desc) {
+		this.desc = desc;
 	}
 
-	public void setAuthorities(Set<Authority> authorities) {
-		this.authorities = authorities;
+	public String getModule() {
+		return module;
+	}
+
+	public void setModule(String module) {
+		this.module = module;
 	}
 
 }

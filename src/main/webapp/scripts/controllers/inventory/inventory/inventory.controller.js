@@ -1,16 +1,19 @@
 angular.module('ecommApp')
 
-.controller('InventoryController', ['$rootScope', '$scope', 'Warehouse', 'Inventory',
-    function($rootScope, $scope, Warehouse, Inventory) {
+.controller('InventoryController', ['$rootScope', '$scope', 'Warehouse', 'Inventory', 'Auth',
+    function($rootScope, $scope, Warehouse, Inventory, Auth) {
 
-        var $ = angular.element;
         $scope.warehouses = [];
         $scope.warehouse = {
             selected: undefined
         };
         $scope.products = [];
 
-        Warehouse.getAll().then(function(warehouses) {
+        Warehouse.getAll({
+            deleted: false,
+            sort: ['name'],
+            warehouseIds: Auth.refreshManaged('warehouse')
+        }).then(function(warehouses) {
             $scope.warehouses = warehouses;
         }).then(function() {
             if ($rootScope.usingWarehouseId) {

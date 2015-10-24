@@ -1,7 +1,7 @@
 angular.module('ecommApp')
 
-.controller('OutInventorySheetController', ['$rootScope', '$scope', 'Warehouse', 'Utils', 'Inventory', 'InventoryBatch',
-    function($rootScope, $scope, Warehouse, Utils, Inventory, InventoryBatch) {
+.controller('OutInventorySheetController', ['$rootScope', '$scope', 'Warehouse', 'Utils', 'Inventory', 'InventoryBatch', 'Auth',
+    function($rootScope, $scope, Warehouse, Utils, Inventory, InventoryBatch, Auth) {
 
         var $ = angular.element;
 
@@ -39,7 +39,8 @@ angular.module('ecommApp')
 
         Warehouse.getAll({
             deleted: false,
-            sort: ['name']
+            sort: ['name'],
+            warehouseIds: Auth.refreshManaged('warehouse')
         }).then(function(warehouses) {
             $scope.warehouses = warehouses;
         });
@@ -49,6 +50,7 @@ angular.module('ecommApp')
                 page: number ? number : 0,
                 size: query.pageSize,
                 warehouseId: query.warehouse ? query.warehouse.id : null,
+                warehouseIds: Auth.refreshManaged('warehouse'),
                 operateTimeStart: query.batch.operateTimeStart,
                 operateTimeEnd: query.batch.operateTimeEnd,
                 outInventoryTimeStart: query.batch.outInventoryTimeStart,

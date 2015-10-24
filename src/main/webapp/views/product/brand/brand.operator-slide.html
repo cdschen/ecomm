@@ -13,7 +13,7 @@
                     <div class="form-group has-feedback" ng-class="{'has-success':(brandForm.name.$dirty && brandForm.name.$valid), 'has-warning':(brandForm.name.$dirty && brandForm.name.$invalid) }">
                         <label class="control-label col-md-2">品牌名称 <span class="text-danger">*</span></label>
                         <div class="col-md-5">
-                            <input type="text" class="form-control" name="name" ng-model="brand.name" placeholder="" required ng-maxlength="50" />
+                            <input type="text" class="form-control" name="name" ng-model="brand.name" placeholder="(必填)" required ng-maxlength="20" />
                             <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="brandForm.name.$dirty && brandForm.name.$valid"></span>
                             <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="brandForm.name.$dirty && brandForm.name.$invalid"></span>
                         </div>

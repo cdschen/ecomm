@@ -54,6 +54,9 @@ public class ShopService {
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			predicates.add(cb.equal(root.get("deleted"), shop.getDeleted() != null && shop.getDeleted() == true ? true : false));
+			if (shop.getShopIds() != null && shop.getShopIds().length > 0) {
+				predicates.add(root.get("id").in(shop.getShopIds()));
+			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
 	}

@@ -1,9 +1,9 @@
 angular.module('ecommApp')
 
-.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ROLES',
-    function($httpProvider, $stateProvider, $urlRouterProvider, ROLES) {
+.config(['$httpProvider', '$stateProvider', '$urlRouterProvider',
+    function($httpProvider, $stateProvider, $urlRouterProvider) {
 
-        var t = new Date().getTime();
+        var t = $.now();
 
         $httpProvider.interceptors.push('authExpiredInterceptor');
 
@@ -35,34 +35,7 @@ angular.module('ecommApp')
                     }
                 },
                 data: {
-                    roles: [],
-                    authorities: []
-                }
-            })
-            .state('dashboard', {
-                parent: 'site',
-                url: '/dashboard',
-                views: {
-                    'content@': {
-                        templateUrl: 'views/dashboard.html?' + t,
-                    }
-                },
-                data: {
-                    roles: [ROLES.sysadmin],
-                    authorities: []
-                }
-            })
-            .state('accessdenied', {
-                parent: 'site',
-                url: '/accessdenied',
-                views: {
-                    'content@': {
-                        templateUrl: 'views/accessdenied.html?' + t,
-                    }
-                },
-                data: {
-                    roles: [],
-                    authorities: []
+                    roles: []
                 }
             });
     }

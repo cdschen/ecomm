@@ -15,8 +15,7 @@ angular.module('ecommApp')
                 }
             },
             data: {
-                roles: [ROLES.sysadmin],
-                authorities: []
+                roles: [ROLES.SYSTEM_ADMIN, ROLES.USER_ADMIN]
             }
         })
         .state('user.operator', {
@@ -28,22 +27,8 @@ angular.module('ecommApp')
                 }
             },
             data: {
-                roles: [ROLES.sysadmin],
-                authorities: []
+                roles: [ROLES.SYSTEM_ADMIN, ROLES.USER_ADMIN]
             }
         });
-        // .state('user.role', {
-        //     url: '/roles',
-        //     views: {
-        //         'content@': {
-        //             templateUrl: 'views/system/user.role.html?' + t,
-        //             controller: 'RoleController'
-        //         }
-        //     },
-        //     data: {
-        //         roles: [ROLES.sysadmin],
-        //         authorities: []
-        //     }
-        // });
 
 }]);
