@@ -2,15 +2,15 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">出库单管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="orderOutInventory">订单出库</a>
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="orderOutInventory">调整出库</a>
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="orderOutInventory">查看库存变动</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="outInventorySheet.orderOutInventory">订单出库</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs">调整出库</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs">查看库存变动</a>
     </li>
 </ol>
 <div class="container-fluid">
     <div class="panel panel-default">
         <form name="outInventorySearchForm" novalidate ng-submit="search(query)">
-            <table class="table clear-marginbottom-table">
+            <table class="table table-condensed clear-marginbottom-table">
                 <tbody>
                     <tr>
                         <td width="15%">
@@ -63,7 +63,7 @@
             </table>
         </form>
         <div class="panel-body" style="padding:0"></div>
-        <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
+        <table class="table table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
             <thead>
                 <tr>
                     <th width="2%">

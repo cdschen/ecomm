@@ -99,7 +99,7 @@
                     </div>
                 </td>
                 <td width="10%">
-                    <button type="button" class="btn btn-success" ng-click="pushItem(itemAddForm, order.selectedProduct)" ng-disabled="!itemAddForm.$valid || !order.selectedProduct || !order.selectedProduct.selectedPrice">添加</button>
+                    <button type="button" class="btn btn-success" ng-click="pushItem(itemAddForm, order.selectedProduct); order.selectedProduct = undefined;" ng-disabled="!itemAddForm.$valid || !order.selectedProduct || !order.selectedProduct.selectedPrice">添加</button>
                 </td>
             </tr>
         </tbody>

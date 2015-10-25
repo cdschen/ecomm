@@ -9,7 +9,7 @@
                     <strong>{{processProduct.name}} ({{processProduct.sku}})</strong>
                 </h4>
             </div>
-            <table class="table table-bordered table-condensed clear-marginbottom-table" ng-show="processes.length > 0">
+            <table class="table table-condensed clear-marginbottom-table" ng-show="processes.length > 0">
                 <thead>
                     <tr>
                         <th width="22%">流程</th>
@@ -29,12 +29,12 @@
                         <td ng-switch on="process.type">
                             <div ng-switch-when="1">
                                 <span ng-repeat="step in process.steps | orderBy: 'sequence'">
-                                    <span class="label {{forObjectProcesses(step) ? 'label-success' : 'label-info' }}" style="margin-bottom:5px;">{{step.name}}</span>
+                                    <span class="label {{forObjectProcesses(step) ? 'label-success' : 'label-default' }}" style="margin-bottom:5px;">{{step.name}}</span>
                                     <span class="glyphicon glyphicon-circle-arrow-right" ng-show="!$last"></span>
                                 </span>
                             </div>
                             <div ng-switch-when="2">
-                                <span class="label {{forObjectProcesses(step) ? 'label-success' : 'label-info' }}" ng-repeat="step in process.steps | orderBy: 'sequence'" style="margin: 0 2px;">{{step.name}}</span>
+                                <span class="label {{forObjectProcesses(step) ? 'label-success' : 'label-default' }}" ng-repeat="step in process.steps | orderBy: 'sequence'" style="margin: 0 2px;">{{step.name}}</span>
                             </div>
                         </td>
                         <td>

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,8 +40,8 @@ public class ProcessController {
 	}
 	
 	@RequestMapping(value = "/processes/get/all")
-	public List<Process> getProcesss(Process process) {
-		return this.processService.getProcesses(process);
+	public List<Process> getProcesss(Process process, Sort sort) {
+		return this.processService.getProcesses(process, sort);
 	}
 	
 	@RequestMapping(value = "/processes", method = RequestMethod.POST)
@@ -101,6 +102,11 @@ public class ProcessController {
 	@RequestMapping(value = "/objectprocesses/get/all")
 	public List<ObjectProcess> getObjectProcesses(ObjectProcess objectProcess) {
 		return this.processService.getObjectProcesses(objectProcess);
+	}
+	
+	@RequestMapping(value = "/objectprocesses/get/count")
+	public long getObjectProcessCount(ObjectProcess objectProcess) {
+		return this.processService.getObjectProcessCount(objectProcess);
 	}
 	
 	@RequestMapping(value = "/objectprocesses", method = RequestMethod.POST)

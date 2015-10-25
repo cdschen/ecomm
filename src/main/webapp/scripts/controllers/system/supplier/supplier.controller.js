@@ -3,11 +3,12 @@ angular.module('ecommApp')
 .controller('SupplierController', ['$rootScope', '$scope', 'Supplier', 'Utils',
     function($rootScope, $scope, Supplier, Utils) {
 
-        var $ = angular.element;
+        var $ = angular.element,
+            t = new Date().getTime();
 
         $scope.template = {
             operator: {
-                url: 'views/supplier/supplier.operator-slide.html?' + (new Date())
+                url: 'views/system/supplier/supplier.operator-slide.html?' + t
             }
         };
 

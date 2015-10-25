@@ -69,6 +69,12 @@ public class SystemController {
 		return this.userService.saveUser(user);
 	}
 	
+	@RequestMapping(value = "/users/update/password", method = RequestMethod.POST)
+	public ResponseEntity<?> updatePassword(@RequestBody User user) {
+		this.userService.updatePassword(user);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
 	@RequestMapping(value = "/users/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
 		this.userService.deleteUser(id);

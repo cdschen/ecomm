@@ -350,6 +350,9 @@ public class InventoryService {
 			if (batch.getWarehouseId() != null) {
 				predicates.add(cb.equal(root.get("warehouseId"), batch.getWarehouseId()));
 			}
+			if (batch.getWarehouseIds() != null && batch.getWarehouseIds().length > 0) {
+				predicates.add(root.get("warehouseId").in(batch.getWarehouseIds()));
+			}
 			if (batch.getOperateTimeStart() != null && batch.getOperateTimeEnd() != null) {
 				predicates.add(cb.between(root.get("operateTime"), batch.getOperateTimeStart(), batch.getOperateTimeEnd()));
 			} else if (batch.getOperateTimeStart() != null) {
@@ -781,6 +784,10 @@ public class InventoryService {
 					productSubquery.where(cb.like(productRoot.get("name"), "%" + item.getProductName() + "%"));
 				}
 				predicates.add(cb.in(root.get("productId")).value(productSubquery));
+			}
+			
+			if (item.getWarehouseIds() != null && item.getWarehouseIds().length > 0) {
+				predicates.add(root.get("warehouseId").in(item.getWarehouseIds()));
 			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};

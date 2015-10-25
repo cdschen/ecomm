@@ -32,12 +32,10 @@ import com.sooeez.ecomm.repository.ShopRepository;
 @Service
 public class ShipmentService {
 
+	// Repository
 	@Autowired private ShopRepository shopRepository;
-
 	@Autowired private OrderRepository orderRepository;
-
 	@Autowired private ShipmentRepository shipmentRepository;
-
 	@Autowired private ShipmentItemRepository shipmentItemRepository;
 	
 	/*

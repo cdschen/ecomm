@@ -3,33 +3,33 @@ angular.module('ecommApp')
 .controller('ProductOperatorController', ['$scope', '$state', '$stateParams', '$filter', 'Product', 'Brand', 'Category', 'MadeFrom', 'Language', 'Currency', 'Tag', 'Shop',
     function($scope, $state, $stateParams, $filter, Product, Brand, Category, MadeFrom, Language, Currency, Tag, Shop) {
 
-        var $ = angular.element;
+        var t = $.now();
         $scope.actionLabel = ($stateParams.id && $stateParams.id !== '') ? '编辑' : '创建';
 
         $scope.template = {
             info: {
-                url: 'views/product/product/product.operator.info.html?' + new Date(),
+                url: 'views/product/product/product.operator.info.html?' + t,
                 attr: {
-                    url: 'views/product/product/product.operator.info.attr.html?' + new Date()
+                    url: 'views/product/product/product.operator.info.attr.html?' + t
                 },
                 price: {
-                    url: 'views/product/product/product.operator.info.price.html?' + new Date()
+                    url: 'views/product/product/product.operator.info.price.html?' + t
                 },
                 group: {
-                    url: 'views/product/product/product.operator.info.group.html?' + new Date()
+                    url: 'views/product/product/product.operator.info.group.html?' + t
                 }
             },
             img: {
-                url: 'views/product/product/product.operator.img.html?' + new Date()
+                url: 'views/product/product/product.operator.img.html?' + t
             },
             multiLanguage: {
-                url: 'views/product/product/product.operator.multi-language.html?' + new Date()
+                url: 'views/product/product/product.operator.multi-language.html?' + t
             },
             multiCurrency: {
-                url: 'views/product/product/product.operator.multi-currency.html?' + new Date()
+                url: 'views/product/product/product.operator.multi-currency.html?' + t
             },
             shopTunnel: {
-                url: 'views/product/product/product.operator.shop-tunnel.html?' + new Date()
+                url: 'views/product/product/product.operator.shop-tunnel.html?' + t
             }
         };
 
@@ -68,6 +68,7 @@ angular.module('ecommApp')
             multiLanguages: [],
             multiCurrencies: [],
             members: [],
+            processes: [],
             shopTunnels: [],
             deleted: false
         };

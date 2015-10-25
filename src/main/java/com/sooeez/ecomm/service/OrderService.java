@@ -56,23 +56,15 @@ import com.sooeez.ecomm.repository.ShipmentRepository;
 public class OrderService {
 	
 	// Repository
-	
 	@Autowired private ShipmentRepository shipmentRepository;
-
 	@Autowired private OrderRepository orderRepository;
-	
 	@Autowired private OrderItemRepository orderItemRepository;
-	
 	@Autowired private OrderBatchRepository orderBatchRepository;
-	
 	@Autowired private ProcessService processServiceRepository;
 	
 	// Service
-	
 	@Autowired private InventoryService inventoryService;
-	
 	@Autowired private ShopService shopService;
-	
 	@PersistenceContext private EntityManager em;
 
 	/*
@@ -188,6 +180,13 @@ public class OrderService {
 		if (order.getShopId() != null) {
 			sqlString += " and `order`.shop_id = " + order.getShopId();
 			order.setShopId(null);;
+		} else if (order.getShopIds() != null && order.getShopIds().length > 0) {
+			String shopIds = "";
+			for (int i = 0, len = order.getShopIds().length; i < len - 1; i++) {
+				shopIds += order.getShopIds()[0] + ",";
+			}
+			shopIds += order.getShopIds()[order.getShopIds().length - 1];
+			sqlString += " and `order`.shop_id in(" + shopIds + ")";
 		}
 		if (StringUtils.hasText(order.getExternalSn())) {
 			sqlString += " and `order`.external_sn like '%" + order.getExternalSn() + "%'";
@@ -215,6 +214,29 @@ public class OrderService {
 					+ "and shopTunnel2.default_warehouse_id = " + order.getWarehouseId() + ")"
 					+ ")))";
 			order.setWarehouseId(null);
+		} else if (order.getWarehouseIds() != null && order.getWarehouseIds().length > 0) {
+			String warehouseIds = "";
+			for (int i = 0, len = order.getWarehouseIds().length; i < len - 1; i++) {
+				warehouseIds += order.getWarehouseIds()[0] + ",";
+			}
+			warehouseIds += order.getWarehouseIds()[order.getWarehouseIds().length - 1];
+			
+			sqlString += " and(orderItem.warehouse_id in(" + warehouseIds + ")"
+					+ " or("
+					+ "orderItem.warehouse_id is null"
+					+ " and(exists(select 1"
+					+ " from t_product_shop_tunnel as productShopTunnel, "
+					+ "t_shop_tunnel as shopTunnel1 "
+					+ "where shopTunnel1.default_warehouse_id in(" + warehouseIds + ")"
+					+ " and shopTunnel1.id = productShopTunnel.tunnel_id "
+					+ "and productShopTunnel.product_id = orderItem.product_id "
+					+ "and productShopTunnel.`shop_id` = shop.id) "
+					+ "or "
+					+ "exists(select 1 from t_shop_tunnel as shopTunnel2 "
+					+ "where shopTunnel2.shop_id = shop.id "
+					+ "and shopTunnel2.default_option = 1 "
+					+ "and shopTunnel2.default_warehouse_id in(" + warehouseIds + "))"
+					+ ")))";
 		}
 		
 		order.setOrderIds(new ArrayList<>());
@@ -972,6 +994,9 @@ public class OrderService {
 			}
 			if (order.getShopId() != null) {
 				predicates.add(cb.equal(root.get("shopId"), order.getShopId()));
+			}
+			if (order.getShopIds() != null && order.getShopIds().length > 0) {
+				predicates.add(root.get("shopId").in(order.getShopIds()));
 			}
 			if (StringUtils.hasText(order.getReceiveName())) {
 				predicates.add(cb.like(root.get("receiveName"), "%" + order.getReceiveName() + "%"));

@@ -1,7 +1,6 @@
 
-var OrderController = function($scope, orderService, Utils, Process, ObjectProcess, Shop)
+var OrderController = function($scope, orderService, Utils, Process, ObjectProcess, Shop, Auth)
 {
-    var $ = angular.element;
 
     /* Activate Date Picker */
     $('input[ng-model="order.internalCreateTimeStart"], input[ng-model="order.internalCreateTimeEnd"], ' +
@@ -64,7 +63,11 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
         return selectedStatus;
     }
 
-    Shop.getAll().then(function(shops) {
+    Shop.getAll({
+        deleted: false,
+        sort: ['name'],
+        shopIds: Auth.refreshManaged('shop')
+    }).then(function(shops) {
         $scope.shops = shops;
     });
 
@@ -72,6 +75,7 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
         page: 0,
         size: $scope.pageSize,
         sort: ['id'],
+        shopIds: Auth.refreshManaged('shop'),
         deleted: false
     }).$promise.then(function(page) {
             console.clear();
@@ -100,6 +104,7 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
                 page: number,
                 size: $scope.pageSize,
                 sort: ['id'],
+                shopIds: Auth.refreshManaged('shop'),
                 internalCreateTimeStart: $scope.order.internalCreateTimeStart,
                 internalCreateTimeEnd: $scope.order.internalCreateTimeEnd,
                 shippingTimeStart: $scope.order.shippingTimeStart,
@@ -124,6 +129,7 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
             sort: ['id'],
             orderId: $scope.order.orderId,
             shopId: $scope.shop.selected ? $scope.shop.selected.id : null,
+            shopIds: Auth.refreshManaged('shop'),
             receiveName: $scope.order.receiveName,
             internalCreateTimeStart: $scope.order.internalCreateTimeStart,
             internalCreateTimeEnd: $scope.order.internalCreateTimeEnd,
@@ -145,7 +151,8 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
         orderService.get({
             page: 0,
             size: $scope.pageSize,
-            sort: ['id']
+            sort: ['id'],
+            shopIds: Auth.refreshManaged('shop')
         }, function(page) {
             $scope.page = page;
             $scope.totalPagesList = Utils.setTotalPagesList(page);
@@ -228,6 +235,6 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
 
 };
 
-OrderController.$inject = ['$scope', 'orderService', 'Utils', 'Process', 'ObjectProcess', 'Shop'];
+OrderController.$inject = ['$scope', 'orderService', 'Utils', 'Process', 'ObjectProcess', 'Shop', 'Auth'];
 
 angular.module('ecommApp').controller('OrderController', OrderController);

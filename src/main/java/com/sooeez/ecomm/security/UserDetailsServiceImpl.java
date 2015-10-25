@@ -20,7 +20,7 @@ import com.sooeez.ecomm.repository.UserRepository;
 
 @Component
 public class UserDetailsServiceImpl implements UserDetailsService {
-	
+
 	private final Logger log = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
 	@Autowired
@@ -29,18 +29,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Override
 	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
 		log.debug("Authenticating {}", username);
-		List<GrantedAuthority> grantedAuthorities = new ArrayList<>();;
+
+		List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+
 		User user = this.userRepository.findOneByUsername(username);
-		user.getRoles()
-			.forEach(role -> {
-				role.getAuthorities().forEach(authority -> {
-					grantedAuthorities.add(new SimpleGrantedAuthority(authority.getName()));
-				});
-			});
+
+		user.getRoles().forEach(role -> {
+			grantedAuthorities.add(new SimpleGrantedAuthority(role.getCode()));
+		});
+		
 		UserDetails userDetails = new org.springframework.security.core.userdetails.User(
 				user.getUsername(), user.getPassword(), grantedAuthorities);
-		
+
 		return userDetails;
 	}
 

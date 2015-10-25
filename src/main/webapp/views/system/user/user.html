@@ -1,0 +1,82 @@
+<ol class="breadcrumb">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li class="active">用户管理</li>
+    <li class="pull-right" id="breadcrumb-li">
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="user.operator">创建</a>
+    </li>
+</ol>
+<div class="container-fluid">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h3 class="panel-title">用户列表</h3>
+        </div>
+        <table class="table table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
+            <thead>
+                <tr>
+                    <th width="10%">编号</th>
+                    <th width="10%">用户名</th>
+                    <th width="20%">邮箱</th>
+                    <th width="44%">角色</th>
+                    <th width="10%">是否启用</th>
+                    <th width="6%">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="user in page.content">
+                    <td>
+                        {{user.id}}
+                    </td>
+                    <td>
+                        {{user.username}}
+                    </td>
+                    <td>
+                        {{user.email}}
+                    </td>
+                    <td>
+                        <span class="label label-{{role.code == 'SYSTEM_ADMIN' ? 'danger' : 'success'}}" ng-repeat="role in user.roles" style="margin:3px;display:inline-block" >
+                            {{role.name}}
+                        </span>
+                    </td>
+                    <td ng-switch on="user.enabled">
+                        <span ng-switch-when="true">是</span>
+                        <span ng-switch-when="false">否</span>
+                    </td>
+                    <td>
+                        <a ui-sref="user.operator({id:user.id})" class="btn btn-info btn-xs">
+                            <span class="glyphicon glyphicon-edit"></span> 编辑
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="20">
+                        <nav class="page-list">
+                            <ul class="pagination pagination-sm">
+                                <li ng-class="{disabled: page.first}">
+                                    <a href="javascript:void(0)" ng-click="turnPage(page.number - 1)">&laquo;</a>
+                                </li>
+                                <li ng-repeat="i in query.totalPagesList" ng-class="{active: i == page.number}">
+                                    <a href="javascript:void(0)" ng-click="turnPage(i)">{{i+1}}</a>
+                                </li>
+                                <li ng-class="{disabled: page.last}">
+                                    <a href="javascript:void(0)" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                </li>
+                            </ul>
+                            <div class="page-total">
+                                共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
+                                <select class="form-control" style="display: inline; padding:0" ng-model="query.pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                </select>
+                            </div>
+                        </nav>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="panel-body" ng-show="page.content.length == 0">
+            <div class="alert alert-warning">
+                <span class="glyphicon glyphicon-info-sign"></span> 没有任何数据被检索到
+            </div>
+        </div>
+    </div>
+</div>

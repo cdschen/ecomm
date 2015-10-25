@@ -2,7 +2,6 @@ angular.module('ecommApp')
 
 .factory('Shop', ['$resource', '$http', function($resource, $http) {
 
-	var $ = angular.element;
     var shop = $resource('/api/shops/:id');
 
     shop.getAll = function(params) {

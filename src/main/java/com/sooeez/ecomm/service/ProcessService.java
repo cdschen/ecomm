@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.criteria.Predicate;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -24,16 +26,18 @@ import com.sooeez.ecomm.repository.ProcessStepRepository;
 public class ProcessService {
 	
 	@Autowired ProcessRepository processRepository;
-	
 	@Autowired ProcessStepRepository processStepRepository;
-	
 	@Autowired ObjectProcessRepository objectProcessRepository;
 	
 	/*
 	 * Process
 	 */
 	
+	@Transactional
 	public Process saveProcess(Process process) {
+//		process.getSteps().forEach(step -> {
+//			step.setProcess(process);
+//		});
 		this.processRepository.save(process);
 		System.out.println("process.getDefaultStepName():" + process.getDefaultStepName());
 		System.out.println("process.getId():" + process.getId());
@@ -58,8 +62,8 @@ public class ProcessService {
 		return this.processRepository.findOne(id);
 	}
 	
-	public List<Process> getProcesses(Process process) {
-		return this.processRepository.findAll(getProcessSpecification(process));
+	public List<Process> getProcesses(Process process, Sort sort) {
+		return this.processRepository.findAll(getProcessSpecification(process), sort);
 	}
 
 	public Page<Process> getPagedProcesses(Pageable pageable) {
@@ -125,11 +129,18 @@ public class ProcessService {
 		return this.objectProcessRepository.findAll(pageable);
 	}
 	
+	public long getObjectProcessCount(ObjectProcess objectProcess) {
+		return this.objectProcessRepository.count(getObjectProcessSpecification(objectProcess));
+	}
+	
 	private Specification<ObjectProcess> getObjectProcessSpecification(ObjectProcess objectProcess) {
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			if (objectProcess.getObjectId() != null) {
 				predicates.add(cb.equal(root.get("objectId"), objectProcess.getObjectId()));
+			}
+			if (objectProcess.getProcessId() != null) {
+				predicates.add(cb.equal(root.get("processId"), objectProcess.getProcessId()));
 			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};

@@ -256,22 +256,43 @@ public class Order implements Serializable {
 	@Transient
 	private Boolean ignoreCheck = false;
 
+	// 仓库id集合
+	@Transient
+	private Long[] warehouseIds;
+
+	// 店铺id集合
+	@Transient
+	private Long[] shopIds;
+
 	//
 
 	public Long getId() {
 		return id;
 	}
-	
+
+	public Long[] getShopIds() {
+		return shopIds;
+	}
+
+	public void setShopIds(Long[] shopIds) {
+		this.shopIds = shopIds;
+	}
+
+	public Long[] getWarehouseIds() {
+		return warehouseIds;
+	}
+
+	public void setWarehouseIds(Long[] warehouseIds) {
+		this.warehouseIds = warehouseIds;
+	}
 
 	public Boolean getIgnoreCheck() {
 		return ignoreCheck;
 	}
 
-
 	public void setIgnoreCheck(Boolean ignoreCheck) {
 		this.ignoreCheck = ignoreCheck;
 	}
-
 
 	public Map<String, Boolean> getCheckMap() {
 		return checkMap;

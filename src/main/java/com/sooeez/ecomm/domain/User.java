@@ -14,7 +14,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "t_user")
@@ -31,30 +34,53 @@ public class User implements Serializable {
 	private Long id;
 
 	@Column(name = "username", unique = true, nullable = false)
-	@Size(min = 5, max = 50)
+	// @Size(min = 1, max = 20)
 	private String username;
 
 	@Column(name = "email", nullable = false)
-	@Size(min = 5, max = 100)
+	// @Size(min = 1, max = 30)
 	private String email;
 
 	@Column(name = "password", nullable = false)
-	@Size(min = 5, max = 100)
+	// @Size(min = 1, max = 20)
 	private String password;
+
+	@Column(name = "enabled", nullable = false)
+	private Boolean enabled;
+
+	@Column(name = "managed_shops")
+	private String managedShops;
+
+	@Column(name = "managed_warehouses")
+	private String managedWarehouses;
 
 	/*
 	 * Related Properties
 	 */
-	
+
 	@ManyToMany
-	@JoinTable(name = "t_user_role", 
-		joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") }, 
-		inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
+	@JoinTable(name = "t_user_role", joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
 	private Set<Role> roles = new HashSet<>();
 
 	//
-	
+
 	public User() {
+	}
+
+	public String getManagedShops() {
+		return managedShops;
+	}
+
+	public void setManagedShops(String managedShops) {
+		this.managedShops = managedShops;
+	}
+
+	public String getManagedWarehouses() {
+		return managedWarehouses;
+	}
+
+	public void setManagedWarehouses(String managedWarehouses) {
+		this.managedWarehouses = managedWarehouses;
 	}
 
 	public Long getId() {
@@ -65,12 +91,12 @@ public class User implements Serializable {
 		this.id = id;
 	}
 
-	public String getPassword() {
-		return password;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getEmail() {
@@ -81,16 +107,20 @@ public class User implements Serializable {
 		this.email = email;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	public String getPassword() {
+		return password;
 	}
 
-	public String getUsername() {
-		return username;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public Set<Role> getRoles() {

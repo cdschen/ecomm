@@ -29,20 +29,11 @@ import com.sooeez.ecomm.security.Http401UnauthorizedEntryPoint;
 @Order(1)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	private UserDetailsService userDetailsService;
-
-	@Autowired
-	private Http401UnauthorizedEntryPoint authenticationEntryPoint;
-
-	@Autowired
-	private AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
-
-	@Autowired
-	private AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler;
-
-	@Autowired
-	private AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler;
+	@Autowired private UserDetailsService userDetailsService;
+	@Autowired private Http401UnauthorizedEntryPoint authenticationEntryPoint;
+	@Autowired private AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
+	@Autowired private AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler;
+	@Autowired private AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -94,6 +85,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.authorizeRequests()
 			.antMatchers("/oauth/api/**").permitAll()
 			.antMatchers("/api/resource").permitAll()
+			
+			//没有做api上的权限限制
 			.antMatchers("/api/**").authenticated();
 		
 	}
