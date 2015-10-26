@@ -3,8 +3,8 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
 {
 
     /* Activate Date Picker */
-    $('input[ng-model="order.internalCreateTimeStart"], input[ng-model="order.internalCreateTimeEnd"], ' +
-        'input[ng-model="order.shippingTimeStart"], input[ng-model="order.shippingTimeEnd"]').datepicker({
+    $('input[ng-model="query.order.internalCreateTimeStart"], input[ng-model="query.order.internalCreateTimeEnd"], ' +
+        'input[ng-model="query.order.shippingTimeStart"], input[ng-model="query.order.shippingTimeEnd"]').datepicker({
         format: 'yyyy-mm-dd',
         clearBtn: true,
         language: 'zh-CN',
@@ -24,44 +24,28 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
         },
         items: {
             url: 'views/product/order.operator.info.items.html?' + new Date()
+        },
+        popover: {
+            url: 'process-tmpl.html'
         }
     };
-    $scope.totalPagesList = [];
-    $scope.pageSize = 20;
-    $scope.order = {};
-    $scope.shop = {};
-    $scope.shops = [];
-    $scope.processes = [];
-    $scope.status = [];
-    $scope.selected = {
+
+    $scope.defaultQuery = {
+        pageSize: 20,
+        totalPagesList: [],
+        sort: ['id'],
+        order: {},
+        shop: {},
         status: []
     };
-    $scope.popover = {
-        url: 'process-tmpl.html'
-    };
-    $scope.detailSlideChecked = false;
+    $scope.query = angular.copy($scope.defaultQuery);
+
+    $scope.shops = [];
+    $scope.processes = [];
+
+    $scope.detailsSlideChecked = false;
     $scope.processSlideChecked = false;
     $scope.statusSlideChecked = false;
-    $scope.processOrder = undefined;
-
-    function initStatus(processes) {
-        angular.forEach(processes, function(process) {
-            angular.forEach(process.steps, function(step) {
-                step.processName = process.name;
-                $scope.status.push(step);
-            });
-        });
-        // console.log('$scope.status:');
-        // console.log($scope.status);
-    }
-
-    function refreshStatus(status) {
-        var selectedStatus = [];
-        angular.forEach(status, function(state) {
-            selectedStatus.push(state.id);
-        });
-        return selectedStatus;
-    }
 
     Shop.getAll({
         deleted: false,
@@ -71,135 +55,84 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
         $scope.shops = shops;
     });
 
-    orderService.get({
-        page: 0,
-        size: $scope.pageSize,
-        sort: ['id'],
-        shopIds: Auth.refreshManaged('shop'),
-        deleted: false
-    }).$promise.then(function(page) {
-            console.clear();
-            console.log('page:');
-            console.log(page);
+    Process.getAll({
+        deleted: false,
+        objectType: 1
+    }).then(function(processes) {
+        $scope.processes = processes;
+        Process.initStatus(processes);
+    });
+
+    $scope.searchData = function(query, number)
+    {
+        orderService.get({
+            page: number ? number : 0,
+            size: query.pageSize,
+            sort: query.sort,
+            orderId: query.order.orderId,
+            shipNumber: query.order.shipNumber,
+            shopId: query.shop.selected ? query.shop.selected.id : null,
+            shopIds: Auth.refreshManaged('shop'),
+            receiveName: query.order.receiveName,
+            internalCreateTimeStart: query.order.internalCreateTimeStart,
+            internalCreateTimeEnd: query.order.internalCreateTimeEnd,
+            shippingTimeStart: query.order.shippingTimeStart,
+            shippingTimeEnd: query.order.shippingTimeEnd,
+            statusIds: Process.refreshStatus(query.status)
+        }, function(page) {
             $scope.page = page;
-            $scope.totalPagesList = Utils.setTotalPagesList(page);
-        }).then(function() {
-            Process.getAll({
-                deleted: false,
-                objectType: 1
-            }).then(function(processes) {
-                console.log('Process.getAll:');
-                console.log(processes);
-                $scope.processes = processes;
-                initStatus(processes);
-            });
+            query.totalPagesList = Utils.setTotalPagesList(page);
         });
+    };
+
+    $scope.searchData($scope.query);
 
     $scope.turnPage = function(number) {
-        console.clear();
-        console.log('turnPage:');
-        console.log($scope.order);
         if (number > -1 && number < $scope.page.totalPages) {
-            orderService.get({
-                page: number,
-                size: $scope.pageSize,
-                sort: ['id'],
-                shopIds: Auth.refreshManaged('shop'),
-                internalCreateTimeStart: $scope.order.internalCreateTimeStart,
-                internalCreateTimeEnd: $scope.order.internalCreateTimeEnd,
-                shippingTimeStart: $scope.order.shippingTimeStart,
-                shippingTimeEnd: $scope.order.shippingTimeEnd,
-                status: refreshStatus($scope.selected.status)
-            }, function(page) {
-                $scope.page = page;
-                $scope.totalPagesList = Utils.setTotalPagesList(page);
-            });
+            $scope.searchData($scope.query, number);
         }
     };
 
     $scope.search = function() {
-        console.clear();
-        console.log('search:');
-        //console.log($scope.order);
-        //console.log($scope.selected.status);
-        console.log($scope.shop.selected);
-        orderService.get({
-            page: 0,
-            size: $scope.pageSize,
-            sort: ['id'],
-            orderId: $scope.order.orderId,
-            shopId: $scope.shop.selected ? $scope.shop.selected.id : null,
-            shopIds: Auth.refreshManaged('shop'),
-            receiveName: $scope.order.receiveName,
-            internalCreateTimeStart: $scope.order.internalCreateTimeStart,
-            internalCreateTimeEnd: $scope.order.internalCreateTimeEnd,
-            shippingTimeStart: $scope.order.shippingTimeStart,
-            shippingTimeEnd: $scope.order.shippingTimeEnd,
-            status: refreshStatus($scope.selected.status)
-        }, function(page) {
-            $scope.page = page;
-            $scope.totalPagesList = Utils.setTotalPagesList(page);
-        });
+        $scope.searchData($scope.query);
     };
 
     $scope.reset = function() {
-        console.clear();
-        console.log('reset:');
-        $scope.order = {};
-        $scope.selected.status.length = 0;
-        console.log($scope.order);
-        orderService.get({
-            page: 0,
-            size: $scope.pageSize,
-            sort: ['id'],
-            shopIds: Auth.refreshManaged('shop')
-        }, function(page) {
-            $scope.page = page;
-            $scope.totalPagesList = Utils.setTotalPagesList(page);
-        });
+        $scope.query = angular.copy($scope.defaultQuery);
+        $scope.searchData($scope.query);
     };
 
     // status
-
-    $scope.closeStatusSlide = function() {
-        $scope.statusSlideChecked = false;
+    $scope.toggleStatusSlide = function() {
+        $scope.statusSlideChecked = !$scope.statusSlideChecked;
     };
 
-    $scope.loadStatus = function() {
-        $scope.statusSlideChecked = true;
-    };
-
-    $scope.selectState = function(step) {
+    $scope.selectStatus = function(step) {
         if (step.selected && step.selected === true) {
             step.selected = false;
-            for (var i = 0, len = $scope.selected.status.length; i < len; i++) {
-                if ($scope.selected.status[i].id === step.id) {
-                    $scope.selected.status.splice(i, 1);
-                    break;
+            $.each($scope.query.status, function(i) {
+                if (this.id === step.id) {
+                    $scope.query.status.splice(i, 1);
+                    return false;
                 }
-            }
+            });
         } else {
             step.selected = true;
-            $scope.selected.status.push(step);
+            $scope.query.status.push(step);
         }
-        console.log('$scope.selectState():');
-        console.log($scope.selected.status);
     };
 
     // process
-
-    $scope.closeProcessSlide = function() {
-        $scope.processSlideChecked = false;
-        if ($scope.processOrder) {
-            $scope.processOrder.active = false;
+    $scope.toggleProcessSlide = function(order) {
+        $scope.processSlideChecked = !$scope.processSlideChecked;
+        if ($scope.processSlideChecked) {
+            $scope.processOrder = order;
+            $scope.processOrder.active = true;
+        } else {
+            if ($scope.processOrder) {
+                $scope.processOrder.active = false;
+            }
         }
-    };
-
-    $scope.loadProcesses = function(order) {
-        console.log(order);
-        $scope.processSlideChecked = true;
-        $scope.processOrder = order;
-        $scope.processOrder.active = true;
     };
 
     $scope.updateStep = function(order) {
@@ -208,29 +141,25 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
     };
 
     $scope.saveUpdateStep = function(process, stepId) {
-        console.log('saveUpdateStep:');
         process.step.id = stepId;
-        console.log(process);
         ObjectProcess.save({}, process, function(objectProcess) {
             ObjectProcess.getAll({
                 objectId: objectProcess.objectId
             }).then(function(objectProcesses) {
-                console.log('refresh Processes:');
-                console.log(objectProcesses);
                 $scope.processOrder.processes = angular.copy(objectProcesses);
             });
         });
     };
 
-    // detail
-    $scope.closeDetailSlide = function() {
-        $scope.detailSlideChecked = false;
-    };
-
-    $scope.loadDetail = function(order) {
-        $scope.detailSlideChecked = true;
-        console.log(order);
-        $scope.processOrder = order;
+    // details
+    $scope.toggleDetailsSlide = function(order) {
+        $scope.detailsSlideChecked = !$scope.detailsSlideChecked;
+        if ($scope.detailsSlideChecked) {
+            $scope.processOrder = order;
+            $scope.defaultHeight = {
+                height: $(window).height() - 100
+            };
+        }
     };
 
 };
