@@ -102,9 +102,21 @@ public class Shop implements Serializable {
 	@Transient
 	private ShopTunnel defaultTunnel;
 
+	// 商店id集合
+	@Transient
+	private Long[] shopIds;
+
 	//
 
 	public Shop() {
+	}
+
+	public Long[] getShopIds() {
+		return shopIds;
+	}
+
+	public void setShopIds(Long[] shopIds) {
+		this.shopIds = shopIds;
 	}
 
 	public ShopTunnel getDefaultTunnel() {

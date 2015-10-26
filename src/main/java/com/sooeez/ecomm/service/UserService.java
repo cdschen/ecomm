@@ -1,18 +1,13 @@
 package com.sooeez.ecomm.service;
 
-import java.util.HashSet;
+
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,11 +27,8 @@ public class UserService {
 	private final Logger log = LoggerFactory.getLogger(UserService.class);
 	
 	@Autowired private PasswordEncoder passwordEncoder;
-	
 	@Autowired private UserRepository userRepository;
-	
 	@Autowired private RoleRepository roleRepository;
-	
 	@Autowired private AuthorityRepository authorityRepository;
 	
 	/*
@@ -46,7 +38,7 @@ public class UserService {
 	@Transactional(readOnly = true)
     public User getUserWithAuthorities() {
         User user = userRepository.findOneByUsername(SecurityUtils.getCurrentLogin());
-        user.getRoles().forEach(role -> role.getAuthorities());
+        user.getRoles().forEach(role -> role.getCode());
 		log.debug("Get Current Login user {}", user);
         return user;
     }
@@ -57,14 +49,21 @@ public class UserService {
 	
 	@Transactional
 	public User saveUser(User user) {
-		if (user.getId() == null)
+		if (user.getId() == null) {
 			user.setPassword(passwordEncoder.encode(user.getPassword()));
+		}
 		return this.userRepository.save(user);
 	}
 	
 	@Transactional
 	public void deleteUser(Long id) {
 		this.userRepository.delete(id);
+	}
+	
+	@Transactional
+	public void updatePassword(User user) {
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		this.userRepository.updatePassword(user.getPassword(), user.getId());
 	}
 	
 	public boolean existsUser(String username) {

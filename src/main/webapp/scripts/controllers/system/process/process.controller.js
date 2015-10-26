@@ -1,9 +1,7 @@
 angular.module('ecommApp')
 
-.controller('ProcessController', ['$scope', '$timeout', 'Process', 'ProcessStep',
-    function($scope, $timeout, Process, ProcessStep) {
-
-        var $ = angular.element;
+.controller('ProcessController', ['$scope', '$timeout', 'Process', 'ProcessStep', 'ObjectProcess', 'toastr',
+    function($scope, $timeout, Process, ProcessStep, ObjectProcess, toastr) {
 
         var defaultProcess = {
             type: {
@@ -113,9 +111,17 @@ angular.module('ecommApp')
         };
 
         $scope.showRemoveProcess = function(process, $index) {
-            $scope.removingProcess = process;
-            $scope.removingProcess.$index = $index;
-            $('#processDeleteModal').modal('show');
+            ObjectProcess.getCount({
+                processId: process.id
+            }).then(function(count) {
+                if (count > 0) {
+                    toastr.warning('当前流程已经被应用，不能被删除。');
+                } else {
+                    $scope.removingProcess = process;
+                    $scope.removingProcess.$index = $index;
+                    $('#processDeleteModal').modal('show');
+                }
+            });
         };
 
         $scope.removeProcess = function() {

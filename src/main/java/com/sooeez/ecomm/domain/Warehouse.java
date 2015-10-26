@@ -59,8 +59,20 @@ public class Warehouse implements Serializable {
 	@Transient
 	private Long total;
 
+	// 仓库id集
+	@Transient
+	private Long[] warehouseIds;
+
 	//
 	public Warehouse() {
+	}
+
+	public Long[] getWarehouseIds() {
+		return warehouseIds;
+	}
+
+	public void setWarehouseIds(Long[] warehouseIds) {
+		this.warehouseIds = warehouseIds;
 	}
 
 	public Long getTotal() {

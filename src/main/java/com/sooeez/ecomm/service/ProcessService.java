@@ -129,11 +129,18 @@ public class ProcessService {
 		return this.objectProcessRepository.findAll(pageable);
 	}
 	
+	public long getObjectProcessCount(ObjectProcess objectProcess) {
+		return this.objectProcessRepository.count(getObjectProcessSpecification(objectProcess));
+	}
+	
 	private Specification<ObjectProcess> getObjectProcessSpecification(ObjectProcess objectProcess) {
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			if (objectProcess.getObjectId() != null) {
 				predicates.add(cb.equal(root.get("objectId"), objectProcess.getObjectId()));
+			}
+			if (objectProcess.getProcessId() != null) {
+				predicates.add(cb.equal(root.get("processId"), objectProcess.getProcessId()));
 			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};

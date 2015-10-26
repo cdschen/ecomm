@@ -69,6 +69,20 @@ angular.module('ecommApp')
             });
         };
 
+        $scope.confirmAvailableOrder = function() {
+            var review = orderService.getOperationReview();
+            var disable = true;
+            if (review && review.orders) {
+                $.each(review.orders, function() {
+                    if (!this.ignoreCheck) {
+                        disable = false;
+                        return false;
+                    }
+                });
+            }
+            return disable;
+        };
+
         $scope.createOutInventorySheet = function() {
             console.clear();
             console.log('createOutInventorySheet');

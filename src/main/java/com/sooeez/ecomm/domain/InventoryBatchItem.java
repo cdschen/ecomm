@@ -119,9 +119,21 @@ public class InventoryBatchItem implements Serializable {
 	@Transient
 	private String productName;
 
+	// 仓库id集合
+	@Transient
+	private Long[] warehouseIds;
+
 	//
 
 	public InventoryBatchItem() {
+	}
+
+	public Long[] getWarehouseIds() {
+		return warehouseIds;
+	}
+
+	public void setWarehouseIds(Long[] warehouseIds) {
+		this.warehouseIds = warehouseIds;
 	}
 
 	public String getProductSKU() {

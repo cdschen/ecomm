@@ -3,7 +3,7 @@ angular.module('ecommApp')
 .config(['$stateProvider', 'ROLES',
     function($stateProvider, ROLES) {
 
-        var t = new Date().getTime();
+        var t = $.now();
 
         $stateProvider
             .state('supplier', {
@@ -16,8 +16,7 @@ angular.module('ecommApp')
                     }
                 },
                 data: {
-                    roles: [ROLES.sysadmin],
-                    authorities: []
+                    roles: [ROLES.SYSTEM_ADMIN, ROLES.SUPPLIER_ADMIN]
                 }
             });
     }

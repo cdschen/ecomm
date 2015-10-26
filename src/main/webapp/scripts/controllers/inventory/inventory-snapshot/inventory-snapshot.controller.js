@@ -1,9 +1,7 @@
 angular.module('ecommApp')
 
-.controller('InventorySnapshotController', ['$rootScope', '$scope', 'Warehouse', 'Utils', 'Inventory', 'InventoryBatch', 'InventoryBatchItem',
-    function($rootScope, $scope, Warehouse, Utils, Inventory, InventoryBatch, InventoryBatchItem) {
-
-        var $ = angular.element;
+.controller('InventorySnapshotController', ['$scope', 'Warehouse', 'Utils', 'Inventory', 'InventoryBatch', 'InventoryBatchItem', 'Auth',
+    function($scope, Warehouse, Utils, Inventory, InventoryBatch, InventoryBatchItem, Auth) {
 
         $scope.Math = Math;
 
@@ -35,7 +33,8 @@ angular.module('ecommApp')
 
         Warehouse.getAll({
             deleted: false,
-            sort: ['name']
+            sort: ['name'],
+            warehouseIds: Auth.refreshManaged('warehouse')
         }).then(function(warehouses) {
             $scope.warehouses = warehouses;
         });
@@ -48,11 +47,11 @@ angular.module('ecommApp')
                 productSKU: query.product.sku,
                 productName: query.product.name,
                 warehouseId: query.warehouse ? query.warehouse.id : null,
+                warehouseIds: Auth.refreshManaged('warehouse'),
                 createTimeStart: query.batchItem.createTimeStart,
                 createTimeEnd: query.batchItem.createTimeEnd,
                 batchOperate: query.batchItem.batchOperate ? query.batchItem.batchOperate.value : null
             }, function(page) {
-                console.log(page);
                 $scope.page = page;
                 $.each(page.content, function() {
                     this.inventorySnapshot = angular.fromJson(this.inventorySnapshot);

@@ -56,13 +56,13 @@ public class ProcessStep implements Serializable {
 	public ProcessStep() {
 	}
 
-//	public Process getProcess() {
-//		return process;
-//	}
-//
-//	public void setProcess(Process process) {
-//		this.process = process;
-//	}
+	// public Process getProcess() {
+	// return process;
+	// }
+	//
+	// public void setProcess(Process process) {
+	// this.process = process;
+	// }
 
 	public Long getId() {
 		return id;

@@ -16,21 +16,21 @@
                         <!-- username -->
                         <div class="form-group has-feedback" ng-class="{'has-success':(loginForm.username.$dirty && loginForm.username.$valid), 'has-warning':(loginForm.username.$dirty && loginForm.username.$invalid) }">
                             <label for="username">用户名</label>
-                            <input type="text" class="form-control" id="username" name="username" ng-model="credentials.username" placeholder="用户名" required ng-minlength="5" ng-maxlength="50" />
+                            <input type="text" class="form-control" id="username" name="username" ng-model="credentials.username" placeholder="用户名" required ng-minlength="5" ng-maxlength="20" />
                             <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="loginForm.username.$dirty && loginForm.username.$valid"></span>
                             <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="loginForm.username.$dirty && loginForm.username.$invalid"></span>
                             <span class="help-block" ng-messages="loginForm.username.$error" ng-messages-multiple ng-show="loginForm.username.$dirty && loginForm.username.$invalid">
-                            <span ng-messages-include="views/error-messages.html" ></span>
+                                <span ng-messages-include="views/error-messages.html" ></span>
                             </span>
                         </div>
                         <!-- password -->
                         <div class="form-group has-feedback" ng-class="{'has-success':(loginForm.password.$dirty && loginForm.password.$valid), 'has-warning':(loginForm.password.$dirty && loginForm.password.$invalid) }">
                             <label for="password">密码</label>
-                            <input type="password" class="form-control" id="password" name="password" ng-model="credentials.password" placeholder="密码" required ng-minlength="5" ng-maxlength="50" />
+                            <input type="password" class="form-control" id="password" name="password" ng-model="credentials.password" placeholder="密码" required ng-minlength="5" ng-maxlength="20" />
                             <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="loginForm.password.$dirty && loginForm.password.$valid"></span>
                             <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="loginForm.password.$dirty && loginForm.password.$invalid"></span>
                             <span class="help-block" ng-messages="loginForm.password.$error" ng-messages-multiple ng-show="loginForm.password.$dirty && loginForm.password.$invalid">
-                            <span ng-messages-include="views/error-messages.html" ></span>
+                                <span ng-messages-include="views/error-messages.html" ></span>
                             </span>
                         </div>
                         <!-- button -->

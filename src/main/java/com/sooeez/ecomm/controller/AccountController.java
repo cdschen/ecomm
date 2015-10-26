@@ -15,14 +15,7 @@ import com.sooeez.ecomm.service.UserService;
 @RequestMapping("/api")
 public class AccountController {
 	
-	@Autowired
-	private UserService userService;
-	
-//	@RequestMapping(value="/register", method = RequestMethod.POST)
-//	public ResponseEntity<?> registerAccount(@RequestBody User user) {
-//		userService.createUserInformation(user);
-//        return new ResponseEntity<>(HttpStatus.CREATED);
-//    }
+	@Autowired private UserService userService;
 
     @RequestMapping(value = "/account")
     public ResponseEntity<User> getAccount() {

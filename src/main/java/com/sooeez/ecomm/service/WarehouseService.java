@@ -56,6 +56,10 @@ public class WarehouseService {
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			predicates.add(cb.equal(root.get("deleted"), warehouse.getDeleted() != null && warehouse.getDeleted() == true ? true : false));
+			if (warehouse.getWarehouseIds() != null && warehouse.getWarehouseIds().length > 0) {
+				predicates.add(root.get("id").in(warehouse.getWarehouseIds()));
+			}
+			
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
 	}

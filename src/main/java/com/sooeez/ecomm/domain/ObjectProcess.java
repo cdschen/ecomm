@@ -11,6 +11,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 @Entity
 @Table(name = "t_object_process")
 public class ObjectProcess implements Serializable {
@@ -31,6 +34,9 @@ public class ObjectProcess implements Serializable {
 	@Column(name = "object_type", nullable = false)
 	private Integer objectType;
 
+	@Column(name = "process_id", nullable = false, insertable = false, updatable = false)
+	private Long processId;
+
 	@Column(name = "step_id", nullable = false, insertable = false, updatable = false)
 	private Long stepId;
 
@@ -39,16 +45,26 @@ public class ObjectProcess implements Serializable {
 	 */
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "process_id")
 	private Process process;
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "step_id")
 	private ProcessStep step;
 
 	//
 
 	public ObjectProcess() {
+	}
+
+	public Long getProcessId() {
+		return processId;
+	}
+
+	public void setProcessId(Long processId) {
+		this.processId = processId;
 	}
 
 	public Process getProcess() {

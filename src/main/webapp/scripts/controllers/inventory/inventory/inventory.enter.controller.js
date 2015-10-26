@@ -1,9 +1,7 @@
 angular.module('ecommApp')
 
-.controller('InventoryEnterController', ['$rootScope', '$scope', '$state', '$stateParams', 'Warehouse', 'Product', 'InventoryBatch',
-    function($rootScope, $scope, $state, $stateParams, Warehouse, Product, InventoryBatch) {
-
-        var $ = angular.element;
+.controller('InventoryEnterController', ['$rootScope', '$scope', '$state', '$stateParams', 'Warehouse', 'Product', 'InventoryBatch', 'Auth',
+    function($rootScope, $scope, $state, $stateParams, Warehouse, Product, InventoryBatch, Auth) {
 
         $scope.defaultBatch = {
             operate: 1,
@@ -44,7 +42,11 @@ angular.module('ecommApp')
             todayHighlight: true,
         });
 
-        Warehouse.getAll().then(function(warehouses) {
+        Warehouse.getAll({
+            deleted: false,
+            sort: ['name'],
+            warehouseIds: Auth.refreshManaged('warehouse')
+        }).then(function(warehouses) {
             $scope.warehouses = warehouses;
             if ($stateParams.id && $stateParams.id !== '') {
                 $.each(warehouses, function() {

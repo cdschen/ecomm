@@ -106,10 +106,22 @@ public class InventoryBatch implements Serializable {
 	@Transient
 	private Date outInventoryTimeEnd;
 
+	// 仓库id集合
+	@Transient
+	private Long[] warehouseIds;
+
 	//
 
 	public Long getWarehouseId() {
 		return warehouseId;
+	}
+
+	public Long[] getWarehouseIds() {
+		return warehouseIds;
+	}
+
+	public void setWarehouseIds(Long[] warehouseIds) {
+		this.warehouseIds = warehouseIds;
 	}
 
 	public Date getOperateTimeStart() {

@@ -1,7 +1,6 @@
 
-var OrderController = function($scope, orderService, Utils, Process, ObjectProcess, Shop)
+var OrderController = function($scope, orderService, Utils, Process, ObjectProcess, Shop, Auth)
 {
-    var $ = angular.element;
 
     /* Activate Date Picker */
     $('input[ng-model="query.order.internalCreateTimeStart"], input[ng-model="query.order.internalCreateTimeEnd"], ' +
@@ -48,7 +47,11 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
     $scope.processSlideChecked = false;
     $scope.statusSlideChecked = false;
 
-    Shop.getAll().then(function(shops) {
+    Shop.getAll({
+        deleted: false,
+        sort: ['name'],
+        shopIds: Auth.refreshManaged('shop')
+    }).then(function(shops) {
         $scope.shops = shops;
     });
 
@@ -69,6 +72,7 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
             orderId: query.order.orderId,
             shipNumber: query.order.shipNumber,
             shopId: query.shop.selected ? query.shop.selected.id : null,
+            shopIds: Auth.refreshManaged('shop'),
             receiveName: query.order.receiveName,
             internalCreateTimeStart: query.order.internalCreateTimeStart,
             internalCreateTimeEnd: query.order.internalCreateTimeEnd,
@@ -160,6 +164,6 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
 
 };
 
-OrderController.$inject = ['$scope', 'orderService', 'Utils', 'Process', 'ObjectProcess', 'Shop'];
+OrderController.$inject = ['$scope', 'orderService', 'Utils', 'Process', 'ObjectProcess', 'Shop', 'Auth'];
 
 angular.module('ecommApp').controller('OrderController', OrderController);

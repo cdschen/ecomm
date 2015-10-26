@@ -1,15 +1,13 @@
 angular.module('ecommApp')
 
-.controller('ShipmentController', ['$scope', '$rootScope', 'toastr', 'Warehouse', 'Shop', 'courierService', 'Utils', 'shipmentService',
-    function($scope, $rootScope, toastr, Warehouse, Shop, courierService, Utils, shipmentService) {
+.controller('ShipmentController', ['$scope', '$rootScope', 'toastr', 'Warehouse', 'Shop', 'courierService', 'Utils', 'shipmentService', 'Auth',
+    function($scope, $rootScope, toastr, Warehouse, Shop, courierService, Utils, shipmentService, Auth) {
 
         $scope.template = {
             shipmentComplete: {
                 url: 'views/inventory/shipment/shipment-complete.html?' + (new Date())
             }
         };
-
-        var $ = angular.element;
 
         /* Activate Date Picker */
         $('input[ng-model="query.createTimeStart"], input[ng-model="query.createTimeEnd"], ' +
@@ -79,7 +77,8 @@ angular.module('ecommApp')
 
         Warehouse.getAll({ // 导入所有仓库
             deleted: false,
-            sort: ['name']
+            sort: ['name'],
+            warehouseIds: Auth.refreshManaged('warehouse')
         }).then(function(warehouses) {
             $scope.warehouses = warehouses;
         }).then(function() { // 导入所有快递公司
@@ -91,7 +90,8 @@ angular.module('ecommApp')
         }).then(function() { // 导入所有店铺
             return Shop.getAll({
                 deleted: false,
-                sort: ['name']
+                sort: ['name'],
+                shopIds: Auth.refreshManaged('shop')
             }).then(function(shops) {
                 $scope.shops = shops;
             });

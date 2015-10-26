@@ -1,48 +1,45 @@
 angular.module('ecommApp')
 
-.config(['$stateProvider', 'ROLES',
-    function($stateProvider, ROLES) {
+.config(['$stateProvider', 'ROLES', function($stateProvider, ROLES) {
 
-        $stateProvider
-            .state('inventory', {
-                parent: 'site',
-                url: '/inventories',
-                views: {
-                    'content@': {
-                        templateUrl: 'views/inventory/inventory/inventory.html?' + (new Date()),
-                        controller: 'InventoryController'
-                    }
-                },
-                data: {
-                    roles: [ROLES.sysadmin],
-                    authorities: []
+    var t = $.now();
+
+    $stateProvider
+        .state('inventory', {
+            parent: 'site',
+            url: '/inventories',
+            views: {
+                'content@': {
+                    templateUrl: 'views/inventory/inventory/inventory.html?' + t,
+                    controller: 'InventoryController'
                 }
-            })
-            .state('inventory.enter', {
-                url: '/enter/:id',
-                views: {
-                    'content@': {
-                        templateUrl: 'views/inventory/inventory/inventory.enter.html?' + (new Date()),
-                        controller: 'InventoryEnterController'
-                    }
-                },
-                data: {
-                    roles: [ROLES.sysadmin],
-                    authorities: []
+            },
+            data: {
+                roles: [ROLES.SYSTEM_ADMIN, ROLES.INVENTORY_ADMIN]
+            }
+        })
+        .state('inventory.enter', {
+            url: '/enter/:id',
+            views: {
+                'content@': {
+                    templateUrl: 'views/inventory/inventory/inventory.enter.html?' + t,
+                    controller: 'InventoryEnterController'
                 }
-            })
-            .state('inventory.out', {
-                url: '/out/:id',
-                views: {
-                    'content@': {
-                        templateUrl: 'views/inventory/inventory/inventory.out.html?' + (new Date()),
-                        controller: 'InventoryOutController'
-                    }
-                },
-                data: {
-                    roles: [ROLES.sysadmin],
-                    authorities: []
+            },
+            data: {
+                roles: [ROLES.SYSTEM_ADMIN, ROLES.INVENTORY_ADMIN]
+            }
+        })
+        .state('inventory.out', {
+            url: '/out/:id',
+            views: {
+                'content@': {
+                    templateUrl: 'views/inventory/inventory/inventory.out.html?' + t,
+                    controller: 'InventoryOutController'
                 }
-            });
-    }
-]);
+            },
+            data: {
+                roles: [ROLES.SYSTEM_ADMIN, ROLES.INVENTORY_ADMIN]
+            }
+        });
+}]);

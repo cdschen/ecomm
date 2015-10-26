@@ -7,7 +7,6 @@ angular.module('ecommApp')
             var timeout, url;
             scope.$watch(attrs.ngModel, function(val) {
                 if (val) {
-
                     if (timeout) {
                         $timeout.cancel(timeout);
                     }

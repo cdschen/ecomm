@@ -10,7 +10,7 @@
 <div class="container-fluid">
     <div class="panel panel-default">
         <form name="productSearchForm" novalidate ng-submit="search(query)">
-            <table class="table clear-marginbottom-table">
+            <table class="table table-condensed clear-marginbottom-table">
                 <thead>
                     <tr>
                         <td width="12%">
@@ -76,14 +76,14 @@
                 <span class="glyphicon glyphicon-info-sign"></span> 没有任何数据被检索到
             </div>
         </div>
-        <table class="table table-bordered" ng-show="page.content.length > 0">
+        <table class="table table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
             <thead>
                 <tr>
                     <th width="2%">
                         <input type="checkbox" ng-model="selectAll">
                     </th>
-                    <th width="12%">SKU</th>
-                    <th width="12%">商品名称</th>
+                    <th width="10%">SKU</th>
+                    <th width="14%">商品名称</th>
                     <th width="20%">销售</th>
                     <th width="15%">成本</th>
                     <th width="17%">库存</th>
@@ -169,12 +169,12 @@
             <span ng-switch on="process.process.type">
                 <span ng-switch-when="1">
                     <span ng-repeat="step in process.process.steps | orderBy: 'sequence'" >
-                        <button type="button" class="btn btn-xs {{step.sequence > process.step.sequence ? 'btn-info' : 'btn-success'}}" style="margin-bottom:5px;" ng-click="saveUpdateStep(process, step.id)">{{step.name}}</button>
+                        <button type="button" class="btn btn-xs {{step.sequence > process.step.sequence ? 'btn-default' : 'btn-success'}}" style="margin-bottom:5px;" ng-click="saveUpdateStep(process, step.id)">{{step.name}}</button>
                         <span class="glyphicon glyphicon-circle-arrow-right" ng-show="!$last"></span>
                     </span>
                 </span>
                 <span ng-switch-when="2">
-                    <button type="button" class="btn btn-xs {{step.id != process.step.id ? 'btn-info' : 'btn-success'}}" ng-repeat="step in process.process.steps | orderBy: 'sequence'" ng-click="saveUpdateStep(process, step.id)" style="margin: 0 5px 5px 0">{{step.name}}</button>
+                    <button type="button" class="btn btn-xs {{step.id != process.step.id ? 'btn-default' : 'btn-success'}}" ng-repeat="step in process.process.steps | orderBy: 'sequence'" ng-click="saveUpdateStep(process, step.id)" style="margin: 0 5px 5px 0">{{step.name}}</button>
                 </span>
             </span>
         </div>
