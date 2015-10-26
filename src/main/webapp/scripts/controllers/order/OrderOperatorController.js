@@ -30,7 +30,10 @@ var OrderOperatorController = function($scope, $state, $stateParams, orderServic
     }
 
     function refreshField(order) {
-        order.deliveryMethod = order.deliveryMethod.value;
+        if( order.deliveryMethod )
+        {
+            order.deliveryMethod = order.deliveryMethod.value;
+        }
     }
 
     Shop.getAll().then(function(shops) {

@@ -226,6 +226,10 @@ public class Order implements Serializable {
 	@Transient
 	private String internalCreateTimeEnd;
 
+	/* 快递单号 */
+	@Transient
+	private String shipNumber;
+
 	/* 发货起始日期 */
 	@Transient
 	private String shippingTimeStart;
@@ -360,6 +364,16 @@ public class Order implements Serializable {
 	public void setInternalCreateTimeEnd(String internalCreateTimeEnd) {
 		this.internalCreateTimeEnd = internalCreateTimeEnd;
 	}
+
+	public String getShipNumber() {
+		return shipNumber;
+	}
+
+
+	public void setShipNumber(String shipNumber) {
+		this.shipNumber = shipNumber;
+	}
+
 
 	public String getShippingTimeStart() {
 		return shippingTimeStart;
