@@ -64,7 +64,8 @@ angular.module('ecommApp', ['toastr', 'ngTinyScrollbar', 'LocalStorageModule', '
         responseError: function(response) {
             //console.log('[DEBUG][app.js]---[factory().responseError()]');
             //console.log(response);
-            if (response.status === 401 && response.data.path !== undefined && response.data.path.indexOf('/api/csrf') === -1) {
+            //&& response.data.path.indexOf('/api/csrf') === -1
+            if (response.status === 401 && response.data.path !== undefined) {
                 var Auth = $injector.get('Auth');
                 var $state = $injector.get('$state');
                 var to = $rootScope.toState;
