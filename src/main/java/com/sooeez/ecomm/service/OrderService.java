@@ -33,6 +33,7 @@ import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Order;
 import com.sooeez.ecomm.domain.OrderBatch;
 import com.sooeez.ecomm.domain.OrderItem;
+import com.sooeez.ecomm.domain.Process;
 import com.sooeez.ecomm.domain.ProcessStep;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.ProductShopTunnel;
@@ -60,10 +61,10 @@ public class OrderService {
 	@Autowired private OrderRepository orderRepository;
 	@Autowired private OrderItemRepository orderItemRepository;
 	@Autowired private OrderBatchRepository orderBatchRepository;
-	@Autowired private ProcessService processServiceRepository;
 	
 	// Service
 	@Autowired private InventoryService inventoryService;
+	@Autowired private ProcessService processService;
 	@Autowired private ShopService shopService;
 	@PersistenceContext private EntityManager em;
 
@@ -75,6 +76,30 @@ public class OrderService {
 	public Order saveOrder(Order order) {
 		/* If id not null then is edit action */
 		if (order.getId() == null) {
+			
+			Process processQuery = new Process();
+			processQuery.setObjectType(1);
+			processQuery.setDeleted(false);
+			List<Process> processes = processService.getProcesses(processQuery, null);
+			if (processes != null && processes.size() > 0) {
+				for (Process process : processes) {
+					if (process.getAutoApply() == true) {
+						ObjectProcess objectProcess = new ObjectProcess();
+						objectProcess.setObjectType(1);
+						objectProcess.setProcess(process);
+						ProcessStep step = new ProcessStep();
+						if (process.getDefaultStepId() != null) {
+							step.setId(process.getDefaultStepId());
+						} else {
+							step.setId(process.getSteps().get(0).getId());
+						}
+						objectProcess.setStep(step);
+						order.setProcesses(new ArrayList<ObjectProcess>());
+						order.getProcesses().add(objectProcess);
+					}
+				}
+			}
+			
 			order.setInternalCreateTime(new Date());
 		}
 		/* execute no matter create or update */
@@ -1024,6 +1049,49 @@ public class OrderService {
 					e.printStackTrace();
 				}
 			}
+			if (order.getShippingTimeStart() != null && order.getShippingTimeEnd() != null) {
+				try {
+					Subquery<Shipment> shipmentSubquery = query.subquery(Shipment.class);
+					Root<Shipment> shipmentRoot = shipmentSubquery.from(Shipment.class);
+					shipmentSubquery.select(shipmentRoot.get("orderId"));
+					shipmentSubquery.where(cb.between(shipmentRoot.get("createTime"),
+							new SimpleDateFormat("yyyy-MM-dd").parse(order.getShippingTimeStart()),
+							new SimpleDateFormat("yyyy-MM-dd").parse(order.getShippingTimeEnd())));
+					predicates.add(cb.in(root.get("id")).value(shipmentSubquery));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			} else if (order.getShippingTimeStart() != null) {
+				try {
+					Subquery<Shipment> shipmentSubquery = query.subquery(Shipment.class);
+					Root<Shipment> shipmentRoot = shipmentSubquery.from(Shipment.class);
+					shipmentSubquery.select(shipmentRoot.get("orderId"));
+					shipmentSubquery.where(cb.greaterThanOrEqualTo(shipmentRoot.get("createTime"), 
+							new SimpleDateFormat("yyyy-MM-dd").parse(order.getShippingTimeStart())));
+					predicates.add(cb.in(root.get("id")).value(shipmentSubquery));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			} else if (order.getShippingTimeEnd() != null) {
+				try {
+					Subquery<Shipment> shipmentSubquery = query.subquery(Shipment.class);
+					Root<Shipment> shipmentRoot = shipmentSubquery.from(Shipment.class);
+					shipmentSubquery.select(shipmentRoot.get("orderId"));
+					shipmentSubquery.where(cb.lessThanOrEqualTo(shipmentRoot.get("createTime"), 
+							new SimpleDateFormat("yyyy-MM-dd").parse(order.getShippingTimeEnd())));
+					predicates.add(cb.in(root.get("id")).value(shipmentSubquery));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+			if( order.getShipNumber() != null && ! order.getShipNumber().trim().equals("") )
+			{
+				Subquery<Shipment> shipmentSubquery = query.subquery(Shipment.class);
+				Root<Shipment> shipmentRoot = shipmentSubquery.from(Shipment.class);
+				shipmentSubquery.select(shipmentRoot.get("orderId"));
+				shipmentSubquery.where(shipmentRoot.get("shipNumber").in(order.getShipNumber()));
+				predicates.add(cb.in(root.get("id")).value(shipmentSubquery));
+			}
 			if (order.getStatusIds() != null) {
 				Subquery<ObjectProcess> objectProcessSubquery = query.subquery(ObjectProcess.class);
 				Root<ObjectProcess> objectProcessRoot = objectProcessSubquery.from(ObjectProcess.class);
@@ -1510,7 +1578,7 @@ public class OrderService {
 			/* 获得订单初始流程状态 */
 			String processName = "";
 			String processStepName = "";
-			process = this.processServiceRepository.getProcess( order.getProcesses().get(0).getProcess().getId() );
+			process = this.processService.getProcess( order.getProcesses().get(0).getProcess().getId() );
 			processName = process.getName();
 			for( ProcessStep ps : process.getSteps() )
 			{
@@ -1832,7 +1900,7 @@ public class OrderService {
 				/* 获得订单初始流程状态 */
 				String processName = "";
 				String processStepName = "";
-				com.sooeez.ecomm.domain.Process process = this.processServiceRepository.getProcess( order.getProcesses().get(0).getProcess().getId() );
+				com.sooeez.ecomm.domain.Process process = this.processService.getProcess( order.getProcesses().get(0).getProcess().getId() );
 				processName = process.getName();
 				for( ProcessStep ps : process.getSteps() )
 				{
