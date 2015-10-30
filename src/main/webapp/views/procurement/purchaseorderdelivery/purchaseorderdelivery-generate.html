@@ -57,7 +57,7 @@
             <tbody>
                 <tr ng-repeat="purchaseOrders in page.content" ng-class="{active: purchaseOrders.active}">
                     <td>
-                        <input type="checkbox" ng-model="purchaseOrderDelivery.isSelected">
+                        <input type="checkbox" ng-model="purchaseOrders.isSelected">
                     </td>
                     <td>
                         {{purchaseOrders.shop.name}}
