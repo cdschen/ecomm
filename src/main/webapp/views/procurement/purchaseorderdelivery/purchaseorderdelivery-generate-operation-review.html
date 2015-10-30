@@ -1,0 +1,377 @@
+<style>
+    table.purchase_order_delivery_confirm_tables>tbody>tr>th,
+    table.purchase_order_delivery_confirm_tables>tbody>tr>td
+    {
+        border:none !important;
+    }
+    td {
+        word-break:break-all;
+    }
+</style>
+<div pageslide ps-open="generatePurchaseOrderDeliverySheetCheckListSlideChecked" ps-speed="0.25" ps-size="100%" style="border-left-width: 1px; border-left-style: solid; border-left-color: #c8c8c8">
+    <div id="operator-slider" style="padding:1px" class="container">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <button type="button" class="close" ng-click="togglePurchaseOrderDeliverySheetSlide()">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h3 class="text-center" style="margin: 0;">
+                    <strong class="text-center text-success">操作复核</strong>
+                </h3>
+                <hr style="margin: 5px 0;">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="panel panel-success" style="height:160px">
+                            <div class="panel-heading" style="padding: 5px;">
+                                <h4 class="panel-title"><strong>摘要</strong></h4>
+                            </div>
+                            <div class="panel-body" style="margin-bottom: 5px;">
+                                <table class="table table-condensed purchase_order_delivery_confirm_tables">
+                                    <tbody>
+                                        <tr>
+                                            <th width="50%">操作</th>
+                                            <td wdith="50%">生成收货单复核</td>
+                                        </tr>
+                                        <tr>
+                                            <th width="50%">时间</th>
+                                            <td wdith="50%">{{ operateDate | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th width="50%">收货人</th>
+                                            <td wdith="50%">{{ user().username }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="panel panel-success" style="height:160px">
+                            <div class="panel-heading" style="padding: 5px;">
+                                <h4 class="panel-title"><strong>操作规定</strong></h4>
+                            </div>
+                            <div class="panel-body" style="margin-bottom: 5px;">
+                                <div class="row" style="margin-bottom: 7px;">
+                                    <div class="col-md-9 col-md-offset-1">
+                                        A. 商品需要设定采购单价
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.emptyPurchaseUnitPriceError">
+                                            <span class="glyphicon glyphicon-ok"></span> 验证通过
+                                        </a>
+                                        <div ng-switch on="operationReview().ignoredMap.emptyPurchaseUnitPriceError" ng-show="operationReview().checkMap.emptyPurchaseUnitPriceError">
+                                            <a class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="ignoreOrNotChecker(operationReview().ignoredMap, 'emptyPurchaseUnitPriceError', true)">
+                                                <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
+                                            </a>
+                                            <a class="btn btn-info btn-xs pull-right" ng-switch-when="true" ng-click="ignoreOrNotChecker(operationReview().ignoredMap, 'emptyPurchaseUnitPriceError', false)">
+                                                <span class="glyphicon glyphicon-repeat"></span> 恢复验证
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-bottom: 7px;">
+                                    <div class="col-md-9 col-md-offset-1">
+                                        B. 商品需要设定收货数量
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.emptyReceiveQtyError">
+                                            <span class="glyphicon glyphicon-ok"></span> 验证通过
+                                        </a>
+                                        <div ng-switch on="operationReview().ignoredMap.emptyReceiveQtyError" ng-show="operationReview().checkMap.emptyReceiveQtyError">
+                                            <a class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="ignoreOrNotChecker(operationReview().ignoredMap, 'emptyReceiveQtyError', true)">
+                                                <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
+                                            </a>
+                                            <a class="btn btn-info btn-xs pull-right" ng-switch-when="true" ng-click="ignoreOrNotChecker(operationReview().ignoredMap, 'emptyReceiveQtyError', false)">
+                                                <span class="glyphicon glyphicon-repeat"></span> 恢复验证
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-bottom: 7px;">
+                                    <div class="col-md-9 col-md-offset-1">
+                                        C. 商品实际收货数量匹配
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.differentReceiveQtyError">
+                                            <span class="glyphicon glyphicon-ok"></span> 验证通过
+                                        </a>
+                                        <div ng-switch on="operationReview().ignoredMap.differentReceiveQtyError" ng-show="operationReview().checkMap.differentReceiveQtyError">
+                                            <a class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="ignoreOrNotChecker(operationReview().ignoredMap, 'differentReceiveQtyError', true)">
+                                                <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
+                                            </a>
+                                            <a class="btn btn-info btn-xs pull-right" ng-switch-when="true" ng-click="ignoreOrNotChecker(operationReview().ignoredMap, 'differentReceiveQtyError', false)">
+                                                <span class="glyphicon glyphicon-repeat"></span> 恢复验证
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="panel panel-default" style="height:160px">
+                            <div class="panel-body">
+                                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="confirmPurchaseOrderDeliveryGeneration()">确定</button>
+                                <button type="button" class="btn btn-default btn-lg btn-block" ng-click="togglePurchaseOrderDeliverySheetSlide()">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-danger">
+                    <strong>详情：</strong>
+                </p>
+                <div style="padding-right:8px;">
+                    <table class="table table-bordered table-condensed clear-marginbottom-table">
+                        <thead>
+                            <tr>
+                                <th colspan="8" class="text-center">采购单详情</th>
+                                <th colspan="5" class="text-center">操作规定复核结果</th>
+                            </tr>
+                            <tr>
+                                <th width="8%">sku</th>
+                                <th width="8%">名称</th>
+                                <th width="8%">供应商sku</th>
+                                <th width="8%">实际采购单价</th>
+                                <th width="8%">待收货数量</th>
+                                <th width="8%">实际收货数量</th>
+                                <th width="8%">Credit数量</th>
+                                <th width="8%">等back order数量</th>
+                                <th width="7%" class="text-center">A</th>
+                                <th width="7%" class="text-center">B</th>
+                                <th width="7%" class="text-center">C</th>
+                                <th width="15%" class="text-center">操作</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultHeight()">
+                    <table class="table table-bordered table-condensed clear-marginbottom-table">
+                        <tbody ng-repeat="purchaseOrder in operationReview().purchaseOrders">
+                            <tr style="font-size: 12px;">
+                                <th colspan="11">
+                                   <a ng-click="purchaseOrder.isShown = ! purchaseOrder.isShown" class="btn btn-xs btn-info">
+                                       <span ng-show="! purchaseOrder.isShown">点这里展开该采购单详情</span>
+                                       <span ng-show="purchaseOrder.isShown">点这里收缩该采购单详情</span>
+                                   </a>
+                                </th>
+                                <th class="text-center">
+                                    <div ng-switch on="purchaseOrder.ignoreCheck">
+                                        <div ng-switch-when="true">
+                                            <button type="button" class="btn btn-success btn-xs btn-block" ng-click="ignoreOrNotCheckPurchaseOrderOrItem( purchaseOrder, true )" ng-show=" purchaseOrder.ignoreCheck ">恢复整个采购单</button>
+                                        </div>
+                                        <div ng-switch-when="false">
+                                            <button type="button" class="btn btn-danger btn-xs btn-block" ng-click="ignoreOrNotCheckPurchaseOrderOrItem( purchaseOrder, true )" ng-show=" ! purchaseOrder.ignoreCheck ">移出整个采购单</button>
+                                        </div>
+                                    </div>
+                                </th>
+                            </tr>
+                            <tr ng-show="purchaseOrder.isShown" ng-click="purchaseOrder.isShown = ! purchaseOrder.isShown" style="font-size: 12px;">
+                                <!--采购单号	创建时间	创建人	收货人信息	供应商	订货方式	采购总件数	收货总件数	总金额	状态	收货信息	入库信息	备注-->
+                                <th class="text-center">采购单号</th>
+                                <th class="text-center">创建人<br/>创建时间</th>
+                                <th class="text-center">收货人信息</th>
+                                <th class="text-center">供应商</th>
+                                <th class="text-center">订货方式</th>
+                                <th class="text-center">总件数</th>
+                                <th class="text-center">总金额</th>
+                                <th class="text-center">状态</th>
+                                <th class="text-center" colspan="2">收货信息</th>
+                                <th class="text-center">入库信息</th>
+                                <th class="text-center">备注</th>
+                            </tr>
+                            <tr ng-show="purchaseOrder.isShown" style="font-size: 12px;">
+                                <td>
+                                    {{ purchaseOrder.id }}
+                                </td>
+                                <td>
+                                    {{ purchaseOrder.creator.username }} <br/> {{ purchaseOrder.createTime | date : 'yyyy-MM-dd HH:mm:ss' }}
+                                </td>
+                                <td class="text-left">
+                                    <ul style="list-style:none; padding-left:4px; margin:0;">
+                                        <li><strong>地址 : </strong>{{ purchaseOrder.receiveAddress }}</li>
+                                        <li><strong>姓名 : </strong>{{ purchaseOrder.receiveName }}</li>
+                                        <li><strong>电话 : </strong>{{ purchaseOrder.receivePhone }}</li>
+                                        <li><strong>电邮 : </strong>{{ purchaseOrder.receiveEmail }}</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    {{ purchaseOrder.supplier.name }}
+                                </td>
+                                <td>
+                                    {{
+                                    purchaseOrder.bookingType == 1 ? '邮件' :
+                                    purchaseOrder.bookingType == 2 ? '电话' :
+                                    purchaseOrder.bookingType == 3 ? 'Ecomm系统' :
+                                    purchaseOrder.bookingType == 4 ? '对方系统' : '未知方式'
+                                    }}
+                                </td>
+                                <td>
+                                    采购: {{ purchaseOrder.totalPurchasedQty }} <br/>
+                                    收货: {{ purchaseOrder.totalDeliveredQty }}
+                                </td>
+                                <td class="text-left">
+                                    <ul style="list-style:none; padding-left:4px; margin:0;">
+                                        <li><strong>采购 : </strong>{{ purchaseOrder.totalEstimatePurchasedAmount ? purchaseOrder.totalEstimatePurchasedAmount : 0 | currency : '' }}</li>
+                                        <li><strong>收货 : </strong>{{ purchaseOrder.totalDeliveredAmount ? purchaseOrder.totalDeliveredAmount : 0 | currency : '' }}</li>
+                                        <li><strong>发票 : </strong>{{ purchaseOrder.totalInvoiceAmount ? purchaseOrder.totalInvoiceAmount : 0 | currency : '' }}</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <!--草稿 || 采购中 || 已完成 || 已取消-->
+                                    测试中
+                                </td>
+                                <td class="text-left" colspan="2">
+                                    <ul style="list-style:none; padding:0px; margin:0;">
+                                        <li>
+                                            <strong>待收货</strong>
+                                        </li>
+                                        <li>
+                                            <!-- 待收货数量 = 采购单上商品采购总数量 - 历史已经收货总数量-历史转credit总数量 -->
+                                            &nbsp;总件数 : {{ purchaseOrder.totalPurchasedQty - ( purchaseOrder.totalDeliveredQty - purchaseOrder.totalCreditQty ) }}
+                                        </li>
+                                        <li>
+                                            <!-- 采购预计总金额 - 收货总金额 -->
+                                            &nbsp;总金额 : {{ purchaseOrder.totalEstimatePurchasedAmount - purchaseOrder.totalDeliveredAmount | currency : '' }}
+                                        </li>
+                                        <li>
+                                            &nbsp;预计到货时间 :
+                                            <div class="text-center">{{ purchaseOrder.estimateReceiveDate | date : 'yyyy-MM-dd' }}</div>
+                                        </li>
+                                    </ul>
+                                    <ul style="list-style:none; padding:0px; margin:0;">
+                                        <li>
+                                            <strong>已收货</strong>
+                                        </li>
+                                        <li>
+                                            <!-- 收货数量： 收货时实际清点的数量， 系统默认与待收货数量一致； -->
+                                            &nbsp;总件数 : {{ purchaseOrder.totalDeliveredQty }}
+                                        </li>
+                                        <li>
+                                            &nbsp;总金额 : {{ purchaseOrder.totalDeliveredAmount ? purchaseOrder.totalDeliveredAmount : 0 | currency : '' }}
+                                        </li>
+                                    </ul>
+                                    <ul style="list-style:none; padding:0px; margin:0;">
+                                        <li>
+                                            <strong>缺货转Credit</strong>
+                                        </li>
+                                        <li>
+                                            &nbsp;总件数 : {{ purchaseOrder.totalCreditQty }}
+                                        </li>
+                                        <li>
+                                            &nbsp;总金额 : {{ purchaseOrder.totalCreditAmount ? purchaseOrder.totalCreditAmount : 0 | currency : '' }}
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul style="list-style:none; padding:0px; margin:0;">
+                                        <li>
+                                            <strong>待入库</strong>
+                                        </li>
+                                        <li>
+                                            &nbsp;总件数
+                                        </li>
+                                    </ul>
+                                    <ul style="list-style:none; padding:0px; margin:0;">
+                                        <li>
+                                            <strong>已入库</strong>
+                                        </li>
+                                        <li>
+                                            &nbsp;总件数
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="text-center">
+                                    {{ purchaseOrder.memo }}
+                                </td>
+                            </tr>
+                            <tr ng-class="{'active': purchaseOrderItem.ignoreCheck}" ng-repeat="purchaseOrderItem in purchaseOrder.items">
+                                <td width="8%">
+                                    <strong>
+                                        {{ purchaseOrderItem.product.sku }}
+                                    </strong>
+                                </td>
+                                <td width="8%">
+                                    {{ purchaseOrderItem.product.name }}
+                                </td>
+                                <td width="8%">
+                                    &nbsp;<!--{{ purchaseOrderItem.product.name }}-->a
+                                </td>
+                                <td width="8%">
+                                    <input type="number" class="form-control" ng-model="purchaseOrderItem.realPurchaseUnitPrice" ng-disabled="purchaseOrderItem.ignoreCheck" ng-blur="updateRealPurchaseUnitPriceConfirm( purchaseOrderItem )" />
+                                </td>
+                                <td width="8%">
+                                    {{ purchaseOrderItem.pendingQty | number }}
+                                </td>
+                                <td width="8%">
+                                    <input type="number" class="form-control" ng-model="purchaseOrderItem.realReceivedQty" ng-disabled="purchaseOrderItem.ignoreCheck" ng-blur="updateReceivedQtyConfirm( purchaseOrderItem )" />
+                                </td>
+                                <td width="8%">
+                                    {{ purchaseOrderItem.creditQty | number }}
+                                </td>
+                                <td width="8%">
+                                    {{ purchaseOrderItem.backOrderQty | number }}
+                                </td>
+                                <td width="7%" class="text-center">
+                                    <div ng-switch on="purchaseOrderItem.checkMap.emptyPurchaseUnitPriceError">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false" ng-show=" ! purchaseOrderItem.ignoreCheck"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show=" ! purchaseOrderItem.ignoreCheck && ! purchaseOrderItem.ignoredMap.emptyPurchaseUnitPriceError "></span>
+                                    </div>
+                                </td>
+                                <td width="7%" class="text-center">
+                                    <div ng-switch on="purchaseOrderItem.checkMap.emptyReceiveQtyError">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false" ng-show=" ! purchaseOrderItem.ignoreCheck"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show=" ! purchaseOrderItem.ignoreCheck && ! purchaseOrderItem.ignoredMap.emptyReceiveQtyError "></span>
+                                    </div>
+                                </td>
+                                <td width="7%" class="text-center">
+                                    <div ng-switch on="purchaseOrderItem.checkMap.differentReceiveQtyError">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false" ng-show=" ! purchaseOrderItem.ignoreCheck"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show=" ! purchaseOrderItem.ignoreCheck && ! purchaseOrderItem.ignoredMap.differentReceiveQtyError "></span>
+                                    </div>
+                                </td>
+                                <td width="15%" class="text-center" colspan="2">
+                                    <div ng-switch on="purchaseOrderItem.ignoreCheck">
+                                        <div ng-switch-when="true">
+                                            <button type="button" class="btn btn-success btn-xs btn-block" ng-click="ignoreOrNotCheckPurchaseOrderOrItem( purchaseOrderItem )" ng-show=" purchaseOrderItem.ignoreCheck ">恢复采购单详情</button>
+                                        </div>
+                                        <div ng-switch-when="false">
+                                            <button type="button" class="btn btn-danger btn-xs btn-block" ng-click="ignoreOrNotCheckPurchaseOrderOrItem( purchaseOrderItem )" ng-show=" ! purchaseOrderItem.ignoreCheck ">移出采购单详情</button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- warning Modal -->
+<div class="modal fade" id="confirmOperationReviewWhenCompletePurchaseOrderDeliveryWaringModal">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-warning">
+                    <span class="glyphicon glyphicon-question-sign"></span> 警告
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <p class="text-warning">
+                        {{warning.content}}
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" ng-click="setIgnoreDifferentReceiveQtyError( false )" ng-show="isReceivedQtyGreaterThanPendingQty">修改采购数量</button>
+                <button type="button" class="btn btn-warning" ng-click="setIgnoreDifferentReceiveQtyError( true )" ng-show="isReceivedQtyGreaterThanPendingQty">就这样，我自己处理</button>
+
+                <button type="button" class="btn btn-info" ng-click="setRemainingQtyToCreditOrBackOrder( true )" ng-show=" ! isReceivedQtyGreaterThanPendingQty">缺货转厂家Credit</button>
+                <button type="button" class="btn btn-warning" ng-click="setRemainingQtyToCreditOrBackOrder( false )" ng-show=" ! isReceivedQtyGreaterThanPendingQty">继续等back order到货</button>
+            </div>
+        </div>
+    </div>
+</div>
