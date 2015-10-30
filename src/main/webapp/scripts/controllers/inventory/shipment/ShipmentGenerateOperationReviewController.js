@@ -8,7 +8,7 @@ angular.module('ecommApp')
         $scope.operationReview = orderService.getOperationReview;
         $scope.defaultHeight = function(){
             return {
-                height: $(window).height() / 2.3
+                height: $(window).height() / 2.1
             };
         };
 
