@@ -181,7 +181,10 @@ angular.module('ecommApp')
                     }
                     else
                     {
-                        toastr.success('成功开出 ' + review.resultMap.generatedPurchaseOrderDeliveryCount + ' 张收货单。');
+                        if( review.resultMap.generatedPurchaseOrderDeliveryCount > 0 )
+                        {
+                            toastr.success('成功开出 ' + review.resultMap.generatedPurchaseOrderDeliveryCount + ' 张收货单。');
+                        }
                         $scope.$parent.togglePurchaseOrderDeliverySheetSlide();
 
                         purchaseOrderDeliveryService.get({

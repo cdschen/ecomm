@@ -407,6 +407,22 @@ public class PurchaseOrderDeliveryService {
 
 					PurchaseOrder updatablePurchaseOrder = this.purchaseOrderRepository.findOne( purchaseOrder.getId() );
 					
+					/* 如果发票总金额为空，初始化为 0 */
+					if( updatablePurchaseOrder.getTotalInvoiceAmount() == null )
+					{
+						updatablePurchaseOrder.setTotalInvoiceAmount( new BigDecimal( 0 ) );
+					}
+					/* 如果收货总金额为空，初始化为 0 */
+					if( updatablePurchaseOrder.getTotalDeliveredAmount() == null )
+					{
+						updatablePurchaseOrder.setTotalDeliveredAmount( new BigDecimal( 0 ) );
+					}
+					/* 如果Credit总金额为空，初始化为 0 */
+					if( updatablePurchaseOrder.getTotalCreditAmount() == null )
+					{
+						updatablePurchaseOrder.setTotalCreditAmount( new BigDecimal( 0 ) );
+					}
+					
 					/* 保存数据到可更新的［采购单］ */
 					updatablePurchaseOrder.setId( purchaseOrder.getId() );
 					updatablePurchaseOrder.setTotalDeliveredQty( updatablePurchaseOrder.getTotalDeliveredQty() + totalDeliveredQty );
