@@ -2,20 +2,12 @@ package com.sooeez.ecomm.domain;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-
-import org.junit.experimental.theories.FromDataPoints;
 
 @Entity
 @Table(name = "t_process_step")
@@ -47,9 +39,9 @@ public class ProcessStep implements Serializable {
 	 * Related Properties
 	 */
 
-//	@ManyToOne
-//	@JoinColumn(name = "process_id")
-//	private Process process;
+	// @ManyToOne
+	// @JoinColumn(name = "process_id")
+	// private Process process;
 
 	//
 
