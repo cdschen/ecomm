@@ -1,0 +1,260 @@
+<style>
+    table.shipment_complete_tables>tbody>tr>th,
+    table.shipment_complete_tables>tbody>tr>td
+    {
+        border:none !important;
+    }
+</style>
+<div pageslide ps-open="shipmentCompleteSlideChecked" ps-speed="0.25" ps-size="100%" style="border-left-width: 1px; border-left-style: solid; border-left-color: #c8c8c8">
+    <div id="operator-slider" style="padding:1px" class="container">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <button type="button" class="close" ng-click="toggleShipmentCompleteSlide()">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h3 class="text-center" style="margin: 0;">
+                    <strong class="text-center text-success">操作复核</strong>
+                </h3>
+                <hr style="margin: 5px 0;">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="panel panel-success">
+                            <div class="panel-heading" style="padding: 5px;">
+                                <h4 class="panel-title"><strong>摘要</strong></h4>
+                            </div>
+                            <table class="table table-condensed shipment_complete_tables">
+                                <tbody>
+                                    <tr>
+                                        <th width="20%" class="text-right">操作 : </th>
+                                        <td wdith="30%" colspan="3">完成发货单复核</td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%" class="text-right">仓库 :</th>
+                                        <td wdith="30%">{{ operationReviewCompleteShipment().shipment.warehouse.name }}</td>
+                                        <th width="20%" class="text-right">店铺 : </th>
+                                        <td wdith="30%">{{ operationReviewCompleteShipment().shipment.shop.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%" class="text-right">创建时间 :</th>
+                                        <td wdith="30%">{{ operationReviewCompleteShipment().shipment.createTime | date : 'yyyy-MM-dd HH:mm:ss' }}</td>
+                                        <th width="20%" class="text-right">完成时间 : </th>
+                                        <td wdith="30%">{{ operatePickupTime | date : 'yyyy-MM-dd HH:mm:ss' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%" class="text-right">创建人 :</th>
+                                        <td wdith="30%">{{ operationReviewCompleteShipment().shipment.operator.username }}</td>
+                                        <th width="20%" class="text-right">发货人 : </th>
+                                        <td wdith="30%">{{ user().username }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%" class="text-right">运费成本 :</th>
+                                        <td wdith="30%">N/A</td>
+                                        <th width="20%" class="text-right">总重量  : </th>
+                                        <td wdith="30%">{{ operationReviewCompleteShipment().shipment.totalWeight }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%" class="text-right">订单号 :</th>
+                                        <td wdith="30%">{{ operationReviewCompleteShipment().shipment.orderId }}</td>
+                                        <th width="20%" class="text-right">总件数  : </th>
+                                        <td wdith="30%">{{ operationReviewCompleteShipment().shipment.qtyTotalItemShipped }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%" class="text-right">快递公司 :</th>
+                                        <td wdith="80%" colspan="3">
+                                            <div class="input-group col-md-12">
+                                                <ui-select ng-model="operationReviewCompleteShipment().shipment.courier" on-select="changeCourier($item)">
+                                                    <ui-select-match placeholder="快递公司(非必选)">{{$select.selected.name}}</ui-select-match>
+                                                    <ui-select-choices repeat="courier in couriers | filter: $select.search">
+                                                        <div ng-bind-html="courier.name | highlight: $select.search"></div>
+                                                    </ui-select-choices>
+                                                </ui-select>
+                                                <span class="input-group-btn">
+                                                    <button type="button" ng-click="emptySelectedCourier()" class="btn btn-default">
+                                                        <span class="glyphicon glyphicon-trash"></span>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%" class="text-right">快递单号 : </th>
+                                        <td wdith="80%" colspan="3">
+                                            <input type="text" class="form-control input-sm" ng-model="operationReviewCompleteShipment().shipment.shipNumber" ng-keyup="updateOperationReviewCompleteShipmentData()" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center bg-success" colspan="4">收件人信息</th>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%" class="text-right">姓名 :</th>
+                                        <td wdith="30%">
+                                            <input type="text" class="form-control input-sm" ng-model="operationReviewCompleteShipment().shipment.receiveName" ng-keyup="updateOperationReviewCompleteShipmentData()" />
+                                        </td>
+                                        <th width="20%" class="text-right">电话 :</th>
+                                        <td wdith="30%">
+                                            <input type="text" class="form-control input-sm" ng-model="operationReviewCompleteShipment().shipment.receivePhone" ng-keyup="updateOperationReviewCompleteShipmentData()" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%" class="text-right">Email : </th>
+                                        <td wdith="80%" colspan="3">
+                                            <input type="text" class="form-control input-sm" ng-model="operationReviewCompleteShipment().shipment.receiveEmail" ng-keyup="updateOperationReviewCompleteShipmentData()" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%" class="text-right">地址 : </th>
+                                        <td wdith="80%" colspan="3">
+                                            <input type="text" class="form-control input-sm" ng-model="operationReviewCompleteShipment().shipment.receiveAddress" ng-keyup="updateOperationReviewCompleteShipmentData()" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="panel panel-success" style="height:200px">
+                            <div class="panel-heading" style="padding: 5px;">
+                                <h4 class="panel-title"><strong>操作规定</strong></h4>
+                            </div>
+                            <div class="panel-body" style="margin-bottom: 5px;">
+                                <div class="row" style="margin-bottom: 7px;">
+                                    <div class="col-md-9 col-md-offset-1">
+                                        是否指定快递公司
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReviewCompleteShipment().checkMap.emptyCourierError">
+                                            <span class="glyphicon glyphicon-ok"></span> 验证通过
+                                        </a>
+                                        <div ng-switch on="operationReviewCompleteShipment().ignoredMap.emptyCourierError" ng-show="operationReviewCompleteShipment().checkMap.emptyCourierError">
+                                            <a class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="ignoreOrNotChecker(operationReviewCompleteShipment().ignoredMap, 'emptyCourierError', true)">
+                                                <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
+                                            </a>
+                                            <a class="btn btn-info btn-xs pull-right" ng-switch-when="true" ng-click="ignoreOrNotChecker(operationReviewCompleteShipment().ignoredMap, 'emptyCourierError', false)">
+                                                <span class="glyphicon glyphicon-repeat"></span> 恢复验证
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-bottom: 7px;">
+                                    <div class="col-md-9 col-md-offset-1">
+                                        是否指定快递单号
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReviewCompleteShipment().checkMap.emptyShipNumberError">
+                                            <span class="glyphicon glyphicon-ok"></span> 验证通过
+                                        </a>
+                                        <div ng-switch on="operationReviewCompleteShipment().ignoredMap.emptyShipNumberError" ng-show="operationReviewCompleteShipment().checkMap.emptyShipNumberError">
+                                            <a class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="ignoreOrNotChecker(operationReviewCompleteShipment().ignoredMap, 'emptyShipNumberError', true)">
+                                                <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
+                                            </a>
+                                            <a class="btn btn-info btn-xs pull-right" ng-switch-when="true" ng-click="ignoreOrNotChecker(operationReviewCompleteShipment().ignoredMap, 'emptyShipNumberError', false)">
+                                                <span class="glyphicon glyphicon-repeat"></span> 恢复验证
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-bottom: 7px;">
+                                    <div class="col-md-9 col-md-offset-1">
+                                        订单的收件人姓名是否为空
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReviewCompleteShipment().checkMap.emptyReceiveNameError">
+                                            <span class="glyphicon glyphicon-ok"></span> 验证通过
+                                        </a>
+                                        <div ng-switch on="operationReviewCompleteShipment().ignoredMap.emptyReceiveNameError" ng-show="operationReviewCompleteShipment().checkMap.emptyReceiveNameError">
+                                            <a class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="ignoreOrNotChecker( operationReviewCompleteShipment().ignoredMap, 'emptyReceiveNameError', true )">
+                                                <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
+                                            </a>
+                                            <a class="btn btn-info btn-xs pull-right" ng-switch-when="true" ng-click="ignoreOrNotChecker( operationReviewCompleteShipment().ignoredMap, 'emptyReceiveNameError', false )">
+                                                <span class="glyphicon glyphicon-repeat"></span> 恢复验证
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-bottom: 7px;">
+                                    <div class="col-md-9 col-md-offset-1">
+                                        订单的收件人电话是否为空
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReviewCompleteShipment().checkMap.emptyReceivePhoneError">
+                                            <span class="glyphicon glyphicon-ok"></span> 验证通过
+                                        </a>
+                                        <div ng-switch on="operationReviewCompleteShipment().ignoredMap.emptyReceivePhoneError" ng-show="operationReviewCompleteShipment().checkMap.emptyReceivePhoneError">
+                                            <a class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="ignoreOrNotChecker( operationReviewCompleteShipment().ignoredMap, 'emptyReceivePhoneError', true )">
+                                                <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
+                                            </a>
+                                            <a class="btn btn-info btn-xs pull-right" ng-switch-when="true" ng-click="ignoreOrNotChecker( operationReviewCompleteShipment().ignoredMap, 'emptyReceivePhoneError', false )">
+                                                <span class="glyphicon glyphicon-repeat"></span> 恢复验证
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-bottom: 7px;">
+                                    <div class="col-md-9 col-md-offset-1">
+                                        订单的收件人地址是否为空
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReviewCompleteShipment().checkMap.emptyReceiveAddressError">
+                                            <span class="glyphicon glyphicon-ok"></span> 验证通过
+                                        </a>
+                                        <div ng-switch on="operationReviewCompleteShipment().ignoredMap.emptyReceiveAddressError" ng-show="operationReviewCompleteShipment().checkMap.emptyReceiveAddressError">
+                                            <a class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="ignoreOrNotChecker( operationReviewCompleteShipment().ignoredMap, 'emptyReceiveAddressError', true )">
+                                                <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
+                                            </a>
+                                            <a class="btn btn-info btn-xs pull-right" ng-switch-when="true" ng-click="ignoreOrNotChecker( operationReviewCompleteShipment().ignoredMap, 'emptyReceiveAddressError', false )">
+                                                <span class="glyphicon glyphicon-repeat"></span> 恢复验证
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="panel panel-default" style="height:200px">
+                            <div class="panel-body">
+                                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="confirmShipmentComplete()">确定</button>
+                                <button type="button" class="btn btn-default btn-lg btn-block" ng-click="toggleShipmentCompleteSlide()">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding-right:8px;">
+                    <table class="table table-bordered table-condensed clear-marginbottom-table">
+                        <thead>
+                            <tr>
+                                <th colspan="4" class="text-center">发货单详情</th>
+                            </tr>
+                            <tr>
+                                <th width="25%">内部SKU</th>
+                                <th width="25%">名称</th>
+                                <th width="25%">重量</th>
+                                <th width="25%">订购数量</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultHeight()">
+                    <table class="table table-bordered table-condensed clear-marginbottom-table">
+                        <tbody>
+                            <tr ng-repeat="shipmentItem in operationReviewCompleteShipment().shipment.shipmentItems">
+                                <td width="25%">
+                                    {{ shipmentItem.orderItem.sku }}
+                                </td>
+                                <td width="25%">
+                                    {{ shipmentItem.orderItem.name }}
+                                </td>
+                                <td width="25%">
+                                    {{ shipmentItem.orderItem.unitWeight }}
+                                </td>
+                                <td width="25%">
+                                    {{ shipmentItem.orderItem.qtyOrdered }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

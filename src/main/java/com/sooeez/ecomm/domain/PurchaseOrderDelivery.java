@@ -33,15 +33,15 @@ public class PurchaseOrderDelivery implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	//	#采购单id
+	// #采购单id
 	@Column(name = "purchase_order_id", nullable = false)
 	private Long purchaseOrderId;
-	
-	//	#收货时间
+
+	// #收货时间
 	@Column(name = "receive_time", nullable = false)
 	private Date receiveTime;
 
-	//	#收货人
+	// #收货人
 	@Column(name = "receive_user_id", nullable = false, insertable = false, updatable = false)
 	private Long receiveUserId;
 
@@ -58,9 +58,11 @@ public class PurchaseOrderDelivery implements Serializable {
 	@JoinColumn(name = "purchase_order_delivery_id")
 	private List<PurchaseOrderDeliveryItem> items;
 
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "receive_id")
+	private List<InventoryBatch> batches;
 
 	//
-
 
 	public Long getId() {
 		return id;
@@ -108,6 +110,14 @@ public class PurchaseOrderDelivery implements Serializable {
 
 	public void setItems(List<PurchaseOrderDeliveryItem> items) {
 		this.items = items;
+	}
+
+	public List<InventoryBatch> getBatches() {
+		return batches;
+	}
+
+	public void setBatches(List<InventoryBatch> batches) {
+		this.batches = batches;
 	}
 
 }

@@ -71,11 +71,7 @@
                 </thead>
             </table>
         </form>
-        <div class="panel-body" ng-show="page.content.length == 0">
-            <div class="alert alert-warning">
-                <span class="glyphicon glyphicon-info-sign"></span> 没有任何数据被检索到
-            </div>
-        </div>
+        <div class="panel-body" style="padding:0"></div>
         <table class="table table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
             <thead>
                 <tr>
@@ -154,6 +150,11 @@
                 </tr>
             </tfoot>
         </table>
+        <div class="panel-body" ng-show="page.content.length == 0">
+            <div class="alert alert-warning">
+                <span class="glyphicon glyphicon-info-sign"></span> 没有任何数据被检索到
+            </div>
+        </div>
     </div>
 </div>
 <section ng-include="template.details.url" onload="initProductDetailsTabs()" ng-controller="ProductDetailsController"></section>

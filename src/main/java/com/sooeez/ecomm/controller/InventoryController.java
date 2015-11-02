@@ -97,6 +97,11 @@ public class InventoryController {
 		return this.inventoryService.saveInventoryBatch(inventoryBatch);
 	}
 	
+	@RequestMapping(value = "/inventory-batches/save/list", method = RequestMethod.POST)
+	public List<InventoryBatch> saveInventoryBatches(@RequestBody List<InventoryBatch> inventoryBatches) {
+		return this.inventoryService.saveInventoryBatches(inventoryBatches);
+	}
+	
 	@RequestMapping(value = "/inventory-batches/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteInventoryBatch(@PathVariable("id") Long id) {
 		this.inventoryService.deleteInventoryBatch(id);

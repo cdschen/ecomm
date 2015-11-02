@@ -46,6 +46,9 @@ public class InventoryBatch implements Serializable {
 	@Column(name = "order_id")
 	private Long orderId;
 
+	@Column(name = "receive_id")
+	private Long receiveId;
+
 	@Column(name = "purchase_order_id")
 	private Long purchaseOrderId;
 
@@ -273,6 +276,14 @@ public class InventoryBatch implements Serializable {
 
 	public void setItems(List<InventoryBatchItem> items) {
 		this.items = items;
+	}
+
+	public Long getReceiveId() {
+		return receiveId;
+	}
+
+	public void setReceiveId(Long receiveId) {
+		this.receiveId = receiveId;
 	}
 
 }
