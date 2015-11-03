@@ -1,7 +1,7 @@
 angular.module('ecommApp')
 
-.controller('PurchaseOrderDeliveryGenerateOperationReviewController', ['$scope', '$location', '$interval', 'toastr', 'purchaseOrderDeliveryService', 'Utils',
-    function($scope, $location, $interval, toastr, purchaseOrderDeliveryService, Utils) {
+.controller('PurchaseOrderDeliveryGenerateOperationReviewController', ['$scope', '$location', '$interval', 'toastr', 'purchaseOrderDeliveryService',
+    function($scope, $location, $interval, toastr, purchaseOrderDeliveryService) {
 
         var $ = angular.element;
         $scope.operateDate = Date.now();
@@ -187,16 +187,7 @@ angular.module('ecommApp')
                         }
                         $scope.$parent.togglePurchaseOrderDeliverySheetSlide();
 
-                        purchaseOrderDeliveryService.get({
-                            page: 0,
-                            size: $scope.$parent.pageSize,
-                            sort: ['receiveTime,desc']
-                        }).then(function(page) {
-                            console.log('page:');
-                            console.log(page);
-                            $scope.$parent.page = page;
-                            $scope.$parent.totalPagesList = Utils.setTotalPagesList(page);
-                        });
+                        //$scope.$parent.reset()
 
                         $location.url('/purchaseorderdeliveries');
                     }
