@@ -11,19 +11,19 @@
             <table class="table" style="margin:0">
                 <tbody>
                     <tr>
-                        <td width="8%">
-                            <ui-select ng-model="query.warehouse" theme="bootstrap">
-                                <ui-select-match placeholder="收货仓库">{{$select.selected.name}}</ui-select-match>
-                                <ui-select-choices repeat="warehouse in warehouses | filter: $select.search">
-                                    <div ng-bind-html="warehouse.name | highlight: $select.search"></div>
-                                </ui-select-choices>
-                            </ui-select>
+                        <!--<td width="8%">-->
+                            <!--<ui-select ng-model="query.warehouse" theme="bootstrap">-->
+                                <!--<ui-select-match placeholder="收货仓库">{{$select.selected.name}}</ui-select-match>-->
+                                <!--<ui-select-choices repeat="warehouse in warehouses | filter: $select.search">-->
+                                    <!--<div ng-bind-html="warehouse.name | highlight: $select.search"></div>-->
+                                <!--</ui-select-choices>-->
+                            <!--</ui-select>-->
+                        <!--</td>-->
+                        <td width="9%">
+                            <input type="text" class="form-control" ng-model="query.queryPurchaseOrderId" placeholder="采购单号" />
                         </td>
                         <td width="9%">
-                            <input type="text" class="form-control" ng-model="query.purchaseOrderId" placeholder="采购单号" />
-                        </td>
-                        <td width="9%">
-                            <input type="text" class="form-control" ng-model="query.purchaseOrderDeliveryId" placeholder="收货单号" />
+                            <input type="text" class="form-control" ng-model="query.queryPurchaseOrderDeliveryId" placeholder="收货单号" />
                         </td>
                         <td width="19%">
                             <div class="form-group">

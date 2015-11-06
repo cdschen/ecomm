@@ -19,16 +19,40 @@ angular.module('ecommApp')
         var createTime = $interval(updateCreateTime, 500);
 
         /* 点击将某个采购单或采购单详情的 ignoreCheck 标为  ! ignoreCheck，在进行复核验证时不再对该采购单或采购单详情进行验证 */
-        $scope.ignoreOrNotCheckPurchaseOrderOrItem = function( orderOrItem, isOrder )
+        $scope.ignoreOrNotCheckPurchaseOrderOrItem = function( orderOrItem, isOrderIgnored, order )
         {
-            if( isOrder )
+            orderOrItem.ignoreCheck = ! orderOrItem.ignoreCheck;
+            /* 采购单详情 */
+            if( ! isOrderIgnored )
+            {
+                var isAllIgnoreCheck = true;
+                for( var orderItemIndex in order.items )
+                {
+                    console.log('order.items[orderItemIndex].ignoreCheck: ' + order.items[orderItemIndex].ignoreCheck);
+                    if( ! order.items[orderItemIndex].ignoreCheck )
+                    {
+                        isAllIgnoreCheck = false;
+                    }
+                }
+                /* 如果采购单详情没有为false的忽略验证，那么就将isOrder变为true，既忽略该采购单所有验证 */
+                if( isAllIgnoreCheck )
+                {
+                    isOrderIgnored = true;
+                    order.ignoreCheck = true;
+                }
+                else
+                {
+                    order.ignoreCheck = false;
+                }
+            }
+            /* 采购单，并且全部忽略 */
+            if( isOrderIgnored )
             {
                 for( var purchaseOrderItemIndex in orderOrItem.items )
                 {
-                    orderOrItem.items[purchaseOrderItemIndex].ignoreCheck = ! orderOrItem.ignoreCheck;
+                    orderOrItem.items[purchaseOrderItemIndex].ignoreCheck = orderOrItem.ignoreCheck;
                 }
             }
-            orderOrItem.ignoreCheck = ! orderOrItem.ignoreCheck;
             var operationReview = purchaseOrderDeliveryService.getOperationReviewCompletePurchaseOrderDelivery();
             var reviewDTO = {
                 'action' : 'VERIFY',

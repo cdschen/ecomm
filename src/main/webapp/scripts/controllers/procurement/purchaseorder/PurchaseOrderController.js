@@ -108,21 +108,15 @@ angular.module('ecommApp')
             });
         };
 
-        //$scope.toggleShipmentCompleteSlide = function(){
-        //   $scope.shipmentCompleteSlideChecked = !$scope.shipmentCompleteSlideChecked;
-        //};
-
 
         $scope.isCheckedAll = false;
         $scope.batchManipulationValue = 'batchManipulation';
-        $scope.selectedCourier = {};
-        $scope.startCourierNumber = '';
 
         $scope.checkAllOrders = function()
         {
-            for( var shipment in $scope.page.content )
+            for( var purchaseOrder in $scope.page.content )
             {
-                $scope.page.content[shipment].isSelected = $scope.isCheckedAll;
+                $scope.page.content[purchaseOrder].isSelected = $scope.isCheckedAll;
             }
         };
 

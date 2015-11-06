@@ -108,31 +108,34 @@ var PurchaseOrderOperatorInformationController = function($scope, $state, $state
 
     $scope.checkSupplierProductCode = function()
     {
-        purchaseOrderService.getSupplierProductCodeMapBySupplierProductCode( $scope.purchaseOrder.supplierProductCode ).then(function(supplierProductCodeMap) {
+        if( $scope.purchaseOrder.supplierProductCode )
+        {
+            purchaseOrderService.getSupplierProductCodeMapBySupplierProductCode( $scope.purchaseOrder.supplierProductCode ).then(function(supplierProductCodeMap) {
+                //console.log('supplierProductCodeMap');
+                //console.log(supplierProductCodeMap);
+                if( supplierProductCodeMap )
+                {
+                    $scope.purchaseOrder.selectedProduct = supplierProductCodeMap.product;
+                    $scope.purchaseOrder.selectedProduct.selectedPrice = supplierProductCodeMap.defaultPurchasePrice;
+                    $scope.purchaseOrder.supplierProductCode = supplierProductCodeMap.supplierProductCode;
+                }
+            });
+        }
+    };
+
+    $scope.checkSelectedProductFromSupplierProductCode = function()
+    {
+        purchaseOrderService.getSelectedProductFromSupplierProductCode( $scope.purchaseOrder.selectedProduct.id ).then(function(supplierProductCodeMap) {
             //console.log('supplierProductCodeMap');
             //console.log(supplierProductCodeMap);
             if( supplierProductCodeMap )
             {
                 $scope.purchaseOrder.selectedProduct = supplierProductCodeMap.product;
-                $scope.purchaseOrder.supplierProductCode = supplierProductCodeMap.supplierProductCode;
                 $scope.purchaseOrder.selectedProduct.selectedPrice = supplierProductCodeMap.defaultPurchasePrice;
+                $scope.purchaseOrder.supplierProductCode = supplierProductCodeMap.supplierProductCode;
             }
         });
     };
-
-    //$scope.checkSelectedProductFromSupplierProductCode = function()
-    //{
-    //    purchaseOrderService.getSelectedProductFromSupplierProductCode( $scope.purchaseOrder.selectedProduct.id ).then(function(supplierProductCodeMap) {
-    //        //console.log('supplierProductCodeMap');
-    //        //console.log(supplierProductCodeMap);
-    //        if( supplierProductCodeMap )
-    //        {
-    //            $scope.purchaseOrder.selectedProduct = supplierProductCodeMap.product;
-    //            $scope.purchaseOrder.selectedProduct.supplierProductCode = supplierProductCodeMap.supplierProductCode;
-    //            $scope.purchaseOrder.selectedProduct.selectedPrice = supplierProductCodeMap.defaultPurchasePrice;
-    //        }
-    //    });
-    //};
 
     $scope.removingItem = undefined;
 

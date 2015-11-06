@@ -332,10 +332,10 @@
                                 <td width="15%" class="text-center" colspan="2">
                                     <div ng-switch on="purchaseOrderItem.ignoreCheck">
                                         <div ng-switch-when="true">
-                                            <button type="button" class="btn btn-success btn-xs btn-block" ng-click="ignoreOrNotCheckPurchaseOrderOrItem( purchaseOrderItem )" ng-show=" purchaseOrderItem.ignoreCheck ">恢复采购单详情</button>
+                                            <button type="button" class="btn btn-success btn-xs btn-block" ng-click="ignoreOrNotCheckPurchaseOrderOrItem( purchaseOrderItem, false, purchaseOrder )" ng-show=" purchaseOrderItem.ignoreCheck ">恢复采购单详情</button>
                                         </div>
                                         <div ng-switch-when="false">
-                                            <button type="button" class="btn btn-danger btn-xs btn-block" ng-click="ignoreOrNotCheckPurchaseOrderOrItem( purchaseOrderItem )" ng-show=" ! purchaseOrderItem.ignoreCheck ">移出采购单详情</button>
+                                            <button type="button" class="btn btn-danger btn-xs btn-block" ng-click="ignoreOrNotCheckPurchaseOrderOrItem( purchaseOrderItem, false, purchaseOrder )" ng-show=" ! purchaseOrderItem.ignoreCheck ">移出采购单详情</button>
                                         </div>
                                     </div>
                                 </td>

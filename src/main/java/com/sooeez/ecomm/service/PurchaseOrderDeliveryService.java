@@ -1,6 +1,8 @@
 package com.sooeez.ecomm.service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,7 +70,35 @@ public class PurchaseOrderDeliveryService {
 
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			
+			if (purchaseOrderDelivery.getQueryPurchaseOrderDeliveryId() != null) {
+				predicates.add( cb.equal( root.get("id"), purchaseOrderDelivery.getQueryPurchaseOrderDeliveryId() ) );
+			}
+			if (purchaseOrderDelivery.getQueryPurchaseOrderId() != null) {
+				predicates.add( cb.equal( root.get("purchaseOrderId"), purchaseOrderDelivery.getQueryPurchaseOrderId() ) );
+			}
+			if (purchaseOrderDelivery.getQueryReceiveTimeStart() != null && purchaseOrderDelivery.getQueryReceiveTimeEnd() != null) {
+				try {
+					predicates.add(cb.between(root.get("receiveTime"),
+							new SimpleDateFormat("yyyy-MM-dd").parse(purchaseOrderDelivery.getQueryReceiveTimeStart()),
+							new SimpleDateFormat("yyyy-MM-dd").parse(purchaseOrderDelivery.getQueryReceiveTimeEnd())));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			} else if (purchaseOrderDelivery.getQueryReceiveTimeStart() != null) {
+				try {
+					predicates.add(cb.greaterThanOrEqualTo(root.get("receiveTime"), 
+							new SimpleDateFormat("yyyy-MM-dd").parse(purchaseOrderDelivery.getQueryReceiveTimeStart())));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			} else if (purchaseOrderDelivery.getQueryReceiveTimeEnd() != null) {
+				try {
+					predicates.add(cb.lessThanOrEqualTo(root.get("receiveTime"), 
+							new SimpleDateFormat("yyyy-MM-dd").parse(purchaseOrderDelivery.getQueryReceiveTimeEnd())));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
 	}
@@ -373,12 +403,6 @@ public class PurchaseOrderDeliveryService {
 						totalInvoiceAmount = totalInvoiceAmount.add( purchaseOrderItem.getRealPurchaseUnitPrice().multiply( new BigDecimal( purchaseOrderItem.getRealReceivedQty() ) ) );
 						totalDeliveredAmount = totalDeliveredAmount.add( purchaseOrderItem.getRealPurchaseUnitPrice().multiply( new BigDecimal( purchaseOrderItem.getRealReceivedQty() ) ) );
 						totalCreditAmount = totalCreditAmount.add( purchaseOrderItem.getRealPurchaseUnitPrice().multiply( new BigDecimal( purchaseOrderItem.getCreditQty() ) ) );
-						
-						System.out.println("totalDeliveredQty: " + totalDeliveredQty);
-						System.out.println("totalCreditQty: " + totalCreditQty);
-						System.out.println("totalInvoiceAmount: " + totalInvoiceAmount);
-						System.out.println("totalDeliveredAmount: " + totalDeliveredAmount);
-						System.out.println("totalCreditAmount: " + totalCreditAmount);
 					}
 				}
 				
