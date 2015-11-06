@@ -7,11 +7,9 @@
     <table class="table" ng-show="purchaseOrder.items.length > 0">
         <thead>
             <tr>
-                <th>商品外部SKU</th>
                 <th>商品sku</th>
-                <th>商品外部名称</th>
                 <th>商品名称</th>
-                <th>商品重量</th>
+                <th>供应商编号</th>
                 <th>采购数量</th>
                 <th>采购单价</th>
                 <th>操作</th>
@@ -19,11 +17,9 @@
         </thead>
         <tbody>
             <tr ng-repeat="item in purchaseOrder.items" class="pagination-ul" >
-                <td>{{ item.product.externalSku }}</td>
                 <td>{{ item.product.sku }}</td>
-                <td>{{ item.product.externalName }}</td>
                 <td>{{ item.product.name }}</td>
-                <td>{{ item.product.weight }}</td>
+                <td>{{ item.supplierProductCodeMap.supplierProductCode }}</td>
                 <td>
                     <span ng-show="!item.editable">{{ item.purchaseQty }}</span>
                     <div ng-show="item.editable" class="form-group has-feedback" ng-class="{'has-success':(itemForm.purchaseQty{{$index}}.$dirty && itemForm.purchaseQty{{$index}}.$valid), 'has-warning':(itemForm.purchaseQty{{$index}}.$dirty && itemForm.purchaseQty{{$index}}.$invalid) }">
@@ -56,22 +52,11 @@
     <table class="table">
         <tbody>
             <tr>
-                <td width="23%">
-                    <!-- selectedPrice -->
-                    <div class="input-group">
-                        <input type="text" ng-model="purchaseOrder.supplierProductCode" ng-keyup="checkSupplierProductCode()" placeholder="供应商编号(可选)" class="form-control" />
-                        <span class="input-group-btn">
-                            <button type="button" ng-click="purchaseOrder.selectedProduct.supplierProductCode = undefined" class="btn btn-default">
-                                <span class="glyphicon glyphicon-trash"></span>
-                            </button>
-                        </span>
-                    </div>
-                </td>
                 <!--sku（键入自动过滤），商品名称（键入自动过滤），采购数量，供应商编号（可选），采购单价（可选）-->
                 <td width="23%">
                     <!-- selectedProduct -->
                     <div class="input-group">
-                        <ui-select ng-model="purchaseOrder.selectedProduct">
+                        <ui-select ng-model="purchaseOrder.selectedProduct" ng-change="checkSelectedProductFromSupplierProductCode()">
                             <ui-select-match placeholder="商品(必填)，可键入sku或名称来进行检索">{{$select.selected.name + '(' + $select.selected.sku + ')'}}</ui-select-match>
                             <ui-select-choices group-by="'sku'" repeat="product in products | filter: $select.search">
                                 <div ng-bind-html="product.name | highlight: $select.search"></div>
@@ -86,7 +71,7 @@
                 </td>
                 <td width="23%">
                     <!-- selectedPrice -->
-                    <div class="input-group" ng-show="purchaseOrder.selectedProduct">
+                    <div class="input-group">
                         <input type="number" ng-model="purchaseOrder.selectedProduct.selectedPrice" placeholder="采购单价(必填)" class="form-control" />
                         <span class="input-group-btn">
                             <button type="button" ng-click="purchaseOrder.selectedProduct.selectedPrice = undefined" class="btn btn-default">
@@ -102,6 +87,17 @@
                         <input type="number" ng-model="purchaseOrder.selectedProduct.purchaseQty" placeholder="数量(必填)" class="form-control" required min="1" ng-maxlength="50" />
                         <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="itemAddForm.purchaseQty.$dirty && itemAddForm.purchaseQty.$valid"></span>
                         <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="itemAddForm.purchaseQty.$dirty && itemAddForm.purchaseQty.$invalid"></span>
+                    </div>
+                </td>
+                <td width="23%">
+                    <!-- supplierProductCode -->
+                    <div class="input-group">
+                        <input type="text" ng-model="purchaseOrder.supplierProductCode" ng-keyup="checkSupplierProductCode()" placeholder="供应商编号(可选)" class="form-control" />
+                        <span class="input-group-btn">
+                            <button type="button" ng-click="purchaseOrder.selectedProduct.supplierProductCode = undefined" class="btn btn-default">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </span>
                     </div>
                 </td>
                 <td>

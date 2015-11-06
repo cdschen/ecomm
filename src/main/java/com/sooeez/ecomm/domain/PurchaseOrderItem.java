@@ -58,6 +58,13 @@ public class PurchaseOrderItem implements Serializable {
 	private Product product;
 	
 	/*
+	 * Irrelevant Properties
+	 */
+	
+	@Transient
+	private SupplierProductCodeMap supplierProductCodeMap;
+	
+	/*
 	 * OperationReview Params
 	 */
 	
@@ -204,6 +211,14 @@ public class PurchaseOrderItem implements Serializable {
 
 	public void setIgnoreCheck(Boolean ignoreCheck) {
 		this.ignoreCheck = ignoreCheck;
+	}
+
+	public SupplierProductCodeMap getSupplierProductCodeMap() {
+		return supplierProductCodeMap;
+	}
+
+	public void setSupplierProductCodeMap(SupplierProductCodeMap supplierProductCodeMap) {
+		this.supplierProductCodeMap = supplierProductCodeMap;
 	}
 
 }

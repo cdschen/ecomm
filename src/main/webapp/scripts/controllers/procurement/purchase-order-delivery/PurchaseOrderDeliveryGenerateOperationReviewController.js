@@ -19,16 +19,40 @@ angular.module('ecommApp')
         var createTime = $interval(updateCreateTime, 500);
 
         /* 点击将某个采购单或采购单详情的 ignoreCheck 标为  ! ignoreCheck，在进行复核验证时不再对该采购单或采购单详情进行验证 */
-        $scope.ignoreOrNotCheckPurchaseOrderOrItem = function( orderOrItem, isOrder )
+        $scope.ignoreOrNotCheckPurchaseOrderOrItem = function( orderOrItem, isOrderIgnored, order )
         {
-            if( isOrder )
+            orderOrItem.ignoreCheck = ! orderOrItem.ignoreCheck;
+            /* 采购单详情 */
+            if( ! isOrderIgnored )
+            {
+                var isAllIgnoreCheck = true;
+                for( var orderItemIndex in order.items )
+                {
+                    console.log('order.items[orderItemIndex].ignoreCheck: ' + order.items[orderItemIndex].ignoreCheck);
+                    if( ! order.items[orderItemIndex].ignoreCheck )
+                    {
+                        isAllIgnoreCheck = false;
+                    }
+                }
+                /* 如果采购单详情没有为false的忽略验证，那么就将isOrder变为true，既忽略该采购单所有验证 */
+                if( isAllIgnoreCheck )
+                {
+                    isOrderIgnored = true;
+                    order.ignoreCheck = true;
+                }
+                else
+                {
+                    order.ignoreCheck = false;
+                }
+            }
+            /* 采购单，并且全部忽略 */
+            if( isOrderIgnored )
             {
                 for( var purchaseOrderItemIndex in orderOrItem.items )
                 {
-                    orderOrItem.items[purchaseOrderItemIndex].ignoreCheck = ! orderOrItem.ignoreCheck;
+                    orderOrItem.items[purchaseOrderItemIndex].ignoreCheck = orderOrItem.ignoreCheck;
                 }
             }
-            orderOrItem.ignoreCheck = ! orderOrItem.ignoreCheck;
             var operationReview = purchaseOrderDeliveryService.getOperationReviewCompletePurchaseOrderDelivery();
             var reviewDTO = {
                 'action' : 'VERIFY',
@@ -187,6 +211,7 @@ angular.module('ecommApp')
                         }
                         $scope.$parent.togglePurchaseOrderDeliverySheetSlide();
 
+<<<<<<< HEAD:src/main/webapp/scripts/controllers/procurement/purchase-order-delivery/PurchaseOrderDeliveryGenerateOperationReviewController.js
                        /* purchaseOrderDeliveryService.get({
                             page: 0,
                             size: $scope.$parent.pageSize,
@@ -197,6 +222,9 @@ angular.module('ecommApp')
                             $scope.$parent.page = page;
                             $scope.$parent.totalPagesList = Utils.setTotalPagesList(page);
                         });*/
+=======
+                        //$scope.$parent.reset()
+>>>>>>> 98f34f4d89986eb84feab2f657e692d7ce0d920b:src/main/webapp/scripts/controllers/procurement/purchaseorderdelivery/PurchaseOrderDeliveryGenerateOperationReviewController.js
 
                         // 用状态，这什么东西
                         $location.url('/purchase-order-deliveries');

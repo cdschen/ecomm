@@ -135,7 +135,8 @@ public class OrderService {
 				grandTotal = grandTotal.add(order.getShippingFee());
 			}
 			if (order.getSubtotal() != null) {
-				tax = order.getSubtotal().multiply(new BigDecimal(0.15));
+				/* *3/23 */
+				tax = order.getSubtotal().multiply( new BigDecimal( 3 ) ).divide( new BigDecimal( 23 ), 2, BigDecimal.ROUND_DOWN );
 			}
 		}
 

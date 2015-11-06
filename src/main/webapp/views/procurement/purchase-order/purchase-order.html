@@ -25,14 +25,14 @@
                                 </div>
                             </div>
                         </td>
-                        <td width="4%">
-                            <ui-select ng-model="query.queryWarehouse" theme="bootstrap">
-                                <ui-select-match placeholder="收货仓库">{{$select.selected.name}}</ui-select-match>
-                                <ui-select-choices repeat="warehouse in warehouses | filter: $select.search">
-                                    <div ng-bind-html="warehouse.name | highlight: $select.search"></div>
-                                </ui-select-choices>
-                            </ui-select>
-                        </td>
+                        <!--<td width="4%">-->
+                            <!--<ui-select ng-model="query.queryWarehouse" theme="bootstrap">-->
+                                <!--<ui-select-match placeholder="收货仓库">{{$select.selected.name}}</ui-select-match>-->
+                                <!--<ui-select-choices repeat="warehouse in warehouses | filter: $select.search">-->
+                                    <!--<div ng-bind-html="warehouse.name | highlight: $select.search"></div>-->
+                                <!--</ui-select-choices>-->
+                            <!--</ui-select>-->
+                        <!--</td>-->
                         <td width="4%">
                             <ui-select ng-model="query.querySupplier" theme="bootstrap">
                                 <ui-select-match placeholder="供应商">{{$select.selected.name}}</ui-select-match>
@@ -89,7 +89,7 @@
             <tbody>
                 <tr ng-repeat="purchaseOrder in page.content" class="text-center" style="font-size: 12px;">
                     <td>
-                        <input type="checkbox" ng-model="shipment.isSelected">
+                        <input type="checkbox" ng-model="purchaseOrder.isSelected">
                     </td>
                     <td>
                         {{ purchaseOrder.id }}

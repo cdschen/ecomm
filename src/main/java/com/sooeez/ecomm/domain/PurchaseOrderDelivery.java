@@ -15,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -62,7 +63,37 @@ public class PurchaseOrderDelivery implements Serializable {
 	@JoinColumn(name = "receive_id")
 	private List<InventoryBatch> batches;
 
-	//
+	/*
+	 * @Transient Properties
+	 */
+
+	@Transient
+	private Long queryWarehouseId;
+
+	@Transient
+	private Long queryPurchaseOrderId;
+
+	@Transient
+	private Long queryPurchaseOrderDeliveryId;
+
+	/* 收货单创建起始日期 */
+	@Transient
+	private String queryReceiveTimeStart;
+
+	/* 收货单创建结束日期 */
+	@Transient
+	private String queryReceiveTimeEnd;
+
+	/*
+	 * Constructor
+	 */
+
+	public PurchaseOrderDelivery() {
+	}
+
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -118,6 +149,47 @@ public class PurchaseOrderDelivery implements Serializable {
 
 	public void setBatches(List<InventoryBatch> batches) {
 		this.batches = batches;
+	}
+
+	public Long getQueryWarehouseId() {
+		return queryWarehouseId;
+	}
+
+	public void setQueryWarehouseId(Long queryWarehouseId) {
+		this.queryWarehouseId = queryWarehouseId;
+	}
+
+	public Long getQueryPurchaseOrderId() {
+		return queryPurchaseOrderId;
+	}
+
+	public void setQueryPurchaseOrderId(Long queryPurchaseOrderId) {
+		this.queryPurchaseOrderId = queryPurchaseOrderId;
+	}
+
+	public Long getQueryPurchaseOrderDeliveryId() {
+		return queryPurchaseOrderDeliveryId;
+	}
+
+	public void setQueryPurchaseOrderDeliveryId(
+			Long queryPurchaseOrderDeliveryId) {
+		this.queryPurchaseOrderDeliveryId = queryPurchaseOrderDeliveryId;
+	}
+
+	public String getQueryReceiveTimeStart() {
+		return queryReceiveTimeStart;
+	}
+
+	public void setQueryReceiveTimeStart(String queryReceiveTimeStart) {
+		this.queryReceiveTimeStart = queryReceiveTimeStart;
+	}
+
+	public String getQueryReceiveTimeEnd() {
+		return queryReceiveTimeEnd;
+	}
+
+	public void setQueryReceiveTimeEnd(String queryReceiveTimeEnd) {
+		this.queryReceiveTimeEnd = queryReceiveTimeEnd;
 	}
 
 }

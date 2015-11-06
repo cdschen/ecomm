@@ -119,7 +119,28 @@ public class PurchaseOrderService {
 	}
 	
 	public PurchaseOrder getPurchaseOrder(Long id) {
-		return this.purchaseOrderRepository.findOne(id);
+		PurchaseOrder purchaseOrder = this.purchaseOrderRepository.findOne(id);
+		if( purchaseOrder.getItems() != null && purchaseOrder.getItems().size() > 0 )
+		{
+			for( PurchaseOrderItem purchaseOrderItem : purchaseOrder.getItems() )
+			{
+				/* 1. 获得供应商产品编码信息 */
+				String sql = "SELECT * FROM t_supplier_product_code_map " +
+							 "WHERE product_id = ?1";
+				Query query =  em.createNativeQuery( sql, SupplierProductCodeMap.class );
+				query.setParameter( 1, purchaseOrderItem.getProduct().getId() );
+				
+				SupplierProductCodeMap supplierProductCodeMap = null;
+
+				/* 2. 供应商产品编码是否存在于数据库中 */
+				if( ! query.getResultList().isEmpty() )
+				{
+					supplierProductCodeMap = (SupplierProductCodeMap) query.getSingleResult();
+				}
+				purchaseOrderItem.setSupplierProductCodeMap( supplierProductCodeMap );
+			}
+		}
+		return purchaseOrder;
 	}
 	
 	public List<PurchaseOrder> getPurchaseOrders(PurchaseOrder purchaseOrder, Sort sort) {

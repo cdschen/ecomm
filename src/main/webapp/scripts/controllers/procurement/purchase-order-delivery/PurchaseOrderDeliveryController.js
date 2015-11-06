@@ -41,11 +41,8 @@ angular.module('ecommApp')
                 size: $scope.pageSize,
                 sort: ['receiveTime,desc'],
                 queryWarehouseId: $scope.query.queryWarehouse ? $scope.query.queryWarehouse.id : null,
+                queryPurchaseOrderId: $scope.query.queryPurchaseOrderId ? $scope.query.queryPurchaseOrderId : null,
                 queryPurchaseOrderDeliveryId: $scope.query.queryPurchaseOrderDeliveryId ? $scope.query.queryPurchaseOrderDeliveryId : null,
-                queryCreatorId: $scope.query.queryCreator ? $scope.query.queryCreator.id : null,
-                querySupplierId: $scope.query.querySupplier ? $scope.query.querySupplier.id : null,
-                //receiveStatus: $scope.query.receiveStatus ? $scope.query.receiveStatus : null,
-                //paymentStatus: $scope.query.paymentStatus ? $scope.query.paymentStatus : null,
                 queryReceiveTimeStart: $scope.query.queryReceiveTimeStart ? $scope.query.queryReceiveTimeStart : null,
                 queryReceiveTimeEnd: $scope.query.queryReceiveTimeEnd ? $scope.query.queryReceiveTimeEnd : null
             };

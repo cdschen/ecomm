@@ -74,7 +74,7 @@ var OrderInformationController = function($scope, $state, $stateParams, orderSer
                 'unitWeight': selectedProduct.weight,
                 'qtyOrdered': selectedProduct.qtyOrdered,
                 'unitPrice': selectedPrice,
-                'unitGst': selectedPrice * 0.15
+                'unitGst': selectedPrice * 3 / 23
             };
 
             $scope.order.items.push(item);
