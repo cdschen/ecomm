@@ -12,11 +12,6 @@ angular.module('ecommApp')
         });
     };
 
-    warehouse.savePositions = function(positions) {
-        return $http.post('/api/warehousepositions/save/list', positions).then(function(res) {
-            return res.data;
-        });
-    };
-
     return warehouse;
+    
 }]);

@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "t_brand")
@@ -25,16 +26,33 @@ public class Brand implements Serializable {
 
 	@Column(name = "name", nullable = false)
 	private String name;
-	
+
 	/*
 	 * Related Properties
 	 */
-	
 
-	//
+	/*
+	 * Related Properties
+	 */
+
+	/*
+	 * @Transient Properties
+	 */
+
+	// 检查唯一
+	@Transient
+	private Boolean checkUnique;
+
+	/*
+	 * Constructor
+	 */
 
 	public Brand() {
 	}
+
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -52,4 +70,11 @@ public class Brand implements Serializable {
 		this.name = name;
 	}
 
+	public Boolean getCheckUnique() {
+		return checkUnique;
+	}
+
+	public void setCheckUnique(Boolean checkUnique) {
+		this.checkUnique = checkUnique;
+	}
 }

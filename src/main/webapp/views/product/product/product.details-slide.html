@@ -2,9 +2,7 @@
     <div id="operator-slider">
         <div class="panel panel-info">
             <div class="panel-body">
-                <button type="button" class="close" ng-click="toggleDetailsSlide()">
-                    <span aria-hidden="true">×</span>
-                </button>
+                <button type="button" class="close" ng-click="toggleDetailsSlide()">&times;</button>
                 <div>
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs" id="productDetailsTabs">
@@ -26,55 +24,56 @@
                                             <table class="table table-condensed table-bordered">
                                                 <tbody>
                                                     <tr>
-                                                        <td width="20%" class="active"><strong>SKU</strong></td>
+                                                        <th width="20%" class="active">SKU</th>
                                                         <td width="80%">{{processProduct.sku}}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="active"><strong>名称</strong></td>
+                                                        <th class="active">名称</th>
                                                         <td>{{processProduct.name}}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="active"><strong>简称</strong></td>
+                                                        <th class="active">简称</th>
                                                         <td>{{processProduct.shortName}}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="active"><strong>类型</strong></td>
-                                                        <td>
-                                                            {{processProduct.productType == 1 ? '组合商品' : '简单商品'}}
+                                                        <th class="active">类型</th>
+                                                        <td ng-switch on="processProduct.productType">
+                                                            <span ng-switch-when="0">简单商品</span>
+                                                            <span ng-switch-when="1">组合商品</span>
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="active"><strong>品牌</strong></td>
+                                                        <th class="active">品牌</th>
                                                         <td>{{processProduct.brand.name}}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="active"><strong>类别</strong></td>
+                                                        <th class="active">类别</th>
                                                         <td>{{processProduct.category.name}}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="active"><strong>产地</strong></td>
-                                                        <td>{{processProduct.madeFrom.name}}</td>
+                                                        <th class="active">产地</th>
+                                                        <td>{{processProduct.source.name}}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="active"><strong>默认语言</strong></td>
+                                                        <th class="active">默认语言</th>
                                                         <td>{{processProduct.language.name}}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="active"><strong>默认货币</strong></td>
+                                                        <th class="active">默认货币</th>
                                                         <td>{{processProduct.currency.name}}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="active"><strong>重量(克)</strong></td>
+                                                        <th class="active">重量(克)</th>
                                                         <td>{{processProduct.weight}}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="active"><strong>Tags</strong></td>
+                                                        <th class="active">Tags</th>
                                                         <td>
                                                             <span class="label label-danger" ng-repeat="tag in processProduct.tags" style="margin: 3px">{{tag.name}}</span>
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="active"><strong>状态</strong></td>
+                                                        <th class="active">状态</th>
                                                         <td>
                                                             <span class="label label-success" ng-repeat="process in processProduct.processes" style="margin: 3px">{{process.step.name}}</span>
                                                         </td>
@@ -213,19 +212,19 @@
                                                             <table class="table table-condensed">
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td class="active" width="10%">名称</td>
+                                                                        <th class="active" width="10%">名称</th>
                                                                         <td>{{ml.name}}</td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td class="active">简称</td>
+                                                                        <th class="active">简称</th>
                                                                         <td>{{ml.shortName}}</td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td class="active">简单描述</td>
+                                                                        <th class="active">简单描述</th>
                                                                         <td>{{ml.shortDescription}}</td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td class="active">完整描述</td>
+                                                                        <th class="active">完整描述</th>
                                                                         <td></td>
                                                                     </tr>
                                                                 </tbody>

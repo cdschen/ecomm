@@ -2,7 +2,7 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">产地管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ng-click="toggleMadeFromSlide('create')">创建</a>
+        <a class="btn btn-info btn-xs" ng-click="toggleSourceSlide('create')">创建</a>
     </li>
 </ol>
 <div class="container-fluid">
@@ -10,27 +10,27 @@
         <div class="panel-heading">
             <h3 class="panel-title">产地列表</h3>
         </div>
-        <table class="table table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
+        <table class="table table-condensed" ng-if="page.content.length > 0">
             <thead>
                 <tr>
-                    <th>编号</th>
-                    <th>产地</th>
-                    <th>操作</th>
+                    <th width="10%">编号</th>
+                    <th width="80%">产地</th>
+                    <th width="10%">操作</th>
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="madeFrom in page.content">
-                    <th width="10%">
-                        {{madeFrom.id}}
+                <tr ng-repeat="source in page.content">
+                    <th>
+                        {{source.id}}
                     </th>
-                    <td width="80%">
-                        {{madeFrom.name}}
+                    <td>
+                        {{source.name}}
                     </td>
-                    <td width="10%">
-                        <button type="button" class="btn btn-info btn-xs" ng-click="updateMadeFrom(madeFrom)">
+                    <td>
+                        <button type="button" class="btn btn-info btn-xs" ng-click="updateSource(source)">
                             <span class="glyphicon glyphicon-edit"></span> 编辑
                         </button>
-                        <button type="button" class="btn btn-danger btn-xs" ng-click="showRemoveMadeFrom(madeFrom)">
+                        <button type="button" class="btn btn-danger btn-xs" ng-click="showRemoveSource(source)">
                             <span class="glyphicon glyphicon-trash"></span> 删除
                         </button>
                     </td>
@@ -42,18 +42,18 @@
                         <nav class="page-list">
                             <ul class="pagination pagination-sm">
                                 <li ng-class="{disabled: page.first}">
-                                    <a href="javascript:void(0)" ng-click="turnPage(page.number - 1)">&laquo;</a>
+                                    <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
                                 </li>
-                                <li ng-repeat="i in query.totalPagesList" ng-class="{active: i == page.number}">
-                                    <a href="javascript:void(0)" ng-click="turnPage(i)">{{i+1}}</a>
+                                <li ng-repeat="i in query.list" ng-class="{active: i == page.number}">
+                                    <a href="" ng-click="turnPage(i)">{{i+1}}</a>
                                 </li>
                                 <li ng-class="{disabled: page.last}">
-                                    <a href="javascript:void(0)" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                    <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
                                 </li>
                             </ul>
                             <div class="page-total">
                                 共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
-                                <select class="form-control" style="display: inline; padding:0" ng-model="query.pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                <select class="form-control" style="display: inline; padding:0" ng-model="query.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
                                 </select>
                             </div>
                         </nav>
@@ -69,8 +69,8 @@
     </div>
 </div>
 <section ng-include="template.operator.url"></section>
-<!-- madeFrom delete Modal -->
-<div class="modal fade" id="madeFromDeleteModal">
+<!-- Source Delete Modal -->
+<div class="modal fade" id="sourceDeleteModal">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">
@@ -79,8 +79,8 @@
                     <span class="glyphicon glyphicon-question-sign"></span> <strong>确定删除</strong>
                 </h4>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" ng-click="removeMadeFrom()">确定</button>
+            <div class="modal-footer" style="border-top:none">
+                <button type="button" class="btn btn-danger" ng-click="removeSource()">确定</button>
             </div>
         </div>
     </div>

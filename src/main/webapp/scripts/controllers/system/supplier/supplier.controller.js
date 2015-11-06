@@ -1,10 +1,9 @@
 angular.module('ecommApp')
 
-.controller('SupplierController', ['$rootScope', '$scope', 'Supplier', 'Utils',
-    function($rootScope, $scope, Supplier, Utils) {
+.controller('SupplierController', ['$scope', 'Supplier', 'Utils',
+    function($scope, Supplier, Utils) {
 
-        var $ = angular.element,
-            t = new Date().getTime();
+        var t = $.now();
 
         $scope.template = {
             operator: {
@@ -12,29 +11,46 @@ angular.module('ecommApp')
             }
         };
 
+        $scope.isorno = [{
+            label: '是',
+            value: true
+        }, {
+            label: '否',
+            value: false
+        }];
+
         $scope.defaultQuery = {
-            pageSize: 20,
-            totalPagesList: [],
-            sort: ['id,desc']
+            size: 20,
+            sort: ['name']
         };
         $scope.query = angular.copy($scope.defaultQuery);
 
         $scope.defaultSupplier = {
-            deleted: false
+            enabled: {
+                label: '是',
+                value: true
+            }
         };
         $scope.supplier = angular.copy($scope.defaultSupplier);
 
         $scope.supplierSlideChecked = false;
 
+        function initProperties(supplier) {
+            supplier.enabled = $scope.isorno[supplier.enabled ? 0 : 1];
+        }
+
+        function refreshProperties(supplier) {
+            supplier.enabled = supplier.enabled.value;
+        }
+
         $scope.searchData = function(query, number) {
             Supplier.get({
                 page: number ? number : 0,
-                size: query.pageSize,
-                sort: query.sort,
-                deleted: false
+                size: query.size,
+                sort: query.sort
             }, function(page) {
                 $scope.page = page;
-                query.totalPagesList = Utils.setTotalPagesList(page);
+                Utils.initList(page, query);
                 $scope.supplierSlideChecked = false;
             });
         };
@@ -47,40 +63,26 @@ angular.module('ecommApp')
             }
         };
 
-        $scope.updateSupplier = function(supplier) {
-            $scope.supplier = angular.copy(supplier);
-            $scope.toggleSupplierSlide('edit');
-        };
-
-        $scope.showRemoveSupplier = function(supplier) {
-            $scope.removingSupplier = supplier;
-            $('#supplierDeleteModal').modal('show');
-        };
-
-        $scope.removeSupplier = function() {
-            if (angular.isDefined($scope.removingSupplier)) {
-                $scope.removingSupplier.deleted = true;
-                Supplier.save({}, $scope.removingSupplier, function() {
-                    $scope.removingSupplier = undefined;
-                    $('#supplierDeleteModal').modal('hide');
-                    $scope.searchData($scope.query);
-                });
-            }
-        };
-
         $scope.saveSupplier = function(supplierForm, supplier) {
+            refreshProperties(supplier);
             Supplier.save({}, supplier, function() {
                 supplierForm.$setPristine();
                 $scope.searchData($scope.query);
             });
         };
 
-        $scope.toggleSupplierSlide = function(action) {
+        $scope.toggleSupplierSlide = function(action, supplier) {
+            $.each($scope.page.content, function(){
+                this.active = false;
+            });
             if (action === 'create') {
                 $scope.title = '创建';
                 $scope.supplier = angular.copy($scope.defaultSupplier);
             } else if (action === 'edit') {
                 $scope.title = '编辑';
+                supplier.active = true;
+                $scope.supplier = angular.copy(supplier);
+                initProperties($scope.supplier);
             }
             $scope.supplierSlideChecked = !$scope.supplierSlideChecked;
         };

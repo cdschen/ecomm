@@ -1,19 +1,14 @@
 package com.sooeez.ecomm.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "t_category")
@@ -36,14 +31,28 @@ public class Category implements Serializable {
 	 * Related Properties
 	 */
 
-//	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-//	@JoinColumn(name = "parent_id")
-//	private List<Category> categories = new ArrayList<>();
+	/*
+	 * Related Properties
+	 */
 
-	//
+	/*
+	 * @Transient Properties
+	 */
+
+	// 检查唯一
+	@Transient
+	private Boolean checkUnique;
+
+	/*
+	 * Constructor
+	 */
 
 	public Category() {
 	}
+
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -61,14 +70,12 @@ public class Category implements Serializable {
 		this.name = name;
 	}
 
-//	public List<Category> getCategories() {
-//		return categories;
-//	}
-//
-//	public void setCategories(List<Category> categories) {
-//		this.categories = categories;
-//	}
+	public Boolean getCheckUnique() {
+		return checkUnique;
+	}
 
-	
+	public void setCheckUnique(Boolean checkUnique) {
+		this.checkUnique = checkUnique;
+	}
 
 }

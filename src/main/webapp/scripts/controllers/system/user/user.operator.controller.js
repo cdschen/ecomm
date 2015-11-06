@@ -4,6 +4,8 @@ angular.module('ecommApp')
     function($scope, $state, $stateParams, User, Role, toastr, Shop, Warehouse, Principal) {
 
         $scope.actionLabel = ($stateParams.id && $stateParams.id !== '') ? '编辑' : '创建';
+        $scope.action = 'create';
+        $scope.modules = [];
 
         $scope.defaultUser = {
             roles: [],
@@ -24,9 +26,6 @@ angular.module('ecommApp')
             label: '否',
             value: false
         }];
-
-        $scope.action = 'create';
-        $scope.modules = [];
 
         function initProperties(user) {
             user.enabled = $scope.isorno[user.enabled ? 0 : 1];
@@ -133,7 +132,7 @@ angular.module('ecommApp')
             } else {
                 refreshProperties(user);
                 User.save({}, user, function() {
-                    Principal.identify(true).then(function(){
+                    Principal.identify(true).then(function() {
                         $state.go('user');
                     });
                 });

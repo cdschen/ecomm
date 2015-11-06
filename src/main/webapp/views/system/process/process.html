@@ -2,208 +2,104 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">流程管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ng-click="addProcess()">创建</a>
+        <a class="btn btn-info btn-xs" ui-sref="process.operator">创建</a>
     </li>
 </ol>
 <div class="container-fluid">
-    <section ng-show="processes.length > 0">
-        <div class="panel panel-default" ng-repeat="process in processes">
-            <div class="panel-body">
-                <ng-form name="processForm" class="form-horizontal" novalidate>
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="btn-group pull-right">
-                                <button type="button" class="btn btn-info" ng-show="!process.editable" ng-click="updateProcess(process, $index)">
-                                    <span class="glyphicon glyphicon-edit"></span> 编辑
-                                </button>
-                                <button type="button" class="btn btn-success" ng-show="process.editable" ng-click="saveProcess(process, processForm, $index)" ng-disabled="!processForm.$valid || !process.objectType">
-                                    <span class="glyphicon glyphicon-floppy-saved"></span> 保存
-                                </button>
-                                <button type="button" class="btn btn-danger" ng-click="showRemoveProcess(process, $index)">
-                                    <span class="glyphicon glyphicon-trash"></span> 删除
-                                </button>
-                            </div>
-                            <h4 class="text-success">
-                            <strong>流程信息</strong>
-                        </h4>
-                            <hr>
-                            <!-- process.name -->
-                            <div class="form-group has-feedback" ng-class="{'has-success':(processForm.name.$dirty && processForm.name.$valid), 'has-warning':(processForm.name.$dirty && processForm.name.$invalid) }">
-                                <label class="control-label col-md-4">名称 <span class="text-danger">*</span></label>
-                                <div class="col-md-4">
-                                    <p class="form-control-static" ng-show="!process.editable">{{process.name}}</p>
-                                    <div ng-show="process.editable">
-                                        <input type="text" class="form-control" name="name" ng-model="process.name" placeholder="(必填)" required ng-maxlength="50" />
-                                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="processForm.name.$dirty && processForm.name.$valid"></span>
-                                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="processForm.name.$dirty && processForm.name.$invalid"></span>
-                                    </div>
-                                </div>
-                                <span class="col-md-4 help-block" ng-messages="processForm.name.$error" ng-show="processForm.name.$dirty && processForm.name.$invalid">
-                                <span ng-messages-include="views/error-messages.html"></span>
-                                </span>
-                            </div>
-                            <!-- process.type -->
-                            <div class="form-group">
-                                <label class="control-label col-md-4">类型 <span class="text-danger">*</span></label>
-                                <div class="col-md-4">
-                                    <p class="form-control-static" ng-show="!process.editable">{{process.type.label}}</p>
-                                    <ui-select ng-model="process.type" ng-show="process.editable">
-                                        <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
-                                        <ui-select-choices repeat="type in types | filter: $select.search">
-                                            <div ng-bind-html="type.label | highlight: $select.search"></div>
-                                        </ui-select-choices>
-                                    </ui-select>
-                                </div>
-                            </div>
-                            <!-- process.objectType -->
-                            <div class="form-group">
-                                <label class="control-label col-md-4">应用对象 <span class="text-danger">*</span></label>
-                                <div class="col-md-4">
-                                    <p class="form-control-static" ng-show="!process.editable">{{process.objectType.label}}</p>
-                                    <ui-select ng-model="process.objectType" ng-show="process.editable">
-                                        <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
-                                        <ui-select-choices repeat="objectType in objectTypes | filter: $select.search">
-                                            <div ng-bind-html="objectType.label | highlight: $select.search"></div>
-                                        </ui-select-choices>
-                                    </ui-select>
-                                </div>
-                            </div>
-                            <!-- process.autoApply -->
-                            <div class="form-group">
-                                <label class="control-label col-md-4">自动应用 <span class="text-danger">*</span></label>
-                                <div class="col-md-4">
-                                    <p class="form-control-static" ng-show="!process.editable">{{process.autoApply.label}}</p>
-                                    <ui-select ng-model="process.autoApply" ng-show="process.editable">
-                                        <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
-                                        <ui-select-choices repeat="opt in isorno | filter: $select.search">
-                                            <div ng-bind-html="opt.label | highlight: $select.search"></div>
-                                        </ui-select-choices>
-                                    </ui-select>
-                                </div>
-                            </div>
-                            <!-- process.defaultStepId -->
-                            <div class="form-group">
-                                <label class="control-label col-md-4">流程默认状态 <span class="text-danger"></span></label>
-                                <div class="col-md-4">
-                                    <p class="form-control-static" ng-show="!process.editable">{{process.defaultStep.name}}</p>
-                                    <div class="input-group" ng-show="process.editable">
-                                        <ui-select ng-model="process.defaultStep">
-                                            <ui-select-match placeholder="(可选)">{{$select.selected.name}}</ui-select-match>
-                                            <ui-select-choices repeat="step in process.steps | filter: $select.search">
-                                                <div ng-bind-html="step.name | highlight: $select.search"></div>
-                                            </ui-select-choices>
-                                        </ui-select>
-                                        <span class="input-group-btn">
-                                        <button type="button" ng-click="process.defaultStep = undefined" class="btn btn-default">
-                                            <span class="glyphicon glyphicon-trash"></span>
-                                        </button>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- process.hideWhenComplete -->
-                            <div class="form-group">
-                                <label class="control-label col-md-4">完成后是否隐藏 <span class="text-danger">*</span></label>
-                                <div class="col-md-4">
-                                    <p class="form-control-static" ng-show="!process.editable">{{process.hideWhenComplete.label}}</p>
-                                    <ui-select ng-model="process.hideWhenComplete" ng-show="process.editable">
-                                        <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
-                                        <ui-select-choices repeat="opt in isorno | filter: $select.search">
-                                            <div ng-bind-html="opt.label | highlight: $select.search"></div>
-                                        </ui-select-choices>
-                                    </ui-select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <h4 class="text-success">
-                            <strong>状态信息</strong>
-                        </h4>
-                            <hr>
-                            <div class="row" ng-show="!process.editable">
-                                <div class="col-md-11 col-md-offset-1">
-                                    <div ng-if="process.type.value == 1">
-                                        <span ng-repeat="step in process.steps | orderBy:'sequence'">
-                                        <button type="button" class="btn btn-info">{{step.name}}</button>
-                                        <span class="glyphicon glyphicon-circle-arrow-right" ng-show="!$last"></span>
-                                        </span>
-                                    </div>
-                                    <div ng-if="process.type.value == 2">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-info" ng-repeat="step in process.steps | orderBy:'sequence'">{{step.name}}</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row" ng-show="process.editable">
-                                <div class="col-md-4" ng-repeat="step in process.steps | orderBy:'sequence'">
-                                    <div class="row">
-                                        <div class="col-md-11">
-                                            <div class="panel panel-default" style="padding: 1px;" data-drop="true" jqyoui-droppable="{index: {{$index}}, onDrop: 'drop(process)' }" ng-model="process.steps">
-                                                <div class="panel panel-info" style="margin:0" data-drag="true" jqyoui-draggable="{index: {{$index}}, placeholder: true, animate: true}" data-jqyoui-options="{revert: 'invalid'}" ng-model="process.steps">
-                                                    <div class="panel-body">
-                                                        <!-- step form -->
-                                                        <ng-form name="stepForm" class="form-horizontal" novalidate>
-                                                            <div style="height:30px;margin-bottom:15px;">
-                                                                <!-- <span ng-show="!step.editable"><strong>{{step.name}}</strong></span> -->
-                                                                <div class=" has-feedback" ng-show="process.editable" ng-class="{'has-success':(stepForm.name.$dirty && stepForm.name.$valid), 'has-warning':(stepForm.name.$dirty && stepForm.name.$invalid) }">
-                                                                    <input type="text" class="form-control input-sm" name="name" ng-model="step.name" placeholder="状态名称(必填)" required ng-maxlength="12" />
-                                                                    <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="stepForm.name.$dirty && stepForm.name.$valid"></span>
-                                                                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="stepForm.name.$dirty && stepForm.name.$invalid"></span>
-                                                                </div>
-                                                            </div>
-                                                            <span class="badge">{{step.sequence+1}}</span>
-                                                            <div class="btn-group btn-group-xs pull-right">
-                                                                <!-- <button type="button" class="btn btn-info" ng-show="!step.editable" ng-click="updateStep(step, $index)">
-                                                    <span class="glyphicon glyphicon-edit"></span>
-                                                </button>
-                                                <button type="button" class="btn btn-success" ng-show="step.editable" ng-click="saveUpdateStep(step, stepForm, $index)" ng-disabled="!stepForm.name.$valid">
-                                                    <span class="glyphicon glyphicon-floppy-saved"></span>
-                                                </button> -->
-                                                                <button type="button" class="btn btn-danger" ng-click="removeStep(process, step, $index)">
-                                                                    <span class="glyphicon glyphicon-trash"></span>
-                                                                </button>
-                                                            </div>
-                                                        </ng-form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-1" style="padding-left: 0;margin-left: -10px;">
-                                            <a href="" class="btn btn-success btn-xs" style="margin:40px 0" ng-show="!$last && process.type.value == 1">
-                                                <span class="glyphicon glyphicon-circle-arrow-right"></span>
-                                            </a>
-                                            <a href="" class="btn btn-primary btn-xs" style="margin:40px 0" ng-show="$last" ng-click="addStep(process, step, $index)">
-                                                <span class="glyphicon glyphicon-plus-sign"></span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </ng-form>
-            </div>
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h3 class="panel-title">流程列表</h3>
         </div>
-    </section>
-    <section ng-show="processes.length == 0">
-        <div class="alert alert-warning">
-            <span class="glyphicon glyphicon-info-sign"></span> 还没有创建任何流程
-        </div>
-    </section>
-</div>
-<!-- process delete Modal -->
-<div class="modal fade" id="processDeleteModal">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title text-danger">
-                    <span class="glyphicon glyphicon-question-sign"></span> 确定删除
-                </h4>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" ng-click="removeProcess()">确定</button>
+        <table class="table table-condensed" ng-if="page.content.length > 0">
+            <thead>
+                <tr>
+                    <th width="12%">名称</th>
+                    <th width="6%">类型</th>
+                    <th width="6%">应用对象</th>
+                    <th width="8%">自动应用</th>
+                    <th width="8%">默认状态</th>
+                    <th width="8%">完成后隐藏</th>
+                    <th width="8%">启用</th>
+                    <th width="38%">状态</th>
+                    <th width="6%">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="process in page.content">
+                    <td>
+                        {{process.name}}
+                    </td>
+                    <td ng-switch on="process.type">
+                        <span ng-switch-when="1">线性流程</span>
+                        <span ng-switch-when="2">开关流程</span>
+                    </td>
+                    <td ng-switch on="process.objectType">
+                        <span ng-switch-when="1">订单</span>
+                        <span ng-switch-when="2">商品</span>
+                        <span ng-switch-when="3">库存</span>
+                        <span ng-switch-when="4">采购</span>
+                    </td>
+                    <td ng-switch on="process.autoApply">
+                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="true"></span>
+                        <span class="glyphicon glyphicon-remove text-danger" ng-switch-when="false"></span>
+                    </td>
+                    <td>
+                        <span class="label label-success">{{process.defaultStep.name}}</span>
+                    </td>
+                    <td ng-switch on="process.hideWhenComplete">
+                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="true"></span>
+                        <span class="glyphicon glyphicon-remove text-danger" ng-switch-when="false"></span>
+                    </td>
+                    <td ng-switch on="process.enabled">
+                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="true"></span>
+                        <span class="glyphicon glyphicon-remove text-danger" ng-switch-when="false"></span>
+                    </td>
+                    <td ng-switch on="process.type">
+                        <div ng-switch-when="1">
+                            <span ng-repeat="step in process.steps | orderBy: 'sequence'">
+                                <span class="label label-success" style="margin:3px">{{step.name}}</span>
+                                <span class="glyphicon glyphicon-circle-arrow-right" ng-show="!$last"></span>
+                            </span>
+                        </div>
+                        <div ng-switch-when="2">
+                            <span class="label label-success" ng-repeat="step in process.steps | orderBy: 'sequence'" style="margin:3px">{{step.name}}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <a ui-sref="process.operator({id:process.id})" class="btn btn-info btn-xs">
+                            <span class="glyphicon glyphicon-edit"></span> 编辑
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="20">
+                        <nav class="page-list">
+                            <ul class="pagination pagination-sm">
+                                <li ng-class="{disabled: page.first}">
+                                    <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
+                                </li>
+                                <li ng-repeat="i in query.list" ng-class="{active: i == page.number}">
+                                    <a href="" ng-click="turnPage(i)">{{i+1}}</a>
+                                </li>
+                                <li ng-class="{disabled: page.last}">
+                                    <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                </li>
+                            </ul>
+                            <div class="page-total">
+                                共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
+                                <select class="form-control" style="display: inline; padding:0" ng-model="query.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                </select>
+                            </div>
+                        </nav>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="panel-body" ng-if="page.content.length == 0">
+            <div class="alert alert-warning">
+                <span class="glyphicon glyphicon-info-sign"></span> 没有任何数据被检索到
             </div>
         </div>
     </div>

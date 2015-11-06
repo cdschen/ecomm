@@ -2,14 +2,12 @@
     <div id="operator-slider">
         <div class="panel panel-default">
             <div class="panel-body">
-                <button type="button" class="close" ng-click="toggleProcessSlide()">
-                    <span aria-hidden="true">×</span>
-                </button>
-                <h4 class="text-success">
+                <button type="button" class="close" ng-click="toggleProcessSlide()">&times;</button>
+                <h3 class="text-success">
                     <strong>{{processProduct.name}} ({{processProduct.sku}})</strong>
-                </h4>
+                </h3>
             </div>
-            <table class="table table-condensed clear-marginbottom-table" ng-show="processes.length > 0">
+            <table class="table table-condensed" ng-show="processes.length > 0">
                 <thead>
                     <tr>
                         <th width="22%">流程</th>
@@ -44,6 +42,11 @@
                     </tr>
                 </tbody>
             </table>
+            <div class="panel-body" ng-if="processes.length == 0">
+                <div class="alert alert-warning">
+                    <span class="glyphicon glyphicon-info-sign"></span> 没有检索到任何数据
+                </div>
+            </div>
         </div>
     </div>
 </div>

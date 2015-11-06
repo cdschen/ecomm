@@ -1,53 +1,56 @@
 angular.module('ecommApp')
 
-.controller('ShopController', ['$rootScope', '$scope', 'Shop', 'Utils', 'Process',
-    function($rootScope, $scope, Shop, Utils, Process) {
+.controller('ShopController', ['$scope', 'Shop', 'Utils', 'Process',
+    function($scope, Shop, Utils, Process) {
 
-        $scope.totalPagesList = [];
-        $scope.pageSize = 20;
+        var t = $.now();
+
+        $scope.template = {
+            process: {
+                url: 'views/system/shop/shop.process-slide.html?' + t
+            }
+        };
+
         $scope.processSlideChecked = false;
         $scope.processShop = undefined;
         $scope.action = undefined;
 
-        $scope.template = {
-            process: {
-                url: 'views/system/shop/shop.process-slide.html?' + (new Date())
-            }
+        Process.getAll({
+            enabled: true,
+            objectType: 1
+        }).then(function(processes) {
+            $scope.processes = processes;
+        });
+
+        $scope.defaultQuery = {
+            size: 20,
+            sort: ['name']
+        };
+        $scope.query = angular.copy($scope.defaultQuery);
+
+        $scope.searchData = function(query, number) {
+            Shop.get({
+                page: number ? number : 0,
+                size: query.size,
+                sort: query.sort
+            }, function(page) {
+                $scope.page = page;
+                Utils.initList(page, query);
+            });
         };
 
-        Shop.get({
-            page: 0,
-            size: $scope.pageSize,
-            sort: ['name'],
-            deleted: false
-        }).$promise.then(function(page) {
-            console.log(page);
-            $scope.page = page;
-            $scope.totalPagesList = Utils.setTotalPagesList(page);
-        }).then(function() {
-            Process.getAll({
-                deleted: false,
-                objectType: 1
-            }).then(function(processes) {
-                $scope.processes = processes;
-            });
-        });
+        $scope.searchData($scope.query);
 
         $scope.turnPage = function(number) {
             if (number > -1 && number < $scope.page.totalPages) {
-                Shop.get({
-                    page: number,
-                    size: $scope.pageSize,
-                    sort: ['name'],
-                    deleted: false
-                }, function(page) {
-                    $scope.page = page;
-                    $scope.totalPagesList = Utils.setTotalPagesList(page);
-                });
+                $scope.searchData($scope.query, number);
             }
         };
 
-        // process
+        /*
+         * Process
+         */
+
         $scope.toggleProcessSlide = function(shop, action) {
             $scope.processSlideChecked = !$scope.processSlideChecked;
             if ($scope.processSlideChecked) {
@@ -75,5 +78,6 @@ angular.module('ecommApp')
                 $scope.toggleProcessSlide();
             });
         };
+
     }
 ]);

@@ -3,8 +3,6 @@ angular.module('ecommApp')
 .controller('ProductProcessController', ['$scope', '$filter', 'Process', 'ObjectProcess',
     function($scope, $filter, Process, ObjectProcess) {
 
-        var $ = angular.element;
-
         $scope.applyProcess = function(process) {
             var objectProcess = {
                 objectId: $scope.processProduct.id,

@@ -33,7 +33,7 @@ public class Warehouse implements Serializable {
 	private String name;
 
 	@Column(name = "enable_position", nullable = false)
-	private boolean enablePosition;
+	private Boolean enablePosition;
 
 	@Column(name = "address", nullable = false)
 	private String address;
@@ -44,16 +44,20 @@ public class Warehouse implements Serializable {
 	@Column(name = "email", nullable = false)
 	private String email;
 
-	@Column(name = "deleted", nullable = false)
-	private Boolean deleted;
+	@Column(name = "enabled", nullable = false)
+	private Boolean enabled;
 
 	/*
 	 * Related Properties
 	 */
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "warehouse_id")
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<WarehousePosition> positions;
+
+	/*
+	 * @Transient Properties
+	 */
 
 	// 产品在一个仓库下的数量
 	@Transient
@@ -63,41 +67,20 @@ public class Warehouse implements Serializable {
 	@Transient
 	private Long[] warehouseIds;
 
-	//
+	// 检查唯一
+	@Transient
+	private Boolean checkUnique;
+
+	/*
+	 * Constructor
+	 */
+
 	public Warehouse() {
 	}
 
-	public Long[] getWarehouseIds() {
-		return warehouseIds;
-	}
-
-	public void setWarehouseIds(Long[] warehouseIds) {
-		this.warehouseIds = warehouseIds;
-	}
-
-	public Long getTotal() {
-		return total;
-	}
-
-	public void setTotal(Long total) {
-		this.total = total;
-	}
-
-	public Boolean getDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-
-	public List<WarehousePosition> getPositions() {
-		return positions;
-	}
-
-	public void setPositions(List<WarehousePosition> positions) {
-		this.positions = positions;
-	}
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -115,11 +98,11 @@ public class Warehouse implements Serializable {
 		this.name = name;
 	}
 
-	public boolean isEnablePosition() {
+	public Boolean getEnablePosition() {
 		return enablePosition;
 	}
 
-	public void setEnablePosition(boolean enablePosition) {
+	public void setEnablePosition(Boolean enablePosition) {
 		this.enablePosition = enablePosition;
 	}
 
@@ -145,6 +128,46 @@ public class Warehouse implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public List<WarehousePosition> getPositions() {
+		return positions;
+	}
+
+	public void setPositions(List<WarehousePosition> positions) {
+		this.positions = positions;
+	}
+
+	public Long getTotal() {
+		return total;
+	}
+
+	public void setTotal(Long total) {
+		this.total = total;
+	}
+
+	public Long[] getWarehouseIds() {
+		return warehouseIds;
+	}
+
+	public void setWarehouseIds(Long[] warehouseIds) {
+		this.warehouseIds = warehouseIds;
+	}
+
+	public Boolean getCheckUnique() {
+		return checkUnique;
+	}
+
+	public void setCheckUnique(Boolean checkUnique) {
+		this.checkUnique = checkUnique;
 	}
 
 }

@@ -24,6 +24,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import com.sooeez.ecomm.dto.InventoryProductDetailDTO;
 
 @Entity
@@ -42,6 +45,21 @@ public class Product implements Serializable {
 
 	@Column(name = "product_type", nullable = false)
 	private Integer productType;
+
+	@Column(name = "brand_id", nullable = false, insertable = false, updatable = false)
+	private Integer brandId;
+
+	@Column(name = "category_id", nullable = false, insertable = false, updatable = false)
+	private Integer categoryId;
+
+	@Column(name = "source_id", nullable = false, insertable = false, updatable = false)
+	private Integer sourceId;
+
+	@Column(name = "default_language_id", nullable = false, insertable = false, updatable = false)
+	private Integer defaultLanguageId;
+
+	@Column(name = "default_currency_id", nullable = false, insertable = false, updatable = false)
+	private Integer defaultCurrencyId;
 
 	@Column(name = "sku", nullable = false)
 	private String sku;
@@ -89,7 +107,7 @@ public class Product implements Serializable {
 	@Column(name = "full_description")
 	private String fullDescription;
 
-	@Column(name = "weight")
+	@Column(name = "weight", nullable = false)
 	private Integer weight;
 
 	@Column(name = "thumbnail_url")
@@ -122,8 +140,8 @@ public class Product implements Serializable {
 	@Column(name = "image9_url")
 	private String image9Url;
 
-	@Column(name = "deleted")
-	private Boolean deleted;
+	@Column(name = "enabled", nullable = false)
+	private Boolean enabled;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "create_time")
@@ -138,51 +156,60 @@ public class Product implements Serializable {
 	 */
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "brand_id")
 	private Brand brand;
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "category_id")
 	private Category category;
 
 	@OneToOne
-	@JoinColumn(name = "made_from_id")
-	private MadeFrom madeFrom;
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "source_id")
+	private Source source;
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "default_language_id")
 	private Language language;
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "default_currency_id")
 	private Currency currency;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id")
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<ProductMultiCurrency> multiCurrencies;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id")
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<ProductMultiLanguage> multiLanguages;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent_product_id")
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<ProductMember> members;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "object_id")
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<ObjectProcess> processes;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id")
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<ProductShopTunnel> shopTunnels;
 
 	@ManyToMany
 	@JoinTable(name = "t_product_tag", joinColumns = { @JoinColumn(name = "product_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id", referencedColumnName = "id") })
 	private List<Tag> tags;
 
+	/*
+	 * @Transient Properties
+	 */
+
 	@Transient
-	private Integer[] statusIds;
+	private Long[] statusIds;
 
 	// 产品在某一个仓库的库存量
 	@Transient
@@ -207,119 +234,20 @@ public class Product implements Serializable {
 	@Transient
 	private List<InventoryBatch> batches = new ArrayList<>();
 
-	//
+	// 检查唯一
+	@Transient
+	private Boolean checkUnique;
+
+	/*
+	 * Constructor
+	 */
 
 	public Product() {
 	}
 
-	public List<InventoryBatch> getBatches() {
-		return batches;
-	}
-
-	public void setBatches(List<InventoryBatch> batches) {
-		this.batches = batches;
-	}
-
-	public List<InventoryProductDetailDTO> getDetails() {
-		return details;
-	}
-
-	public void setDetails(List<InventoryProductDetailDTO> details) {
-		this.details = details;
-	}
-
-	public Boolean getExistPosition() {
-		if (positions.size() > 0) {
-			this.existPosition = true;
-		} else {
-			this.existPosition = false;
-		}
-		return existPosition;
-	}
-
-	public void setExistPosition(Boolean existPosition) {
-		this.existPosition = existPosition;
-	}
-
-	public List<WarehousePosition> getPositions() {
-		return positions;
-	}
-
-	public void setPositions(List<WarehousePosition> positions) {
-		this.positions = positions;
-	}
-
-	public List<Warehouse> getWarehouses() {
-		return warehouses;
-	}
-
-	public void setWarehouses(List<Warehouse> warehouses) {
-		this.warehouses = warehouses;
-	}
-
-	public Long getTotal() {
-		return total;
-	}
-
-	public void setTotal(Long total) {
-		this.total = total;
-	}
-
-	public Boolean getDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-
-	public Integer[] getStatusIds() {
-		return statusIds;
-	}
-
-	public void setStatusIds(Integer[] statusIds) {
-		this.statusIds = statusIds;
-	}
-
-	public List<ObjectProcess> getProcesses() {
-		return processes;
-	}
-
-	public void setProcesses(List<ObjectProcess> processes) {
-		this.processes = processes;
-	}
-
-	public List<ProductMember> getMembers() {
-		return members;
-	}
-
-	public void setMembers(List<ProductMember> members) {
-		this.members = members;
-	}
-
-	public List<Tag> getTags() {
-		return tags;
-	}
-
-	public void setTags(List<Tag> tags) {
-		this.tags = tags;
-	}
-
-	public List<ProductMultiCurrency> getMultiCurrencies() {
-		return multiCurrencies;
-	}
-
-	public void setMultiCurrencies(List<ProductMultiCurrency> multiCurrencies) {
-		this.multiCurrencies = multiCurrencies;
-	}
-
-	public List<ProductMultiLanguage> getMultiLanguages() {
-		return multiLanguages;
-	}
-
-	public void setMultiLanguages(List<ProductMultiLanguage> multiLanguages) {
-		this.multiLanguages = multiLanguages;
-	}
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -329,12 +257,52 @@ public class Product implements Serializable {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public Integer getProductType() {
+		return productType;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setProductType(Integer productType) {
+		this.productType = productType;
+	}
+
+	public Integer getBrandId() {
+		return brandId;
+	}
+
+	public void setBrandId(Integer brandId) {
+		this.brandId = brandId;
+	}
+
+	public Integer getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Integer categoryId) {
+		this.categoryId = categoryId;
+	}
+
+	public Integer getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(Integer sourceId) {
+		this.sourceId = sourceId;
+	}
+
+	public Integer getDefaultLanguageId() {
+		return defaultLanguageId;
+	}
+
+	public void setDefaultLanguageId(Integer defaultLanguageId) {
+		this.defaultLanguageId = defaultLanguageId;
+	}
+
+	public Integer getDefaultCurrencyId() {
+		return defaultCurrencyId;
+	}
+
+	public void setDefaultCurrencyId(Integer defaultCurrencyId) {
+		this.defaultCurrencyId = defaultCurrencyId;
 	}
 
 	public String getSku() {
@@ -345,140 +313,12 @@ public class Product implements Serializable {
 		this.sku = sku;
 	}
 
-	public Integer getWeight() {
-		return weight;
+	public String getName() {
+		return name;
 	}
 
-	public void setWeight(Integer weight) {
-		this.weight = weight;
-	}
-
-	public String getThumbnailUrl() {
-		return thumbnailUrl;
-	}
-
-	public void setThumbnailUrl(String thumbnailUrl) {
-		this.thumbnailUrl = thumbnailUrl;
-	}
-
-	public String getImage1Url() {
-		return image1Url;
-	}
-
-	public void setImage1Url(String image1Url) {
-		this.image1Url = image1Url;
-	}
-
-	public String getImage2Url() {
-		return image2Url;
-	}
-
-	public void setImage2Url(String image2Url) {
-		this.image2Url = image2Url;
-	}
-
-	public String getImage3Url() {
-		return image3Url;
-	}
-
-	public void setImage3Url(String image3Url) {
-		this.image3Url = image3Url;
-	}
-
-	public String getImage4Url() {
-		return image4Url;
-	}
-
-	public void setImage4Url(String image4Url) {
-		this.image4Url = image4Url;
-	}
-
-	public String getImage5Url() {
-		return image5Url;
-	}
-
-	public void setImage5Url(String image5Url) {
-		this.image5Url = image5Url;
-	}
-
-	public String getImage6Url() {
-		return image6Url;
-	}
-
-	public void setImage6Url(String image6Url) {
-		this.image6Url = image6Url;
-	}
-
-	public String getImage7Url() {
-		return image7Url;
-	}
-
-	public void setImage7Url(String image7Url) {
-		this.image7Url = image7Url;
-	}
-
-	public String getImage8Url() {
-		return image8Url;
-	}
-
-	public void setImage8Url(String image8Url) {
-		this.image8Url = image8Url;
-	}
-
-	public String getImage9Url() {
-		return image9Url;
-	}
-
-	public void setImage9Url(String image9Url) {
-		this.image9Url = image9Url;
-	}
-
-	public Brand getBrand() {
-		return brand;
-	}
-
-	public void setBrand(Brand brand) {
-		this.brand = brand;
-	}
-
-	public Category getCategory() {
-		return category;
-	}
-
-	public void setCategory(Category category) {
-		this.category = category;
-	}
-
-	public MadeFrom getMadeFrom() {
-		return madeFrom;
-	}
-
-	public void setMadeFrom(MadeFrom madeFrom) {
-		this.madeFrom = madeFrom;
-	}
-
-	public Language getLanguage() {
-		return language;
-	}
-
-	public void setLanguage(Language language) {
-		this.language = language;
-	}
-
-	public Currency getCurrency() {
-		return currency;
-	}
-
-	public void setCurrency(Currency currency) {
-		this.currency = currency;
-	}
-
-	public Integer getProductType() {
-		return productType;
-	}
-
-	public void setProductType(Integer productType) {
-		this.productType = productType;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getShortName() {
@@ -585,12 +425,100 @@ public class Product implements Serializable {
 		this.fullDescription = fullDescription;
 	}
 
-	public List<ProductShopTunnel> getShopTunnels() {
-		return shopTunnels;
+	public Integer getWeight() {
+		return weight;
 	}
 
-	public void setShopTunnels(List<ProductShopTunnel> shopTunnels) {
-		this.shopTunnels = shopTunnels;
+	public void setWeight(Integer weight) {
+		this.weight = weight;
+	}
+
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
+
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
+
+	public String getImage1Url() {
+		return image1Url;
+	}
+
+	public void setImage1Url(String image1Url) {
+		this.image1Url = image1Url;
+	}
+
+	public String getImage2Url() {
+		return image2Url;
+	}
+
+	public void setImage2Url(String image2Url) {
+		this.image2Url = image2Url;
+	}
+
+	public String getImage3Url() {
+		return image3Url;
+	}
+
+	public void setImage3Url(String image3Url) {
+		this.image3Url = image3Url;
+	}
+
+	public String getImage4Url() {
+		return image4Url;
+	}
+
+	public void setImage4Url(String image4Url) {
+		this.image4Url = image4Url;
+	}
+
+	public String getImage5Url() {
+		return image5Url;
+	}
+
+	public void setImage5Url(String image5Url) {
+		this.image5Url = image5Url;
+	}
+
+	public String getImage6Url() {
+		return image6Url;
+	}
+
+	public void setImage6Url(String image6Url) {
+		this.image6Url = image6Url;
+	}
+
+	public String getImage7Url() {
+		return image7Url;
+	}
+
+	public void setImage7Url(String image7Url) {
+		this.image7Url = image7Url;
+	}
+
+	public String getImage8Url() {
+		return image8Url;
+	}
+
+	public void setImage8Url(String image8Url) {
+		this.image8Url = image8Url;
+	}
+
+	public String getImage9Url() {
+		return image9Url;
+	}
+
+	public void setImage9Url(String image9Url) {
+		this.image9Url = image9Url;
+	}
+
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public Date getCreateTime() {
@@ -607,6 +535,158 @@ public class Product implements Serializable {
 
 	public void setLastUpdate(Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
+	}
+
+	public Brand getBrand() {
+		return brand;
+	}
+
+	public void setBrand(Brand brand) {
+		this.brand = brand;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+	public Source getSource() {
+		return source;
+	}
+
+	public void setSource(Source source) {
+		this.source = source;
+	}
+
+	public Language getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(Language language) {
+		this.language = language;
+	}
+
+	public Currency getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(Currency currency) {
+		this.currency = currency;
+	}
+
+	public List<ProductMultiCurrency> getMultiCurrencies() {
+		return multiCurrencies;
+	}
+
+	public void setMultiCurrencies(List<ProductMultiCurrency> multiCurrencies) {
+		this.multiCurrencies = multiCurrencies;
+	}
+
+	public List<ProductMultiLanguage> getMultiLanguages() {
+		return multiLanguages;
+	}
+
+	public void setMultiLanguages(List<ProductMultiLanguage> multiLanguages) {
+		this.multiLanguages = multiLanguages;
+	}
+
+	public List<ProductMember> getMembers() {
+		return members;
+	}
+
+	public void setMembers(List<ProductMember> members) {
+		this.members = members;
+	}
+
+	public List<ObjectProcess> getProcesses() {
+		return processes;
+	}
+
+	public void setProcesses(List<ObjectProcess> processes) {
+		this.processes = processes;
+	}
+
+	public List<ProductShopTunnel> getShopTunnels() {
+		return shopTunnels;
+	}
+
+	public void setShopTunnels(List<ProductShopTunnel> shopTunnels) {
+		this.shopTunnels = shopTunnels;
+	}
+
+	public List<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
+	}
+
+	public Long[] getStatusIds() {
+		return statusIds;
+	}
+
+	public void setStatusIds(Long[] statusIds) {
+		this.statusIds = statusIds;
+	}
+
+	public Long getTotal() {
+		return total;
+	}
+
+	public void setTotal(Long total) {
+		this.total = total;
+	}
+
+	public List<Warehouse> getWarehouses() {
+		return warehouses;
+	}
+
+	public void setWarehouses(List<Warehouse> warehouses) {
+		this.warehouses = warehouses;
+	}
+
+	public List<WarehousePosition> getPositions() {
+		return positions;
+	}
+
+	public void setPositions(List<WarehousePosition> positions) {
+		this.positions = positions;
+	}
+
+	public Boolean getExistPosition() {
+		return existPosition;
+	}
+
+	public void setExistPosition(Boolean existPosition) {
+		this.existPosition = existPosition;
+	}
+
+	public List<InventoryProductDetailDTO> getDetails() {
+		return details;
+	}
+
+	public void setDetails(List<InventoryProductDetailDTO> details) {
+		this.details = details;
+	}
+
+	public List<InventoryBatch> getBatches() {
+		return batches;
+	}
+
+	public void setBatches(List<InventoryBatch> batches) {
+		this.batches = batches;
+	}
+
+	public Boolean getCheckUnique() {
+		return checkUnique;
+	}
+
+	public void setCheckUnique(Boolean checkUnique) {
+		this.checkUnique = checkUnique;
 	}
 
 }

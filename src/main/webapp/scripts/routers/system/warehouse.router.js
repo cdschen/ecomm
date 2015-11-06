@@ -30,4 +30,5 @@ angular.module('ecommApp')
                 roles: [ROLES.SYSTEM_ADMIN, ROLES.WAREHOUSE_ADMIN]
             }
         });
+        
 }]);

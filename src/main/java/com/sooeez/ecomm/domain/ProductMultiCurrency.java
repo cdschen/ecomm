@@ -3,18 +3,17 @@ package com.sooeez.ecomm.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "t_product_multicurrency")
@@ -32,6 +31,9 @@ public class ProductMultiCurrency implements Serializable {
 
 	@Column(name = "product_id")
 	private Long productId;
+
+	@Column(name = "currency_id", insertable = false, updatable = false)
+	private Long currencyId;
 
 	@Column(name = "price_l1", nullable = false)
 	private BigDecimal priceL1;
@@ -68,27 +70,24 @@ public class ProductMultiCurrency implements Serializable {
 	 */
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "currency_id")
 	private Currency currency;
 
-	//
+	/*
+	 * @Transient Properties
+	 */
+
+	/*
+	 * Constructor
+	 */
 
 	public ProductMultiCurrency() {
 	}
 
-	
-
-	public Long getProductId() {
-		return productId;
-	}
-
-
-
-	public void setProductId(Long productId) {
-		this.productId = productId;
-	}
-
-
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -96,6 +95,22 @@ public class ProductMultiCurrency implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Long productId) {
+		this.productId = productId;
+	}
+
+	public Long getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(Long currencyId) {
+		this.currencyId = currencyId;
 	}
 
 	public BigDecimal getPriceL1() {

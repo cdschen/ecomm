@@ -9,11 +9,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "t_product_multilanguage")
@@ -41,7 +41,7 @@ public class ProductMultiLanguage implements Serializable {
 	@Column(name = "short_name")
 	private String shortName;
 
-	@Column(name = "short_description", length = 1000)
+	@Column(name = "short_description")
 	private String shortDescription;
 
 	@Lob
@@ -53,28 +53,31 @@ public class ProductMultiLanguage implements Serializable {
 	 */
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "language_id")
 	private Language language;
 
-	//
+	/*
+	 * @Transient Properties
+	 */
+
+	/*
+	 * Constructor
+	 */
 
 	public ProductMultiLanguage() {
 	}
 
-	public Long getLanguageId() {
-		return languageId;
+	/*
+	 * Functions
+	 */
+
+	public Long getId() {
+		return id;
 	}
 
-	public void setLanguageId(Long languageId) {
-		this.languageId = languageId;
-	}
-
-	public String getShortName() {
-		return shortName;
-	}
-
-	public void setShortName(String shortName) {
-		this.shortName = shortName;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public Long getProductId() {
@@ -85,20 +88,12 @@ public class ProductMultiLanguage implements Serializable {
 		this.productId = productId;
 	}
 
-	public Language getLanguage() {
-		return language;
+	public Long getLanguageId() {
+		return languageId;
 	}
 
-	public void setLanguage(Language language) {
-		this.language = language;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
+	public void setLanguageId(Long languageId) {
+		this.languageId = languageId;
 	}
 
 	public String getName() {
@@ -107,6 +102,14 @@ public class ProductMultiLanguage implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getShortName() {
+		return shortName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
 	}
 
 	public String getShortDescription() {
@@ -124,4 +127,13 @@ public class ProductMultiLanguage implements Serializable {
 	public void setFullDescription(String fullDescription) {
 		this.fullDescription = fullDescription;
 	}
+
+	public Language getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(Language language) {
+		this.language = language;
+	}
+
 }

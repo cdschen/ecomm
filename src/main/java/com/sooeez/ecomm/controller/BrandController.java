@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,36 +20,46 @@ import com.sooeez.ecomm.service.BrandService;
 @RestController
 @RequestMapping("/api")
 public class BrandController {
+	
+	/*
+	 * Service
+	 */
 
-	@Autowired BrandService brandService;
+	@Autowired 
+	private BrandService brandService;
 	
 	/*
 	 * Brand
 	 */
 	
+	@RequestMapping(value = "/brands/check-unique")
+	public Boolean existsBrand(Brand brand) {
+		return brandService.existsBrand(brand);
+	}
+	
 	@RequestMapping(value = "/brands/{id}")
 	public Brand getBrand(@PathVariable("id") Long id) {
-		return this.brandService.getBrand(id);
+		return brandService.getBrand(id);
 	}
 	
 	@RequestMapping(value = "/brands")
-	public Page<Brand> getPagedBrands(Pageable pageable) {
-		return this.brandService.getPagedBrands(pageable);
+	public Page<Brand> getPagedBrands(Brand brand, Pageable pageable) {
+		return brandService.getPagedBrands(brand, pageable);
 	}
 	
 	@RequestMapping(value = "/brands/get/all")
-	public List<Brand> getBrands() {
-		return this.brandService.getBrands();
+	public List<Brand> getBrands(Brand brand, Sort sort) {
+		return brandService.getBrands(brand, sort);
 	}
 	
 	@RequestMapping(value = "/brands", method = RequestMethod.POST)
 	public Brand saveBrand(@RequestBody Brand brand) {
-		return this.brandService.saveBrand(brand);
+		return brandService.saveBrand(brand);
 	}
 	
 	@RequestMapping(value = "/brands/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteBrand(@PathVariable("id") Long id) {
-		this.brandService.deleteBrand(id);
+		brandService.deleteBrand(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

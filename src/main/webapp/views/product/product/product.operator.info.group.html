@@ -3,7 +3,7 @@
         <strong>组合商品</strong>
     </h4>
 </div>
-<!-- member table -->
+<!-- Member Table -->
 <table class="table clear-marginbottom-table">
     <tbody>
         <tr>
@@ -23,7 +23,7 @@
         </tr>
     </tbody>
 </table>
-<form name="memberForm" novalidate ng-repeat="member in product.members" ><!-- class="pagination-ul" -->
+<form name="memberForm" novalidate ng-repeat="member in product.members" >
     <table class="table clear-marginbottom-table">
         <tbody>
             <tr>
@@ -91,7 +91,7 @@
         </tr>
     </tbody>
 </table>
-<!-- member add form -->
+<!-- Member Add Form -->
 <form name="memberAddForm" novalidate>
     <table class="table clear-marginbottom-table">
         <tbody>
@@ -135,17 +135,17 @@
         </tbody>
     </table>
 </form>
-<!-- member delete Modal -->
+<!-- Member Delete Modal -->
 <div class="modal fade" id="memberDeleteModal">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title text-danger">
-                    <span class="glyphicon glyphicon-question-sign"></span> 确定删除
+                    <span class="glyphicon glyphicon-question-sign"></span> <strong>确定删除</strong>
                 </h4>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="border-top: none">
                 <button type="button" class="btn btn-danger" ng-click="removeMember()">确定</button>
             </div>
         </div>

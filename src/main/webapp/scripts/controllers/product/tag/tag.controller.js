@@ -1,10 +1,9 @@
 angular.module('ecommApp')
 
-.controller('TagController', ['$rootScope', '$scope', 'Tag', 'Utils',
-    function($rootScope, $scope, Tag, Utils) {
+.controller('TagController', ['$scope', 'Tag', 'Utils',
+    function($scope, Tag, Utils) {
 
-    	var $ = angular.element,
-            t = new Date().getTime();
+    	var t = $.now();
         
         $scope.template = {
             operator: {
@@ -13,9 +12,8 @@ angular.module('ecommApp')
         };
 
     	$scope.defaultQuery = {
-            pageSize: 20,
-            totalPagesList: [],
-            sort: ['id,desc']
+            size: 20,
+            sort: ['name']
         };
         $scope.query = angular.copy($scope.defaultQuery);
 
@@ -24,11 +22,11 @@ angular.module('ecommApp')
         $scope.searchData = function(query, number) {
             Tag.get({
                 page: number ? number : 0,
-                size: query.pageSize,
+                size: query.size,
                 sort: query.sort
             }, function(page) {
                 $scope.page = page;
-                query.totalPagesList = Utils.setTotalPagesList(page);
+                Utils.initList(page, query);
                 $scope.tagSlideChecked = false;
             });
         };

@@ -1,18 +1,34 @@
 angular.module('ecommApp')
 
-.controller('WarehouseOperatorController', ['$rootScope', '$scope', '$state', '$stateParams', 'Warehouse',
-    function($rootScope, $scope, $state, $stateParams, Warehouse) {
+.controller('WarehouseOperatorController', ['$scope', '$state', '$stateParams', 'Warehouse',
+    function($scope, $state, $stateParams, Warehouse) {
 
-        var $ = angular.element;
         var positions = ['default', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
         $scope.actionLabel = ($stateParams.id && $stateParams.id !== '') ? '编辑' : '创建';
+        $scope.defaultPositions = [];
         $scope.action = 'create';
 
-        $scope.warehouse = {
-            deleted: false
+        $scope.isorno = [{
+            label: '是',
+            value: true
+        }, {
+            label: '否',
+            value: false
+        }];
+
+        $scope.defaultWarehouse = {
+            enablePosition: {
+                label: '是',
+                value: true
+            },
+            enabled: {
+                label: '是',
+                value: true
+            }
         };
-        $scope.defaultPositions = [];
+
+        $scope.warehouse = angular.copy($scope.defaultWarehouse);
 
         $.each(positions, function() {
             $scope.defaultPositions.push({
@@ -20,18 +36,28 @@ angular.module('ecommApp')
             });
         });
 
+        function initProperties(warehouse) {
+            warehouse.enabled = $scope.isorno[warehouse.enabled ? 0 : 1];
+            warehouse.enablePosition = $scope.isorno[warehouse.enablePosition ? 0 : 1];
+        }
+
+        function refreshProperties(warehouse) {
+            warehouse.enabled = warehouse.enabled.value;
+            warehouse.enablePosition = warehouse.enablePosition.value;
+        }
+
         if ($stateParams.id && $stateParams.id !== '') {
             $scope.action = 'update';
             Warehouse.get({
                 id: $stateParams.id
             }, {}, function(warehouse) {
                 $scope.warehouse = warehouse;
-                console.log(warehouse);
+                initProperties(warehouse);
             });
         }
 
-        $scope.save = function(warehouse) {
-            console.log(warehouse);
+        $scope.saveWarehouse = function(warehouse) {
+
             if ($scope.action === 'create') {
                 if (warehouse.enablePosition) {
                     warehouse.positions = $scope.defaultPositions;
@@ -48,25 +74,12 @@ angular.module('ecommApp')
                 }
             }
 
+            refreshProperties(warehouse);
+
             Warehouse.save({}, warehouse, function() {
                 $state.go('warehouse');
             });
 
-        };
-
-        $('#warehouseDeleteModal').on('hidden.bs.modal', function(){
-            Warehouse.save({}, $scope.warehouse, function() {
-                $state.go('warehouse');
-            });
-        });
-
-        $scope.showRemoveWarehouse = function() {
-            $('#warehouseDeleteModal').modal('show');
-        };
-
-        $scope.removeWarehouse = function() {
-            $scope.warehouse.deleted = true;
-            $('#warehouseDeleteModal').modal('hide'); 
         };
 
     }

@@ -17,107 +17,125 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.ProcessStep;
 import com.sooeez.ecomm.domain.Process;
+import com.sooeez.ecomm.service.ObjectProcessService;
 import com.sooeez.ecomm.service.ProcessService;
+import com.sooeez.ecomm.service.ProcessStepService;
 
 @RestController
 @RequestMapping("/api")
 public class ProcessController {
 
-	@Autowired ProcessService processService;
+	/*
+	 * Service
+	 */
+
+	@Autowired
+	private ProcessService processService;
 	
+	@Autowired
+	private ProcessStepService stepService;
+	
+	@Autowired
+	private ObjectProcessService objectProcessService;
+
 	/*
 	 * Process
 	 */
 	
+	@RequestMapping(value = "/processes/check-unique")
+	public Boolean existsProcess(Process process) {
+		return processService.existsProcess(process);
+	}
+
 	@RequestMapping(value = "/processes/{id}")
 	public Process getProcess(@PathVariable("id") Long id) {
-		return this.processService.getProcess(id);
+		return processService.getProcess(id);
 	}
-	
+
 	@RequestMapping(value = "/processes")
-	public Page<Process> getPagedProcesss(Pageable pageable) {
-		return this.processService.getPagedProcesses(pageable);
+	public Page<Process> getPagedProcesses(Process process, Pageable pageable) {
+		return processService.getPagedProcesses(process, pageable);
 	}
-	
+
 	@RequestMapping(value = "/processes/get/all")
-	public List<Process> getProcesss(Process process, Sort sort) {
-		return this.processService.getProcesses(process, sort);
+	public List<Process> getProcesses(Process process, Sort sort) {
+		return processService.getProcesses(process, sort);
 	}
-	
+
 	@RequestMapping(value = "/processes", method = RequestMethod.POST)
 	public Process saveProcess(@RequestBody Process process) {
-		return this.processService.saveProcess(process);
+		return processService.saveProcess(process);
 	}
-	
+
 	@RequestMapping(value = "/processes/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteProcess(@PathVariable("id") Long id) {
-		this.processService.deleteProcess(id);
+		processService.deleteProcess(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
-	
+
 	/*
 	 * ProcessStep
 	 */
-	
-	@RequestMapping(value = "/processsteps/{id}")
-	public ProcessStep getProcessStep(@PathVariable("id") Long id) {
-		return this.processService.getProcessStep(id);
+
+	@RequestMapping(value = "/process-steps/{id}")
+	public ProcessStep getStep(@PathVariable("id") Long id) {
+		return stepService.getStep(id);
 	}
-	
-	@RequestMapping(value = "/processsteps")
+
+	@RequestMapping(value = "/process-steps")
 	public Page<ProcessStep> getPagedProcessSteps(Pageable pageable) {
-		return this.processService.getPagedProcessSteps(pageable);
+		return stepService.getPagedSteps(pageable);
 	}
-	
-	@RequestMapping(value = "/processsteps/get/all")
-	public List<ProcessStep> getProcessSteps() {
-		return this.processService.getProcessSteps();
+
+	@RequestMapping(value = "/process-steps/get/all")
+	public List<ProcessStep> getSteps() {
+		return stepService.getSteps();
 	}
-	
-	@RequestMapping(value = "/processsteps", method = RequestMethod.POST)
-	public ProcessStep saveProcessStep(@RequestBody ProcessStep processStep) {
-		return this.processService.saveProcessStep(processStep);
+
+	@RequestMapping(value = "/process-steps", method = RequestMethod.POST)
+	public ProcessStep saveStep(@RequestBody ProcessStep step) {
+		return stepService.saveStep(step);
 	}
-	
-	@RequestMapping(value = "/processsteps/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteProcessStep(@PathVariable("id") Long id) {
-		this.processService.deleteProcessStep(id);
+
+	@RequestMapping(value = "/process-steps/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteStep(@PathVariable("id") Long id) {
+		stepService.deleteStep(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
-	
+
 	/*
 	 * ObjectProcess
 	 */
-	
-	@RequestMapping(value = "/objectprocesses/{id}")
+
+	@RequestMapping(value = "/object-processes/{id}")
 	public ObjectProcess getObjectProcess(@PathVariable("id") Long id) {
-		return this.processService.getObjectProcess(id);
+		return objectProcessService.getObjectProcess(id);
 	}
-	
-	@RequestMapping(value = "/objectprocesses")
+
+	@RequestMapping(value = "/object-processes")
 	public Page<ObjectProcess> getPagedObjectProcesses(Pageable pageable) {
-		return this.processService.getPagedObjectProcesses(pageable);
+		return objectProcessService.getPagedObjectProcesses(pageable);
 	}
-	
-	@RequestMapping(value = "/objectprocesses/get/all")
+
+	@RequestMapping(value = "/object-processes/get/all")
 	public List<ObjectProcess> getObjectProcesses(ObjectProcess objectProcess) {
-		return this.processService.getObjectProcesses(objectProcess);
+		return objectProcessService.getObjectProcesses(objectProcess);
 	}
-	
-	@RequestMapping(value = "/objectprocesses/get/count")
+
+	@RequestMapping(value = "/object-processes/get/count")
 	public long getObjectProcessCount(ObjectProcess objectProcess) {
-		return this.processService.getObjectProcessCount(objectProcess);
+		return objectProcessService.getObjectProcessCount(objectProcess);
 	}
-	
-	@RequestMapping(value = "/objectprocesses", method = RequestMethod.POST)
+
+	@RequestMapping(value = "/object-processes", method = RequestMethod.POST)
 	public ObjectProcess saveObjectProcess(@RequestBody ObjectProcess objectProcess) {
-		return this.processService.saveObjectProcess(objectProcess);
+		return objectProcessService.saveObjectProcess(objectProcess);
 	}
-	
-	@RequestMapping(value = "/objectprocesses/{id}", method = RequestMethod.DELETE)
+
+	@RequestMapping(value = "/object-processes/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteObjectProcess(@PathVariable("id") Long id) {
-		this.processService.deleteObjectProcess(id);
+		objectProcessService.deleteObjectProcess(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
-	
+
 }

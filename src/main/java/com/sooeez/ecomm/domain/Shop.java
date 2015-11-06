@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "t_shop")
@@ -26,12 +27,6 @@ public class Shop implements Serializable {
 
 	@Column(name = "type", nullable = false)
 	private Integer type;
-
-	@Column(name = "status", nullable = false)
-	private Integer status;
-
-	@Column(name = "admin_id", nullable = false, insertable = false, updatable = false)
-	private Long adminId;
 
 	@Column(name = "api_call_limit", nullable = false)
 	private Integer apiCallLimit;
@@ -57,107 +52,80 @@ public class Shop implements Serializable {
 	@Column(name = "error_process_step_id", insertable = false, updatable = false)
 	private Long errorProcessStepId;
 
-	@Column(name = "token")
+	@Column(name = "token", nullable = false)
 	private String token;
 
-	@Column(name = "deleted")
-	private Boolean deleted;
+	@Column(name = "default_tunnel_id", insertable = false, updatable = false)
+	private String defaultTunnelId;
+
+	@Column(name = "enabled", nullable = false)
+	private Boolean enabled;
 
 	/*
 	 * Related Properties
 	 */
 
 	@OneToOne
-	@JoinColumn(name = "admin_id")
-	private User user;
-
-	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "language_id")
 	private Language language;
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "currency_id")
 	private Currency currency;
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "default_tunnel_id")
+	private ShopTunnel defaultTunnel;
+
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "init_process_step_id")
 	private ProcessStep initStep;
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "deploy_process_step_id")
 	private ProcessStep deployStep;
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "complete_process_step_id")
 	private ProcessStep completeStep;
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "error_process_step_id")
 	private ProcessStep errorStep;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "shop_id")
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<ShopTunnel> tunnels;
 
-	@Transient
-	private ShopTunnel defaultTunnel;
+	/*
+	 * @Transient Properties
+	 */
 
 	// 商店id集合
 	@Transient
 	private Long[] shopIds;
 
-	//
+	// 检查唯一
+	@Transient
+	private Boolean checkUnique;
+
+	/*
+	 * Constructor
+	 */
 
 	public Shop() {
 	}
 
-	public Long[] getShopIds() {
-		return shopIds;
-	}
-
-	public void setShopIds(Long[] shopIds) {
-		this.shopIds = shopIds;
-	}
-
-	public ShopTunnel getDefaultTunnel() {
-		return defaultTunnel;
-	}
-
-	public void setDefaultTunnel(ShopTunnel defaultTunnel) {
-		this.defaultTunnel = defaultTunnel;
-	}
-
-	public Long getDeployProcessStepId() {
-		return deployProcessStepId;
-	}
-
-	public void setDeployProcessStepId(Long deployProcessStepId) {
-		this.deployProcessStepId = deployProcessStepId;
-	}
-
-	public ProcessStep getDeployStep() {
-		return deployStep;
-	}
-
-	public void setDeployStep(ProcessStep deployStep) {
-		this.deployStep = deployStep;
-	}
-
-	public Boolean getDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-
-	public String getToken() {
-		return token;
-	}
-
-	public void setToken(String token) {
-		this.token = token;
-	}
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -181,22 +149,6 @@ public class Shop implements Serializable {
 
 	public void setType(Integer type) {
 		this.type = type;
-	}
-
-	public Integer getStatus() {
-		return status;
-	}
-
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
-
-	public Long getAdminId() {
-		return adminId;
-	}
-
-	public void setAdminId(Long adminId) {
-		this.adminId = adminId;
 	}
 
 	public Integer getApiCallLimit() {
@@ -239,6 +191,14 @@ public class Shop implements Serializable {
 		this.initProcessStepId = initProcessStepId;
 	}
 
+	public Long getDeployProcessStepId() {
+		return deployProcessStepId;
+	}
+
+	public void setDeployProcessStepId(Long deployProcessStepId) {
+		this.deployProcessStepId = deployProcessStepId;
+	}
+
 	public Long getCompleteProcessStepId() {
 		return completeProcessStepId;
 	}
@@ -255,12 +215,20 @@ public class Shop implements Serializable {
 		this.errorProcessStepId = errorProcessStepId;
 	}
 
-	public User getUser() {
-		return user;
+	public String getToken() {
+		return token;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public Language getLanguage() {
@@ -287,6 +255,14 @@ public class Shop implements Serializable {
 		this.initStep = initStep;
 	}
 
+	public ProcessStep getDeployStep() {
+		return deployStep;
+	}
+
+	public void setDeployStep(ProcessStep deployStep) {
+		this.deployStep = deployStep;
+	}
+
 	public ProcessStep getCompleteStep() {
 		return completeStep;
 	}
@@ -309,6 +285,30 @@ public class Shop implements Serializable {
 
 	public void setTunnels(List<ShopTunnel> tunnels) {
 		this.tunnels = tunnels;
+	}
+
+	public ShopTunnel getDefaultTunnel() {
+		return defaultTunnel;
+	}
+
+	public void setDefaultTunnel(ShopTunnel defaultTunnel) {
+		this.defaultTunnel = defaultTunnel;
+	}
+
+	public Long[] getShopIds() {
+		return shopIds;
+	}
+
+	public void setShopIds(Long[] shopIds) {
+		this.shopIds = shopIds;
+	}
+
+	public Boolean getCheckUnique() {
+		return checkUnique;
+	}
+
+	public void setCheckUnique(Boolean checkUnique) {
+		this.checkUnique = checkUnique;
 	}
 
 }

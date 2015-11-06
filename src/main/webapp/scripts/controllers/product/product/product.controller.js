@@ -21,16 +21,16 @@ angular.module('ecommApp')
         };
 
         $scope.defaultQuery = {
-            pageSize: 20,
-            totalPagesList: [],
+            size: 20,
             sort: ['name'],
             product: {
                 sku: '',
                 name: '',
-                deleted: false
+                enabled: true
             },
             statuses: []
         };
+
         $scope.query = angular.copy($scope.defaultQuery);
 
         $scope.processes = [];
@@ -39,7 +39,7 @@ angular.module('ecommApp')
         $scope.statusSlideChecked = false;
 
         Process.getAll({
-            deleted: false,
+            enabled: true,
             objectType: 2
         }).then(function(processes) {
             $scope.processes = processes;
@@ -49,15 +49,15 @@ angular.module('ecommApp')
         $scope.searchData = function(query, number) {
             Product.get({
                 page: number ? number : 0,
-                size: query.pageSize,
+                size: query.size,
                 sort: query.sort,
                 sku: query.product.sku,
                 name: query.product.name,
-                deleted: query.product.deleted,
+                enabled: query.product.enabled,
                 statusIds: Process.refreshStatus(query.statuses)
             }, function(page) {
                 $scope.page = page;
-                query.totalPagesList = Utils.setTotalPagesList(page);
+                Utils.initList(page, query);
             });
         };
 
@@ -78,7 +78,10 @@ angular.module('ecommApp')
             $scope.searchData($scope.query);
         };
 
-        // status
+        /*
+         *  Status
+         */
+
         $scope.toggleStatusSlide = function() {
             $scope.statusSlideChecked = !$scope.statusSlideChecked;
         };
@@ -98,7 +101,10 @@ angular.module('ecommApp')
             }
         };
 
-        // process
+        /*
+         *  Process
+         */
+        
         $scope.toggleProcessSlide = function(product) {
             $scope.processSlideChecked = !$scope.processSlideChecked;
             if ($scope.processSlideChecked) {
@@ -126,7 +132,10 @@ angular.module('ecommApp')
             });
         };
 
-        // details
+        /*
+         *  details
+         */
+
         $scope.toggleDetailsSlide = function(product) {
             $scope.detailsSlideChecked = !$scope.detailsSlideChecked;
             if ($scope.detailsSlideChecked) {

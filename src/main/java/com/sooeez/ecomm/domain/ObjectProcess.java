@@ -54,34 +54,20 @@ public class ObjectProcess implements Serializable {
 	@JoinColumn(name = "step_id")
 	private ProcessStep step;
 
-	//
+	/*
+	 * @Transient Properties
+	 */
+
+	/*
+	 * Constructor
+	 */
 
 	public ObjectProcess() {
 	}
 
-	public Long getProcessId() {
-		return processId;
-	}
-
-	public void setProcessId(Long processId) {
-		this.processId = processId;
-	}
-
-	public Process getProcess() {
-		return process;
-	}
-
-	public void setProcess(Process process) {
-		this.process = process;
-	}
-
-	public ProcessStep getStep() {
-		return step;
-	}
-
-	public void setStep(ProcessStep step) {
-		this.step = step;
-	}
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -107,12 +93,36 @@ public class ObjectProcess implements Serializable {
 		this.objectType = objectType;
 	}
 
+	public Long getProcessId() {
+		return processId;
+	}
+
+	public void setProcessId(Long processId) {
+		this.processId = processId;
+	}
+
 	public Long getStepId() {
 		return stepId;
 	}
 
 	public void setStepId(Long stepId) {
 		this.stepId = stepId;
+	}
+
+	public Process getProcess() {
+		return process;
+	}
+
+	public void setProcess(Process process) {
+		this.process = process;
+	}
+
+	public ProcessStep getStep() {
+		return step;
+	}
+
+	public void setStep(ProcessStep step) {
+		this.step = step;
 	}
 
 }

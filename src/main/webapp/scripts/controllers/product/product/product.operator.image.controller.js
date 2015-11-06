@@ -3,8 +3,8 @@ angular.module('ecommApp')
 .controller('ProductImageController', ['$scope', '$cookies', '$stateParams',
     function($scope, $cookies, $stateParams) {
 
-        var $ = angular.element;
         var id = 0;
+        
         if ($stateParams.id && $stateParams.id !== '') {
             id = $stateParams.id;
         } else {
@@ -12,13 +12,12 @@ angular.module('ecommApp')
         }
 
         $scope.initImage = function() {
-            console.log('initImage');
             $('input[type="file"][name="image"]').on('change', function() {
-                console.log(this.value.substring(this.value.lastIndexOf('\\') + 1));
-                var imgUrl = this.value.substring(this.value.lastIndexOf('\\') + 1);
-                if (id !== 0) {
-                    imgUrl = id + '-' + imgUrl;
-                }
+                // console.log(this.value.substring(this.value.lastIndexOf('\\') + 1));
+                // var imgUrl = this.value.substring(this.value.lastIndexOf('\\') + 1);
+                // if (id !== 0) {
+                //     imgUrl = id + '-' + imgUrl;
+                // }
                 var field = this.id;
 
                 $.ajax({
@@ -32,9 +31,9 @@ angular.module('ecommApp')
                     processData: false,
                     contentType: false,
                     cache: false,
-                    success: function() {
+                    success: function(res) {
                         $scope.$apply(function() {
-                            $scope.product[field] = imgUrl;
+                            $scope.product[field] = res;
                         });
                     },
                     error: function() {}

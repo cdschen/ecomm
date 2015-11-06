@@ -29,10 +29,24 @@ public class Language implements Serializable {
 	@Column(name = "code", nullable = false)
 	private String code;
 
-	//
-	public Language() {
+	/*
+	 * Related Properties
+	 */
 
+	/*
+	 * @Transient Properties
+	 */
+
+	/*
+	 * Constructor
+	 */
+
+	public Language() {
 	}
+
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;

@@ -1,18 +1,12 @@
 package com.sooeez.ecomm.domain;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -38,13 +32,13 @@ public class Role implements Serializable {
 	@Column(name = "desc")
 	private String desc;
 
-	@Column(name = "module")
+	@Column(name = "module", nullable = false)
 	private String module;
 
-	@Column(name = "module_code")
+	@Column(name = "module_code", nullable = false)
 	private String moduleCode;
 
-	@Column(name = "module_sequence")
+	@Column(name = "module_sequence", nullable = false)
 	private Integer moduleSequence;
 
 	/*
@@ -52,35 +46,19 @@ public class Role implements Serializable {
 	 */
 
 	/*
-	 * @ManyToMany
-	 * 
-	 * @JoinTable(name = "t_role_authority", joinColumns = { @JoinColumn(name =
-	 * "role_id", referencedColumnName = "id") }, inverseJoinColumns = {
-	 * 
-	 * @JoinColumn(name = "authority_id", referencedColumnName = "id") })
-	 * private Set<Authority> authorities = new HashSet<>();
+	 * @Transient Properties
 	 */
 
-	//
+	/*
+	 * Constructor
+	 */
 
 	public Role() {
 	}
 
-	public String getModuleCode() {
-		return moduleCode;
-	}
-
-	public void setModuleCode(String moduleCode) {
-		this.moduleCode = moduleCode;
-	}
-
-	public Integer getModuleSequence() {
-		return moduleSequence;
-	}
-
-	public void setModuleSequence(Integer moduleSequence) {
-		this.moduleSequence = moduleSequence;
-	}
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -120,6 +98,22 @@ public class Role implements Serializable {
 
 	public void setModule(String module) {
 		this.module = module;
+	}
+
+	public String getModuleCode() {
+		return moduleCode;
+	}
+
+	public void setModuleCode(String moduleCode) {
+		this.moduleCode = moduleCode;
+	}
+
+	public Integer getModuleSequence() {
+		return moduleSequence;
+	}
+
+	public void setModuleSequence(Integer moduleSequence) {
+		this.moduleSequence = moduleSequence;
 	}
 
 }

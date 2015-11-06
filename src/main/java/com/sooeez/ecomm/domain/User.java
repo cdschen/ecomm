@@ -14,10 +14,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "t_user")
@@ -33,16 +29,13 @@ public class User implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@Column(name = "username", unique = true, nullable = false)
-	// @Size(min = 1, max = 20)
+	@Column(name = "username", nullable = false)
 	private String username;
 
 	@Column(name = "email", nullable = false)
-	// @Size(min = 1, max = 30)
 	private String email;
 
 	@Column(name = "password", nullable = false)
-	// @Size(min = 1, max = 20)
 	private String password;
 
 	@Column(name = "enabled", nullable = false)
@@ -62,26 +55,24 @@ public class User implements Serializable {
 	@JoinTable(name = "t_user_role", joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
 	private Set<Role> roles = new HashSet<>();
 
-	//
+	/*
+	 * @Transient Properties
+	 */
+
+	// 检查唯一
+	@Transient
+	private Boolean checkUnique;
+
+	/*
+	 * Constructor
+	 */
 
 	public User() {
 	}
 
-	public String getManagedShops() {
-		return managedShops;
-	}
-
-	public void setManagedShops(String managedShops) {
-		this.managedShops = managedShops;
-	}
-
-	public String getManagedWarehouses() {
-		return managedWarehouses;
-	}
-
-	public void setManagedWarehouses(String managedWarehouses) {
-		this.managedWarehouses = managedWarehouses;
-	}
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -123,12 +114,36 @@ public class User implements Serializable {
 		this.enabled = enabled;
 	}
 
+	public String getManagedShops() {
+		return managedShops;
+	}
+
+	public void setManagedShops(String managedShops) {
+		this.managedShops = managedShops;
+	}
+
+	public String getManagedWarehouses() {
+		return managedWarehouses;
+	}
+
+	public void setManagedWarehouses(String managedWarehouses) {
+		this.managedWarehouses = managedWarehouses;
+	}
+
 	public Set<Role> getRoles() {
 		return roles;
 	}
 
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
+	}
+
+	public Boolean getCheckUnique() {
+		return checkUnique;
+	}
+
+	public void setCheckUnique(Boolean checkUnique) {
+		this.checkUnique = checkUnique;
 	}
 
 }

@@ -2,14 +2,17 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">出库单管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="outInventorySheet.orderOutInventory">订单出库</a>
-        <a href="javascript:void(0)" class="btn btn-info btn-xs">调整出库</a>
-        <a href="javascript:void(0)" class="btn btn-info btn-xs">查看库存变动</a>
+        <a class="btn btn-info btn-xs" ui-sref="outInventorySheet.orderOutInventory">订单出库</a>
+        <a class="btn btn-info btn-xs">调整出库</a>
+        <a class="btn btn-info btn-xs">查看库存变动</a>
     </li>
 </ol>
 <div class="container-fluid">
-    <div class="panel panel-default">
-        <form name="outInventorySearchForm" novalidate ng-submit="search(query)">
+    <form name="outInventorySearchForm" novalidate ng-submit="search(query)">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">出库单列表</h3>
+            </div>
             <table class="table table-condensed clear-marginbottom-table">
                 <tbody>
                     <tr>
@@ -24,9 +27,9 @@
                         <td width="20%">
                             <div id="sandbox-container-create">
                                 <div class="input-daterange input-group">
-                                    <input type="text" class="form-control" placeholder="创建起始时间" ng-model="query.batch.operateTimeStart"/>
+                                    <input type="text" class="form-control" placeholder="创建起始时间" ng-model="query.batch.operateTimeStart" />
                                     <span class="input-group-addon">到</span>
-                                    <input type="text" class="form-control" placeholder="创建结束时间" ng-model="query.batch.operateTimeEnd"/>
+                                    <input type="text" class="form-control" placeholder="创建结束时间" ng-model="query.batch.operateTimeEnd" />
                                 </div>
                             </div>
                         </td>
@@ -61,103 +64,102 @@
                     </tr>
                 </tbody>
             </table>
-        </form>
-        <div class="panel-body" style="padding:0"></div>
-        <table class="table table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
-            <thead>
-                <tr>
-                    <th width="2%">
-                        <input type="checkbox" ng-model="checkedAll" ng-click="selectAll(page, checkedAll)">
-                    </th>
-                    <th width="12%">仓库</th>
-                    <th width="12%">出库单号</th>
-                    <th width="12%">状态</th>
-                    <th width="12%">创建时间</th>
-                    <th width="12%">出库时间</th>
-                    <th width="12%">创建人</th>
-                    <th width="12%">出库人</th>
-                    <th width="14%" style="padding: 2px">
-                        <select class="form-control input-sm">
-                            <option selected="selected">批量操作</option>
-                            <option>批量上架</option>
-                            <option>批量下架</option>
-                            <option>批量更名</option>
-                            <option>批量作废</option>
-                        </select>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="batch in page.content">
-                    <td>
-                        <input type="checkbox" ng-model="batch.checked">
-                    </td>
-                    <td>
-                        {{batch.warehouse.name}}
-                    </td>
-                    <td>
-                        {{batch.id}}
-                    </td>
-                    <td ng-switch on="batch.type">
-                        <span ng-switch-when="0">作废</span>
-                        <span ng-switch-when="1">待出库</span>
-                        <span ng-switch-when="2">已出库</span>
-                    </td>
-                    <td>
-                        {{batch.operateTime | date:'yyyy/MM/dd HH:mm:ss'}}
-                    </td>
-                    <td>
-                        {{batch.outInventoryTime | date:'yyyy/MM/dd HH:mm:ss'}}
-                    </td>
-                    <td>
-                        {{batch.user.username}}
-                    </td>
-                    <td>
-                        {{batch.executeOperator.username}}
-                    </td>
-                    <td>
-                        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="outInventorySheet.operator({id:batch.id})" ng-switch on="batch.type">
-                            <span ng-switch-when="0">查看</span>
-                            <span ng-switch-when="1">完成</span>
-                            <span ng-switch-when="2">查看</span>
-                        </a>
-                        <a href="javascript:void(0)" class="btn btn-info btn-xs">导出</a>
-                        <a href="javascript:void(0)" class="btn btn-info btn-xs">打印</a>
-                        <a href="javascript:void(0)" class="btn btn-danger btn-xs" ng-click="showInvalidBatch(batch)" ng-show="batch.type == 1">作废</a>
-                    </td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="20">
-                        <nav class="page-list">
-                            <ul class="pagination pagination-sm">
-                                <li ng-class="{disabled: page.first}">
-                                    <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
-                                </li>
-                                <li ng-repeat="i in query.totalPagesList" ng-class="{active: i == page.number}">
-                                    <a href="" ng-click="turnPage(i)">{{i+1}}</a>
-                                </li>
-                                <li ng-class="{disabled: page.last}">
-                                    <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
-                                </li>
-                            </ul>
-                            <div class="page-total">
-                                共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
-                                <select class="form-control" style="display: inline; padding:0" ng-model="query.pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
-                                </select>
-                            </div>
-                        </nav>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-        <div class="panel-body" ng-show="page.content.length == 0">
-            <div class="alert alert-warning">没有任何数据被检索到</div>
+            <div class="panel-body" ng-show="page.content.length == 0">
+                <div class="alert alert-warning">没有任何数据被检索到</div>
+            </div>
+            <table class="table table-condensed" ng-show="page.content.length > 0">
+                <thead>
+                    <tr>
+                        <th width="2%">
+                            <input type="checkbox" ng-model="checkedAll" ng-click="selectAll(page, checkedAll)">
+                        </th>
+                        <th width="12%">仓库</th>
+                        <th width="12%">出库单号</th>
+                        <th width="12%">状态</th>
+                        <th width="12%">创建时间</th>
+                        <th width="12%">出库时间</th>
+                        <th width="12%">创建人</th>
+                        <th width="12%">出库人</th>
+                        <th width="14%" style="padding: 2px">
+                            <select class="form-control input-sm">
+                                <option selected="selected">批量操作</option>
+                                <option>批量上架</option>
+                                <option>批量下架</option>
+                                <option>批量更名</option>
+                                <option>批量作废</option>
+                            </select>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="batch in page.content">
+                        <td>
+                            <input type="checkbox" ng-model="batch.checked">
+                        </td>
+                        <td>
+                            {{batch.warehouse.name}}
+                        </td>
+                        <td>
+                            {{batch.id}}
+                        </td>
+                        <td ng-switch on="batch.type">
+                            <span ng-switch-when="0">作废</span>
+                            <span ng-switch-when="1">待出库</span>
+                            <span ng-switch-when="2">已出库</span>
+                        </td>
+                        <td>
+                            {{batch.operateTime | date:'yyyy/MM/dd HH:mm:ss'}}
+                        </td>
+                        <td>
+                            {{batch.outInventoryTime | date:'yyyy/MM/dd HH:mm:ss'}}
+                        </td>
+                        <td>
+                            {{batch.user.username}}
+                        </td>
+                        <td>
+                            {{batch.executeOperator.username}}
+                        </td>
+                        <td>
+                            <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="outInventorySheet.operator({id:batch.id})" ng-switch on="batch.type">
+                                <span ng-switch-when="0">查看</span>
+                                <span ng-switch-when="1">完成</span>
+                                <span ng-switch-when="2">查看</span>
+                            </a>
+                            <a href="javascript:void(0)" class="btn btn-info btn-xs">导出</a>
+                            <a href="javascript:void(0)" class="btn btn-info btn-xs">打印</a>
+                            <a href="javascript:void(0)" class="btn btn-danger btn-xs" ng-click="showInvalidBatch(batch)" ng-show="batch.type == 1">作废</a>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="20">
+                            <nav class="page-list">
+                                <ul class="pagination pagination-sm">
+                                    <li ng-class="{disabled: page.first}">
+                                        <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
+                                    </li>
+                                    <li ng-repeat="i in query.list" ng-class="{active: i == page.number}">
+                                        <a href="" ng-click="turnPage(i)">{{i+1}}</a>
+                                    </li>
+                                    <li ng-class="{disabled: page.last}">
+                                        <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                    </li>
+                                </ul>
+                                <div class="page-total">
+                                    共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
+                                    <select class="form-control" style="display: inline; padding:0" ng-model="query.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                    </select>
+                                </div>
+                            </nav>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
-    </div>
+    </form>
 </div>
-<!-- batch invalid Modal -->
+<!-- Batch Invalid Modal -->
 <div class="modal fade" id="batchInvalidModal">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -167,10 +169,9 @@
                     <span class="glyphicon glyphicon-question-sign"></span> 确定作废
                 </h4>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="border-top: none">
                 <button type="button" class="btn btn-danger" ng-click="invalidBatch()">确定</button>
             </div>
         </div>
     </div>
 </div>
-
