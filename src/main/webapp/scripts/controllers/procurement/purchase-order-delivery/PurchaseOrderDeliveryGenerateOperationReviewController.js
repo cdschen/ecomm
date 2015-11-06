@@ -211,7 +211,7 @@ angular.module('ecommApp')
                         }
                         $scope.$parent.togglePurchaseOrderDeliverySheetSlide();
 
-<<<<<<< HEAD:src/main/webapp/scripts/controllers/procurement/purchase-order-delivery/PurchaseOrderDeliveryGenerateOperationReviewController.js
+
                        /* purchaseOrderDeliveryService.get({
                             page: 0,
                             size: $scope.$parent.pageSize,
@@ -222,9 +222,8 @@ angular.module('ecommApp')
                             $scope.$parent.page = page;
                             $scope.$parent.totalPagesList = Utils.setTotalPagesList(page);
                         });*/
-=======
+
                         //$scope.$parent.reset()
->>>>>>> 98f34f4d89986eb84feab2f657e692d7ce0d920b:src/main/webapp/scripts/controllers/procurement/purchaseorderdelivery/PurchaseOrderDeliveryGenerateOperationReviewController.js
 
                         // 用状态，这什么东西
                         $location.url('/purchase-order-deliveries');
