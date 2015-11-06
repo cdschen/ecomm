@@ -8,10 +8,10 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="shop in shops">
+            <tr ng-repeat="shop in shops | orderBy: 'name'">
                 <td>{{ shop.name }}</td>
                 <td>
-                    <button class="btn btn-{{tunnel.selectedDefault ? 'success' : 'info'}}" style="margin: 5px 10px 0 10px;" ng-repeat="tunnel in shop.tunnels" ng-click="setProductDefaultTunnel(tunnel, shop.tunnels)">
+                    <button class="btn btn-{{tunnel.selectedDefault ? 'success' : 'info'}}" style="margin: 5px 10px 0 10px;" ng-repeat="tunnel in shop.tunnels | orderBy: 'name'" ng-click="setProductDefaultTunnel(tunnel, shop.tunnels)">
                         {{tunnel.name}} {{tunnel.selectedDefault ? '(默认)' : ''}}
                     </button>
                 </td>

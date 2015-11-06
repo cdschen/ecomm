@@ -12,21 +12,21 @@ angular.module('ecommApp')
         });
     };
 
-    shop.initShopDefaultTunnel = function(shop){
-    	$.each(shop.tunnels, function(){
-    		var tunnel = this;
-    		if (tunnel.defaultOption) {
-    			shop.defaultTunnel = angular.copy(tunnel);
-    			$.each(tunnel.warehouses, function(){
-    				if (shop.defaultTunnel.defaultWarehouseId === this.id) {
-    					shop.defaultTunnel.defaultWarehouse = angular.copy(this);
-    					return false;
-    				}
-    			});
-    			return false;
-    		}
-    	});
-    };
+    // shop.initShopDefaultTunnel = function(shop){
+    // 	$.each(shop.tunnels, function(){
+    // 		var tunnel = this;
+    // 		if (tunnel.defaultOption) {
+    // 			shop.defaultTunnel = angular.copy(tunnel);
+    // 			$.each(tunnel.warehouses, function(){
+    // 				if (shop.defaultTunnel.defaultWarehouseId === this.id) {
+    // 					shop.defaultTunnel.defaultWarehouse = angular.copy(this);
+    // 					return false;
+    // 				}
+    // 			});
+    // 			return false;
+    // 		}
+    // 	});
+    // };
 
     return shop;
 }]);

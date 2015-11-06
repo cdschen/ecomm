@@ -10,7 +10,7 @@
                 </h3>
                 <hr>
                 <ul class="list-unstyled">
-                    <li ng-repeat="warehouse in optionalWarehouses" style="margin-bottom: 5px">
+                    <li ng-repeat="warehouse in optionalWarehouses | orderBy: 'name'" style="margin-bottom: 5px">
                         <button type="button" class="btn btn-{{warehouse.selected ? 'info' : 'default'}}" ng-click="toggleWarehouse(warehouse)">
                             <span class="glyphicon glyphicon-record" ng-show="warehouse.selected"></span> {{warehouse.name}}
                         </button>

@@ -13,7 +13,7 @@ angular.module('ecommApp')
             Warehouse.get({
                 page: number ? number : 0,
                 size: query.size,
-                sort: query.sort,
+                sort: query.sort
             }, function(page) {
                 $scope.page = page;
                 Utils.initList(page, query);
