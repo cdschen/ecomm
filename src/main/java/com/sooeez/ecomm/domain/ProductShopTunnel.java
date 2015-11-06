@@ -25,7 +25,7 @@ public class ProductShopTunnel implements Serializable {
 
 	@Column(name = "product_id")
 	private Long productId;
-	
+
 	@Column(name = "shop_id", nullable = false)
 	private Long shopId;
 
@@ -33,10 +33,19 @@ public class ProductShopTunnel implements Serializable {
 	private Long tunnelId;
 
 	/*
-	 * Related Properties
+	 * @Transient Properties
 	 */
 
-	//
+	/*
+	 * Constructor
+	 */
+
+	public ProductShopTunnel() {
+	}
+	
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -70,5 +79,4 @@ public class ProductShopTunnel implements Serializable {
 		this.tunnelId = tunnelId;
 	}
 
-	
 }

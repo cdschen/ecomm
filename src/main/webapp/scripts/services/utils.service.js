@@ -3,6 +3,14 @@ angular.module('ecommApp')
 .factory('Utils', [function() {
 
     return {
+        initList: function(page, query) {
+            query.list = [];
+            if (page.totalPages > 0) {
+                for (var i = 0, len = page.totalPages; i < len; i++) {
+                    query.list.push(i);
+                }
+            }
+        },
         setTotalPagesList: function(page) {
             var totalPagesList = [];
             if (page.totalPages > 0) {

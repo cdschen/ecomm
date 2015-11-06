@@ -19,9 +19,9 @@
         </div>
     </div>
 </form>
-<div class="panel panel-default" ng-show="product.productType && product.productType.value == 1" ng-include="template.info.group.url">
+<div class="panel panel-default" ng-if="product.productType && product.productType.value == 1" ng-include="template.info.group.url">
 </div>
-<form name="productOperatorForm" class="form-horizontal" novalidate>
+<form name="productForm" class="form-horizontal" novalidate>
     <div class="row">
         <div class="col-md-6" ng-include="template.info.attr.url">
         </div>
@@ -31,12 +31,12 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <!-- product.shortDescription -->
-            <div class="form-group has-feedback" ng-class="{'has-warning':(productOperatorForm.shortDescription.$dirty && productOperatorForm.shortDescription.$invalid) }">
+            <div class="form-group has-feedback" ng-class="{'has-warning':(productForm.shortDescription.$dirty && productForm.shortDescription.$invalid) }">
                 <label class="control-label col-md-2">简单描述</label>
                 <div class="col-md-6">
                     <textarea name="shortDescription" ng-model="product.shortDescription" rows="10" placeholder="(选填)" class="form-control" ng-maxlength="1000"></textarea>
                 </div>
-                <span class="col-md-4 help-block" ng-messages="productOperatorForm.shortDescription.$error" ng-show="productOperatorForm.shortDescription.$dirty && productOperatorForm.shortDescription.$invalid">
+                <span class="col-md-4 help-block" ng-messages="productForm.shortDescription.$error" ng-show="productForm.shortDescription.$dirty && productForm.shortDescription.$invalid">
                     <span ng-messages-include="views/error-messages.html" ></span>
                 </span>
             </div>
@@ -74,7 +74,7 @@
                 </div>
             </div>
             <div class="col-md-2">
-                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="save(product)" ng-disabled="!productOperatorForm.$valid || !product.productType || !product.brand || !product.category || !product.madeFrom || !product.language || !product.currency || !passed">
+                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="save(product)" ng-disabled="!productForm.$valid || !product.productType || !product.brand || !product.category || !product.source || !product.language || !product.currency || !passed">
                     <span class="glyphicon glyphicon-floppy-saved"></span> 保存
                 </button>
             </div>

@@ -1,19 +1,21 @@
-<div pageslide ps-open="tunnelWarehouseSlideChecked" ps-side="left" ps-speed="0.25" ps-size="700px" style="border-right-width: 1px; border-right-style: solid; border-right-color: #c8c8c8">
+<div pageslide ps-open="tunnelSupplierSlideChecked" ps-side="left" ps-speed="0.25" ps-size="700px" style="border-right-width: 1px; border-right-style: solid; border-right-color: #c8c8c8">
     <div id="operator-slider">
         <div class="panel panel-default">
             <div class="panel-body">
-                <button type="button" class="close" ng-click="closeTunnelWarehouseSlide()">
+                <button type="button" class="close" ng-click="toggleTunnelSupplierSlide()">
                     <span aria-hidden="true">×</span>
                 </button>
-                <h3>可选的供应商</h3>
+                <h3 class="text-success">
+                    <strong>可选的供应商</strong>
+                </h3>
                 <hr>
-                <div class="row">
-                    <div class="col-md-3" ng-repeat="supplier in operateSuppliers" style="margin-bottom:10px;">
-                        <button type="button" class="btn btn-block" ng-class="{'btn-info': supplier.selected}" ng-click="selectTunnelDeploySupplier(supplier)">
-                            {{supplier.name}} <span class="glyphicon glyphicon-ok" style="color:white" ng-show="supplier.selected"></span>
+                <ul class="list-unstyled">
+                    <li ng-repeat="supplier in optionalSuppliers" style="margin-bottom: 5px">
+                        <button type="button" class="btn btn-{{supplier.selected ? 'info' : 'default'}}" ng-click="toggleSupplier(supplier)">
+                            <span class="glyphicon glyphicon-record" ng-show="supplier.selected"></span> {{supplier.name}}
                         </button>
-                    </div>
-                </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

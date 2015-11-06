@@ -11,62 +11,96 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.sooeez.ecomm.domain.Shop;
 import com.sooeez.ecomm.domain.ShopTunnel;
 import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.repository.ShopRepository;
-import com.sooeez.ecomm.repository.ShopTunnelRepository;
 
 @Service
 public class ShopService {
 
-	@Autowired private ShopRepository shopRepository;
-	
-	@Autowired private ShopTunnelRepository shopTunnelRepository;
-	
+	/*
+	 * Repository
+	 */
+
+	@Autowired
+	private ShopRepository shopRepository;
+
 	/*
 	 * Shop
 	 */
-	
+
+	@Transactional
 	public Shop saveShop(Shop shop) {
-		return this.shopRepository.save(shop);
-	}
-	
-	public void deleteShop(Long id) {
-		this.shopRepository.delete(id);
-	}
-	
-	public Shop getShop(Long id) {
-		return this.shopRepository.findOne(id);
-	}
-	
-	public List<Shop> getShops(Shop shop, Sort sort) {
-		return this.shopRepository.findAll(getShopSpecification(shop), sort);
+		
+		if (shop.getTunnels() != null && shop.getTunnels().size() > 0) {
+			// set default tunnel for shop
+			for (ShopTunnel tunnel : shop.getTunnels()) {
+				if (tunnel.getDefaultOption()) {
+					shop.setDefaultTunnel(tunnel);
+					break;
+				}
+			}
+		}
+		
+		return shopRepository.save(shop);
 	}
 
-	public Page<Shop> getPagedShops(Pageable pageable, Shop shop) {
-		return this.shopRepository.findAll(getShopSpecification(shop), pageable);
+	@Transactional
+	public void deleteShop(Long id) {
+		shopRepository.delete(id);
 	}
 	
+	public Boolean existsShop(Shop shop) {
+		return shopRepository.count(getShopSpecification(shop)) > 0 ? true : false;
+	}
+
+	public Shop getShop(Long id) {
+		return shopRepository.findOne(id);
+	}
+
+	public List<Shop> getShops(Shop shop, Sort sort) {
+		return shopRepository.findAll(getShopSpecification(shop), sort);
+	}
+
+	public Page<Shop> getPagedShops(Shop shop, Pageable pageable) {
+		return shopRepository.findAll(getShopSpecification(shop), pageable);
+	}
+
 	private Specification<Shop> getShopSpecification(Shop shop) {
 
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			predicates.add(cb.equal(root.get("deleted"), shop.getDeleted() != null && shop.getDeleted() == true ? true : false));
+			if (shop.getId() != null) {
+				if (shop.getCheckUnique() != null && shop.getCheckUnique().booleanValue() == true) {
+					predicates.add(cb.notEqual(root.get("id"), shop.getId()));
+				} else {
+					predicates.add(cb.equal(root.get("id"), shop.getId()));
+				}
+			}
+			if (StringUtils.hasText(shop.getName())) {
+				predicates.add(cb.equal(root.get("name"), shop.getName()));
+			}
+			if (shop.getEnabled() != null) {
+				predicates.add(cb.equal(root.get("enabled"), shop.getEnabled()));
+			}
 			if (shop.getShopIds() != null && shop.getShopIds().length > 0) {
-				predicates.add(root.get("id").in(shop.getShopIds()));
+				predicates.add(root.get("id").in((Object)shop.getShopIds()));
 			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
+		
 	}
-	
-	/* 设置店铺的默认通道和下面的默认仓库  */
-	public void initShopDefaultTunnel(Shop shop){
-		for (ShopTunnel tunnel: shop.getTunnels()) {
+
+	/* 设置店铺的默认通道和下面的默认仓库 */
+	public void initShopDefaultTunnel(Shop shop) {
+		for (ShopTunnel tunnel : shop.getTunnels()) {
 			if (tunnel.getDefaultOption()) {
 				shop.setDefaultTunnel(tunnel);
-				for (Warehouse warehouse: tunnel.getWarehouses()) {
+				for (Warehouse warehouse : tunnel.getWarehouses()) {
 					if (shop.getDefaultTunnel().getDefaultWarehouseId().longValue() == warehouse.getId().longValue()) {
 						shop.getDefaultTunnel().setDefaultWarehouse(warehouse);
 						break;
@@ -76,30 +110,5 @@ public class ShopService {
 			}
 		}
 	}
-	
-	/*
-	 * ShopTunnel
-	 */
-	
-	public ShopTunnel saveShopTunnel(ShopTunnel shopTunnel) {
-		return this.shopTunnelRepository.save(shopTunnel);
-	}
-	
-	public void deleteShopTunnel(Long id) {
-		this.shopTunnelRepository.delete(id);
-	}
-	
-	public ShopTunnel getShopTunnel(Long id) {
-		return this.shopTunnelRepository.findOne(id);
-	}
-	
-	public List<ShopTunnel> getShopTunnels() {
-		return this.shopTunnelRepository.findAll();
-	}
 
-	public Page<ShopTunnel> getPagedShopTunnels(Pageable pageable) {
-		return this.shopTunnelRepository.findAll(pageable);
-	}
-	
-	
 }

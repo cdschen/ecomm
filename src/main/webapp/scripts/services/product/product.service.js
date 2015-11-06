@@ -13,34 +13,39 @@ angular.module('ecommApp')
     };
 
 	return product;
+	
 }])
 
 .factory('ProductMultiLanguage', ['$resource', function($resource) {
 
-	var multiLanguage = $resource('/api/productmultilanguages/:id', {}, {});
+	var multiLanguage = $resource('/api/product-multilanguages/:id', {}, {});
 
 	return multiLanguage;
+
 }])
 
 .factory('ProductMultiCurrency', ['$resource', function($resource) {
 
-	var multiCurrency = $resource('/api/productmulticurrencies/:id', {}, {});
+	var multiCurrency = $resource('/api/product-multicurrencies/:id', {}, {});
 
 	return multiCurrency;
+
 }])
 
 .factory('ProductMember', ['$resource', function($resource) {
 
-	var member = $resource('/api/productmembers/:id', {}, {});
+	var member = $resource('/api/product-members/:id', {}, {});
 
 	return member;
+
 }])
 
 .factory('ProductShopTunnel', ['$resource', function($resource) {
 
-	var shopTunnel = $resource('/api/productshoptunnels/:id', {}, {});
+	var shopTunnel = $resource('/api/product-shop-tunnels/:id', {}, {});
 
 	return shopTunnel;
+
 }]);
 
 

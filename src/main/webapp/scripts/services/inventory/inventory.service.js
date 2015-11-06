@@ -152,7 +152,7 @@ angular.module('ecommApp')
                     }];
                     inventory.product.positions.push(inventory.position);
                     inventory.product.existPosition = true;
-                } 
+                }
                 inventory.product.details = [{
                     position: inventory.position,
                     quantity: inventory.quantity,
@@ -394,6 +394,12 @@ angular.module('ecommApp')
         return $http.get('/api/inventory-batches/get/all', {
             params: params
         }).then(function(res) {
+            return res.data;
+        });
+    };
+
+    batch.saveList = function(params) {
+        return $http.post('/api/inventory-batches/save/list', params).then(function(res) {
             return res.data;
         });
     };

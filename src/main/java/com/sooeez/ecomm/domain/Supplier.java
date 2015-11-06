@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "t_supplier")
@@ -35,16 +36,31 @@ public class Supplier implements Serializable {
 	@Column(name = "address")
 	private String address;
 
-	@Column(name = "deleted")
-	private Boolean deleted;
+	@Column(name = "enabled", nullable = false)
+	private Boolean enabled;
 
 	/*
 	 * Related Properties
 	 */
 
-	//
+	/*
+	 * @Transient Properties
+	 */
+
+	// 检查唯一
+	@Transient
+	private Boolean checkUnique;
+
+	/*
+	 * Constructor
+	 */
+
 	public Supplier() {
 	}
+
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -86,12 +102,20 @@ public class Supplier implements Serializable {
 		this.address = address;
 	}
 
-	public Boolean getDeleted() {
-		return deleted;
+	public Boolean getEnabled() {
+		return enabled;
 	}
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Boolean getCheckUnique() {
+		return checkUnique;
+	}
+
+	public void setCheckUnique(Boolean checkUnique) {
+		this.checkUnique = checkUnique;
 	}
 
 }

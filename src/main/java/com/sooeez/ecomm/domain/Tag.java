@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "t_tag")
@@ -30,10 +31,28 @@ public class Tag implements Serializable {
 	 * Related Properties
 	 */
 
-	//
+	/*
+	 * Related Properties
+	 */
+
+	/*
+	 * @Transient Properties
+	 */
+
+	// 检查唯一
+	@Transient
+	private Boolean checkUnique;
+
+	/*
+	 * Constructor
+	 */
 
 	public Tag() {
 	}
+
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -49,6 +68,14 @@ public class Tag implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Boolean getCheckUnique() {
+		return checkUnique;
+	}
+
+	public void setCheckUnique(Boolean checkUnique) {
+		this.checkUnique = checkUnique;
 	}
 
 }

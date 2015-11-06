@@ -1,0 +1,31 @@
+<div pageslide ps-open="sourceSlideChecked" ps-speed="0.25" ps-size="700px" style="border-left-width: 1px; border-left-style: solid; border-left-color: #c8c8c8">
+    <div id="operator-slider">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <button type="button" class="close" ng-click="toggleSourceSlide()">&times;</button>
+                <h3 class="text-success">
+                    <strong>{{title}}产地</strong>
+                </h3>
+                <hr>
+                <form name="sourceForm" class="form-horizontal" novalidate ng-submit="saveSource(sourceForm, source)">
+                    <div class="form-group has-feedback" ng-class="{'has-success':(sourceForm.name.$dirty && sourceForm.name.$valid), 'has-warning':(sourceForm.name.$dirty && sourceForm.name.$invalid) }">
+                        <label class="control-label col-md-2">产地名称 <span class="text-danger">*</span></label>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control" name="name" ng-model="source.name" placeholder="(必填)" required ng-maxlength="50" check-unique="/api/sources/check-unique" check-property="name" check-id="{{source.id}}"/>
+                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="sourceForm.name.$dirty && sourceForm.name.$valid"></span>
+                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="sourceForm.name.$dirty && sourceForm.name.$invalid"></span>
+                        </div>
+                        <span class="col-md-5 help-block" ng-messages="sourceForm.name.$error" ng-show="sourceForm.name.$dirty && sourceForm.name.$invalid">
+                            <span ng-messages-include="views/error-messages.html"></span>
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-5 col-md-offset-2">
+                            <button type="submit" class="btn btn-success btn-lg" ng-disabled="!sourceForm.$valid">保存</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

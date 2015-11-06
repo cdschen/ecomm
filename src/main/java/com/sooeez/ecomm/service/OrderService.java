@@ -64,6 +64,7 @@ public class OrderService {
 	
 	// Service
 	@Autowired private InventoryService inventoryService;
+	@Autowired private InventoryBatchService inventoryBatchService;
 	@Autowired private ProcessService processService;
 	@Autowired private ShopService shopService;
 	@PersistenceContext private EntityManager em;
@@ -79,7 +80,7 @@ public class OrderService {
 			
 			Process processQuery = new Process();
 			processQuery.setObjectType(1);
-			processQuery.setDeleted(false);
+			processQuery.setEnabled(true);
 			List<Process> processes = processService.getProcesses(processQuery, null);
 			if (processes != null && processes.size() > 0) {
 				for (Process process : processes) {
@@ -508,7 +509,7 @@ public class OrderService {
 		
 		// 查询出这些仓库的每个商品的库存
 		List<Inventory> inventories = inventoryService.getInventories(inventoryQuery, null);
-		List<Product> products = inventoryService.refreshInventory(inventories);
+		List<Product> products = inventoryBatchService.refreshInventory(inventories);
 		// 循环出每个商品下在每个仓库中的库存
 		products.forEach(product -> {
 			System.out.println("product: " + product.getName());

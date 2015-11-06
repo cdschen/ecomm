@@ -1,0 +1,139 @@
+<div pageslide ps-open="enterInventorySheetSlideChecked" ps-speed="0.25" ps-size="100%" style="border-left-width: 1px; border-left-style: solid; border-left-color: #c8c8c8">
+    <div id="operator-slider" style="padding:1px" >
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <button type="button" class="close" ng-click="toggleEnterInventorySheetSlide()">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h3 class="text-center" style="margin: 0;">
+                    <strong class="text-center text-success">入库操作</strong>
+                </h3>
+                <hr style="margin: 5px 0;">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultLeftHeight()">
+                            <table class="table table-condensed clear-marginbottom-table">
+                                <thead>
+                                    <tr>
+                                        <th width="4%">
+                                            <input type="checkbox" ng-model="checkedAll" ng-click="selectAll(purchaseOrderDelivery, checkedAll)">
+                                        </th>
+                                        <th width="60%">可入库商品</th>
+                                        <th width="36%">已添加/可入库数量</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in purchaseOrderDelivery.items">
+                                        <td>
+                                            <input type="checkbox" ng-model="item.checked">
+                                        </td>
+                                        <td>
+                                            {{item.product.name}}
+                                        </td>
+                                        <td>
+                                            <span class="text-success">{{item.addedQty}}</span>{{}}/{{item.receiveQty}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <hr style="margin: 5px 0;">
+                        <form name="itemAddForm" class="form-horizontal" novalidate ng-submit="saveItem(item, itemAddForm)">
+                            <div class="form-group">
+                                <label class="control-label col-md-2">仓库 <span class="text-danger">*</span></label>
+                                <div class="col-md-5">
+                                    <ui-select ng-model="batch.warehouse">
+                                        <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
+                                        <ui-select-choices repeat="warehouse in warehouses | filter: $select.search">
+                                            <div ng-bind-html="warehouse.name | highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2">库位</label>
+                                <div class="col-md-5">
+                                    <ui-select ng-model="item.position" ng-show="batch.warehouse.enablePosition">
+                                        <ui-select-match placeholder="(可选)">{{$select.selected.name}}</ui-select-match>
+                                        <ui-select-choices repeat="position in batch.warehouse.positions | filter: $select.search | filter: {name: '!default'}">
+                                            <div ng-bind-html="position.name | highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback" ng-class="{'has-success':(itemAddForm.changedQuantity.$dirty && itemAddForm.changedQuantity.$valid), 'has-warning':(itemAddForm.changedQuantity.$dirty && itemAddForm.changedQuantity.$invalid) }">
+                                <label class="control-label col-md-2">数量 <span class="text-danger">*</span></label>
+                                <div class="col-md-5">
+                                    <input type="number" name="changedQuantity" ng-model="item.changedQuantity" placeholder="(必填)" class="form-control" required min="1" ng-maxlength="5" />
+                                    <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="itemAddForm.changedQuantity.$dirty && itemAddForm.changedQuantity.$valid"></span>
+                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="itemAddForm.changedQuantity.$dirty && itemAddForm.changedQuantity.$invalid"></span>
+                                </div>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-md-2">保质期 </label>
+                                <div id="sandbox-container" class="col-md-5">
+                                    <input type="text" class="form-control" ng-model="item.expireDate">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-5 col-md-offset-2">
+                                    <button type="submit" class="btn btn-success btn-lg" ng-disabled="!itemAddForm.$valid || !batch.warehouse">添加</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-8">
+                        <div style="padding-right:8px;">
+                            <table class="table table-condensed clear-marginbottom-table">
+                                <thead>
+                                    <tr>
+                                        <th width="25%">商品</th>
+                                        <th width="20%">仓库</th>
+                                        <th width="15%">库位</th>
+                                        <th width="15%">数量</th>
+                                        <th width="20%">保质期</th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultRightHeight()">
+                            <table class="table table-condensed clear-marginbottom-table">
+                                <thead>
+                                    <tr ng-repeat="item in items">
+                                        <td width="25%">
+                                            {{item.product.name}}
+                                        </td>
+                                        <td width="20%">
+                                            {{item.warehouse.name}}
+                                        </td>
+                                        <td width="15%">
+                                            <span ng-if="item.position.name !== 'default'">{{item.position.name}}</span>
+                                        </td>
+                                        <td width="15%">
+                                            {{item.changedQuantity}}
+                                        </td>
+                                        <td width="20%">
+                                            {{item.expireDate}}
+                                        </td>
+                                        <td width="5%">
+                                            <button type="button" class="btn btn-danger btn-xs" ng-click="removeItem(item, $index)">
+                                                <span class="glyphicon glyphicon-trash"></span> 删除
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <hr style="margin: 5px 0;">
+                        <div class="row">
+                            <div class="col-md-2 col-md-offset-10">
+                                <button type="button" class="btn btn-success btn-lg pull-right" ng-click="enterInventory()">入库确认</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

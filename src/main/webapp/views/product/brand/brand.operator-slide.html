@@ -2,9 +2,7 @@
     <div id="operator-slider">
         <div class="panel panel-default">
             <div class="panel-body">
-                <button type="button" class="close" ng-click="toggleBrandSlide()">
-                    <span aria-hidden="true">×</span>
-                </button>
+                <button type="button" class="close" ng-click="toggleBrandSlide()">&times;</button>
                 <h3 class="text-success">
                     <strong>{{title}}品牌</strong>
                 </h3>
@@ -13,7 +11,7 @@
                     <div class="form-group has-feedback" ng-class="{'has-success':(brandForm.name.$dirty && brandForm.name.$valid), 'has-warning':(brandForm.name.$dirty && brandForm.name.$invalid) }">
                         <label class="control-label col-md-2">品牌名称 <span class="text-danger">*</span></label>
                         <div class="col-md-5">
-                            <input type="text" class="form-control" name="name" ng-model="brand.name" placeholder="(必填)" required ng-maxlength="20" />
+                            <input type="text" class="form-control" name="name" ng-model="brand.name" placeholder="(必填)" required ng-maxlength="50" check-unique="/api/brands/check-unique" check-property="name" check-id="{{brand.id}}"/>
                             <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="brandForm.name.$dirty && brandForm.name.$valid"></span>
                             <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="brandForm.name.$dirty && brandForm.name.$invalid"></span>
                         </div>

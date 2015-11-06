@@ -2,14 +2,17 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">商品管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="product.operator">创建</a>
-        <a href="javascript:void(0)" class="btn btn-info btn-xs">导入</a>
-        <a href="javascript:void(0)" class="btn btn-info btn-xs">导出</a>
+        <a class="btn btn-info btn-xs" ui-sref="product.operator">创建</a>
+        <a class="btn btn-info btn-xs">导入</a>
+        <a class="btn btn-info btn-xs">导出</a>
     </li>
 </ol>
 <div class="container-fluid">
-    <div class="panel panel-default">
-        <form name="productSearchForm" novalidate ng-submit="search(query)">
+    <form name="productSearchForm" novalidate ng-submit="search(query)">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">产品列表</h3>
+            </div>
             <table class="table table-condensed clear-marginbottom-table">
                 <thead>
                     <tr>
@@ -70,91 +73,91 @@
                     </tr>
                 </thead>
             </table>
-        </form>
-        <div class="panel-body" ng-show="page.content.length == 0">
-            <div class="alert alert-warning">
-                <span class="glyphicon glyphicon-info-sign"></span> 没有任何数据被检索到
+            <div class="panel-body" ng-show="page.content.length == 0">
+                <div class="alert alert-warning">
+                    <span class="glyphicon glyphicon-info-sign"></span> 没有任何数据被检索到
+                </div>
             </div>
-        </div>
-        <table class="table table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
-            <thead>
-                <tr>
-                    <th width="2%">
-                        <input type="checkbox" ng-model="selectAll">
-                    </th>
-                    <th width="10%">SKU</th>
-                    <th width="14%">商品名称</th>
-                    <th width="20%">销售</th>
-                    <th width="15%">成本</th>
-                    <th width="17%">库存</th>
-                    <th width="14%">状态</th>
-                    <th width="8%" style="padding: 2px">
-                        <select class="form-control input-sm" ng-disabled="true">
-                            <option value="default">批量操作</option>
-                        </select>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="product in page.content" ng-class="{active: product.active}">
-                    <td>
-                        <input type="checkbox" ng-model="product.checked" ng-checked="selectAll">
-                    </td>
-                    <td>
-                        {{product.sku}}
-                    </td>
-                    <td>
-                        <span class="glyphicon glyphicon-th-large text-success" ng-show="product.productType == 1"></span>
-                        <a href="javascript:void(0)" ng-click="toggleDetailsSlide(product)">{{product.name}}</a>
-                    </td>
-                    <td>
-                        &nbsp;
-                    </td>
-                    <td>
-                        &nbsp;
-                    </td>
-                    <td>
-                        &nbsp;
-                    </td>
-                    <td>
-                        <a href="javascript:void(0)" popover-template="template.popover.url" ng-click="updateStep(product)" popover-trigger="focus" class="btn btn-success btn-xs" ng-repeat="process in product.processes" style="margin:0 5px 5px 0">
+            <table class="table table-condensed" ng-show="page.content.length > 0">
+                <thead>
+                    <tr>
+                        <th width="2%">
+                            <input type="checkbox" ng-model="selectAll">
+                        </th>
+                        <th width="10%">SKU</th>
+                        <th width="14%">商品名称</th>
+                        <th width="20%">销售</th>
+                        <th width="15%">成本</th>
+                        <th width="17%">库存</th>
+                        <th width="14%">状态</th>
+                        <th width="8%" style="padding: 2px">
+                            <select class="form-control input-sm" ng-disabled="true">
+                                <option value="default">批量操作</option>
+                            </select>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="product in page.content" ng-class="{active: product.active}">
+                        <td>
+                            <input type="checkbox" ng-model="product.checked" ng-checked="selectAll">
+                        </td>
+                        <td>
+                            {{product.sku}}
+                        </td>
+                        <td>
+                            <span class="glyphicon glyphicon-th-large text-success" ng-show="product.productType == 1"></span>
+                            <a href="javascript:void(0)" ng-click="toggleDetailsSlide(product)">{{product.name}}</a>
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            <a href="javascript:void(0)" popover-template="template.popover.url" ng-click="updateStep(product)" popover-trigger="focus" class="btn btn-success btn-xs" ng-repeat="process in product.processes" style="margin:0 5px 5px 0">
                             {{process.step.name}}
                         </a>
-                        <a href="javascript:void(0)" class="btn btn-info btn-xs pull-right" ng-click="toggleProcessSlide(product)">...</a>
-                    </td>
-                    <td>
-                        <a ui-sref="product.operator({id:product.id})" class="btn btn-info btn-xs">
-                            <span class="glyphicon glyphicon-edit"></span> 编辑
-                        </a>
-                    </td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="20">
-                        <nav class="page-list">
-                            <ul class="pagination pagination-sm">
-                                <li ng-class="{disabled: page.first}">
-                                    <a href="javascript:void(0)" ng-click="turnPage(page.number - 1)">&laquo;</a>
-                                </li>
-                                <li ng-repeat="i in query.totalPagesList" ng-class="{active: i == page.number}">
-                                    <a href="javascript:void(0)" ng-click="turnPage(i)">{{i+1}}</a>
-                                </li>
-                                <li ng-class="{disabled: page.last}">
-                                    <a href="javascript:void(0)" ng-click="turnPage(page.number + 1)">&raquo;</a>
-                                </li>
-                            </ul>
-                            <div class="page-total">
-                                共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
-                                <select class="form-control" style="display: inline; padding:0" ng-model="query.pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
-                                </select>
-                            </div>
-                        </nav>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+                            <a href="javascript:void(0)" class="btn btn-info btn-xs pull-right" ng-click="toggleProcessSlide(product)">...</a>
+                        </td>
+                        <td>
+                            <a ui-sref="product.operator({id:product.id})" class="btn btn-info btn-xs">
+                                <span class="glyphicon glyphicon-edit"></span> 编辑
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="20">
+                            <nav class="page-list">
+                                <ul class="pagination pagination-sm">
+                                    <li ng-class="{disabled: page.first}">
+                                        <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
+                                    </li>
+                                    <li ng-repeat="i in query.list" ng-class="{active: i == page.number}">
+                                        <a href="" ng-click="turnPage(i)">{{i+1}}</a>
+                                    </li>
+                                    <li ng-class="{disabled: page.last}">
+                                        <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                    </li>
+                                </ul>
+                                <div class="page-total">
+                                    共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
+                                    <select class="form-control" style="display: inline; padding:0" ng-model="query.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                    </select>
+                                </div>
+                            </nav>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </form>
 </div>
 <section ng-include="template.details.url" onload="initProductDetailsTabs()" ng-controller="ProductDetailsController"></section>
 <section ng-include="template.status.url"></section>

@@ -4,8 +4,7 @@ angular.module('ecommApp')
     function($rootScope, $scope, User, Utils) {
 
         $scope.defaultQuery = {
-            pageSize: 20,
-            totalPagesList: [],
+            size: 20,
             sort: ['username']
         };
         $scope.query = angular.copy($scope.defaultQuery);
@@ -13,11 +12,11 @@ angular.module('ecommApp')
         $scope.searchData = function(query, number) {
             User.get({
                 page: number ? number : 0,
-                size: query.pageSize,
+                size: query.size,
                 sort: query.sort
             }, function(page) {
                 $scope.page = page;
-                query.totalPagesList = Utils.setTotalPagesList(page);
+                Utils.initList(page, query);
             });
         };
 
@@ -28,5 +27,6 @@ angular.module('ecommApp')
                 $scope.searchData($scope.query, number);
             }
         };
+        
     }
 ]);

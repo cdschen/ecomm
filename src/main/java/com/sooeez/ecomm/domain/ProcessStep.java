@@ -23,7 +23,7 @@ public class ProcessStep implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@Column(name = "process_id", insertable = false, updatable = false)
+	@Column(name = "process_id")
 	private Long processId;
 
 	@Column(name = "name", nullable = false)
@@ -39,22 +39,20 @@ public class ProcessStep implements Serializable {
 	 * Related Properties
 	 */
 
-	// @ManyToOne
-	// @JoinColumn(name = "process_id")
-	// private Process process;
+	/*
+	 * @Transient Properties
+	 */
 
-	//
+	/*
+	 * Constructor
+	 */
 
 	public ProcessStep() {
 	}
 
-	// public Process getProcess() {
-	// return process;
-	// }
-	//
-	// public void setProcess(Process process) {
-	// this.process = process;
-	// }
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;

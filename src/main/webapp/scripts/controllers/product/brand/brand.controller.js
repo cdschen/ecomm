@@ -1,7 +1,7 @@
 angular.module('ecommApp')
 
-.controller('BrandController', ['$rootScope', '$scope', 'Brand', 'Utils',
-    function($rootScope, $scope, Brand, Utils) {
+.controller('BrandController', ['$scope', 'Brand', 'Utils',
+    function($scope, Brand, Utils) {
 
         var t = $.now();
 
@@ -12,9 +12,8 @@ angular.module('ecommApp')
         };
 
         $scope.defaultQuery = {
-            pageSize: 20,
-            totalPagesList: [],
-            sort: ['id,desc']
+            size: 20,
+            sort: ['name']
         };
         $scope.query = angular.copy($scope.defaultQuery);
 
@@ -23,11 +22,11 @@ angular.module('ecommApp')
         $scope.searchData = function(query, number) {
             Brand.get({
                 page: number ? number : 0,
-                size: query.pageSize,
+                size: query.size,
                 sort: query.sort
             }, function(page) {
                 $scope.page = page;
-                query.totalPagesList = Utils.setTotalPagesList(page);
+                Utils.initList(page, query);
                 $scope.brandSlideChecked = false;
             });
         };

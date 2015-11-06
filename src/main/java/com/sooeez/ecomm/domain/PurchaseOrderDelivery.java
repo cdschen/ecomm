@@ -34,15 +34,15 @@ public class PurchaseOrderDelivery implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	//	#采购单id
+	// #采购单id
 	@Column(name = "purchase_order_id", nullable = false)
 	private Long purchaseOrderId;
-	
-	//	#收货时间
+
+	// #收货时间
 	@Column(name = "receive_time", nullable = false)
 	private Date receiveTime;
 
-	//	#收货人
+	// #收货人
 	@Column(name = "receive_user_id", nullable = false, insertable = false, updatable = false)
 	private Long receiveUserId;
 
@@ -59,19 +59,23 @@ public class PurchaseOrderDelivery implements Serializable {
 	@JoinColumn(name = "purchase_order_delivery_id")
 	private List<PurchaseOrderDeliveryItem> items;
 
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "receive_id")
+	private List<InventoryBatch> batches;
+
 	/*
-	 * Query Params;
+	 * @Transient Properties
 	 */
-	
+
 	@Transient
 	private Long queryWarehouseId;
-	
+
 	@Transient
 	private Long queryPurchaseOrderId;
-	
+
 	@Transient
 	private Long queryPurchaseOrderDeliveryId;
-	
+
 	/* 收货单创建起始日期 */
 	@Transient
 	private String queryReceiveTimeStart;
@@ -80,8 +84,16 @@ public class PurchaseOrderDelivery implements Serializable {
 	@Transient
 	private String queryReceiveTimeEnd;
 
-	//
+	/*
+	 * Constructor
+	 */
 
+	public PurchaseOrderDelivery() {
+	}
+
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -131,6 +143,14 @@ public class PurchaseOrderDelivery implements Serializable {
 		this.items = items;
 	}
 
+	public List<InventoryBatch> getBatches() {
+		return batches;
+	}
+
+	public void setBatches(List<InventoryBatch> batches) {
+		this.batches = batches;
+	}
+
 	public Long getQueryWarehouseId() {
 		return queryWarehouseId;
 	}
@@ -151,7 +171,8 @@ public class PurchaseOrderDelivery implements Serializable {
 		return queryPurchaseOrderDeliveryId;
 	}
 
-	public void setQueryPurchaseOrderDeliveryId(Long queryPurchaseOrderDeliveryId) {
+	public void setQueryPurchaseOrderDeliveryId(
+			Long queryPurchaseOrderDeliveryId) {
 		this.queryPurchaseOrderDeliveryId = queryPurchaseOrderDeliveryId;
 	}
 

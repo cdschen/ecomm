@@ -20,7 +20,8 @@ angular.module('ecommApp', ['toastr', 'ngTinyScrollbar', 'LocalStorageModule', '
     SHOP_ADMIN: 'SHOP_ADMIN',
     WAREHOUSE_ADMIN: 'WAREHOUSE_ADMIN', // 16
     PROCESS_ADMIN: 'PROCESS_ADMIN',
-    SUPPLIER_ADMIN: 'SUPPLIER_ADMIN'
+    SUPPLIER_ADMIN: 'SUPPLIER_ADMIN',
+    RECEIVE_ADMIN: 'RECEIVE_ADMIN'
 })
 
 .run(['$rootScope', '$state', '$window', 'Auth', 'Principal', 'Resource',

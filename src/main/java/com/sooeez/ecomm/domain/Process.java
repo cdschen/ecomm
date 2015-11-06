@@ -13,15 +13,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "t_process")
-// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
 public class Process implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -43,58 +43,52 @@ public class Process implements Serializable {
 	@Column(name = "object_type", nullable = false)
 	private Integer objectType;
 
-	@Column(name = "auto_apply")
+	@Column(name = "auto_apply", nullable = false)
 	private Boolean autoApply;
 
-	@Column(name = "default_step_id")
+	@Column(name = "default_step_id", insertable = false, updatable = false)
 	private Long defaultStepId;
 
 	@Column(name = "hide_when_complete", nullable = false)
 	private Boolean hideWhenComplete;
 
-	@Column(name = "deleted", nullable = false)
-	private Boolean deleted;
+	@Column(name = "enabled", nullable = false)
+	private Boolean enabled;
 
 	/*
 	 * Related Properties
 	 */
 
-	// mappedBy = "process",
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "process_id")
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<ProcessStep> steps = new ArrayList<>();
+
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "default_step_id")
+	private ProcessStep defaultStep;
+
+	/*
+	 * @Transient Properties
+	 */
 
 	@Transient
 	private String defaultStepName;
 
-	//
+	// 检查唯一
+	@Transient
+	private Boolean checkUnique;
+
+	/*
+	 * Constructor
+	 */
 
 	public Process() {
 	}
 
-	public Boolean getAutoApply() {
-		return autoApply;
-	}
-
-	public void setAutoApply(Boolean autoApply) {
-		this.autoApply = autoApply;
-	}
-
-	public String getDefaultStepName() {
-		return defaultStepName;
-	}
-
-	public void setDefaultStepName(String defaultStepName) {
-		this.defaultStepName = defaultStepName;
-	}
-
-	public List<ProcessStep> getSteps() {
-		return steps;
-	}
-
-	public void setSteps(List<ProcessStep> steps) {
-		this.steps = steps;
-	}
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -128,6 +122,14 @@ public class Process implements Serializable {
 		this.objectType = objectType;
 	}
 
+	public Boolean getAutoApply() {
+		return autoApply;
+	}
+
+	public void setAutoApply(Boolean autoApply) {
+		this.autoApply = autoApply;
+	}
+
 	public Long getDefaultStepId() {
 		return defaultStepId;
 	}
@@ -144,12 +146,44 @@ public class Process implements Serializable {
 		this.hideWhenComplete = hideWhenComplete;
 	}
 
-	public Boolean getDeleted() {
-		return deleted;
+	public Boolean getEnabled() {
+		return enabled;
 	}
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public List<ProcessStep> getSteps() {
+		return steps;
+	}
+
+	public void setSteps(List<ProcessStep> steps) {
+		this.steps = steps;
+	}
+
+	public String getDefaultStepName() {
+		return defaultStepName;
+	}
+
+	public void setDefaultStepName(String defaultStepName) {
+		this.defaultStepName = defaultStepName;
+	}
+
+	public Boolean getCheckUnique() {
+		return checkUnique;
+	}
+
+	public void setCheckUnique(Boolean checkUnique) {
+		this.checkUnique = checkUnique;
+	}
+
+	public ProcessStep getDefaultStep() {
+		return defaultStep;
+	}
+
+	public void setDefaultStep(ProcessStep defaultStep) {
+		this.defaultStep = defaultStep;
 	}
 
 }

@@ -1,22 +1,24 @@
 angular.module('ecommApp')
 
-.directive('ensureUnique', ['$timeout', '$http', function($timeout, $http) {
+.directive('checkUnique', ['$timeout', '$http', function($timeout, $http) {
     return {
         require: 'ngModel',
         link: function(scope, ele, attrs, ctrl) {
-            var timeout, url;
+            var timeout;
             scope.$watch(attrs.ngModel, function(val) {
                 if (val) {
                     if (timeout) {
                         $timeout.cancel(timeout);
                     }
                     timeout = $timeout(function() {
+                        var params = '{"checkUnique": true, ' + '"' + attrs.checkProperty + '": "' + val + '"';
                         if (attrs.checkId !== '') {
-                            url = attrs.ensureUnique + val + '/' + attrs.checkId;
-                        } else {
-                            url = attrs.ensureUnique + val;
+                            params += ', "id":' + attrs.checkId;
                         }
-                        $http.get(url)
+                        params += '}';
+                        $http.get(attrs.checkUnique, {
+                                params: angular.fromJson(params)
+                            })
                             .success(function(data) {
                                 ctrl.$setValidity('unique', !data);
                             }).error(function() {
