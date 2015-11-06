@@ -10,7 +10,7 @@
                 </h3>
                 <hr>
                 <ul class="list-unstyled">
-                    <li ng-repeat="supplier in optionalSuppliers" style="margin-bottom: 5px">
+                    <li ng-repeat="supplier in optionalSuppliers | orderBy: 'name'" style="margin-bottom: 5px">
                         <button type="button" class="btn btn-{{supplier.selected ? 'info' : 'default'}}" ng-click="toggleSupplier(supplier)">
                             <span class="glyphicon glyphicon-record" ng-show="supplier.selected"></span> {{supplier.name}}
                         </button>

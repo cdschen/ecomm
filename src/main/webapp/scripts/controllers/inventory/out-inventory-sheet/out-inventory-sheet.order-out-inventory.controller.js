@@ -11,64 +11,73 @@ angular.module('ecommApp')
             }
         };
 
-        $scope.pageSize = 20;
-        $scope.totalPagesList = [];
-
         $scope.defaultQuery = {
+            size: 20,
+            sort: ['internalCreateTime,desc'],
             warehouse: undefined,
             shop: undefined
         };
+
         $scope.query = angular.copy($scope.defaultQuery);
+
         $scope.warehouses = [];
         $scope.shops = [];
+
         $scope.confirmOutInventorySheetSlideChecked = false;
 
-        $scope.searchData = function(){
+        $scope.searchData = function(query, number) {
             orderService.getPagedOrdersForOrderDeploy({
-                page: 0,
-                size: $scope.pageSize,
-                sort: ['internalCreateTime,desc'],
+                page: number ? number : 0,
+                size: query.size,
+                sort: query.sort,
                 warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
                 warehouseIds: Auth.refreshManaged('warehouse'),
                 shopId: $scope.query.shop ? $scope.query.shop.id : null,
                 shopIds: Auth.refreshManaged('shop'),
                 deleted: false
             }).then(function(page) {
+                console.log(page);
                 $.each(page.content, function() {
-                    Shop.initShopDefaultTunnel(this.shop);
+                    //Shop.initShopDefaultTunnel(this.shop);
                     orderService.checkItemProductShopTunnel(this);
                 });
                 $scope.page = page;
-                $scope.totalPagesList = Utils.setTotalPagesList(page);
+                Utils.initList(page, query);
                 $scope.selectAll = false;
             });
         };
 
         Warehouse.getAll({ // 导入所有仓库
-            deleted: false,
+            enabled: true,
             sort: ['name'],
             warehouseIds: Auth.refreshManaged('warehouse')
         }).then(function(warehouses) {
             $scope.warehouses = warehouses;
         }).then(function() { // 导入所有店铺
             return Shop.getAll({
-                deleted: false,
+                enabled: true,
                 sort: ['name'],
                 shopIds: Auth.refreshManaged('shop')
             }).then(function(shops) {
                 $scope.shops = shops;
             });
         }).then(function() {
-            $scope.searchData();
+            $scope.searchData($scope.query);
         });
 
-        $scope.search = function() {
-            $scope.searchData();
+        $scope.turnPage = function(number) {
+            if (number > -1 && number < $scope.page.totalPages) {
+                $scope.searchData($scope.query, number);
+            }
+        };
+
+        $scope.search = function(query) {
+            $scope.searchData(query);
         };
 
         $scope.reset = function() {
             $scope.query = angular.copy($scope.defaultQuery);
-            $scope.searchData();
+            $scope.searchData($scope.query);
         };
 
         $scope.selectItemWarehouse = function(item, $item) {
@@ -83,8 +92,8 @@ angular.module('ecommApp')
             $scope.confirmOutInventorySheetSlideChecked = !$scope.confirmOutInventorySheetSlideChecked;
         };
 
-        $scope.selectAllOrders = function(){
-            $.each($scope.page.content, function(){
+        $scope.selectAllOrders = function() {
+            $.each($scope.page.content, function() {
                 this.checked = $scope.selectAll;
             });
         };

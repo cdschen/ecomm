@@ -9,15 +9,14 @@ angular.module('ecommApp')
             //}
         };
 
-        var $ = angular.element;
-
         /* Activate Date Picker */
         $('input[ng-model="query.queryCreateTimeStart"], input[ng-model="query.queryCreateTimeEnd"]').datepicker({
             format: 'yyyy-mm-dd',
             clearBtn: true,
             language: 'zh-CN',
             orientation: 'top left',
-            todayHighlight: true
+            todayHighlight: true,
+            autoclose: true
         });
 
         $scope.selectedPurchaseOrder = {};
@@ -54,23 +53,16 @@ angular.module('ecommApp')
         }
 
         Warehouse.getAll({ // 导入所有仓库
-            deleted: false,
+            enabled: true,
             sort: ['name']
         }).then(function(warehouses) {
             $scope.warehouses = warehouses;
         }).then(function() { // 导入所有供应商
             return Supplier.getAll({
-                deleted: false,
+                enabled: true,
                 sort: ['name']
             }).then(function(suppliers) {
                 $scope.suppliers = suppliers;
-            });
-        }).then(function() { // 导入所有用户
-            return User.getAll({
-                deleted: false,
-                sort: ['name']
-            }).then(function(users) {
-                $scope.users = users;
             });
         }).then(function() {
             purchaseOrderService.get( getQueryParamJSON(), function(page) {

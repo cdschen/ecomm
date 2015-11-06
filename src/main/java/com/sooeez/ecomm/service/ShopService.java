@@ -96,19 +96,19 @@ public class ShopService {
 	}
 
 	/* 设置店铺的默认通道和下面的默认仓库 */
-	public void initShopDefaultTunnel(Shop shop) {
-		for (ShopTunnel tunnel : shop.getTunnels()) {
-			if (tunnel.getDefaultOption()) {
-				shop.setDefaultTunnel(tunnel);
-				for (Warehouse warehouse : tunnel.getWarehouses()) {
-					if (shop.getDefaultTunnel().getDefaultWarehouseId().longValue() == warehouse.getId().longValue()) {
-						shop.getDefaultTunnel().setDefaultWarehouse(warehouse);
-						break;
-					}
-				}
-				break;
-			}
-		}
-	}
+//	public void initShopDefaultTunnel(Shop shop) {
+//		for (ShopTunnel tunnel : shop.getTunnels()) {
+//			if (tunnel.getDefaultOption()) {
+//				shop.setDefaultTunnel(tunnel);
+//				for (Warehouse warehouse : tunnel.getWarehouses()) {
+//					if (shop.getDefaultTunnel().getDefaultWarehouseId().longValue() == warehouse.getId().longValue()) {
+//						shop.getDefaultTunnel().setDefaultWarehouse(warehouse);
+//						break;
+//					}
+//				}
+//				break;
+//			}
+//		}
+//	}
 
 }

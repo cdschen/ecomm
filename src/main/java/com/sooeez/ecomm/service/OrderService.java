@@ -364,20 +364,24 @@ public class OrderService {
 				boolean exitShopTunnels = false;
 				// 循环当前订单所属店铺的所有通道
 				for (ShopTunnel tunnel: order.getShop().getTunnels()) {
-					// 循环每个通道下的仓库
-					for (Warehouse warehouse: tunnel.getWarehouses()) {
-						// 判断当前仓库id是否和item上指定的仓库id一样
-						if (warehouse.getId().longValue() == item.getWarehouseId().longValue()) {
-							// 设置指定通道，和设置指定通道的默认仓库
-							ShopTunnel assignTunnel = new ShopTunnel();
-							BeanUtils.copyProperties(tunnel, assignTunnel);
-							item.setAssignTunnel(assignTunnel);
-							item.getAssignTunnel().setDefaultWarehouse(warehouse);
-							System.out.println("item assign tunnel, orderid:" + order.getId() + ", itemid:" + item.getId() + ", tunnelid:" + tunnel.getId() + ", warehouseId:" + warehouse.getId());
-							exitShopTunnels = true;
-							break;
+					// 判断通道是不是仓库通道，并且行为是包含
+					if (tunnel.getType().intValue() == 1 && tunnel.getBehavior().intValue() == 1) {
+						// 循环每个通道下的仓库
+						for (Warehouse warehouse: tunnel.getWarehouses()) {
+							// 判断当前仓库id是否和item上指定的仓库id一样
+							if (warehouse.getId().longValue() == item.getWarehouseId().longValue()) {
+								// 设置指定通道，和设置指定通道的默认仓库
+								ShopTunnel assignTunnel = new ShopTunnel();
+								BeanUtils.copyProperties(tunnel, assignTunnel);
+								item.setAssignTunnel(assignTunnel);
+								item.getAssignTunnel().setDefaultWarehouse(warehouse);
+								System.out.println("item assign tunnel, orderid:" + order.getId() + ", itemid:" + item.getId() + ", tunnelid:" + tunnel.getId() + ", warehouseId:" + warehouse.getId());
+								exitShopTunnels = true;
+								break;
+							}
 						}
 					}
+					
 					if (exitShopTunnels) {
 						break;
 					}
@@ -397,12 +401,9 @@ public class OrderService {
 								// 判断店铺通过的id是不是和商品指定通道的id相等
 								if (tunnel.getId().longValue() == productShopTunnel.getTunnelId()) {
 									item.setAssignTunnel(tunnel);
-									for (Warehouse warehouse: tunnel.getWarehouses()) {
-										// 判断当前仓库id是否和item上指定的仓库id一样
-										if (warehouse.getId().longValue() == item.getAssignTunnel().getDefaultWarehouseId().longValue()) {
-											item.getAssignTunnel().setDefaultWarehouse(warehouse);
-											break;
-										}
+									// 如何选择的通道是一个供应商通道
+									if (tunnel.getDefaultWarehouse() == null) {
+										item.setAssignTunnel(order.getShop().getDefaultTunnel());
 									}
 									break;
 								}
@@ -633,7 +634,7 @@ public class OrderService {
 					break;
 				}
 			}
-			this.shopService.initShopDefaultTunnel(o.getShop());
+			//this.shopService.initShopDefaultTunnel(o.getShop());
 			this.checkItemProductShopTunnel(o);
 		});
 		
