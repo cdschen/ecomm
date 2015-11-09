@@ -240,57 +240,7 @@ angular.module('ecommApp')
         //    });
         //}
 
-        $scope.enterInventorySheetSlideChecked = false;
-        $scope.defaultBatch = {
-            operate: 1,
-            operateTime: undefined,
-            memo: '',
-            warehouse: undefined,
-            user: $rootScope.user(),
-            executeOperator: null,
-            receiveId: null,
-            items: []
-        };
-        $scope.defaultItem = {
-            product: undefined,
-            warehouse: undefined,
-            position: null,
-            user: $rootScope.user(),
-            executeOperator: null,
-            changedQuantity: 1,
-            expireDate: undefined,
-            outBatch: null
-        };
-
-        //$scope.enterProducts = [];
-
-        $scope.toggleEnterInventorySheetSlide = function(purchaseOrderDelivery) {
-            $scope.enterInventorySheetSlideChecked = !$scope.enterInventorySheetSlideChecked;
-            if ($scope.enterInventorySheetSlideChecked) {
-
-                $scope.batch = angular.copy($scope.defaultBatch);
-                $scope.item = angular.copy($scope.defaultItem);
-                $scope.batches = [];
-                $scope.items = [];
-
-                $scope.purchaseOrderDelivery = purchaseOrderDelivery;
-                $.each(purchaseOrderDelivery.items, function() {
-                    this.addedQty = 0;
-                });
-
-                $('#sandbox-container input').datepicker({
-                    format: 'yyyy-mm-dd',
-                    clearBtn: true,
-                    language: 'zh-CN',
-                    todayHighlight: true,
-                    autoclose: true
-                });
-
-            } else {
-
-            }
-
-        };
+        
 
     }
 ]);

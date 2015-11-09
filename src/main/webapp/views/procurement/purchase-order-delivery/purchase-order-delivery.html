@@ -90,9 +90,7 @@
                         <input type="checkbox" ng-model="purchaseOrderDelivery.isSelected">
                     </td>
                     <td>
-                        <button type="button" class="btn btn-info btn-xs" ng-show="purchaseOrderDelivery.batches.length == 0" ng-click="toggleEnterInventorySheetSlide(purchaseOrderDelivery)">未入库</button>
-                        <!-- <button type="button" class="btn btn-primary btn-xs" >未完全库</button> -->
-                        <button type="button" class="btn btn-success btn-xs" ng-show="purchaseOrderDelivery.batches.length > 0" ng-click="toggleEnterInventorySheetSlide(purchaseOrderDelivery)">完全入库</button>
+                        
                         
                     </td>
                     <td>
@@ -107,8 +105,10 @@
                     <td>
                         {{ purchaseOrderDelivery.receiveUser.username }}
                     </td>
-                    <td style="text-align: center;">
-                        <!--<a class="btn btn-sm btn-success" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5" ng-click="showShipmentCompleteSlide( shipment )">完成</a>-->
+                    <td>
+                        <a ui-sref="purchaseOrderDelivery.enterInventory({id:purchaseOrderDelivery.id})" class="btn btn-info btn-xs">
+                            <span class="glyphicon glyphicon-edit"></span> 入库
+                        </a>
                     </td>
                 </tr>
             </tbody>
@@ -182,4 +182,4 @@
         </div>
     </div>
 </div>
-<section ng-include="template.enterInventorySheet.url" ng-controller="EnterInventorySheetController"></section>
+
