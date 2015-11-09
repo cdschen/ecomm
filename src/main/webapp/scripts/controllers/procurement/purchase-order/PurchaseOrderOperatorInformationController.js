@@ -47,10 +47,9 @@ var PurchaseOrderOperatorInformationController = function($scope, $state, $state
                 console.log('$scope.purchaseOrder.items[existedItem]');
                 console.log($scope.purchaseOrder.items[existedItem]);
                 $scope.purchaseOrder.items[existedItem].purchaseQty += selectedProduct.purchaseQty;
-                if( selectedProduct.supplierProductCode )
-                {
-                    $scope.purchaseOrder.items[existedItem].supplierProductCode += $scope.purchaseOrder.supplierProductCode;
-                }
+                $scope.purchaseOrder.items[existedItem].supplierProductCodeMap = {
+                    supplierProductCode : $scope.purchaseOrder.supplierProductCode
+                };
                 isRepeated = true;
             }
         }
@@ -68,7 +67,9 @@ var PurchaseOrderOperatorInformationController = function($scope, $state, $state
                     unitCost: selectedProduct.unitCost,
                     unitGst: selectedProduct.unitGst
                 },
-                supplierProductCode: $scope.purchaseOrder.supplierProductCode,
+                supplierProductCodeMap: {
+                    supplierProductCode : $scope.purchaseOrder.supplierProductCode
+                },
                 purchaseQty: selectedProduct.purchaseQty,
                 estimatePurchaseUnitPrice: selectedProduct.selectedPrice
             };

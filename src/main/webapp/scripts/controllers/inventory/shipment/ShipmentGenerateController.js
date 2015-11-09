@@ -79,7 +79,6 @@ angular.module('ecommApp')
                 console.log('page:');
                 console.log(page);
                 $.each(page.content, function() {
-                    Shop.initShopDefaultTunnel(this.shop);
                     orderService.checkItemProductShopTunnel(this);
                 });
                 $scope.page = page;
@@ -103,7 +102,6 @@ angular.module('ecommApp')
                 console.log(page);
                 $scope.page = page;
                 $.each(page.content, function() {
-                    Shop.initShopDefaultTunnel(this.shop);
                     orderService.checkItemProductShopTunnel(this);
                 });
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
@@ -129,7 +127,6 @@ angular.module('ecommApp')
                 console.log(page);
                 $scope.page = page;
                 $.each(page.content, function() {
-                    Shop.initShopDefaultTunnel(this.shop);
                     orderService.checkItemProductShopTunnel(this);
                 });
                 $scope.totalPagesList = Utils.setTotalPagesList(page);

@@ -90,9 +90,9 @@
                         <input type="checkbox" ng-model="purchaseOrderDelivery.isSelected">
                     </td>
                     <td>
-                        <button type="button" class="btn btn-info btn-xs" ng-show="purchaseOrderDelivery.batches.length == 0" ng-click="toggleEnterInventorySheetSlide(purchaseOrderDelivery)">未入库</button>
-                        <!-- <button type="button" class="btn btn-primary btn-xs" >未完全库</button> -->
-                        <button type="button" class="btn btn-success btn-xs" ng-show="purchaseOrderDelivery.batches.length > 0" ng-click="toggleEnterInventorySheetSlide(purchaseOrderDelivery)">完全入库</button>
+                        <pan ng-repeat="batch in purchaseOrderDelivery.batches">
+                            {{ $index > 0 ? ', ' : '' }} {{ batch.warehouse.name }}
+                        </pan>
                         
                     </td>
                     <td>

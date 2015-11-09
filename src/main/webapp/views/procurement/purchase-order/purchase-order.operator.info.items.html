@@ -19,7 +19,12 @@
             <tr ng-repeat="item in purchaseOrder.items" class="pagination-ul" >
                 <td>{{ item.product.sku }}</td>
                 <td>{{ item.product.name }}</td>
-                <td>{{ item.supplierProductCodeMap.supplierProductCode }}</td>
+                <td>
+                    <span ng-show="!item.editable">{{ item.supplierProductCodeMap.supplierProductCode }}</span>
+                    <div ng-show="item.editable" class="form-group has-feedback">
+                        <input type="text" name="supplierProductCodeMap.supplierProductCode{{$index}}" ng-model="item.supplierProductCodeMap.supplierProductCode" placeholder="供应商编号(选填)" class="form-control" />
+                    </div>
+                </td>
                 <td>
                     <span ng-show="!item.editable">{{ item.purchaseQty }}</span>
                     <div ng-show="item.editable" class="form-group has-feedback" ng-class="{'has-success':(itemForm.purchaseQty{{$index}}.$dirty && itemForm.purchaseQty{{$index}}.$valid), 'has-warning':(itemForm.purchaseQty{{$index}}.$dirty && itemForm.purchaseQty{{$index}}.$invalid) }">
