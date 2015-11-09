@@ -297,15 +297,20 @@ angular.module('ecommApp')
             tunnelForm.$setPristine();
         };
 
-        $scope.showRemoveTunnel = function(tunnel, $index) {
+        $scope.showRemoveTunnel = function(tunnel) {
             $scope.removingTunnel = tunnel;
-            $scope.removingTunnel.$index = $index;
             $('#tunnelDeleteModal').modal('show');
         };
 
         $scope.removeTunnel = function() {
             if (angular.isDefined($scope.removingTunnel)) {
-                $scope.shop.tunnels.splice($scope.removingTunnel.$index, 1);
+                $.each($scope.shop.tunnels, function(index){
+                    if (this.name === $scope.removingTunnel.name) {
+                        $scope.shop.tunnels.splice(index, 1);
+                        return false;
+                    }
+                });
+                
                 $scope.removingTunnel = undefined;
                 $('#tunnelDeleteModal').modal('hide');
             }

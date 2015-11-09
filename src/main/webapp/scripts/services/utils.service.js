@@ -6,6 +6,19 @@ angular.module('ecommApp')
         initList: function(page, query) {
             query.list = [];
             if (page.totalPages > 0) {
+                // if (page.number < 5 || page.number > page.totalPages  - 5) {
+                //     if (page.totalPages < 5) {
+                //         for (var i = 0, len = page.totalPages; i < len; i++) {
+                //             query.list.push(i);
+                //         }
+                //     } else if (page.totalPages >= 5) {
+                //         for (var i = page.number, len = page.totalPages; i < len; i++) {
+                //             query
+                //         }
+                //     }
+                // } else {
+
+                // }
                 for (var i = 0, len = page.totalPages; i < len; i++) {
                     query.list.push(i);
                 }

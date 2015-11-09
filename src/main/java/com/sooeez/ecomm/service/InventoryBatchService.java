@@ -67,7 +67,7 @@ public class InventoryBatchService {
 	@Transactional
 	public List<InventoryBatch> saveInventoryBatches(List<InventoryBatch> batches) {
 		for (InventoryBatch batch : batches) {
-			this.saveInventoryBatch(batch);
+			saveInventoryBatch(batch);
 		}
 		return batches;
 	}

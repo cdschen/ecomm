@@ -57,6 +57,7 @@ angular.module('ecommApp')
                 statusIds: Process.refreshStatus(query.statuses)
             }, function(page) {
                 $scope.page = page;
+                console.log(page);
                 Utils.initList(page, query);
             });
         };
