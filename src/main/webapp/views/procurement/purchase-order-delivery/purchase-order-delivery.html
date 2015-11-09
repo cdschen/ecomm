@@ -90,8 +90,9 @@
                         <input type="checkbox" ng-model="purchaseOrderDelivery.isSelected">
                     </td>
                     <td>
-                        
-                        
+                        <pan ng-repeat="batch in purchaseOrderDelivery.batches">
+                            {{ $index > 0 ? ', ' : '' }} {{ batch.warehouse.name }}
+                        </pan>
                     </td>
                     <td>
                         {{ purchaseOrderDelivery.id }}

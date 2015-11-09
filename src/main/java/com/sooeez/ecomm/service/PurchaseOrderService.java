@@ -59,7 +59,8 @@ public class PurchaseOrderService {
 //				System.out.println("item.getProduct().getName(): " + item.getProduct().getName());
 //				System.out.println("item.getSupplierProductCode(): " + item.getSupplierProductCode());
 				
-				if( item.getSupplierProductCode() != null && ! item.getSupplierProductCode().trim().equals("") )
+				if( item.getSupplierProductCodeMap() != null &&
+					item.getSupplierProductCodeMap().getSupplierProductCode() != null )
 				{
 					/* 1. 获得供应商产品编码信息 */
 					String sql = "SELECT * FROM t_supplier_product_code_map " +
@@ -78,11 +79,13 @@ public class PurchaseOrderService {
 //						System.out.println("item.getEstimatePurchaseUnitPrice(): " + item.getEstimatePurchaseUnitPrice());
 //						System.out.println("supplierProductCodeMap.getDefaultPurchasePrice(): " + supplierProductCodeMap.getDefaultPurchasePrice());
 						
-						/* 2.1.1 传入的［采购单价］与［默认采购单价］不一致，则更新［采购单价］至［默认采购单价］ */
-						if( item.getEstimatePurchaseUnitPrice() != null && item.getEstimatePurchaseUnitPrice().compareTo( supplierProductCodeMap.getDefaultPurchasePrice() ) != 0 )
+						/* 2.1.1 传入的［采购单价］与［默认采购单价］或［供应商编号］与数据库存储的［供应商编号］不一致，则更新［采购单价］或［供应商编号］到数据库 */
+						if( ( item.getEstimatePurchaseUnitPrice() != null && item.getEstimatePurchaseUnitPrice().compareTo( supplierProductCodeMap.getDefaultPurchasePrice() ) != 0 ) ||
+							( ! item.getSupplierProductCodeMap().getSupplierProductCode().trim().equals( supplierProductCodeMap.getSupplierProductCode() ) ) )
 						{
 							isSupplierProductCodeChanged = true;
 							supplierProductCodeMap.setDefaultPurchasePrice( item.getEstimatePurchaseUnitPrice() );
+							supplierProductCodeMap.setSupplierProductCode( item.getSupplierProductCodeMap().getSupplierProductCode() );
 							
 							this.supplierProductCodeMapRepository.save( supplierProductCodeMap );
 						}
@@ -100,7 +103,7 @@ public class PurchaseOrderService {
 						supplierProductCodeMap.setProduct( product );
 						supplierProductCodeMap.setSupplier( supplier );
 						supplierProductCodeMap.setDefaultPurchasePrice( item.getEstimatePurchaseUnitPrice() );
-						supplierProductCodeMap.setSupplierProductCode( item.getSupplierProductCode() );
+						supplierProductCodeMap.setSupplierProductCode( item.getSupplierProductCodeMap() != null ? item.getSupplierProductCodeMap().getSupplierProductCode().trim() : null );
 
 						this.supplierProductCodeMapRepository.save( supplierProductCodeMap );
 					}
