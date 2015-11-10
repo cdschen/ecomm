@@ -81,7 +81,7 @@
                             <option selected="selected" value="batchManipulation">批量操作</option>
                             <option value="shipmentExport">导出</option>
                             <option value="shipmentPrint">打印</option>
-                            <option value="shipmentObsolete">作废</option>
+                            <option value="purchaseOrderObsolete">作废</option>
                         </select>
                     </th>
                 </tr>
@@ -133,8 +133,11 @@
                         </ul>
                     </td>
                     <td>
-                        <!--草稿 || 采购中 || 已完成 || 已取消-->
-                        测试中
+                        {{
+                            purchaseOrder.status == 1 ? '待收货' :
+                            purchaseOrder.status == 2 ? '已收货' :
+                            purchaseOrder.status == 3 ? '作废' : '未指定状态'
+                        }}
                     </td>
                     <td class="text-left">
                         <ul style="list-style:none; padding:0px; margin:0;">
@@ -200,10 +203,11 @@
                         {{ purchaseOrder.memo }}
                     </td>
                     <td style="text-align: center;">
-                        <a ui-sref="purchaseOrder.operator({id:purchaseOrder.id})" class="btn btn-info btn-xs">
+                        <a ui-sref="purchaseOrder.operator({id:purchaseOrder.id})" class="btn btn-info btn-xs" ng-hide="purchaseOrder.status == 2 || purchaseOrder.status == 3">
                             <span class="glyphicon glyphicon-edit"></span> 编辑
                         </a>
-                        <!--<a class="btn btn-danger btn-xs" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5" ng-click="showObsoleteShipmentModal( shipment )">作废</a>-->
+                        <!-- 已收货，则不能被作废 -->
+                        <a class="btn btn-danger btn-xs" ng-hide="purchaseOrder.status == 2 || purchaseOrder.status == 3" ng-click="showObsoletePurchaseOrderModal( purchaseOrder )">作废</a>
                     </td>
                 </tr>
             </tbody>
@@ -238,20 +242,20 @@
     </div>
 </div>
 
-<!-- obsoleteShipments Modal -->
-<div class="modal fade" id="obsoleteShipments">
+<!-- obsoletePurchaseOrders Modal -->
+<div class="modal fade" id="obsoletePurchaseOrders">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h3 class="modal-title">作废批量选中的发货单</h3>
+                <h3 class="modal-title">作废批量选中的采购单</h3>
             </div>
             <div class="modal-body">
-                <p>确定作废批量选中的发货单？注意，该操作不可逆！</p>
+                <p>确定作废批量选中的采购单？注意，该操作不可逆！</p>
             </div>
             <div class="modal-footer">
                 <div class="form-group">
-                    <button class="btn btn-primary" type="button" ng-click="obsoleteShipments()">确认作废</button>
+                    <button class="btn btn-primary" type="button" ng-click="obsoletePurchaseOrders()">确认作废</button>
                     <button class="btn btn-warning" type="button" data-dismiss="modal">取消</button>
                 </div>
             </div>
@@ -259,20 +263,20 @@
     </div>
 </div>
 
-<!-- obsoleteShipment Modal -->
-<div class="modal fade" id="obsoleteShipment">
+<!-- obsoletePurchaseOrderModal -->
+<div class="modal fade" id="obsoletePurchaseOrder">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h3 class="modal-title">作废该发货单</h3>
+                <h3 class="modal-title">作废该采购单</h3>
             </div>
             <div class="modal-body">
-                <p>确定作废该发货单？注意，该操作不可逆！</p>
+                <p>确定作废该采购单？注意，该操作不可逆！</p>
             </div>
             <div class="modal-footer">
                 <div class="form-group">
-                    <button class="btn btn-primary" type="button" ng-click="obsoleteShipment()">确认作废</button>
+                    <button class="btn btn-primary" type="button" ng-click="obsoletePurchaseOrder()">确认作废</button>
                     <button class="btn btn-warning" type="button" data-dismiss="modal">取消</button>
                 </div>
             </div>

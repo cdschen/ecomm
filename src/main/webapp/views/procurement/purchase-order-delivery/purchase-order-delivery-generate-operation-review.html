@@ -105,6 +105,19 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row" style="margin-bottom: 7px;">
+                                    <div class="col-md-9 col-md-offset-1">
+                                        D. 采购单不能处于作废状态
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a class="btn btn-success btn-xs pull-right" ng-disabled="true" ng-show=" ! operationReview().checkMap.isStatusObsoleteError">
+                                            <span class="glyphicon glyphicon-ok"></span> 验证通过
+                                        </a>
+                                        <a class="btn btn-danger btn-xs pull-right" ng-disabled="true" ng-show="operationReview().checkMap.isStatusObsoleteError">
+                                            <span class="glyphicon glyphicon-remove-circle"></span> 验证失败
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -136,10 +149,11 @@
                                 <th width="8%">实际收货数量</th>
                                 <th width="8%">Credit数量</th>
                                 <th width="8%">等back order数量</th>
-                                <th width="7%" class="text-center">A</th>
-                                <th width="7%" class="text-center">B</th>
-                                <th width="7%" class="text-center">C</th>
-                                <th width="15%" class="text-center">操作</th>
+                                <th width="5%" class="text-center">A</th>
+                                <th width="5%" class="text-center">B</th>
+                                <th width="5%" class="text-center">C</th>
+                                <th width="5%" class="text-center">D</th>
+                                <th width="16%" class="text-center">操作</th>
                             </tr>
                         </thead>
                     </table>
@@ -148,7 +162,7 @@
                     <table class="table table-bordered table-condensed clear-marginbottom-table">
                         <tbody ng-repeat="purchaseOrder in operationReview().purchaseOrders">
                             <tr style="font-size: 12px;">
-                                <th colspan="11">
+                                <th colspan="12">
                                    <a ng-click="purchaseOrder.isShown = ! purchaseOrder.isShown" class="btn btn-xs btn-info">
                                        <span ng-show="! purchaseOrder.isShown">点这里展开该采购单详情</span>
                                        <span ng-show="purchaseOrder.isShown">点这里收缩该采购单详情</span>
@@ -262,7 +276,7 @@
                                         </li>
                                     </ul>
                                 </td>
-                                <td>
+                                <td class="text-left" colspan="2">
                                     <ul style="list-style:none; padding:0px; margin:0;">
                                         <li>
                                             <strong>待入库</strong>
@@ -311,25 +325,31 @@
                                 <td width="8%">
                                     {{ purchaseOrderItem.backOrderQty | number }}
                                 </td>
-                                <td width="7%" class="text-center">
+                                <td width="5%" class="text-center">
                                     <div ng-switch on="purchaseOrderItem.checkMap.emptyPurchaseUnitPriceError">
                                         <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false" ng-show=" ! purchaseOrderItem.ignoreCheck"></span>
                                         <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show=" ! purchaseOrderItem.ignoreCheck && ! purchaseOrderItem.ignoredMap.emptyPurchaseUnitPriceError "></span>
                                     </div>
                                 </td>
-                                <td width="7%" class="text-center">
+                                <td width="5%" class="text-center">
                                     <div ng-switch on="purchaseOrderItem.checkMap.emptyReceiveQtyError">
                                         <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false" ng-show=" ! purchaseOrderItem.ignoreCheck"></span>
                                         <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show=" ! purchaseOrderItem.ignoreCheck && ! purchaseOrderItem.ignoredMap.emptyReceiveQtyError "></span>
                                     </div>
                                 </td>
-                                <td width="7%" class="text-center">
+                                <td width="5%" class="text-center">
                                     <div ng-switch on="purchaseOrderItem.checkMap.differentReceiveQtyError">
                                         <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false" ng-show=" ! purchaseOrderItem.ignoreCheck"></span>
                                         <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show=" ! purchaseOrderItem.ignoreCheck && ! purchaseOrderItem.ignoredMap.differentReceiveQtyError "></span>
                                     </div>
                                 </td>
-                                <td width="15%" class="text-center" colspan="2">
+                                <td width="5%" class="text-center">
+                                    <div ng-switch on="purchaseOrderItem.checkMap.isStatusObsoleteError">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false" ng-show=" ! purchaseOrderItem.ignoreCheck"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show=" ! purchaseOrderItem.ignoreCheck && ! purchaseOrderItem.ignoredMap.isStatusObsoleteError "></span>
+                                    </div>
+                                </td>
+                                <td width="16%" class="text-center" colspan="2">
                                     <div ng-switch on="purchaseOrderItem.ignoreCheck">
                                         <div ng-switch-when="true">
                                             <button type="button" class="btn btn-success btn-xs btn-block" ng-click="ignoreOrNotCheckPurchaseOrderOrItem( purchaseOrderItem, false, purchaseOrder )" ng-show=" purchaseOrderItem.ignoreCheck ">恢复采购单详情</button>

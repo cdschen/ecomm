@@ -46,6 +46,10 @@ public class PurchaseOrderDelivery implements Serializable {
 	@Column(name = "receive_user_id", nullable = false, insertable = false, updatable = false)
 	private Long receiveUserId;
 
+	// #收货单状态
+	@Column(name = "status")
+	private Integer status;
+
 	/*
 	 * Related Properties
 	 */
@@ -192,4 +196,12 @@ public class PurchaseOrderDelivery implements Serializable {
 		this.queryReceiveTimeEnd = queryReceiveTimeEnd;
 	}
 
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+	
 }

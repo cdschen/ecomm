@@ -28,6 +28,7 @@ import com.sooeez.ecomm.dto.InventoryProductDetailDTO;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.repository.InventoryBatchRepository;
 import com.sooeez.ecomm.repository.InventoryRepository;
+import com.sooeez.ecomm.repository.PurchaseOrderDeliveryRepository;
 import com.sooeez.ecomm.repository.WarehousePositionRepository;
 import com.sooeez.ecomm.repository.WarehouseRepository;
 
@@ -49,6 +50,9 @@ public class InventoryBatchService {
 	
 	@Autowired 
 	private InventoryBatchRepository batchRepository;
+	
+	@Autowired 
+	private PurchaseOrderDeliveryRepository purchaseOrderDeliveryRepository;
 	
 	/*
 	 * Service
@@ -161,6 +165,12 @@ public class InventoryBatchService {
 			}
 			
 			batchRepository.save(batch);
+			
+			/* 如果时从收货单入库，则更新收货单状态为：已入库 */
+			if( batch.getReceiveId() != null )
+			{
+				this.purchaseOrderDeliveryRepository.updateStatus( 2 ,  batch.getReceiveId() );
+			}
 
 			batch.getItems().forEach(item -> {
 

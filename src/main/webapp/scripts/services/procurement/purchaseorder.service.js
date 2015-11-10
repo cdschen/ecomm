@@ -15,6 +15,14 @@ angular.module('ecommApp')
             });
         };
 
+        purchaseOrder.savePurchaseOrders = function( PurchaseOrder )
+        {
+            return $http.post('/api/savePurchaseOrders', PurchaseOrder )
+                .then(function(res) {
+                    return res.data;
+                });
+        };
+
         purchaseOrder.getSupplierProductCodeMapBySupplierProductCode = function(supplierProductCode)
         {
             return $http.get('/api/supplierproductcodemaps/get/supplierProductCode/' + supplierProductCode, {}).then(function(res) {
