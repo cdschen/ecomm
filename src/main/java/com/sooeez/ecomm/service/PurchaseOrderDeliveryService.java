@@ -47,6 +47,12 @@ public class PurchaseOrderDeliveryService {
 	 */
 	
 	public PurchaseOrderDelivery savePurchaseOrderDelivery(PurchaseOrderDelivery purchaseOrderDelivery) {
+		/* If id equals to null then is add action */
+		System.out.println("purchaseOrderDelivery.getId(): " + purchaseOrderDelivery.getId());
+		if( purchaseOrderDelivery.getId() == null )
+		{
+			purchaseOrderDelivery.setStatus( 1 );	// 初始状态为：待入库
+		}
 		return this.purchaseOrderDeliveryRepository.save(purchaseOrderDelivery);
 	}
 	
@@ -109,7 +115,8 @@ public class PurchaseOrderDeliveryService {
 		/* 如果验证全都通过 */
 		if( ! review.getCheckMap().get("emptyPurchaseUnitPriceError") &&
 			! review.getCheckMap().get("emptyReceiveQtyError") &&
-			! review.getCheckMap().get("differentReceiveQtyError") )
+			! review.getCheckMap().get("differentReceiveQtyError") &&
+			! review.getCheckMap().get("isStatusObsoleteError") )
 		{
 			review.setConfirmable( true );
 		}
@@ -119,6 +126,7 @@ public class PurchaseOrderDeliveryService {
 			boolean isEmptyPurchaseUnitPriceError = false;
 			boolean isEmptyReceiveQtyError = false;
 			boolean isDifferentReceiveQtyError = false;
+			boolean isStatusObsoleteError = false;
 			
 			/* 不在同一仓库，并且没有取消验证 */
 			if( review.getCheckMap().get("emptyPurchaseUnitPriceError") && ! review.getIgnoredMap().get("emptyPurchaseUnitPriceError") )
@@ -129,16 +137,25 @@ public class PurchaseOrderDeliveryService {
 			if( review.getCheckMap().get("emptyReceiveQtyError")  && ! review.getIgnoredMap().get("emptyReceiveQtyError") )
 			{
 				isEmptyReceiveQtyError = true;
-			}/* 没有指定快递公司或填写起始快递单号，并且没有取消验证 */
+			}
+			/* 没有指定快递公司或填写起始快递单号，并且没有取消验证 */
 			if( review.getCheckMap().get("differentReceiveQtyError") && ! review.getIgnoredMap().get("differentReceiveQtyError") )
 			{
 				isDifferentReceiveQtyError = true;
 			}
+			/* 存在处于作废状态的采购单 */
+			if( review.getCheckMap().get("isStatusObsoleteError") && ! review.getIgnoredMap().get("isStatusObsoleteError") )
+			{
+				isStatusObsoleteError = true;
+			}
 			
 			/* 如果有一个验证不通过 */
-			if( isEmptyPurchaseUnitPriceError ||
-					isEmptyReceiveQtyError ||
-					isDifferentReceiveQtyError )
+			if(
+				isEmptyPurchaseUnitPriceError ||
+				isEmptyReceiveQtyError ||
+				isDifferentReceiveQtyError ||
+				isStatusObsoleteError
+			)
 			{
 				review.setConfirmable( false );
 			}
@@ -332,6 +349,45 @@ public class PurchaseOrderDeliveryService {
 		review.getCheckMap().put("differentReceiveQtyError", isAnyError);
 	}
 
+	/* 验证 4 ： 采购单不能处于作废状态 */
+	public void confirmIsStatusObsolete( OperationReviewDTO review )
+	{
+		List<PurchaseOrder> purchaseOrders = review.getPurchaseOrders();
+		Boolean isAnyError = false;
+		for( PurchaseOrder purchaseOrder : purchaseOrders )
+		{
+			/* 如果没有取消［采购单］的验证 */
+			if( ! purchaseOrder.getIgnoreCheck() )
+			{
+				/* 如果处于［作废］状态 */
+				if( purchaseOrder.getStatus().equals( 3 ) )
+				{
+					if( purchaseOrder.getItems() != null )
+					{
+						for( PurchaseOrderItem purchaseOrderItem : purchaseOrder.getItems() )
+						{
+							purchaseOrderItem.getCheckMap().put("isStatusObsoleteError", true);
+						}
+					}
+					purchaseOrder.getCheckMap().put("isStatusObsoleteError", true);
+					isAnyError = true;
+				}
+				else
+				{
+					if( purchaseOrder.getItems() != null )
+					{
+						for( PurchaseOrderItem purchaseOrderItem : purchaseOrder.getItems() )
+						{
+							purchaseOrderItem.getCheckMap().put("isStatusObsoleteError", false);
+						}
+					}
+					purchaseOrder.getCheckMap().put("isStatusObsoleteError", false);
+				}
+			}
+		}
+		review.getCheckMap().put("isStatusObsoleteError", isAnyError);
+	}
+
 	/* 如果验证全都通过，并且操作类型是 CONFIRM 则执行创建操作 */
 	public void executePurchseOrderDeliveryGeneration(OperationReviewDTO review)
 	{
@@ -349,7 +405,7 @@ public class PurchaseOrderDeliveryService {
 			}
 		}
 		
-		/* 如果有可生成发货单的订单 */
+		/* 如果有可生成收货单的采购单 */
 		if( finalPurchaseOrders.size() > 0 )
 		{
 			/* 准备可插入的［收货单］集合 */
@@ -363,6 +419,10 @@ public class PurchaseOrderDeliveryService {
 			/* 获取所有的［采购单］ */
 			for( PurchaseOrder purchaseOrder : finalPurchaseOrders )
 			{
+				/* 设置为状态为：已收货 */
+				purchaseOrder.setStatus( 2 );
+				this.purchaseOrderRepository.save( purchaseOrder );
+				
 				Long totalDeliveredQty = 0L;
 				Long totalCreditQty = 0L;
 				BigDecimal totalInvoiceAmount = new BigDecimal( 0 );
@@ -411,19 +471,16 @@ public class PurchaseOrderDeliveryService {
 				{
 					User insertableReceiveUser = new User();
 					PurchaseOrderDelivery insertablePurchaseOrderDelivery = new PurchaseOrderDelivery();
+					
+					/* 设置为状态为：未入库 */
+					insertablePurchaseOrderDelivery.setStatus( 1 );
 
 					/* 保存数据到可插入的［收货单］ */
 					insertableReceiveUser.setId( finalReceiveUserId );
 					insertablePurchaseOrderDelivery.setPurchaseOrderId( purchaseOrder.getId() );
 					insertablePurchaseOrderDelivery.setReceiveTime( new Date() );
 					insertablePurchaseOrderDelivery.setReceiveUser( insertableReceiveUser );
-					insertablePurchaseOrderDelivery.setItems( new ArrayList<PurchaseOrderDeliveryItem>() );
-					insertablePurchaseOrderDelivery.getItems().addAll( insertablePurchaseOrderDeliveryItems );
-					
-//					for( PurchaseOrderDeliveryItem purchaseOrderDeliveryItem : insertablePurchaseOrderDelivery.getItems() )
-//					{
-//						System.out.println( "purchaseOrderDeliveryItem.getPurchaseOrderItem().getId(): " + purchaseOrderDeliveryItem.getPurchaseOrderItem().getId() );
-//					}
+					insertablePurchaseOrderDelivery.setItems( insertablePurchaseOrderDeliveryItems );
 
 					/* 将可插入的［收货单］加入可插入的［收货单］集合中 */
 					insertablePurchaseOrderDeliveries.add( insertablePurchaseOrderDelivery );
@@ -489,6 +546,9 @@ public class PurchaseOrderDeliveryService {
 		
 		/* 验证 3 ： 商品实际收货数量匹配（可以忽略验证） */
 		this.confirmDifferentReceiveQty( review );
+		
+		/* 验证 4 ： 采购单不能处于作废状态 */
+		this.confirmIsStatusObsolete( review );
 		
 		/* 设置可确认性 */
 		this.setConfirmable( review );

@@ -136,7 +136,8 @@ angular.module('ecommApp')
                 ignoredMap : {
                     emptyPurchaseUnitPriceError : false,
                     emptyReceiveQtyError : false,
-                    differentReceiveQtyError : false
+                    differentReceiveQtyError : false,
+                    isStatusObsoleteError : false
                 }
             };
             console.log('Before Operation Review:');

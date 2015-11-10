@@ -42,10 +42,17 @@ public class PurchaseOrderService {
 	 * PurchaseOrder
 	 */
 	
+	public List<PurchaseOrder> savePurchaseOrders( PurchaseOrder purchaseOrder )
+	{
+		return this.purchaseOrderRepository.save( purchaseOrder.getPurchaseOrders() );
+	}
+	
 	public PurchaseOrder savePurchaseOrder(PurchaseOrder purchaseOrder) {
-		/* If id not null then is edit action */
-		if (purchaseOrder.getId() == null) {
+		/* If id equals to null then is add action */
+		if (purchaseOrder.getId() == null)
+		{
 			purchaseOrder.setCreateTime( new Date() );
+			purchaseOrder.setStatus( 1 );	// 初始状态为：待收货
 		}
 		/* execute no matter create or update */
 		purchaseOrder.setLastUpdate( new Date() );

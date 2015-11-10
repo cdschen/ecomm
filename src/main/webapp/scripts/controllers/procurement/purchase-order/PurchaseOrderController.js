@@ -29,6 +29,17 @@ angular.module('ecommApp')
         $scope.suppliers = [];
         $scope.users = [];
         $scope.purchaseOrders = [];
+        $scope.purchaseOrderStatus = [
+            {
+                id : 1, name : '待收货'
+            },
+            {
+                id : 2, name : '已收货'
+            },
+            {
+                id : 3, name : '作废'
+            }
+        ];
 
         $scope.shipmentCompleteSlideChecked = false;
 
@@ -113,135 +124,102 @@ angular.module('ecommApp')
         };
 
         ///* 批量操作 */
-        //$scope.batchManipulation = function()
-        //{
-        //    var shipments = $scope.page.content;
-        //    shipmentService.selectedPurchaseOrders.length = 0;
-        //    $.each(shipments, function(){
-        //        var shipment = this;
-        //        if (shipment.isSelected) {
-        //            shipmentService.selectedPurchaseOrders.push(angular.copy(shipment));
-        //        }
-        //    });
-        //    if (shipmentService.selectedPurchaseOrders.length > 0)
-        //    {
-        //        if($scope.batchManipulationValue === 'shipmentExport')
-        //        {
-        //            toastr.info('发货单导出！');
-        //        }
-        //        else if($scope.batchManipulationValue === 'shipmentPrint')
-        //        {
-        //            toastr.info('发货单打印！');
-        //        }
-        //        else if($scope.batchManipulationValue === 'shipmentObsolete')
-        //        {
-        //            $('#obsoleteShipments').modal('show');
-        //        }
-        //    }
-        //    else
-        //    {
-        //        toastr.error('请选择一到多个发货单来继续！');
-        //    }
-        //
-        //
-        //    $scope.batchManipulationValue = 'batchManipulation';
-        //};
+        $scope.batchManipulation = function()
+        {
+            var purchaseOrders = $scope.page.content;
+            purchaseOrderService.selectedPurchaseOrders.length = 0;
+            $.each(purchaseOrders, function(){
+                var purchaseOrder = this;
+                if (purchaseOrder.isSelected) {
+                    purchaseOrderService.selectedPurchaseOrders.push(angular.copy( purchaseOrder ));
+                }
+            });
+            if (purchaseOrderService.selectedPurchaseOrders.length > 0)
+            {
+                if($scope.batchManipulationValue === 'purchaseOrderExport')
+                {
+                    toastr.info('采购单导出！');
+                }
+                else if($scope.batchManipulationValue === 'purchaseOrderPrint')
+                {
+                    toastr.info('采购单打印！');
+                }
+                else if($scope.batchManipulationValue === 'purchaseOrderObsolete')
+                {
+                    $('#obsoletePurchaseOrders').modal('show');
+                }
+            }
+            else
+            {
+                toastr.error('请选择一到多个采购单来继续！');
+            }
 
-        //$scope.showObsoleteShipmentModal = function( shipment )
-        //{
-        //    $scope.selectedPurchaseOrder = shipment;
-        //
-        //    $('#obsoleteShipment').modal('show');
-        //};
+            $scope.batchManipulationValue = 'batchManipulation';
+        };
 
-        ///* 将选中发货单作废 */
-        //$scope.obsoleteShipment = function()
-        //{
-        //    /* 作废状态 */
-        //    $scope.selectedPurchaseOrder.shipStatus = 5;
-        //
-        //    shipmentService.save({
-        //        action: 'update'
-        //    }, $scope.selectedPurchaseOrder, function( shipment ) {
-        //
-        //            console.log( shipment );
-        //
-        //            shipmentService.get( getQueryParamJSON(), function(page) {
-        //                console.log('page:');
-        //                console.log(page);
-        //                $scope.page = page;
-        //                $scope.totalPagesList = Utils.setTotalPagesList(page);
-        //            });
-        //        });
-        //
-        //    $('#obsoleteShipment').modal('hide');
-        //
-        //    toastr.error('作废选中发的货单！');
-        //};
+        $scope.showObsoletePurchaseOrderModal = function( purchaseOrder )
+        {
+            $scope.selectedPurchaseOrder = purchaseOrder;
 
-        ///* 将批量选中的货单作废 */
-        //$scope.obsoleteShipments = function()
-        //{
-        //    for( var shipmentIndex in shipmentService.selectedPurchaseOrders )
-        //    {
-        //        /* 作废状态 */
-        //        shipmentService.selectedPurchaseOrders[shipmentIndex].shipStatus = 5;
-        //    }
-        //
-        //    var shipment = {};
-        //    shipment.shipments = shipmentService.selectedPurchaseOrders;
-        //
-        //    shipmentService.saveShipments( shipment )
-        //        .then(function(shipments) {
-        //
-        //            console.log( shipments );
-        //
-        //            shipmentService.get( getQueryParamJSON(), function(page) {
-        //                console.log('page:');
-        //                console.log(page);
-        //                $scope.page = page;
-        //                $scope.totalPagesList = Utils.setTotalPagesList(page);
-        //            });
-        //        });
-        //
-        //    $('#obsoleteShipments').modal('hide');
-        //    toastr.error('作废批量选中的发货单！');
-        //};
+            $('#obsoletePurchaseOrder').modal('show');
+        };
 
+        /* 将选中采购单作废 */
+        $scope.obsoletePurchaseOrder = function()
+        {
+            /* 作废状态 */
+            $scope.selectedPurchaseOrder.status = 3;
 
-        //$scope.showShipmentCompleteSlide = function( shipment )
-        //{
-        //    shipmentService.setselectedPurchaseOrder( angular.copy( shipment ) );
-        //
-        //    executeOperationReviewCompleteShipment('VERIFY');
-        //
-        //    $scope.toggleShipmentCompleteSlide();
-        //};
+            purchaseOrderService.save({
+                action: 'update'
+            }, $scope.selectedPurchaseOrder, function( purchaseOrder ) {
 
+                console.log( purchaseOrder );
 
-        //function executeOperationReviewCompleteShipment(action)
-        //{
-        //    var reviewDTO = {
-        //        action                      : action,
-        //        shipment                    : shipmentService.getselectedPurchaseOrder(),
-        //        dataMap : {
-        //            executeOperatorId                : $rootScope.user().id
-        //        },
-        //        ignoredMap : {
-        //            emptyCourierError : false,
-        //            emptyShipNumberError : false,
-        //            emptyReceiveNameError : false,
-        //            emptyReceivePhoneError : false,
-        //            emptyReceiveAddressError : false
-        //        }
-        //    };
-        //    console.log('Before Operation Review:');
-        //    console.log(reviewDTO);
-        //    shipmentService.confirmOperationReviewWhenCompleteShipment(reviewDTO).then(function(review){
-        //        console.log('After Operation Review Complete Shipment:');
-        //        console.log(review);
-        //    });
-        //}
+                purchaseOrderService.get( getQueryParamJSON(), function(page) {
+                    console.log('page:');
+                    console.log(page);
+                    $scope.page = page;
+                    $scope.totalPagesList = Utils.setTotalPagesList(page);
+                });
+            });
+
+            $('#obsoletePurchaseOrder').modal('hide');
+
+            toastr.success('作废选中的采购单！');
+        };
+
+        /* 将批量选中的采购单作废 */
+        $scope.obsoletePurchaseOrders = function()
+        {
+            for( var purchaseOrderIndex in purchaseOrderService.selectedPurchaseOrders )
+            {
+                /* 作废状态 */
+                purchaseOrderService.selectedPurchaseOrders[ purchaseOrderIndex ].status = 3;
+            }
+
+            var purchaseOrder = {};
+            purchaseOrder.purchaseOrders = purchaseOrderService.selectedPurchaseOrders;
+
+            console.log('obsoletePurchaseOrders');
+            console.log( purchaseOrder );
+
+            purchaseOrderService.savePurchaseOrders( purchaseOrder )
+                .then(function( purchaseOrders ) {
+
+                    console.log( purchaseOrders );
+
+                    purchaseOrderService.get( getQueryParamJSON(), function(page) {
+                        console.log('page:');
+                        console.log(page);
+                        $scope.page = page;
+                        $scope.totalPagesList = Utils.setTotalPagesList(page);
+                    });
+                });
+
+            $('#obsoletePurchaseOrders').modal('hide');
+            toastr.error('作废批量选中的发货单！');
+        };
 
     }
 ]);

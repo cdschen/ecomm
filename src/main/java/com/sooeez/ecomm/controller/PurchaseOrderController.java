@@ -57,6 +57,11 @@ public class PurchaseOrderController {
 		return this.purchaseOrderService.savePurchaseOrder(purchaseOrder);
 	}
 	
+	@RequestMapping(value = "/savePurchaseOrders", method = RequestMethod.POST)
+	public List<PurchaseOrder> savePurchaseOrders(@RequestBody PurchaseOrder purchaseOrders) {
+		return purchaseOrderService.savePurchaseOrders( purchaseOrders );
+	}
+	
 	@RequestMapping(value = "/purchaseorders/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deletePurchaseOrder(@PathVariable("id") Long id) {
 		this.purchaseOrderService.deletePurchaseOrder(id);

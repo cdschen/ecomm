@@ -1442,7 +1442,7 @@ public class OrderService {
 								 ") " +
 							 ") " +
 						 ") " +
-						 "AND deleted = false " +
+						 "AND enabled = false " +
 						 "LIMIT 1";
 				Query query =  em.createNativeQuery( sql , Product.class);
 				query.setParameter(1, shop.getId());
@@ -1708,7 +1708,7 @@ public class OrderService {
 											 ") " +
 										 ") " +
 									 ") " +
-									 "AND deleted = false " +
+									 "AND enabled = false " +
 									 "LIMIT 1";
 							Query query =  em.createNativeQuery( sql , Product.class);
 							query.setParameter(1, shop.getId());

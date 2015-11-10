@@ -3,7 +3,9 @@ package com.sooeez.ecomm.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -114,6 +116,10 @@ public class PurchaseOrder implements Serializable {
 	@Column(name = "receive_post")
 	private String receivePost;
 
+	//	#采购单状态
+	@Column(name = "status")
+	private Integer status;
+
 	/*
 	 * Related Properties
 	 */
@@ -178,10 +184,16 @@ public class PurchaseOrder implements Serializable {
 	 */
 
 	@Transient
+	private Map<String, Boolean> checkMap = new HashMap<>();
+
+	@Transient
 	private Boolean ignoreCheck = false;
 	
 
 	//
+	
+	@Transient
+	private List<PurchaseOrder> purchaseOrders;
 	
 
 	public Long getId() {
@@ -456,12 +468,36 @@ public class PurchaseOrder implements Serializable {
 		this.isSupplierProductCodeChanged = isSupplierProductCodeChanged;
 	}
 
+	public Map<String, Boolean> getCheckMap() {
+		return checkMap;
+	}
+
+	public void setCheckMap(Map<String, Boolean> checkMap) {
+		this.checkMap = checkMap;
+	}
+
 	public Boolean getIgnoreCheck() {
 		return ignoreCheck;
 	}
 
 	public void setIgnoreCheck(Boolean ignoreCheck) {
 		this.ignoreCheck = ignoreCheck;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public List<PurchaseOrder> getPurchaseOrders() {
+		return purchaseOrders;
+	}
+
+	public void setPurchaseOrders(List<PurchaseOrder> purchaseOrders) {
+		this.purchaseOrders = purchaseOrders;
 	}
 	
 

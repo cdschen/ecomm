@@ -72,11 +72,12 @@
                     <th width="2%">
                         <input type="checkbox" name="orderId" ng-model="isCheckedAll" ng-click="checkAllPurchaseOrderDeliveries()">
                     </th>
-                    <th width="18%">收货仓库</th>
-                    <th width="18%">收货单号</th>
-                    <th width="18%">采购单号</th>
-                    <th width="18%">收货时间</th>
-                    <th width="18%">收货人</th>
+                    <th width="15%">收货仓库</th>
+                    <th width="15%">收货单号</th>
+                    <th width="15%">采购单号</th>
+                    <th width="15%">状态</th>
+                    <th width="15%">收货时间</th>
+                    <th width="15%">收货人</th>
                     <th width="8%" style="padding: 2px">
                         <select class="form-control input-sm" ng-change="batchManipulation()" ng-model="batchManipulationValue">
                             <option selected="selected" value="batchManipulation">批量操作</option>
@@ -99,6 +100,13 @@
                     </td>
                     <td>
                         {{ purchaseOrderDelivery.purchaseOrderId }}
+                    </td>
+                    <td>
+                        {{
+                            purchaseOrderDelivery.status == 1 ? '待入库' :
+                            purchaseOrderDelivery.status == 2 ? '已入库' :
+                            purchaseOrderDelivery.status == 3 ? '作废' : '未指定状态'
+                        }}
                     </td>
                     <td>
                         {{ purchaseOrderDelivery.receiveTime | date : 'yyyy-MM-dd HH:mm:ss' }}
