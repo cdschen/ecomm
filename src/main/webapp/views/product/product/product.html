@@ -136,14 +136,8 @@
                         <td colspan="20">
                             <nav class="page-list">
                                 <ul class="pagination pagination-sm">
-                                    <li ng-class="{disabled: page.first}">
-                                        <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
-                                    </li>
-                                    <li ng-repeat="i in query.list" ng-class="{active: i == page.number}">
-                                        <a href="" ng-click="turnPage(i)">{{i+1}}</a>
-                                    </li>
-                                    <li ng-class="{disabled: page.last}">
-                                        <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                    <li ng-repeat="i in query.list" ng-class="{active: i.value === page.number}">
+                                        <a href="" ng-click="turnPage(i.value)" >{{i.label}}</a>
                                     </li>
                                 </ul>
                                 <div class="page-total">
