@@ -532,6 +532,8 @@ public class OrderService {
 				// 循环item
 				for (OrderItem item: order.getItems()) {
 					// 循环products
+					
+					System.out.println("item.getProduct().getSku():" + item.getProduct());
 					boolean exitProductsEach = false;
 					boolean matchItemInventory = false;
 					for (Product product: products) {

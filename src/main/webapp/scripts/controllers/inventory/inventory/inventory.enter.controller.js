@@ -3,6 +3,9 @@ angular.module('ecommApp')
 .controller('InventoryEnterController', ['$rootScope', '$scope', '$state', '$stateParams', 'Warehouse', 'Product', 'InventoryBatch', 'Auth',
     function($rootScope, $scope, $state, $stateParams, Warehouse, Product, InventoryBatch, Auth) {
 
+        $scope.states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Dakota', 'North Carolina', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'];
+
+
         $scope.defaultBatch = {
             operate: 1,
             operateTime: undefined,
@@ -43,7 +46,7 @@ angular.module('ecommApp')
         });
 
         Warehouse.getAll({
-            deleted: false,
+            enabled: true,
             sort: ['name'],
             warehouseIds: Auth.refreshManaged('warehouse')
         }).then(function(warehouses) {
@@ -57,12 +60,12 @@ angular.module('ecommApp')
                 });
             }
         }).then(function() {
-            Product.getAll({
-                sort: ['name'],
-                deleted: false
-            }).then(function(products) {
-                $scope.products = products;
-            });
+            // Product.getAll({
+            //     sort: ['name'],
+            //     enabled: true
+            // }).then(function(products) {
+            //     $scope.products = products;
+            // });
         });
 
         $scope.saveItem = function(item, itemAddForm) {
