@@ -1,24 +1,28 @@
 angular.module('ecommApp')
 
-.controller('ShopOperatorController', ['$rootScope', '$scope', '$state', '$stateParams', 'User', 'Language', 'Currency', 'Shop', 'Supplier', 'Warehouse',
-    function($rootScope, $scope, $state, $stateParams, User, Language, Currency, Shop, Supplier, Warehouse) {
+.controller('ShopOperatorController', ['$scope', '$state', '$stateParams', 'User', 'Language', 'Currency', 'Shop', 'Supplier', 'Warehouse', 'toastr',
+    function($scope, $state, $stateParams, User, Language, Currency, Shop, Supplier, Warehouse, toastr) {
 
-        var $ = angular.element;
+        var t = $.now();
+        $scope.action = 'create';
         $scope.actionLabel = ($stateParams.id && $stateParams.id !== '') ? '编辑' : '创建';
 
         $scope.template = {
             tunnel: {
-                url: 'views/system/shop/shop.operator.tunnel.html?' + (new Date()),
+                url: 'views/system/shop/shop.operator.tunnel.html?' + t,
                 warehouse: {
-                    url: 'views/system/shop/shop.operator.tunnel.warehouse.html?' + (new Date()),
+                    url: 'views/system/shop/shop.operator.tunnel.warehouse.html?' + t
+                },
+                supplier: {
+                    url: 'views/system/shop/shop.operator.tunnel.supplier.html?' + t
                 }
             }
         };
-        $scope.users = [];
-        $scope.languages = [];
-        $scope.currencies = [];
-        $scope.warehouses = [];
-        $scope.suppliers = [];
+
+        /*
+         *  Init Shop
+         */
+
         $scope.types = [{
             label: '自营',
             value: 0,
@@ -26,58 +30,68 @@ angular.module('ecommApp')
             label: '合作',
             value: 1
         }];
-        $scope.statuses = [{
-            label: '禁用',
-            value: 0
+
+        $scope.isorno = [{
+            label: '是',
+            value: true
         }, {
-            label: '正常',
-            value: 1
+            label: '否',
+            value: false
         }];
-        $scope.lvls = [{
-            label: 'Level 0',
-            value: 0
-        }, {
-            label: 'Level 1',
-            value: 1
-        }, {
-            label: 'Level 2',
-            value: 2
-        }, {
-            label: 'Level 3',
-            value: 3
-        }, {
-            label: 'Level 4',
-            value: 4
-        }, {
-            label: 'Level 5',
-            value: 5
-        }, {
-            label: 'Level 6',
-            value: 6
-        }, {
-            label: 'Level 7',
-            value: 7
-        }, {
-            label: 'Level 8',
-            value: 8
-        }, {
-            label: 'Level 9',
-            value: 9
-        }, {
-            label: 'Level 10',
-            value: 10
-        }, ];
-        $scope.shop = {
-            type: 0,
-            status: 1,
+
+        $scope.lvls = [];
+        $.each([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], function() {
+            $scope.lvls.push({
+                label: 'Level ' + this,
+                value: this
+            });
+        });
+
+        $scope.defaultShop = {
+            type: {
+                label: '自营',
+                value: 0
+            },
             apiCallLimit: -1,
-            user: undefined,
             language: undefined,
             currency: undefined,
-            priceLevel: 0,
-            tunnels: [],
-            deleted: false
+            priceLevel: {
+                label: 'Level 0',
+                value: 0
+            },
+            enabled: {
+                label: '是',
+                value: true
+            },
+            tunnels: []
         };
+
+        $scope.shop = angular.copy($scope.defaultShop);
+
+        $scope.changeShopType = function($item) {
+            if ($item.value === 0) {
+                $scope.shop.priceLevel = $scope.lvls[0];
+            } else if ($item.value === 1) {
+                $scope.shop.priceLevel = $scope.lvls[1];
+            }
+        };
+
+        function initShopProperties(shop) {
+            shop.type = $scope.types[shop.type];
+            shop.priceLevel = $scope.lvls[shop.priceLevel];
+            shop.enabled = $scope.isorno[shop.enabled ? 0 : 1];
+        }
+
+        function refreshShopProperties(shop) {
+            shop.type = shop.type.value;
+            shop.priceLevel = shop.priceLevel.value;
+            shop.enabled = shop.enabled.value;
+        }
+
+        /*
+         *  Init Tunnel
+         */
+
         $scope.tunnelTypes = [{
             label: '仓库配货方式(自营)',
             value: 1
@@ -85,6 +99,7 @@ angular.module('ecommApp')
             label: '供应商配货方式(代发)',
             value: 2
         }];
+
         $scope.tunnelBehaviors = [{
             label: '包括',
             value: 1
@@ -92,37 +107,20 @@ angular.module('ecommApp')
             label: '排除',
             value: 2
         }];
-        $scope.tunnelDefaultOptions = [{
-            label: '是',
-            value: true
-        }, {
-            label: '否',
-            value: false
-        }];
+
         $scope.defaultTunnel = {
+            defaultWarehouse: undefined,
+            defaultSupplier: undefined,
             warehouses: [],
             suppliers: []
         };
 
-        $scope.action = 'create';
         $scope.tunnel = angular.copy($scope.defaultTunnel);
 
-        function initShopField(shop) {
-            shop.type = $scope.types[shop.type];
-            shop.status = $scope.statuses[shop.status];
-            shop.priceLevel = $scope.lvls[shop.priceLevel];
-        }
-
-        function refreshShopField(shop) {
-            shop.type = shop.type.value;
-            shop.status = shop.status.value;
-            shop.priceLevel = shop.priceLevel.value;
-        }
-
-        function initTunnelField(tunnel) {
+        function initTunnelProperties(tunnel) {
             tunnel.type = $scope.tunnelTypes[tunnel.type - 1];
             tunnel.behavior = $scope.tunnelBehaviors[tunnel.behavior - 1];
-            tunnel.defaultOption = $scope.tunnelDefaultOptions[tunnel.defaultOption ? 0 : 1];
+            tunnel.defaultOption = $scope.isorno[tunnel.defaultOption ? 0 : 1];
             if (tunnel.type.value === 1) {
                 $.each(tunnel.warehouses, function() {
                     if (this.id === tunnel.defaultWarehouseId) {
@@ -140,103 +138,126 @@ angular.module('ecommApp')
             }
         }
 
-        function refreshTunnelField(tunnel) {
+        function refreshTunnelProperties(tunnel) {
             tunnel.type = tunnel.type.value;
             tunnel.behavior = tunnel.behavior.value;
             tunnel.defaultOption = tunnel.defaultOption.value;
         }
 
-        User.getAll().then(function(users) {
-            $scope.users = users;
-        }).then(function() {
-            return Language.getAll().then(function(languages) {
-                $scope.languages = languages;
-            });
-        }).then(function() {
-            return Currency.getAll().then(function(currencies) {
-                $scope.currencies = currencies;
-            });
-        }).then(function() {
-            return Warehouse.getAll({
-                deleted: false,
-                sort: ['name']
-            }).then(function(warehouses) {
-                $scope.warehouses = warehouses;
-            });
-        }).then(function() {
-            return Supplier.getAll({
-                deleted: false,
-                sort: ['name']
-            }).then(function(suppliers) {
-                $scope.suppliers = suppliers;
-            });
-        }).then(function() {
-            if ($stateParams.id && $stateParams.id !== '') {
-                $scope.action = 'update';
-                Shop.get({
-                    id: $stateParams.id
-                }, {}, function(shop) {
-                    initShopField(shop);
-                    $scope.shop = shop;
-                    angular.forEach($scope.shop.tunnels, function(tunnel) {
-                        initTunnelField(tunnel);
-                    });
-                });
-            } else {
-                initShopField($scope.shop);
-            }
+        /*
+         *  Shop
+         */
+
+        Language.getAll().then(function(languages) {
+            $scope.languages = languages;
         });
 
+        Currency.getAll().then(function(currencies) {
+            $scope.currencies = currencies;
+        });
+
+        Warehouse.getAll({
+            enabled: true,
+            sort: ['name']
+        }).then(function(warehouses) {
+            $scope.warehouses = warehouses;
+        });
+
+        Supplier.getAll({
+            enabled: true,
+            sort: ['name']
+        }).then(function(suppliers) {
+            $scope.suppliers = suppliers;
+        });
+
+        if ($stateParams.id && $stateParams.id !== '') {
+            $scope.action = 'update';
+            Shop.get({
+                id: $stateParams.id
+            }, {}, function(shop) {
+                $scope.shop = shop;
+                initShopProperties(shop);
+                $.each(shop.tunnels, function() {
+                    initTunnelProperties(this);
+                });
+            });
+        }
+
         $scope.saveShop = function(shop) {
-
-            refreshShopField(shop);
-
-            angular.forEach(shop.tunnels, function(tunnel) {
-                refreshTunnelField(tunnel);
-            });
-
-            Shop.save({}, shop, function() {
-                $state.go('shop');
-            }, function(err) {
-                console.log(err);
-            });
+            if (shop.tunnels.length > 0) {
+                refreshShopProperties(shop);
+                $.each(shop.tunnels, function() {
+                    refreshTunnelProperties(this);
+                });
+                Shop.save({}, shop, function() {
+                    $state.go('shop');
+                });
+            } else {
+                toastr.warning('至少设置一种配货方式');
+            }
         };
 
-        // $scope.remove = function() {
-        //     Shop.remove({
-        //         id: $stateParams.id
-        //     }, {}, function() {
-        //         $state.go('shop');
-        //     }, function(err) {
-        //         console.log(err);
-        //     });
-        // };
+        /*
+         *  Tunnel
+         */
 
         function setDefaultToFalse(tunnels) {
             $.each(tunnels, function() {
-                this.defaultOption = $scope.tunnelDefaultOptions[1];
+                this.defaultOption = $scope.isorno[1];
             });
         }
 
         function setTunnelDefaultWarehouseIdAndSupplierId(tunnel) {
             if (tunnel.type.value === 1) {
+                var existDefaultWarehouse = false;
                 $.each(tunnel.warehouses, function() {
                     if (this.defaultOption) {
-                        tunnel.defaultWarehouseId = this.id;
+                        tunnel.defaultWarehouse = this;
+                        existDefaultWarehouse = true;
                         return false;
                     }
                 });
+                if (!existDefaultWarehouse) {
+                    tunnel.warehouses[0].defaultOption = true;
+                    tunnel.defaultWarehouse = tunnel.warehouses[0];
+                }
             } else if (tunnel.type.value === 2) {
+                var existDefaultSupplier = false;
                 $.each(tunnel.suppliers, function() {
                     if (this.defaultOption) {
-                        tunnel.defaultSupplierId = this.id;
+                        tunnel.defaultSupplier = this;
+                        existDefaultSupplier = true;
                         return false;
                     }
                 });
+                if (!existDefaultSupplier) {
+                    tunnel.suppliers[0].defaultOption = true;
+                    tunnel.defaultSupplier = tunnel.suppliers[0];
+                }
             }
         }
 
+        function checkTunnelWarehouseAndSuppliers(tunnel) {
+            if (tunnel.type.value === 1) {
+                if (tunnel.warehouses.length === 0) {
+                    toastr.warning('仓库配货方式, 至少设置一家仓库');
+                    return false;
+                }
+            } else if (tunnel.type.value === 2) {
+                if (tunnel.suppliers.length === 0) {
+                    toastr.warning('供应商配货方式, 至少设置一家供应商');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
         $scope.saveTunnel = function(tunnel, tunnelAddForm) {
+
+            if (!checkTunnelWarehouseAndSuppliers(tunnel)) {
+                return;
+            }
 
             if (tunnel.defaultOption.value) {
                 setDefaultToFalse($scope.shop.tunnels);
@@ -245,7 +266,8 @@ angular.module('ecommApp')
             $scope.shop.tunnels.push(angular.copy(tunnel));
             tunnelAddForm.$setPristine();
             $scope.tunnel = angular.copy($scope.defaultTunnel);
-            $scope.closeTunnelWarehouseSlide();
+            $scope.tunnelWarehouseSlideChecked = false;
+            $scope.tunnelSupplierSlideChecked = false;
         };
 
         $scope.updateTunnel = function(tunnel) {
@@ -253,40 +275,51 @@ angular.module('ecommApp')
         };
 
         $scope.saveUpdateTunnel = function(tunnel, tunnelForm) {
+
+            if (!checkTunnelWarehouseAndSuppliers(tunnel)) {
+                return;
+            }
+
             if (tunnel.type.value === 1) {
                 tunnel.suppliers = undefined;
-                $scope.closeTunnelWarehouseSlide();
+                $scope.tunnelWarehouseSlideChecked = false;
             } else if (tunnel.type.value === 2) {
                 tunnel.warehouses = undefined;
-                $scope.closeTunnelSupplierSlide();
+                $scope.tunnelSupplierSlideChecked = false;
             }
             setTunnelDefaultWarehouseIdAndSupplierId(tunnel);
 
             if (tunnel.defaultOption.value) {
                 setDefaultToFalse($scope.shop.tunnels);
-                tunnel.defaultOption = $scope.tunnelDefaultOptions[0];
+                tunnel.defaultOption = $scope.isorno[0];
             }
             tunnel.editable = false;
             tunnelForm.$setPristine();
         };
 
-        $scope.removingTunnel = undefined;
-
-        $scope.showRemoveTunnel = function(tunnel, $index) {
+        $scope.showRemoveTunnel = function(tunnel) {
             $scope.removingTunnel = tunnel;
-            $scope.removingTunnel.$index = $index;
             $('#tunnelDeleteModal').modal('show');
         };
 
         $scope.removeTunnel = function() {
             if (angular.isDefined($scope.removingTunnel)) {
-                $scope.shop.tunnels.splice($scope.removingTunnel.$index, 1);
+                $.each($scope.shop.tunnels, function(index){
+                    if (this.name === $scope.removingTunnel.name) {
+                        $scope.shop.tunnels.splice(index, 1);
+                        return false;
+                    }
+                });
+                
                 $scope.removingTunnel = undefined;
                 $('#tunnelDeleteModal').modal('hide');
             }
         };
 
-        // slide
+        /*
+         *  Init Slide
+         */
+
         $scope.defaultSelected = {
             warehouses: [],
             suppliers: []
@@ -294,35 +327,37 @@ angular.module('ecommApp')
         $scope.selected = angular.copy($scope.defaultSelected);
         $scope.tunnelWarehouseSlideChecked = false;
         $scope.tunnelSupplierSlideChecked = false;
+        $scope.optionalWarehouses = [];
+        $scope.optionalSuppliers = [];
 
-        // warehouse slide
-        $scope.operateWarehouses = [];
+        /*
+         *  Warehouse Slide
+         */
 
-        $scope.closeTunnelWarehouseSlide = function() {
-            $scope.tunnelWarehouseSlideChecked = false;
-        };
-
-        $scope.loadTunnelWarehouses = function(tunnelWarehouses) {
-            $scope.selected.warehouses = tunnelWarehouses;
-            $scope.tunnelWarehouseSlideChecked = true;
-            $scope.operateWarehouses.length = 0;
-            $.each($scope.warehouses, function() {
-                $scope.operateWarehouses.push(angular.copy(this));
-            });
-            $.each(tunnelWarehouses, function() {
-                var tunnelWarehouse = this;
-                $.each($scope.operateWarehouses, function() {
-                    if (this.id === tunnelWarehouse.id) {
-                        this.selected = true;
-                        return false;
-                    }
+        $scope.toggleTunnelWarehouseSlide = function(tunnelWarehouses) {
+            $scope.tunnelWarehouseSlideChecked = !$scope.tunnelWarehouseSlideChecked;
+            if ($scope.tunnelWarehouseSlideChecked) {
+                $scope.selected.warehouses = tunnelWarehouses;
+                $scope.optionalWarehouses.length = 0;
+                $.each($scope.warehouses, function() {
+                    $scope.optionalWarehouses.push(angular.copy(this));
                 });
-            });
+                $.each(tunnelWarehouses, function() {
+                    var tunnelWarehouse = this;
+                    $.each($scope.optionalWarehouses, function() {
+                        if (this.id === tunnelWarehouse.id) {
+                            this.selected = true;
+                            return false;
+                        }
+                    });
+                });
+            }
         };
 
-        $scope.selectTunnelDeployWarehouse = function(warehouse) {
+        $scope.toggleWarehouse = function(warehouse) {
             if (warehouse.selected && warehouse.selected === true) {
                 warehouse.selected = false;
+                warehouse.defaultOption = false;
                 $.each($scope.selected.warehouses, function(i) {
                     if (this.id === warehouse.id) {
                         $scope.selected.warehouses.splice(i, 1);
@@ -340,37 +375,37 @@ angular.module('ecommApp')
                 this.defaultOption = false;
             });
             warehouse.defaultOption = true;
-            tunnel.defaultWarehouseId = warehouse.id;
+            tunnel.defaultWarehouse = warehouse;
         };
 
-        // supplier slide
-        $scope.operateSuppliers = [];
+        /*
+         *  Supplier Slide
+         */
 
-        $scope.closeTunnelSupplierSlide = function() {
-            $scope.tunnelSupplierSlideChecked = false;
-        };
-
-        $scope.loadTunnelSuppliers = function(tunnelSuppliers) {
-            $scope.selected.suppliers = tunnelSuppliers;
-            $scope.tunnelSupplierSlideChecked = true;
-            $scope.operateSuppliers.length = 0;
-            $.each($scope.suppliers, function() {
-                $scope.operateSuppliers.push(angular.copy(this));
-            });
-            $.each(tunnelSuppliers, function() {
-                var tunnelsupplier = this;
-                $.each($scope.operateSuppliers, function() {
-                    if (this.id === tunnelsupplier.id) {
-                        this.selected = true;
-                        return false;
-                    }
+        $scope.toggleTunnelSupplierSlide = function(tunnelSuppliers) {
+            $scope.tunnelSupplierSlideChecked = !$scope.tunnelSupplierSlideChecked;
+            if ($scope.tunnelSupplierSlideChecked) {
+                $scope.selected.suppliers = tunnelSuppliers;
+                $scope.optionalSuppliers.length = 0;
+                $.each($scope.suppliers, function() {
+                    $scope.optionalSuppliers.push(angular.copy(this));
                 });
-            });
+                $.each(tunnelSuppliers, function() {
+                    var tunnelsupplier = this;
+                    $.each($scope.optionalSuppliers, function() {
+                        if (this.id === tunnelsupplier.id) {
+                            this.selected = true;
+                            return false;
+                        }
+                    });
+                });
+            }
         };
 
-        $scope.selectTunnelDeploySupplier = function(supplier) {
+        $scope.toggleSupplier = function(supplier) {
             if (supplier.selected && supplier.selected === true) {
                 supplier.selected = false;
+                supplier.defaultOption = false;
                 $.each($scope.selected.suppliers, function(i) {
                     if (this.id === supplier.id) {
                         $scope.selected.suppliers.splice(i, 1);
@@ -388,7 +423,7 @@ angular.module('ecommApp')
                 this.defaultOption = false;
             });
             supplier.defaultOption = true;
-            tunnel.defaultSupplierId = supplier.id;
+            tunnel.defaultSupplier = supplier;
         };
 
     }

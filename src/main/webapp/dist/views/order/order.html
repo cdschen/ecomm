@@ -13,65 +13,69 @@
             <table class="table" style="margin:0">
                 <tbody>
                     <tr>
-                        <td width="12%">
-                            <div class="form-group">
-                                <input type="text" ng-model="product.sku" class="form-control" id="sku" placeholder="SKU">
+                        <td width="8%">
+                            <div class="form-group" style="margin-bottom:0; margin-top:5px;">
+                                <input type="text" ng-model="query.order.orderId" class="form-control" placeholder="订单编号" />
                             </div>
                         </td>
-                        <td width="12%">
-                            <div class="form-group">
-                                <input type="text" ng-model="product.name" class="form-control" id="name" placeholder="商品名称">
+                        <td width="8%">
+                            <div class="form-group" style="margin-bottom:0; margin-top:5px;">
+                                <input type="text" ng-model="query.order.shipNumber" class="form-control" placeholder="快递单号" />
                             </div>
                         </td>
-                        <td width="12%">
-                            <div class="form-group">
-                                <select class="form-control">
-                                    <option>全部店铺</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option>5</option>
-                                </select>
+                        <td width="8%">
+                            <div class="form-group" style="margin-bottom:0; margin-top:5px;">
+                                <input type="text" ng-model="query.order.receiveName" class="form-control" placeholder="收件人姓名" />
                             </div>
                         </td>
-                        <td width="12%">
-                            <div class="form-group">
-                                <select class="form-control">
-                                    <option>全部仓库</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option>5</option>
-                                </select>
+                        <td width="9%">
+                            <div class="form-group" style="margin-bottom:0; margin-top:5px;">
+                                <ui-select ng-model="query.shop.selected">
+                                    <ui-select-match placeholder="店铺">{{$select.selected.name}}</ui-select-match>
+                                    <ui-select-choices repeat="shop in shops | filter: $select.search">
+                                        <div ng-bind-html="shop.name | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                </ui-select>
                             </div>
                         </td>
-                        <td width="12%">
-                            <div class="form-group">
-                                <select class="form-control">
-                                    <option>全部供应商</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option>5</option>
-                                </select>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="panel panel-default">
-                                <div class="panel-body">
-                                    <a href="" class="btn btn-info btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-repeat="state in selected.status"> 
-                                        {{state.name}} <span class="glyphicon glyphicon-remove" sytle="color:white" ng-click="selectState(state)"></span>
-                                    </button>
-                                    <a href="" class="btn btn-primary btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-click="loadStatus()">选择状态</a>
+                        <td width="19%">
+                            <div class="form-group" style="margin-bottom:0; margin-top:5px;">
+                                <div class="input-daterange input-group">
+                                    <input type="text" class="form-control" placeholder="下单起始日期" ng-model="query.order.internalCreateTimeStart" style="">
+                                    <span class="input-group-addon">到</span>
+                                    <input type="text" class="form-control" placeholder="下单结束日期" ng-model="query.order.internalCreateTimeEnd">
                                 </div>
                             </div>
                         </td>
-                        <td width="12%">
-                            <div class="form-group pull-right">
-                                <button type="reset" class="btn btn-default" ng-click="reset()">重置</button>
-                                <button type="submit" class="btn btn-default">
-                                    <span class="glyphicon glyphicon-search"></span> 搜索
-                                </button>
+                        <td width="19%">
+                            <div class="form-group" style="margin-bottom:0; margin-top:5px;">
+                                <div class="input-daterange input-group">
+                                    <input type="text" class="form-control" placeholder="发货起始日期" ng-model="query.order.shippingTimeStart" style="">
+                                    <span class="input-group-addon">到</span>
+                                    <input type="text" class="form-control" placeholder="发货结束日期" ng-model="query.order.shippingTimeEnd">
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="panel panel-default" style="margin-top:5px;">
+                                <div class="panel-body" style="padding:5px;">
+                                    <a href="" class="btn btn-info btn-xs" style="margin-bottom:5px;margin-right:5px;" ng-repeat="state in query.status">
+                                        {{state.name}} <span class="glyphicon glyphicon-remove" sytle="color:white" ng-click="selectStatus(state)"></span>
+                                    </a>
+                                    <a href="" class="btn btn-primary btn-xs" style="margin-right:5px;" ng-click="toggleStatusSlide()">选择状态</a>
+                                </div>
+                            </div>
+                        </td>
+                        <td width="14%">
+                            <div class="form-group text-center">
+                                <div class="col-md-12">
+                                    <button type="reset" class="btn btn-default" ng-click="reset()">
+                                        <span class="glyphicon glyphicon-refresh"></span>&nbsp;重置
+                                    </button>
+                                    <button type="submit" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-search"></span>&nbsp;搜索
+                                    </button>
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -83,60 +87,94 @@
             <thead>
                 <tr>
                     <th width="2%">
-                        <input type="checkbox" name="productId">
+                        <input type="checkbox" name="orderId">
                     </th>
-                    <th width="12%">SKU</th>
-                    <th width="12%">商品名称</th>
-                    <th width="20%">销售</th>
-                    <th width="15%">成本</th>
-                    <th width="17%">库存</th>
-                    <th width="14%">状态</th>
-                    <th width="8%" style="padding: 2px">
+                    <th width="10%">订单编号</th>
+                    <th width="10%">店铺</th>
+                    <th width="10%">店铺单号</th>
+                    <th width="14%">时间（下单，导入，发出）</th>
+                    <th width="6%">总金额</th>
+                    <th width="10%">收件人</th>
+                    <th width="10%">商品信息</th>
+                    <th width="12%">备注</th>
+                    <th width="10%">状态</th>
+                    <th width="6%" style="padding: 2px">
                         <select class="form-control input-sm">
                             <option selected="selected">批量操作</option>
-                            <option>批量上架</option>
-                            <option>批量下架</option>
-                            <option>批量更名</option>
-                            <option>批量作废</option>
                         </select>
                     </th>
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="product in page.content" ng-class="{active: product.active}">
+                <tr ng-repeat="order in page.content" ng-class="{active: order.active}">
                     <td>
-                        <input type="checkbox" name="productId">
+                        <input type="checkbox" name="orderId">
                     </td>
                     <td>
-                        {{product.sku}}
+                        {{order.id}}
                     </td>
                     <td>
-                        <span class="glyphicon glyphicon-th-large text-success" ng-show="product.productType==1"></span>
-                        <a href="" ng-click="loadDetails(product)">{{product.name}}</a>
+                        {{order.shop.name}}
                     </td>
                     <td>
-                        &nbsp;
+                        {{order.externalSn}}
                     </td>
                     <td>
-                        &nbsp;
+                        <div ng-show="order.internalCreateTime">
+                            下单 : {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}
+                        </div>
+                        <!--<div ng-show="order.internalCreateTime">-->
+                            <!--导入 : {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}-->
+                        <!--</div>-->
+                        <div ng-show="order.pickupTime">
+                            发出 : {{order.pickupTime | date : 'yyyy-MM-dd HH:mm:ss'}}
+                        </div>
+
                     </td>
                     <td>
-                        &nbsp;
+                        {{order.grandTotal | currency : ''}}
                     </td>
                     <td>
-                        <a href="" popover-template="popover.url" popover-title="{{process.process.name}}" ng-click="updateStep(product)" class="btn btn-success btn-xs" ng-repeat="process in product.processes" style="margin-right: 5px; margin-bottom:5px">
+                        <div ng-show="order.receiveName">
+                            名字 : {{order.receiveName}}
+                        </div>
+                        <div ng-show="order.receivePhone">
+                            电话 : {{order.receivePhone}}
+                        </div>
+                        <div ng-show="order.receiveAddress">
+                            地址 : {{order.receiveAddress}}
+                        </div>
+                    </td>
+                    <td>
+                        <div ng-repeat="item in order.items | limitTo:5">
+                            {{item.name}}&nbsp;*&nbsp;{{item.qtyOrdered}}
+                        </div>
+                        <a href="" class="btn btn-info btn-xs pull-right" ng-click="toggleDetailsSlide(order)">...</a>
+                    </td>
+                    <td>
+                        {{order.memo}}
+                    </td>
+                    <td>
+                        <a href="javascript:void(0)" popover-template="template.popover.url" ng-click="updateStep(order)" popover-trigger="focus" class="btn btn-success btn-xs" ng-repeat="process in order.processes" style="margin-right: 5px; margin-bottom:5px">
                             {{process.step.name}}
                         </a>
-                        <a href="" class="btn btn-info btn-xs pull-right" ng-click="loadProcesses(product)">...</a>
+                        <a href="javascript:void(0)" class="btn btn-info btn-xs pull-right" ng-click="toggleProcessSlide(order)">...</a>
                     </td>
                     <td>
-                        <a ui-sref="product.operator({id:product.id})" class="btn btn-info btn-xs">
+                        <a ui-sref="order.operator({id:order.id})" class="btn btn-info btn-xs">
                             <span class="glyphicon glyphicon-edit"></span> 编辑
                         </a>
                     </td>
                 </tr>
             </tbody>
             <tfoot>
+                <tr>
+                    <td colspan="20">
+                        <div class="panel-body" ng-show="page.content.length == 0">
+                            <div class="alert alert-warning">没有任何数据被检索到</div>
+                        </div>
+                    </td>
+                </tr>
                 <tr>
                     <td colspan="20">
                         <nav class="page-list">
@@ -153,7 +191,7 @@
                             </ul>
                             <div class="page-total">
                                 共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
-                                <select class="form-control" style="display: inline; padding:0" ng-model="pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                <select class="form-control" style="display: inline; padding:0" ng-model="query.pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
                                 </select>
                             </div>
                         </nav>
@@ -161,24 +199,29 @@
                 </tr>
             </tfoot>
         </table>
-        <div class="panel-body" ng-show="page.content.length == 0">
-            <div class="alert alert-warning">没有任何数据被检索到</div>
-        </div>
     </div>
 </div>
-<section ng-controller="ProductDetailsController" onload="initProductDetailsTabs()" ng-include="template.details.url"></section>
+<section ng-controller="OrderDetailController" onload="initOrderDetailTabs()" ng-include="template.detail.url"></section>
 <section ng-include="template.status.url"></section>
-<section ng-controller="ProductProcessController" ng-include="template.process.url"></section>
+<section ng-controller="OrderProcessController" ng-include="template.process.url"></section>
 <script type="text/ng-template" id="process-tmpl.html">
-    <span ng-if="process.process.type == 1">
-    <span ng-repeat="step in process.process.steps | orderBy: 'sequence'" >
-        <button type="button" class="btn btn-xs {{step.sequence > process.step.sequence ? 'btn-info' : 'btn-success'}}" style="margin-bottom:5px;" ng-click="saveUpdateStep(process, step.id)">{{step.name}}</button>
-        <span class="glyphicon glyphicon-circle-arrow-right" ng-show="!$last"></span>
-    </span>
-    </span>
-    <span ng-if="process.process.type == 2">
-    <div class="btn-group btn-group-xs">
-        <button type="button" class="btn btn-xs {{step.id != process.step.id ? 'btn-info' : 'btn-success'}}" ng-repeat="step in process.process.steps | orderBy: 'sequence'" ng-click="saveUpdateStep(process, step.id)">{{step.name}}</button>
+    <div class="panel panel-default" style="border: 0; margin: 0">
+        <div class="panel-heading" style="padding: 4px">
+            <button type="button" class="close">&times;</button>
+            <div class="panel-title">{{process.process.name}}</div>
+        </div>
+        <div class="panel-body" style="padding: 5px">
+            <span ng-switch on="process.process.type">
+                <span ng-switch-when="1">
+                    <span ng-repeat="step in process.process.steps | orderBy: 'sequence'" >
+                        <button type="button" class="btn btn-xs {{step.sequence > process.step.sequence ? 'btn-default' : 'btn-success'}}" style="margin-bottom:5px;" ng-click="saveUpdateStep(process, step.id)">{{step.name}}</button>
+                        <span class="glyphicon glyphicon-circle-arrow-right" ng-show="!$last"></span>
+                    </span>
+                </span>
+                <span ng-switch-when="2">
+                    <button type="button" class="btn btn-xs {{step.id != process.step.id ? 'btn-default' : 'btn-success'}}" ng-repeat="step in process.process.steps | orderBy: 'sequence'" ng-click="saveUpdateStep(process, step.id)" style="margin: 0 5px 5px 0">{{step.name}}</button>
+                </span>
+            </span>
+        </div>
     </div>
-</span>
 </script>

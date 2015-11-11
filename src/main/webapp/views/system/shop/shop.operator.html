@@ -4,133 +4,113 @@
     <li class="active">{{actionLabel}}店铺</li>
 </ol>
 <div class="container-fluid">
-    <div class="panel panel-default">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h3 class="panel-title">店铺&amp;配货方式</h3>
+        </div>
         <div class="panel-body">
             <!-- 店铺基本信息 -->
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <h4 class="text-success"><strong>店铺基本信息</strong></h4>
-                    <hr>
-                    <form name="shopOperatorForm" class="form-horizontal" novalidate>
-                        <div class="form-group has-feedback" ng-class="{'has-success':(shopOperatorForm.name.$dirty && shopOperatorForm.name.$valid), 'has-warning':(shopOperatorForm.name.$dirty && shopOperatorForm.name.$invalid) }">
-                            <label class="control-label col-md-2">店铺名称 <span class="text-danger">*</span></label>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="name" ng-model="shop.name" placeholder="(必填)" required ng-maxlength="50" />
-                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="shopOperatorForm.name.$dirty && shopOperatorForm.name.$valid"></span>
-                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="shopOperatorForm.name.$dirty && shopOperatorForm.name.$invalid"></span>
-                            </div>
-                            <span class="col-md-5 help-block" ng-messages="shopOperatorForm.name.$error" ng-show="shopOperatorForm.name.$dirty && shopOperatorForm.name.$invalid">
-                                <span ng-messages-include="views/error-messages.html?1" ></span>
-                            </span>
-                        </div>
-                        <div class="form-group has-feedback" ng-class="{'has-success':(shopOperatorForm.token.$dirty && shopOperatorForm.token.$valid), 'has-warning':(shopOperatorForm.token.$dirty && shopOperatorForm.token.$invalid) }">
-                            <label class="control-label col-md-2">店铺 Token <span class="text-danger">*</span></label>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="token" ng-model="shop.token" placeholder="(必填)" required ng-maxlength="50" />
-                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="shopOperatorForm.token.$dirty && shopOperatorForm.token.$valid"></span>
-                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="shopOperatorForm.token.$dirty && shopOperatorForm.token.$invalid"></span>
-                            </div>
-                            <span class="col-md-5 help-block" ng-messages="shopOperatorForm.token.$error" ng-show="shopOperatorForm.token.$dirty && shopOperatorForm.token.$invalid">
-                                <span ng-messages-include="views/error-messages.html?1" ></span>
-                            </span>
-                        </div>
-                        <div class="form-group has-feedback">
-                            <label class="control-label col-md-2">店铺类型 <span class="text-danger">*</span></label>
-                            <div class="col-md-4">
-                                <ui-select ng-model="shop.type" >
-                                    <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
-                                    <ui-select-choices repeat="type in types | filter: $select.search">
-                                        <div ng-bind-html="type.label | highlight: $select.search"></div>
-                                    </ui-select-choices>
-                                </ui-select>
-                            </div>
-                        </div>
-                        <div class="form-group has-feedback">
-                            <label class="control-label col-md-2">店铺状态 <span class="text-danger">*</span></label>
-                            <div class="col-md-4">
-                                <ui-select ng-model="shop.status" >
-                                    <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
-                                    <ui-select-choices repeat="status in statuses | filter: $select.search">
-                                        <div ng-bind-html="status.label | highlight: $select.search"></div>
-                                    </ui-select-choices>
-                                </ui-select>
-                            </div>
-                        </div>
-                        <div class="form-group has-feedback">
-                            <label class="control-label col-md-2">店铺管理员 <span class="text-danger">*</span></label>
-                            <div class="col-md-4">
-                                <ui-select ng-model="shop.user" >
-                                    <ui-select-match placeholder="(必选)">{{$select.selected.username}}</ui-select-match>
-                                    <ui-select-choices repeat="user in users | filter: $select.search">
-                                        <div ng-bind-html="user.username | highlight: $select.search"></div>
-                                    </ui-select-choices>
-                                </ui-select>
-                            </div>
-                        </div>
-                        <div class="form-group has-feedback" ng-class="{'has-success':(shopOperatorForm.apiCallLimit.$dirty && shopOperatorForm.apiCallLimit.$valid), 'has-warning':(shopOperatorForm.apiCallLimit.$dirty && shopOperatorForm.apiCallLimit.$invalid) }">
-                            <label class="control-label col-md-2" for="apiCallLimit">API 调用次数限制 <span class="text-danger">*</span></label>
-                            <div class="col-md-4">
-                                <input type="number" class="form-control" name="apiCallLimit" ng-model="shop.apiCallLimit" placeholder="(-1 为无限制)" required ng-maxlength="6" />
-                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="shopOperatorForm.apiCallLimit.$dirty && shopOperatorForm.apiCallLimit.$valid"></span>
-                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="shopOperatorForm.apiCallLimit.$dirty && shopOperatorForm.apiCallLimit.$invalid"></span>
-                            </div>
-                            <span class="col-md-5 help-block" ng-messages="shopOperatorForm.apiCallLimit.$error" ng-show="shopOperatorForm.apiCallLimit.$dirty && shopOperatorForm.apiCallLimit.$invalid">
-                                <span ng-messages-include="views/error-messages.html" ></span>
-                            </span>
-                        </div>
-                        <div class="form-group has-feedback">
-                            <label class="control-label col-md-2">店铺显示语言 <span class="text-danger">*</span></label>
-                            <div class="col-md-4">
-                                <ui-select ng-model="shop.language" >
-                                    <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
-                                    <ui-select-choices repeat="language in languages | filter: $select.search">
-                                        <div ng-bind-html="language.name | highlight: $select.search"></div>
-                                    </ui-select-choices>
-                                </ui-select>
-                            </div>
-                        </div>
-                        <div class="form-group has-feedback">
-                            <label class="control-label col-md-2">店铺结算货币 <span class="text-danger">*</span></label>
-                            <div class="col-md-4">
-                                <ui-select ng-model="shop.currency" >
-                                    <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
-                                    <ui-select-choices repeat="currency in currencies | filter: $select.search">
-                                        <div ng-bind-html="currency.name | highlight: $select.search"></div>
-                                    </ui-select-choices>
-                                </ui-select>
-                            </div>
-                        </div>
-                        <div class="form-group has-feedback">
-                            <label class="control-label col-md-2">店铺价格等级 <span class="text-danger">*</span></label>
-                            <div class="col-md-4">
-                                <ui-select ng-model="shop.priceLevel" >
-                                    <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
-                                    <ui-select-choices repeat="lvl in lvls | filter: $select.search">
-                                        <div ng-bind-html="lvl.label | highlight: $select.search"></div>
-                                    </ui-select-choices>
-                                </ui-select>
-                            </div>
-                        </div>
-                        <!-- <div class="form-group">
-                            <div class="col-md-5 col-md-offset-2">
-                                <button type="submit" class="btn btn-success btn-lg" ng-disabled="!shopOperatorForm.$valid">保存</button>
-                                <button type="button" class="btn btn-danger btn-lg" ng-click="remove()" ng-if="action=='update'">删除</button>
-                            </div>
-                        </div> -->
-                    </form>
-                </div>
-            </div>
-            <!-- 店铺的配货方式 -->
-            <div class="panel panel-default" ng-include="template.tunnel.url"></div>
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-2 col-md-offset-10">
-                            <button type="button" class="btn btn-success btn-lg btn-block" ng-click="saveShop(shop)" ng-disabled="!shopOperatorForm.$valid || !shop.user || !shop.language || !shop.currency">
-                                <span class="glyphicon glyphicon-floppy-saved"></span> 保存
-                            </button>
-                        </div>
+            <h4 class="text-success"><strong>店铺基本信息</strong></h4>
+            <hr>
+            <form name="shopForm" class="form-horizontal" novalidate>
+                <div class="form-group has-feedback" ng-class="{'has-success':(shopForm.name.$dirty && shopForm.name.$valid), 'has-warning':(shopForm.name.$dirty && shopForm.name.$invalid) }">
+                    <label class="control-label col-md-2">店铺名称 <span class="text-danger">*</span></label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="name" ng-model="shop.name" placeholder="(必填)" required ng-maxlength="100" check-unique="/api/shops/check-unique" check-property="name" check-id="{{shop.id}}"/>
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="shopForm.name.$dirty && shopForm.name.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="shopForm.name.$dirty && shopForm.name.$invalid"></span>
                     </div>
+                    <span class="col-md-5 help-block" ng-messages="shopForm.name.$error" ng-show="shopForm.name.$dirty && shopForm.name.$invalid">
+                        <span ng-messages-include="views/error-messages.html" ></span>
+                    </span>
+                </div>
+                <div class="form-group has-feedback" ng-class="{'has-success':(shopForm.token.$dirty && shopForm.token.$valid), 'has-warning':(shopForm.token.$dirty && shopForm.token.$invalid) }">
+                    <label class="control-label col-md-2">店铺 Token <span class="text-danger">*</span></label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="token" ng-model="shop.token" placeholder="(必填)" required ng-maxlength="50" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="shopForm.token.$dirty && shopForm.token.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="shopForm.token.$dirty && shopForm.token.$invalid"></span>
+                    </div>
+                    <span class="col-md-5 help-block" ng-messages="shopForm.token.$error" ng-show="shopForm.token.$dirty && shopForm.token.$invalid">
+                        <span ng-messages-include="views/error-messages.html"></span>
+                    </span>
+                </div>
+                
+                <div class="form-group has-feedback" ng-class="{'has-success':(shopForm.apiCallLimit.$dirty && shopForm.apiCallLimit.$valid), 'has-warning':(shopForm.apiCallLimit.$dirty && shopForm.apiCallLimit.$invalid) }">
+                    <label class="control-label col-md-2">API 调用次数限制 <span class="text-danger">*</span></label>
+                    <div class="col-md-4">
+                        <input type="number" class="form-control" name="apiCallLimit" ng-model="shop.apiCallLimit" placeholder="(-1 为无限制)" required ng-maxlength="10" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="shopForm.apiCallLimit.$dirty && shopForm.apiCallLimit.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="shopForm.apiCallLimit.$dirty && shopForm.apiCallLimit.$invalid"></span>
+                    </div>
+                    <span class="col-md-5 help-block" ng-messages="shopForm.apiCallLimit.$error" ng-show="shopForm.apiCallLimit.$dirty && shopForm.apiCallLimit.$invalid">
+                        <span ng-messages-include="views/error-messages.html" ></span>
+                    </span>
+                </div>
+                <div class="form-group has-feedback">
+                    <label class="control-label col-md-2">店铺类型 <span class="text-danger">*</span></label>
+                    <div class="col-md-3">
+                        <ui-select ng-model="shop.type" on-select="changeShopType($item, $model)">
+                            <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
+                            <ui-select-choices repeat="type in types | filter: $select.search">
+                                <div ng-bind-html="type.label | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <div class="form-group has-feedback">
+                    <label class="control-label col-md-2">显示语言 <span class="text-danger">*</span></label>
+                    <div class="col-md-3">
+                        <ui-select ng-model="shop.language">
+                            <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
+                            <ui-select-choices repeat="language in languages | filter: $select.search">
+                                <div ng-bind-html="language.name | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <div class="form-group has-feedback">
+                    <label class="control-label col-md-2">结算货币 <span class="text-danger">*</span></label>
+                    <div class="col-md-3">
+                        <ui-select ng-model="shop.currency">
+                            <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
+                            <ui-select-choices repeat="currency in currencies | filter: $select.search">
+                                <div ng-bind-html="currency.name | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <div class="form-group has-feedback" ng-show="shop.type.value==1">
+                    <label class="control-label col-md-2">价格等级 <span class="text-danger">*</span></label>
+                    <div class="col-md-3">
+                        <ui-select ng-model="shop.priceLevel" >
+                            <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
+                            <ui-select-choices repeat="lvl in lvls | filter: $select.search | filter: {value: '!0'}">
+                                <div ng-bind-html="lvl.label | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <div class="form-group has-feedback">
+                    <label class="control-label col-md-2">启用 <span class="text-danger">*</span></label>
+                    <div class="col-md-3">
+                        <ui-select ng-model="shop.enabled">
+                            <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
+                            <ui-select-choices repeat="opt in isorno | filter: $select.search">
+                                <div ng-bind-html="opt.label | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+            </form>
+            <!-- 店铺的配货方式 -->
+            <section ng-include="template.tunnel.url"></section>
+            <hr>
+            <div class="row">
+                <div class="col-md-2 col-md-offset-10">
+                    <button type="button" class="btn btn-success btn-lg btn-block" ng-click="saveShop(shop)" ng-disabled="!shopForm.$valid || !shop.language || !shop.currency">
+                        <span class="glyphicon glyphicon-floppy-saved"></span> 保存
+                    </button>
                 </div>
             </div>
         </div>
@@ -146,7 +126,7 @@
                     <span class="glyphicon glyphicon-question-sign"></span> 确定删除
                 </h4>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="border-top: none">
                 <button type="button" class="btn btn-danger" ng-click="removeTunnel()">确定</button>
             </div>
         </div>

@@ -1,0 +1,136 @@
+<ol class="breadcrumb">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li><a ui-sref="purchaseOrderDelivery">收货单管理</a></li>
+    <li class="active">收货单入库</li>
+</ol>
+<div class="container-fluid">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h3 class="panel-title">收货单入库</h3>
+        </div>
+        <div class="panel-body">
+            <p class="text-info">右边为入库单列表， 左边为需要入库的商品清单， 选择左边列表的商品，添加到右边列表</p>
+            <p class="text-info">默认添加按钮会忽略输入的数量，一次性把左边选中的商品，全数添加到右边的列表</p>
+        </div>
+        <hr style="margin: 0">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <table class="table table-condensed clear-marginbottom-table">
+                        <thead>
+                            <tr>
+                                <th width="4%">
+                                    <input type="checkbox" ng-model="checkedAll" ng-click="selectAll(receive, checkedAll)">
+                                </th>
+                                <th width="60%">可入库商品</th>
+                                <th width="36%">已添加/可入库数量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in receive.items | orderBy: 'product.name'">
+                                <td>
+                                    <input type="checkbox" ng-model="item.checked">
+                                </td>
+                                <td>
+                                    {{item.product.name}}
+                                </td>
+                                <td>
+                                    <span class="text-success">{{item.addedQty}}</span>/{{item.receiveQty}}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <hr style="">
+                    <form name="itemAddForm" class="form-horizontal" novalidate >
+                        <div class="form-group">
+                            <label class="control-label col-md-2">仓库 <span class="text-danger">*</span></label>
+                            <div class="col-md-10">
+                                <ui-select ng-model="batch.warehouse" on-select="item.position = undefined">
+                                    <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
+                                    <ui-select-choices repeat="warehouse in warehouses | filter: $select.search | orderBy: 'name'">
+                                        <div ng-bind-html="warehouse.name | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2">库位</label>
+                            <div class="col-md-10">
+                                <ui-select ng-model="item.position">
+                                    <ui-select-match placeholder="(可选)">{{$select.selected.name}}</ui-select-match>
+                                    <ui-select-choices repeat="position in batch.warehouse.positions | filter: $select.search | filter: {name: '!default'}">
+                                        <div ng-bind-html="position.name | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="form-group has-feedback" ng-class="{'has-success':(itemAddForm.changedQuantity.$dirty && itemAddForm.changedQuantity.$valid), 'has-warning':(itemAddForm.changedQuantity.$dirty && itemAddForm.changedQuantity.$invalid) }">
+                            <label class="control-label col-md-2">数量 <span class="text-danger">*</span></label>
+                            <div class="col-md-10">
+                                <input type="number" name="changedQuantity" ng-model="item.changedQuantity" placeholder="(必填)" class="form-control" required min="1" ng-maxlength="5" />
+                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="itemAddForm.changedQuantity.$dirty && itemAddForm.changedQuantity.$valid"></span>
+                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="itemAddForm.changedQuantity.$dirty && itemAddForm.changedQuantity.$invalid"></span>
+                            </div>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <label class="control-label col-md-2">保质期 </label>
+                            <div id="sandbox-container" class="col-md-10">
+                                <input type="text" class="form-control" ng-model="item.expireDate">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-10 col-md-offset-2">
+                                <button type="button" class="btn btn-success btn-lg" ng-click="saveItem(item, itemAddForm)" ng-disabled="!itemAddForm.$valid || !batch.warehouse">添加</button>
+                                <button type="button" class="btn btn-danger btn-lg" ng-click="defaultAdd(item, itemAddForm)" ng-disabled="!itemAddForm.$valid || !batch.warehouse">默认添加</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-8">
+                    <table class="table table-condensed clear-marginbottom-table">
+                        <thead>
+                            <tr>
+                                <th width="25%">商品</th>
+                                <th width="22%">仓库</th>
+                                <th width="15%">库位</th>
+                                <th width="10">数量</th>
+                                <th width="20%">保质期</th>
+                                <th width="8%">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in items | orderBy: 'product.name'">
+                                <td>
+                                    {{item.product.name}}{{item.product.id}}
+                                </td>
+                                <td>
+                                    {{item.warehouse.name}}
+                                </td>
+                                <td>
+                                    <span ng-if="item.position.name !== 'default'">{{item.position.name}}</span>
+                                </td>
+                                <td>
+                                    {{item.changedQuantity}}
+                                </td>
+                                <td>
+                                    {{item.expireDate}}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-xs" ng-click="removeItem(item, $index)">
+                                        <span class="glyphicon glyphicon-trash"></span> 删除
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <hr style="">
+                    <div class="row">
+                        <div class="col-md-2 col-md-offset-10">
+                            <button type="button" class="btn btn-success btn-lg pull-right" ng-click="enterInventory()">入库确认</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

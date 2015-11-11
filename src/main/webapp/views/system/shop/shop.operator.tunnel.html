@@ -1,24 +1,23 @@
-<div class="panel-body">
-    <h4 class="text-success">
-        <strong>店铺的配货方式</strong>
-    </h4>
-</div>
+<hr>
+<h4 class="text-success">
+    <strong>店铺的配货方式</strong>
+</h4>
 <form>
     <table class="table table-condensed clear-marginbottom-table">
         <tbody>
             <tr>
                 <th width="15%">名称</th>
                 <th width="15%">类型</th>
-                <th width="15%">行为</th>
-                <th width="15%">默认方式</th>
-                <th width="30%">仓库 | 供应商</th>
+                <th width="10%">行为</th>
+                <th width="10%">默认方式</th>
+                <th width="40%">仓库 | 供应商</th>
                 <th width="10%">操作</th>
             </tr>
         </tbody>
     </table>
 </form>
-<!-- tunnel table -->
-<form name="tunnelForm" novalidate ng-repeat="tunnel in shop.tunnels">
+<!-- Tunnel Table -->
+<form name="tunnelForm" novalidate ng-repeat="tunnel in shop.tunnels | orderBy: 'name'">
     <table class="table table-condensed clear-marginbottom-table">
         <tbody>
             <tr>
@@ -41,7 +40,7 @@
                         </ui-select>
                     </span>
                 </td>
-                <td width="15%">
+                <td width="10%">
                     <span ng-show="!tunnel.editable">{{tunnel.behavior.label}}</span>
                     <span ng-show="tunnel.editable">
                         <ui-select ng-model="tunnel.behavior">
@@ -52,43 +51,43 @@
                         </ui-select>
                     </span>
                 </td>
-                <td width="15%">
+                <td width="10%">
                     <span ng-show="!tunnel.editable">{{tunnel.defaultOption.label}}</span>
                     <span ng-show="tunnel.editable">
                         <ui-select ng-model="tunnel.defaultOption">
                             <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
-                            <ui-select-choices repeat="option in tunnelDefaultOptions | filter: $select.search">
-                                <div ng-bind-html="option.label | highlight: $select.search"></div>
+                            <ui-select-choices repeat="opt in isorno | filter: $select.search">
+                                <div ng-bind-html="opt.label | highlight: $select.search"></div>
                             </ui-select-choices>
                         </ui-select>
                     </span>
                 </td>
-                <td width="30%">
+                <td width="40%">
                     <span ng-show="!tunnel.editable && tunnel.type.value == 1">
-                        <span ng-repeat="warehouse in tunnel.warehouses" class="label label-{{warehouse.defaultOption ? 'danger' : 'default'}}" style="margin:3px">{{warehouse.name}}</span>
+                        <span ng-repeat="warehouse in tunnel.warehouses | orderBy: 'name'" class="label label-{{warehouse.defaultOption ? 'danger' : 'default'}}" style="margin:3px; display: inline-block">{{warehouse.name}}</span>
                     </span>
                     <span ng-show="!tunnel.editable && tunnel.type.value == 2">
-                        <span ng-repeat="supplier in tunnel.suppliers" class="label label-{{supplier.defaultOption ? 'danger' : 'default'}}" style="margin:3px">{{supplier.name}}</span>
+                        <span ng-repeat="supplier in tunnel.suppliers | orderBy: 'name'" class="label label-{{supplier.defaultOption ? 'danger' : 'default'}}" style="margin:3px; display: inline-block">{{supplier.name}}</span>
                     </span>
                     <section ng-show="tunnel.editable && tunnel.type.value == 1">
                         <div class="panel panel-default">
-                            <div class="panel-heading" style="font-size: 2px; padding: 3px">已分配的仓库列表(<span class="text-danger">点击可变为红色, 表示为优先项</span>)</div>
+                            <div class="panel-heading" style="font-size: 2px; padding: 3px">已分配的仓库列表(<span class="text-danger">点击可变为红色, 表示为默认仓库</span>)</div>
                             <div class="panel-body" style="padding:3px">
-                                <a href="javascript:void(0)" class="btn btn-{{warehouse.defaultOption ? 'danger' : 'info'}} btn-xs" ng-repeat="warehouse in tunnel.warehouses" style="margin:3px 3px 0 0" ng-click="setTunnelDefaultWarehouse(warehouse, tunnel)">
+                                <a href="javascript:void(0)" class="btn btn-{{warehouse.defaultOption ? 'danger' : 'info'}} btn-xs" ng-repeat="warehouse in tunnel.warehouses | orderBy: 'name'" style="margin:3px 3px 0 0" ng-click="setTunnelDefaultWarehouse(warehouse, tunnel)">
                                     {{warehouse.name}} 
                                 </a>
-                                <a href="javascript:void(0)" class="btn btn-primary btn-xs" style="margin:3px 3px 0 0" ng-click="loadTunnelWarehouses(tunnel.warehouses)">选择仓库</a>
+                                <a href="javascript:void(0)" class="btn btn-primary btn-xs" style="margin:3px 3px 0 0" ng-click="toggleTunnelWarehouseSlide(tunnel.warehouses)">选择仓库</a>
                             </div>
                         </div>
                     </section>
                     <section ng-show="tunnel.editable && tunnel.type.value == 2">
                         <div class="panel panel-default">
-                            <div class="panel-heading" style="font-size: 2px; padding: 3px">已分配的供应商列表(<span class="text-danger">点击可变为红色, 表示为优先项</span>)</div>
+                            <div class="panel-heading" style="font-size: 2px; padding: 3px">已分配的供应商列表(<span class="text-danger">点击可变为红色, 表示为默认供应商</span>)</div>
                             <div class="panel-body" style="padding:3px">
-                                <a href="javascript:void(0)" class="btn btn-{{supplier.defaultOption ? 'danger' : 'info'}} btn-xs" ng-repeat="supplier in tunnel.suppliers" style="margin:3px 3px 0 0" ng-click="setTunnelDefaultSupplier(supplier, tunnel)">
+                                <a href="javascript:void(0)" class="btn btn-{{supplier.defaultOption ? 'danger' : 'info'}} btn-xs" ng-repeat="supplier in tunnel.suppliers | orderBy: 'name'" style="margin:3px 3px 0 0" ng-click="setTunnelDefaultSupplier(supplier, tunnel)">
                                     {{supplier.name}}
                                 </a>
-                                <a href="javascript:void(0)" class="btn btn-primary btn-xs" style="margin:3px 3px 0 0" ng-click="loadTunnelSuppliers(tunnel.suppliers)">选择仓库</a>
+                                <a href="javascript:void(0)" class="btn btn-primary btn-xs" style="margin:3px 3px 0 0" ng-click="toggleTunnelSupplierSlide(tunnel.suppliers)">选择仓库</a>
                             </div>
                         </div>
                     </section>
@@ -108,14 +107,14 @@
         </tbody>
     </table>
 </form>
-<!-- tunnel add form -->
+<!-- Tunnel Add Form -->
 <form name="tunnelAddForm" novalidate ng-submit="saveTunnel(tunnel, tunnelAddForm)">
     <table class="table table-condensed clear-marginbottom-table">
         <tbody>
             <tr>
                 <td width="15%">
                     <div class="form-group has-feedback" ng-class="{'has-success':(tunnelAddForm.name.$dirty && tunnelAddForm.name.$valid), 'has-warning':(tunnelAddForm.name.$dirty && tunnelAddForm.name.$invalid) }">
-                        <input type="text" name="name" ng-model="tunnel.name" placeholder="(必填)" class="form-control" required min="1" ng-maxlength="50" />
+                        <input type="text" name="name" ng-model="tunnel.name" placeholder="(必填)" class="form-control" required ng-maxlength="20" />
                         <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="tunnelAddForm.name.$dirty && tunnelAddForm.name.$valid"></span>
                         <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="tunnelAddForm.name.$dirty && tunnelAddForm.name.$invalid"></span>
                     </div>
@@ -128,7 +127,7 @@
                         </ui-select-choices>
                     </ui-select>
                 </td>
-                <td width="15%">
+                <td width="10%">
                     <ui-select ng-model="tunnel.behavior">
                         <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
                         <ui-select-choices repeat="behavior in tunnelBehaviors | filter: $select.search">
@@ -136,37 +135,33 @@
                         </ui-select-choices>
                     </ui-select>
                 </td>
-                <td width="15%">
+                <td width="10%">
                     <ui-select ng-model="tunnel.defaultOption">
                         <ui-select-match placeholder="(必选)">{{$select.selected.label}}</ui-select-match>
-                        <ui-select-choices repeat="option in tunnelDefaultOptions | filter: $select.search">
-                            <div ng-bind-html="option.label | highlight: $select.search"></div>
+                        <ui-select-choices repeat="opt in isorno | filter: $select.search">
+                            <div ng-bind-html="opt.label | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
                 </td>
-                <td width="30%">
-                    <section ng-show="tunnel.type.value == 1">
-                        <div class="panel panel-default">
-                            <div class="panel-heading" style="font-size: 12px; padding: 3px">已分配的仓库列表(<span class="text-danger">点击可变为红色, 表示为优先项</span>)</div>
-                            <div class="panel-body" style="padding:3px">
-                                <a href="javascript:void(0)" class="btn btn-{{warehouse.defaultOption ? 'danger' : 'info'}} btn-xs" ng-repeat="warehouse in tunnel.warehouses" style="margin:3px 3px 0 0" ng-click="setTunnelDefaultWarehouse(warehouse, tunnel)">
-                                    {{warehouse.name}} 
-                                </a>
-                                <a href="javascript:void(0)" class="btn btn-primary btn-xs" style="margin:3px 3px 0 0" ng-click="loadTunnelWarehouses(tunnel.warehouses)">选择仓库</a>
-                            </div>
+                <td width="40%" ng-switch on="tunnel.type.value">
+                    <div class="panel panel-default" ng-switch-when="1">
+                        <div class="panel-heading" style="font-size: 12px; padding: 3px">已分配的仓库列表(<span class="text-danger">点击可变为红色, 表示为默认仓库</span>)</div>
+                        <div class="panel-body" style="padding:3px">
+                            <a href="javascript:void(0)" class="btn btn-{{warehouse.defaultOption ? 'danger' : 'info'}} btn-xs" ng-repeat="warehouse in tunnel.warehouses | orderBy: 'name'" style="margin:3px 3px 0 0" ng-click="setTunnelDefaultWarehouse(warehouse, tunnel)">
+                                {{warehouse.name}} 
+                            </a>
+                            <a href="javascript:void(0)" class="btn btn-primary btn-xs" style="margin:3px 3px 0 0" ng-click="toggleTunnelWarehouseSlide(tunnel.warehouses)">选择仓库</a>
                         </div>
-                    </section>
-                    <section ng-show="tunnel.type.value == 2">
-                        <div class="panel panel-default">
-                            <div class="panel-heading" style="font-size: 12px; padding: 3px">已分配的供应商列表(<span class="text-danger">点击可变为红色, 表示为优先项</span>)</div>
-                            <div class="panel-body" style="padding:3px">
-                                <a href="javascript:void(0)" class="btn btn-{{supplier.defaultOption ? 'danger' : 'info'}} btn-xs" ng-repeat="supplier in tunnel.suppliers" style="margin:3px 3px 0 0" ng-click="setTunnelDefaultSupplier(supplier, tunnel)">
-                                    {{supplier.name}} 
-                                </a>
-                                <a href="javascript:void(0)" class="btn btn-primary btn-xs" style="margin:3px 3px 0 0" ng-click="loadTunnelSuppliers(tunnel.suppliers)">选择仓库</a>
-                            </div>
+                    </div>
+                    <div class="panel panel-default" ng-switch-when="2">
+                        <div class="panel-heading" style="font-size: 12px; padding: 3px">已分配的供应商列表(<span class="text-danger">点击可变为红色, 表示为默认供应商</span>)</div>
+                        <div class="panel-body" style="padding:3px">
+                            <a href="javascript:void(0)" class="btn btn-{{supplier.defaultOption ? 'danger' : 'info'}} btn-xs" ng-repeat="supplier in tunnel.suppliers | orderBy: 'name'" style="margin:3px 3px 0 0" ng-click="setTunnelDefaultSupplier(supplier, tunnel)">
+                                {{supplier.name}} 
+                            </a>
+                            <a href="javascript:void(0)" class="btn btn-primary btn-xs" style="margin:3px 3px 0 0" ng-click="toggleTunnelSupplierSlide(tunnel.suppliers)">选择供应商</a>
                         </div>
-                    </section>
+                    </div>
                 </td>
                 <td width="10%">
                     <button type="submit" class="btn btn-success" ng-disabled="!tunnelAddForm.$valid || !tunnel.type || !tunnel.behavior || !tunnel.defaultOption">添加</button>
@@ -176,3 +171,4 @@
     </table>
 </form>
 <section ng-include="template.tunnel.warehouse.url"></section>
+<section ng-include="template.tunnel.supplier.url"></section>

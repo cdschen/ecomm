@@ -4,7 +4,12 @@
     <li class="active">入库</li>
 </ol>
 <div class="container-fluid">
-    <div class="panel panel-default">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                入库
+            </h3>
+        </div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-3">
@@ -15,10 +20,13 @@
                         </ui-select-choices>
                     </ui-select>
                 </div>
+                <div class="col-md-5">
+                    
+                </div>
             </div>
         </div>
         <form>
-            <table class="table table-bordered table-condensed clear-marginbottom-table">
+            <table class="table table-condensed clear-marginbottom-table">
                 <tbody>
                     <tr>
                         <th width="36%">SKU | 商品名称</th>
@@ -32,7 +40,7 @@
         </form>
         <!-- item table -->
         <form name="itemForm" novalidate ng-repeat="item in batch.items">
-            <table class="table table-bordered table-condensed clear-marginbottom-table">
+            <table class="table table-condensed clear-marginbottom-table">
                 <tbody>
                     <tr>
                         <td width="36%">
@@ -60,7 +68,7 @@
         </form>
         <!-- item add form -->
         <form name="itemAddForm" novalidate ng-submit="saveItem(item, itemAddForm)">
-            <table class="table table-bordered table-condensed clear-marginbottom-table">
+            <table class="table table-condensed clear-marginbottom-table">
                 <tbody>
                     <tr>
                         <td width="36%">
@@ -89,7 +97,7 @@
                         </td>
                         <td width="16%">
                             <div id="sandbox-container">
-                                <input type="text" type="text" class="form-control" ng-model="item.expireDate">
+                                <input type="text" class="form-control" ng-model="item.expireDate">
                             </div>
                         </td>
                         <td width="16%">

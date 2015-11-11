@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,117 +28,86 @@ import com.sooeez.ecomm.domain.ProductMember;
 import com.sooeez.ecomm.domain.ProductMultiCurrency;
 import com.sooeez.ecomm.domain.ProductMultiLanguage;
 import com.sooeez.ecomm.domain.ProductShopTunnel;
+import com.sooeez.ecomm.service.ProductMemberService;
+import com.sooeez.ecomm.service.ProductMultiCurrencyService;
+import com.sooeez.ecomm.service.ProductMultiLanguageService;
 import com.sooeez.ecomm.service.ProductService;
+import com.sooeez.ecomm.service.ProductShopTunnelService;
 
 @RestController
 @RequestMapping("/api")
 public class ProductController {
+	
+	@Autowired 
+	private Environment env;
+	
+	@Autowired 
+	private PasswordEncoder passwordEncoder;
+	
+	/*
+	 * Service
+	 */
 
-	@Autowired private Environment env;
-	@Autowired private ProductService productService;
+	@Autowired 
+	private ProductService productService;
+	
+	@Autowired 
+	private ProductMemberService memberService;
+	
+	@Autowired 
+	private ProductMultiLanguageService multiLanguageService;
+	
+	@Autowired 
+	private ProductMultiCurrencyService multiCurrencyService;
+	
+	@Autowired 
+	private ProductShopTunnelService shopTunnelService;
 	
 	/*
 	 * Product
 	 */
 	
+	@RequestMapping(value = "/products/check-unique")
+	public Boolean existsProduct(Product product) {
+		return productService.existsProduct(product);
+	}
+	
 	@RequestMapping(value = "/products/{id}")
 	public Product getProduct(@PathVariable("id") Long id) {
-		return this.productService.getProduct(id);
+		return productService.getProduct(id);
 	}
 	
 	@RequestMapping(value = "/products")
 	public Page<Product> getPagedProducts(Product product, Pageable pageable) {
-		return this.productService.getPagedProducts(product, pageable);
+		return productService.getPagedProducts(product, pageable);
 	}
 	
 	@RequestMapping(value = "/products/get/all")
 	public List<Product> getProducts(Product product, Sort sort) {
-		return this.productService.getProducts(product, sort);
+		return productService.getProducts(product, sort);
 	}
 	
 	@RequestMapping(value = "/products", method = RequestMethod.POST)
 	public Product saveProduct(@RequestBody Product product, @RequestParam String action, HttpServletRequest request) {
-		if ("create".equals(action)) {
-			String directory = env.getProperty("ecomm.resource.directory");
-			System.out.println("directory:" + directory);
-			//this.productService.saveProduct(product);
-			if (product.getThumbnailUrl() != null) {
-				File file = new File(directory + product.getThumbnailUrl());
-				product.setThumbnailUrl(product.getId() + "-" + product.getThumbnailUrl());
-				boolean b = file.renameTo(new File(directory + product.getThumbnailUrl()));
-				System.out.println("缩略图更新: " + b);
-			}
-			if (product.getImage1Url() != null) {
-				File file = new File(directory + product.getImage1Url());
-				product.setImage1Url(product.getId() + "-" + product.getImage1Url());
-				boolean b = file.renameTo(new File(directory + product.getImage1Url()));
-				System.out.println("图片1更新: " + b);
-			}
-			if (product.getImage2Url() != null) {
-				File file = new File(directory + product.getImage2Url());
-				product.setImage2Url(product.getId() + "-" + product.getImage2Url());
-				boolean b = file.renameTo(new File(directory + product.getImage2Url()));
-				System.out.println("图片2更新: " + b);
-			}
-			if (product.getImage3Url() != null) {
-				File file = new File(directory + product.getImage3Url());
-				product.setImage3Url(product.getId() + "-" + product.getImage3Url());
-				boolean b = file.renameTo(new File(directory + product.getImage3Url()));
-				System.out.println("图片3更新: " + b);
-			}
-			if (product.getImage4Url() != null) {
-				File file = new File(directory + product.getImage4Url());
-				product.setImage4Url(product.getId() + "-" + product.getImage4Url());
-				boolean b = file.renameTo(new File(directory + product.getImage4Url()));
-				System.out.println("图片4更新: " + b);
-			}
-			if (product.getImage5Url() != null) {
-				File file = new File(directory + product.getImage5Url());
-				product.setImage5Url(product.getId() + "-" + product.getImage5Url());
-				boolean b = file.renameTo(new File(directory + product.getImage5Url()));
-				System.out.println("图片5更新: " + b);
-			}
-			if (product.getImage6Url() != null) {
-				File file = new File(directory + product.getImage6Url());
-				product.setImage6Url(product.getId() + "-" + product.getImage6Url());
-				boolean b = file.renameTo(new File(directory + product.getImage6Url()));
-				System.out.println("图片6更新: " + b);
-			}
-			if (product.getImage7Url() != null) {
-				File file = new File(directory + product.getImage7Url());
-				product.setImage7Url(product.getId() + "-" + product.getImage7Url());
-				boolean b = file.renameTo(new File(directory + product.getImage7Url()));
-				System.out.println("图片7更新: " + b);
-			}
-			if (product.getImage8Url() != null) {
-				File file = new File(directory + product.getImage8Url());
-				product.setImage8Url(product.getId() + "-" + product.getImage8Url());
-				boolean b = file.renameTo(new File(directory + product.getImage8Url()));
-				System.out.println("图片8更新: " + b);
-			}
-			if (product.getImage9Url() != null) {
-				File file = new File(directory + product.getImage9Url());
-				product.setImage9Url(product.getId() + "-" + product.getImage9Url());
-				boolean b = file.renameTo(new File(directory + product.getImage9Url()));
-				System.out.println("图片9更新: " + b);
-			}
-			return this.productService.saveProduct(product);		
-		} else if ("update".equals(action)) {
-			return this.productService.saveProduct(product);
-		}
-		return null;
+		return productService.saveProduct(product);
 	}
 	
 	@RequestMapping(value = "/products/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteProduct(@PathVariable("id") Long id) {
-		this.productService.deleteProduct(id);
+		productService.deleteProduct(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/products/image/upload/{id}/{field}", method = RequestMethod.POST)
-	public ResponseEntity<?> imageUpload(@PathVariable("id") Long id, @PathVariable("field") String field,  
+	public ResponseEntity<String> imageUpload(@PathVariable("id") Long id, @PathVariable("field") String field,  
 			@RequestParam("image") MultipartFile uploadfile,
 			HttpServletRequest request) {
+		
+		String filename = uploadfile.getOriginalFilename();
+		String time = String.valueOf(System.currentTimeMillis());
+		String encode = passwordEncoder.encode(filename + time);
+		encode = encode.replaceAll("[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]", "").trim();
+		String dest = encode.substring(0, 20) + "" + filename.substring(filename.lastIndexOf("."));
 
 		try {
 			System.out.println("id: " + id);
@@ -145,11 +115,10 @@ public class ProductController {
 			String directory = env.getProperty("ecomm.resource.directory");
 			System.out.println("directory:" + directory);
 			
-			String filename = uploadfile.getOriginalFilename();
 			if (id.intValue() != 0) {
 				
-				Product product = this.productService.getProduct(id);
-				String dest = id + "-" + filename;
+				Product product = productService.getProduct(id);
+				
 				if ("thumbnailUrl".equals(field)) {
 					product.setThumbnailUrl(dest);
 					System.out.println("缩略图已上传并更新表");
@@ -194,44 +163,43 @@ public class ProductController {
 				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(directory + dest)));
 				stream.write(uploadfile.getBytes());
 				stream.close();
-				this.productService.saveProduct(product);
+				productService.saveProduct(product);
 				
 			} else {
 				
-				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(directory + filename)));
+				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(directory + dest)));
 				stream.write(uploadfile.getBytes());
 				stream.close();
 			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<String>(dest, HttpStatus.OK);
 	} 
 	
 	/*
 	 * ProductMultiLanguage
 	 */
 	
-	@RequestMapping(value = "/productmultilanguages/{id}")
-	public ProductMultiLanguage getProductMultiLanguage(@PathVariable("id") Long id) {
-		return this.productService.getProductMultiLanguage(id);
+	@RequestMapping(value = "/product-multilanguages/{id}")
+	public ProductMultiLanguage getMultiLanguage(@PathVariable("id") Long id) {
+		return multiLanguageService.getMultiLanguage(id);
 	}
 	
-	@RequestMapping(value = "/productmultilanguages")
-	public List<ProductMultiLanguage> getProductMultiLanguages() {
-		return this.productService.getProductMultiLanguages();
+	@RequestMapping(value = "/product-multilanguages")
+	public List<ProductMultiLanguage> getMultiLanguages() {
+		return multiLanguageService.getMultiLanguages();
 	}
 	
-	@RequestMapping(value = "/productmultilanguages", method = RequestMethod.POST)
-	public ProductMultiLanguage saveProductMultiLanguage(@RequestBody ProductMultiLanguage productMultiLanguage) {
-		return this.productService.saveProductMultiLanguage(productMultiLanguage);
+	@RequestMapping(value = "/product-multilanguages", method = RequestMethod.POST)
+	public ProductMultiLanguage saveMultiLanguage(@RequestBody ProductMultiLanguage multiLanguage) {
+		return multiLanguageService.saveMultiLanguage(multiLanguage);
 	}
 	
-	@RequestMapping(value = "/productmultilanguages/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteProductMultiLanguage(@PathVariable("id") Long id) {
-		this.productService.deleteProductMultiLanguage(id);
+	@RequestMapping(value = "/product-multilanguages/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteMultiLanguage(@PathVariable("id") Long id) {
+		multiLanguageService.deleteMultiLanguage(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
@@ -239,24 +207,24 @@ public class ProductController {
 	 * ProductMultiCurrency
 	 */
 	
-	@RequestMapping(value = "/productmulticurrencies/{id}")
-	public ProductMultiCurrency getProductMultiCurrency(@PathVariable("id") Long id) {
-		return this.productService.getProductMultiCurrency(id);
+	@RequestMapping(value = "/product-multicurrencies/{id}")
+	public ProductMultiCurrency getMultiCurrency(@PathVariable("id") Long id) {
+		return multiCurrencyService.getMultiCurrency(id);
 	}
 	
-	@RequestMapping(value = "/productmulticurrencies")
-	public List<ProductMultiCurrency> getProductMultiCurrencies() {
-		return this.productService.getProductMultiCurrencies();
+	@RequestMapping(value = "/product-multicurrencies")
+	public List<ProductMultiCurrency> getMultiCurrencies() {
+		return multiCurrencyService.getMultiCurrencies();
 	}
 	
-	@RequestMapping(value = "/productmulticurrencies", method = RequestMethod.POST)
-	public ProductMultiCurrency saveProductMultiCurrency(@RequestBody ProductMultiCurrency productMultiCurrency) {
-		return this.productService.saveProductMultiCurrency(productMultiCurrency);
+	@RequestMapping(value = "/product-multicurrencies", method = RequestMethod.POST)
+	public ProductMultiCurrency saveMultiCurrency(@RequestBody ProductMultiCurrency multiCurrency) {
+		return multiCurrencyService.saveMultiCurrency(multiCurrency);
 	}
 	
-	@RequestMapping(value = "/productmulticurrencies/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteProductMultiCurrency(@PathVariable("id") Long id) {
-		this.productService.deleteProductMultiCurrency(id);
+	@RequestMapping(value = "/product-multicurrencies/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteMultiCurrency(@PathVariable("id") Long id) {
+		multiCurrencyService.deleteMultiCurrency(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
@@ -264,24 +232,24 @@ public class ProductController {
 	 * ProductMember
 	 */
 	
-	@RequestMapping(value = "/productmembers/{id}")
-	public ProductMember getProductMember(@PathVariable("id") Long id) {
-		return this.productService.getProductMember(id);
+	@RequestMapping(value = "/product-members/{id}")
+	public ProductMember getMember(@PathVariable("id") Long id) {
+		return memberService.getMember(id);
 	}
 	
-	@RequestMapping(value = "/productmembers")
-	public List<ProductMember> getProductMembers() {
-		return this.productService.getProductMembers();
+	@RequestMapping(value = "/product-members")
+	public List<ProductMember> getMembers() {
+		return memberService.getMembers();
 	}
 	
-	@RequestMapping(value = "/productmembers", method = RequestMethod.POST)
-	public ProductMember saveProductMember(@RequestBody ProductMember productMember) {
-		return this.productService.saveProductMember(productMember);
+	@RequestMapping(value = "/product-members", method = RequestMethod.POST)
+	public ProductMember saveMember(@RequestBody ProductMember member) {
+		return memberService.saveMember(member);
 	}
 	
-	@RequestMapping(value = "/productmembers/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteProductMember(@PathVariable("id") Long id) {
-		this.productService.deleteProductMember(id);
+	@RequestMapping(value = "/product-members/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteMember(@PathVariable("id") Long id) {
+		memberService.deleteMember(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
@@ -289,24 +257,24 @@ public class ProductController {
 	 * ProductShopTunnel
 	 */
 	
-	@RequestMapping(value = "/productshoptunnels/{id}")
-	public ProductShopTunnel getProductShopTunnel(@PathVariable("id") Long id) {
-		return this.productService.getProductShopTunnel(id);
+	@RequestMapping(value = "/product-shop-tunnels/{id}")
+	public ProductShopTunnel getShopTunnel(@PathVariable("id") Long id) {
+		return shopTunnelService.getShopTunnel(id);
 	}
 	
-	@RequestMapping(value = "/productshoptunnels")
-	public List<ProductShopTunnel> getProductShopTunnel() {
-		return this.productService.getProductShopTunnels();
+	@RequestMapping(value = "/product-shop-tunnels")
+	public List<ProductShopTunnel> getShopTunnel() {
+		return shopTunnelService.getShopTunnels();
 	}
 	
-	@RequestMapping(value = "/productshoptunnels", method = RequestMethod.POST)
-	public ProductShopTunnel saveProductProductShopTunnel(@RequestBody ProductShopTunnel productShopTunnel) {
-		return this.productService.saveProductShopTunnel(productShopTunnel);
+	@RequestMapping(value = "/product-shop-tunnels", method = RequestMethod.POST)
+	public ProductShopTunnel saveShopTunnel(@RequestBody ProductShopTunnel shopTunnel) {
+		return shopTunnelService.saveShopTunnel(shopTunnel);
 	}
 	
-	@RequestMapping(value = "/productshoptunnels/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteProductShopTunnel(@PathVariable("id") Long id) {
-		this.productService.deleteProductShopTunnel(id);
+	@RequestMapping(value = "/product-shop-tunnels/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteShopTunnel(@PathVariable("id") Long id) {
+		shopTunnelService.deleteShopTunnel(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	

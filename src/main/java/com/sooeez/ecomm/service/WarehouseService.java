@@ -12,18 +12,20 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.sooeez.ecomm.domain.Warehouse;
-import com.sooeez.ecomm.domain.WarehousePosition;
-import com.sooeez.ecomm.repository.WarehousePositionRepository;
 import com.sooeez.ecomm.repository.WarehouseRepository;
 
 @Service
 public class WarehouseService {
 
-	// Repository
-	@Autowired private WarehouseRepository warehouseRepository;
-	@Autowired private WarehousePositionRepository warehousePositionRepository;
+	/*
+	 * Repository
+	 */
+	
+	@Autowired
+	private WarehouseRepository warehouseRepository;
 
 	/*
 	 * Warehouse
@@ -31,67 +33,53 @@ public class WarehouseService {
 
 	@Transactional
 	public Warehouse saveWarehouse(Warehouse warehouse) {
-		return this.warehouseRepository.save(warehouse);
+		return warehouseRepository.save(warehouse);
 	}
 
 	@Transactional
 	public void deleteWarehouse(Long id) {
-		this.warehouseRepository.delete(id);
+		warehouseRepository.delete(id);
+	}
+	
+	public Boolean existsWarehouse(Warehouse warehouse) {
+		return warehouseRepository.count(getWarehouseSpecification(warehouse)) > 0 ? true : false;
 	}
 
 	public Warehouse getWarehouse(Long id) {
-		return this.warehouseRepository.findOne(id);
+		return warehouseRepository.findOne(id);
 	}
 
 	public List<Warehouse> getWarehouses(Warehouse warehouse, Sort sort) {
-		return this.warehouseRepository.findAll(getWarehouseSpecification(warehouse), sort);
+		return warehouseRepository.findAll(getWarehouseSpecification(warehouse), sort);
 	}
 
 	public Page<Warehouse> getPagedWarehouses(Warehouse warehouse, Pageable pageable) {
-		return this.warehouseRepository.findAll(getWarehouseSpecification(warehouse), pageable);
+		return warehouseRepository.findAll(getWarehouseSpecification(warehouse), pageable);
 	}
 
 	private Specification<Warehouse> getWarehouseSpecification(Warehouse warehouse) {
 
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			predicates.add(cb.equal(root.get("deleted"), warehouse.getDeleted() != null && warehouse.getDeleted() == true ? true : false));
-			if (warehouse.getWarehouseIds() != null && warehouse.getWarehouseIds().length > 0) {
-				predicates.add(root.get("id").in(warehouse.getWarehouseIds()));
+			if (warehouse.getId() != null) {
+				if (warehouse.getCheckUnique() != null && warehouse.getCheckUnique().booleanValue() == true) {
+					predicates.add(cb.notEqual(root.get("id"), warehouse.getId()));
+				} else {
+					predicates.add(cb.equal(root.get("id"), warehouse.getId()));
+				}
 			}
-			
+			if (StringUtils.hasText(warehouse.getName())) {
+				predicates.add(cb.equal(root.get("name"), warehouse.getName()));
+			}
+			if (warehouse.getEnabled() != null) {
+				predicates.add(cb.equal(root.get("enabled"), warehouse.getEnabled()));
+			}
+			if (warehouse.getWarehouseIds() != null && warehouse.getWarehouseIds().length > 0) {
+				predicates.add(root.get("id").in((Object[]) warehouse.getWarehouseIds()));
+			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
+		
 	}
-
-	/*
-	 * WarehousePosition
-	 */
-
-	@Transactional
-	public WarehousePosition saveWarehousePosition(WarehousePosition warehousePosition) {
-		return this.warehousePositionRepository.save(warehousePosition);
-	}
-
-	@Transactional
-	public List<WarehousePosition> saveWarehousePositions(List<WarehousePosition> positions) {
-		return this.warehousePositionRepository.save(positions);
-	}
-
-	@Transactional
-	public void deleteWarehousePosition(Long id) {
-		this.warehousePositionRepository.delete(id);
-	}
-
-	public WarehousePosition getWarehousePosition(Long id) {
-		return this.warehousePositionRepository.findOne(id);
-	}
-
-	public List<WarehousePosition> getWarehousePositions() {
-		return this.warehousePositionRepository.findAll();
-	}
-
-	public Page<WarehousePosition> getPagedWarehousePositions(Pageable pageable) {
-		return this.warehousePositionRepository.findAll(pageable);
-	}
+	
 }

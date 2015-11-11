@@ -39,6 +39,7 @@ public class Inventory implements Serializable {
 	@Column(name = "warehouse_position_id", nullable = false, insertable = false, updatable = false)
 	private Long warehousePositionId;
 
+	// 入库, 批次ID
 	@Column(name = "inventory_batch_id", nullable = false)
 	private Long inventoryBatchId;
 
@@ -64,25 +65,23 @@ public class Inventory implements Serializable {
 	@Transient
 	private List<Long> warehouseIds;
 
-	//
+	/*
+	 * @Transient Properties
+	 */
 
 	public Inventory() {
 	}
 
-	public Long getWarehousePositionId() {
-		return warehousePositionId;
+	/*
+	 * Functions
+	 */
+
+	public Long getId() {
+		return id;
 	}
 
-	public void setWarehousePositionId(Long warehousePositionId) {
-		this.warehousePositionId = warehousePositionId;
-	}
-
-	public List<Long> getWarehouseIds() {
-		return warehouseIds;
-	}
-
-	public void setWarehouseIds(List<Long> warehouseIds) {
-		this.warehouseIds = warehouseIds;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public Long getProductId() {
@@ -93,20 +92,20 @@ public class Inventory implements Serializable {
 		this.productId = productId;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public Long getWarehouseId() {
 		return warehouseId;
 	}
 
 	public void setWarehouseId(Long warehouseId) {
 		this.warehouseId = warehouseId;
+	}
+
+	public Long getWarehousePositionId() {
+		return warehousePositionId;
+	}
+
+	public void setWarehousePositionId(Long warehousePositionId) {
+		this.warehousePositionId = warehousePositionId;
 	}
 
 	public Long getInventoryBatchId() {
@@ -147,6 +146,14 @@ public class Inventory implements Serializable {
 
 	public void setPosition(WarehousePosition position) {
 		this.position = position;
+	}
+
+	public List<Long> getWarehouseIds() {
+		return warehouseIds;
+	}
+
+	public void setWarehouseIds(List<Long> warehouseIds) {
+		this.warehouseIds = warehouseIds;
 	}
 
 }

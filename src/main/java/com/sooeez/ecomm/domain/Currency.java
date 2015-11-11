@@ -4,11 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "t_currency")
@@ -24,17 +20,17 @@ public class Currency implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@Column(name = "name", length = 255, nullable = false)
+	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "code", length = 255, nullable = false)
+	@Column(name = "code", nullable = false)
 	private String code;
 
 	@Column(name = "type", nullable = false)
-	private int type;
+	private Integer type;
 
 	@Column(name = "exchange_rate", nullable = false)
-	private float exchangeRate;
+	private Double exchangeRate;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "last_update", nullable = false)
@@ -44,14 +40,20 @@ public class Currency implements Serializable {
 	 * Related Properties
 	 */
 
-	
+	/*
+	 * @Transient Properties
+	 */
 
-	//
+	/*
+	 * Constructor
+	 */
 
 	public Currency() {
 	}
 
-	
+	/*
+	 * Functions
+	 */
 
 	public Long getId() {
 		return id;
@@ -77,19 +79,19 @@ public class Currency implements Serializable {
 		this.code = code;
 	}
 
-	public int getType() {
+	public Integer getType() {
 		return type;
 	}
 
-	public void setType(int type) {
+	public void setType(Integer type) {
 		this.type = type;
 	}
 
-	public float getExchangeRate() {
+	public Double getExchangeRate() {
 		return exchangeRate;
 	}
 
-	public void setExchangeRate(float exchangeRate) {
+	public void setExchangeRate(Double exchangeRate) {
 		this.exchangeRate = exchangeRate;
 	}
 
@@ -99,10 +101,6 @@ public class Currency implements Serializable {
 
 	public void setLastUpdate(Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
 	}
 
 }

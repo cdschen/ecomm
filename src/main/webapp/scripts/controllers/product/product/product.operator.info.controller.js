@@ -3,12 +3,13 @@ angular.module('ecommApp')
 .controller('ProductInformationController', ['$scope', '$state', '$stateParams', 'Product',
     function($scope, $state, $stateParams, Product) {
 
-        var $ = angular.element;
-        var defaultMember = {
+        $scope.defaultMember = {
             quantity: 1
         };
-        $scope.member = angular.copy(defaultMember);
-        var defaultSum = {
+
+        $scope.member = angular.copy($scope.defaultMember);
+
+        $scope.defaultSum = {
             totalPriceL1: 0,
             totalPriceL2: 0,
             totalPriceL3: 0,
@@ -20,13 +21,14 @@ angular.module('ecommApp')
             totalPriceL9: 0,
             totalPriceL10: 0
         };
-        $scope.sum = angular.copy(defaultSum);
+
+        $scope.sum = angular.copy($scope.defaultSum);
 
         $scope.changeProductType = function($item) {
             if ($item.value === 1) {
                 Product.getAll({
                     productType: 0,
-                    deleted: false
+                    enabled: true
                 }).then(function(members) {
                     $scope.members = members;
                 });
@@ -48,7 +50,7 @@ angular.module('ecommApp')
         $scope.saveMember = function(memberAddForm, member) {
             $scope.product.members.push(angular.copy(member));
             memberAddForm.$setPristine();
-            $scope.member = angular.copy(defaultMember);
+            $scope.member = angular.copy($scope.defaultMember);
         };
 
         $scope.updateMember = function(member) {
@@ -59,8 +61,6 @@ angular.module('ecommApp')
             member.editable = false;
             memberForm.$setPristine();
         };
-
-        $scope.removingMember = undefined;
 
         $scope.showRemoveMember = function(member, $index) {
             $scope.removingMember = member;
@@ -99,19 +99,19 @@ angular.module('ecommApp')
                     $scope.passed = false;
                 }
             }
-            $scope.sum = angular.copy(defaultSum);
-            angular.forEach(members, function(member) {
-                var quantity = parseInt(member.quantity);
-                $scope.sum.totalPriceL1 += parseFloat(member.product.priceL1) * quantity;
-                $scope.sum.totalPriceL2 += parseFloat(member.product.priceL2) * quantity;
-                $scope.sum.totalPriceL3 += parseFloat(member.product.priceL3) * quantity;
-                $scope.sum.totalPriceL4 += parseFloat(member.product.priceL4) * quantity;
-                $scope.sum.totalPriceL5 += parseFloat(member.product.priceL5) * quantity;
-                $scope.sum.totalPriceL6 += parseFloat(member.product.priceL6) * quantity;
-                $scope.sum.totalPriceL7 += parseFloat(member.product.priceL7) * quantity;
-                $scope.sum.totalPriceL8 += parseFloat(member.product.priceL8) * quantity;
-                $scope.sum.totalPriceL9 += parseFloat(member.product.priceL9) * quantity;
-                $scope.sum.totalPriceL10 += parseFloat(member.product.priceL10) * quantity;
+            $scope.sum = angular.copy($scope.defaultSum);
+            $.each(members, function() {
+                var quantity = parseInt(this.quantity);
+                $scope.sum.totalPriceL1 += parseFloat(this.product.priceL1) * quantity;
+                $scope.sum.totalPriceL2 += parseFloat(this.product.priceL2) * quantity;
+                $scope.sum.totalPriceL3 += parseFloat(this.product.priceL3) * quantity;
+                $scope.sum.totalPriceL4 += parseFloat(this.product.priceL4) * quantity;
+                $scope.sum.totalPriceL5 += parseFloat(this.product.priceL5) * quantity;
+                $scope.sum.totalPriceL6 += parseFloat(this.product.priceL6) * quantity;
+                $scope.sum.totalPriceL7 += parseFloat(this.product.priceL7) * quantity;
+                $scope.sum.totalPriceL8 += parseFloat(this.product.priceL8) * quantity;
+                $scope.sum.totalPriceL9 += parseFloat(this.product.priceL9) * quantity;
+                $scope.sum.totalPriceL10 += parseFloat(this.product.priceL10) * quantity;
             });
             $scope.product.priceL1 = $scope.sum.totalPriceL1;
             $scope.product.priceL2 = $scope.sum.totalPriceL2;

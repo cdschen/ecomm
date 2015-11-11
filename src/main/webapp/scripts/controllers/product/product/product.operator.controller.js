@@ -1,9 +1,11 @@
 angular.module('ecommApp')
 
-.controller('ProductOperatorController', ['$scope', '$state', '$stateParams', '$filter', 'Product', 'Brand', 'Category', 'MadeFrom', 'Language', 'Currency', 'Tag', 'Shop',
-    function($scope, $state, $stateParams, $filter, Product, Brand, Category, MadeFrom, Language, Currency, Tag, Shop) {
+.controller('ProductOperatorController', ['$scope', '$state', '$stateParams', '$filter', 'Product', 'Brand', 'Category', 'Source', 'Language', 'Currency', 'Tag', 'Shop',
+    function($scope, $state, $stateParams, $filter, Product, Brand, Category, Source, Language, Currency, Tag, Shop) {
 
         var t = $.now();
+
+        $scope.action = 'create';
         $scope.actionLabel = ($stateParams.id && $stateParams.id !== '') ? '编辑' : '创建';
 
         $scope.template = {
@@ -44,14 +46,12 @@ angular.module('ecommApp')
         $scope.shops = [];
         $scope.brands = [];
         $scope.categories = [];
-        $scope.madeFroms = [];
+        $scope.sources = [];
         $scope.languages = [];
         $scope.currencies = [];
         $scope.tags = [];
         $scope.members = [];
 
-        $scope.selectedDefaultTunnelsMap = {};
-        
         $scope.defaultProduct = {
             weight: 0,
             priceL1: 0.00,
@@ -70,12 +70,10 @@ angular.module('ecommApp')
             members: [],
             processes: [],
             shopTunnels: [],
-            deleted: false
+            enabled: true
         };
 
         $scope.product = angular.copy($scope.defaultProduct);
-
-        $scope.action = 'create';
 
         function initDefaultProductShopTunnel(tunnels) {
             $.each(tunnels, function() {
@@ -101,33 +99,33 @@ angular.module('ecommApp')
 
         Brand.getAll().then(function(brands) {
             $scope.brands = brands;
-        }).then(function() {
-            return Category.getAll().then(function(categories) {
-                $scope.categories = categories;
-            });
-        }).then(function() {
-            return MadeFrom.getAll().then(function(madeFroms) {
-                $scope.madeFroms = madeFroms;
-            });
-        }).then(function() {
-            return Language.getAll().then(function(languages) {
-                $scope.languages = languages;
-            });
-        }).then(function() {
-            return Currency.getAll().then(function(currencies) {
-                $scope.currencies = currencies;
-            });
-        }).then(function() {
-            return Tag.getAll().then(function(tags) {
-                $scope.tags = tags;
-            });
-        }).then(function() {
-            return Shop.getAll().then(function(shops) {
-                $scope.shops = shops;
-                $.each(shops, function() {
-                    var shop = this;
-                    initDefaultProductShopTunnel(shop.tunnels);
-                });
+        });
+
+        Category.getAll().then(function(categories) {
+            $scope.categories = categories;
+        });
+
+        Source.getAll().then(function(sources) {
+            $scope.sources = sources;
+        });
+
+        Language.getAll().then(function(languages) {
+            $scope.languages = languages;
+        });
+
+        Currency.getAll().then(function(currencies) {
+            $scope.currencies = currencies;
+        });
+
+        Tag.getAll().then(function(tags) {
+            $scope.tags = tags;
+        });
+
+        Shop.getAll().then(function(shops) {
+            $scope.shops = shops;
+            $.each(shops, function() {
+                var shop = this;
+                initDefaultProductShopTunnel(shop.tunnels);
             });
         }).then(function() {
             if ($stateParams.id && $stateParams.id !== '') {
@@ -147,7 +145,7 @@ angular.module('ecommApp')
                         if (product.productType.value === 1) {
                             Product.getAll({
                                 productType: 0,
-                                deleted: false
+                                enabled: true
                             }).then(function(members) {
                                 $scope.members = members;
                             });

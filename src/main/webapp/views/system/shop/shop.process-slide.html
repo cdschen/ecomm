@@ -5,11 +5,11 @@
                 <button type="button" class="close" ng-click="toggleProcessSlide()">
                     <span aria-hidden="true">×</span>
                 </button>
-                <h4 class="text-success">
+                <h3 class="text-success">
                     <strong>{{processShop.name}}</strong>
-                </h4>
+                </h3>
             </div>
-            <table class="table" ng-show="processes.length > 0">
+            <table class="table table-condensed" ng-show="processes.length > 0">
                 <thead>
                     <tr>
                         <th width="30%">流程</th>
@@ -20,24 +20,32 @@
                     <tr ng-repeat="process in processes">
                         <td>
                             {{process.name}}
-                            <small class="text-warning">({{process.type == 1 ? '线性' : '开关'}})</small>
+                            <small class="text-warning" ng-switch on="process.type">
+                                <span ng-switch-when="1">(线性)</span>
+                                <span ng-switch-when="2">(开关)</span>
+                            </small>
                         </td>
-                        <td>
-                            <div ng-if="process.type == 1">
+                        <td ng-switch on="process.type">
+                            <div ng-switch-when="1">
                                 <span ng-repeat="step in process.steps | orderBy: 'sequence'"> 
-                                    <button type="button" class="btn btn-xs {{forObjectProcesses(step) ? 'btn-success' : 'btn-info' }}" style="margin-bottom:5px;" ng-click="applyState(step)">{{step.name}}</button>
+                                    <button type="button" class="btn btn-xs btn-default" style="margin-bottom:5px;" ng-click="applyState(step)">{{step.name}}</button>
                                     <span class="glyphicon glyphicon-circle-arrow-right" ng-show="!$last"></span>
                                 </span>
                             </div>
-                            <div ng-if="process.type == 2">
+                            <div ng-switch-when="2">
                                 <div class="btn-group btn-group-xs">
-                                    <button type="button" class="btn btn-xs {{forObjectProcesses(step) ? 'btn-success' : 'btn-info' }}" ng-repeat="step in process.steps | orderBy: 'sequence'" ng-click="applyState(step)">{{step.name}}</button>
+                                    <button type="button" class="btn btn-xs btn-default" ng-repeat="step in process.steps | orderBy: 'sequence'" ng-click="applyState(step)">{{step.name}}</button>
                                 </div>
                             </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
+            <div class="panel-body" ng-if="processes.length == 0">
+                <div class="alert alert-warning">
+                    <span class="glyphicon glyphicon-info-sign"></span> 没有检索到任何数据
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -2,41 +2,38 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">店铺管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a ui-sref="shop.operator" class="btn btn-info btn-xs">创建</a>
+        <a class="btn btn-info btn-xs" ui-sref="shop.operator">创建</a>
     </li>
 </ol>
 <div class="container-fluid">
-    <div class="panel panel-default">
-        <table class="table table-condensed" ng-show="page.content.length > 0">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h3 class="panel-title">店铺列表</h3>
+        </div>
+        <table class="table table-condensed" ng-if="page.content.length > 0">
             <thead>
                 <tr>
-                    <th width="5%">编号</th>
                     <th width="12%">店名</th>
                     <th width="5%">类型</th>
-                    <th width="5%">状态</th>
-                    <th width="7%">管理员</th>
+                    <th width="5%">启用</th>
                     <th width="5%">货币</th>
                     <th width="6%">价钱等级</th>
-                    <th width="50%">店铺订单规则</th>
-                    <th width="5%">操作</th>
+                    <th width="61%">店铺订单规则</th>
+                    <th width="6%">操作</th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="shop in page.content" ng-class="{active: shop.active}">
-                    <th>
-                        {{shop.id}}
-                    </th>
                     <td>
                         {{shop.name}}
                     </td>
-                    <td>
-                        {{shop.type == 0 ? '自营' : '合作'}}
+                    <td ng-switch on="shop.type">
+                        <span ng-switch-when="0">自营</span>
+                        <span ng-switch-when="1">合作</span>
                     </td>
-                    <td>
-                        {{shop.status == 0 ? '禁用' : '正常'}}
-                    </td>
-                    <td>
-                        {{shop.user.username}}
+                    <td ng-switch on="shop.enabled">
+                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="true"></span>
+                        <span class="glyphicon glyphicon-remove text-danger" ng-switch-when="false"></span>
                     </td>
                     <td>
                         {{shop.currency.name}}
@@ -72,19 +69,13 @@
                     <td colspan="20">
                         <nav class="page-list">
                             <ul class="pagination pagination-sm">
-                                <li ng-class="{disabled: page.first}">
-                                    <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
-                                </li>
-                                <li ng-repeat="i in totalPagesList" ng-class="{active: i == page.number}">
-                                    <a href="" ng-click="turnPage(i)">{{i+1}}</a>
-                                </li>
-                                <li ng-class="{disabled: page.last}">
-                                    <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                <li ng-repeat="i in query.list" ng-class="{active: i.value === page.number}">
+                                    <a href="" ng-click="turnPage(i.value)">{{i.label}}</a>
                                 </li>
                             </ul>
                             <div class="page-total">
                                 共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
-                                <select class="form-control" style="display: inline; padding:0" ng-model="pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                <select class="form-control" style="display: inline; padding:0" ng-model="query.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
                                 </select>
                             </div>
                         </nav>
@@ -92,7 +83,7 @@
                 </tr>
             </tfoot>
         </table>
-        <div class="panel-body" ng-show="page.content.length == 0">
+        <div class="panel-body" ng-if="page.content.length == 0">
             <div class="alert alert-warning">
                 <span class="glyphicon glyphicon-info-sign"></span> 没有检索到任何数据
             </div>

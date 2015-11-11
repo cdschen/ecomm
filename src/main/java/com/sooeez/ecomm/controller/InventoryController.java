@@ -25,6 +25,8 @@ import com.sooeez.ecomm.domain.WarehousePosition;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.dto.OperationReviewShipmentDTO;
 import com.sooeez.ecomm.service.CourierService;
+import com.sooeez.ecomm.service.InventoryBatchItemService;
+import com.sooeez.ecomm.service.InventoryBatchService;
 import com.sooeez.ecomm.service.InventoryService;
 import com.sooeez.ecomm.service.ShipmentService;
 import com.sooeez.ecomm.service.WarehouseService;
@@ -32,11 +34,28 @@ import com.sooeez.ecomm.service.WarehouseService;
 @RestController
 @RequestMapping("/api")
 public class InventoryController {
+	
+	/*
+	 * Service
+	 */
 
-	@Autowired private InventoryService inventoryService;
-	@Autowired private CourierService courierService;
-	@Autowired private ShipmentService shipmentService;
-	@Autowired private WarehouseService warehouseService;
+	@Autowired 
+	private InventoryService inventoryService;
+	
+	@Autowired 
+	private InventoryBatchService batchService;
+	
+	@Autowired 
+	private InventoryBatchItemService batchItemService;
+	
+	@Autowired 
+	private CourierService courierService;
+	
+	@Autowired 
+	private ShipmentService shipmentService;
+	
+	@Autowired 
+	private WarehouseService warehouseService;
 	
 	/*
 	 * Inventory
@@ -44,33 +63,33 @@ public class InventoryController {
 	
 	@RequestMapping(value = "/inventories/{id}")
 	public Inventory getInventory(@PathVariable("id") Long id) {
-		return this.inventoryService.getInventory(id);
+		return inventoryService.getInventory(id);
 	}
 	
 	@RequestMapping(value = "/inventories")
-	public Page<Inventory> getPagedInventories(Pageable pageable) {
-		return this.inventoryService.getPagedInventories(pageable);
+	public Page<Inventory> getPagedInventories(Inventory inventory, Pageable pageable) {
+		return inventoryService.getPagedInventories(inventory, pageable);
 	}
 	
 	@RequestMapping(value = "/inventories/get/all")
 	public List<Inventory> getInventories(Inventory inventory, Sort sort) {
-		return this.inventoryService.getInventories(inventory, sort);
+		return inventoryService.getInventories(inventory, sort);
 	}
 	
 	@RequestMapping(value = "/inventories", method = RequestMethod.POST)
 	public Inventory saveInventory(@RequestBody Inventory inventory) {
-		return this.inventoryService.saveInventory(inventory);
+		return inventoryService.saveInventory(inventory);
 	}
 	
 	@RequestMapping(value = "/inventories/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteInventory(@PathVariable("id") Long id) {
-		this.inventoryService.deleteInventory(id);
+		inventoryService.deleteInventory(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/inventories/outinventorysheet/create", method = RequestMethod.POST)
 	public OperationReviewDTO createOutInventorySheet(@RequestBody OperationReviewDTO review) {
-		return this.inventoryService.createOutInventorySheet(review);
+		return batchService.createOutInventorySheet(review);
 	}
 	
 	/*
@@ -78,28 +97,33 @@ public class InventoryController {
 	 */
 	
 	@RequestMapping(value = "/inventory-batches/{id}")
-	public InventoryBatch getInventoryBatch(@PathVariable("id") Long id) {
-		return this.inventoryService.getInventoryBatch(id);
+	public InventoryBatch getBatch(@PathVariable("id") Long id) {
+		return batchService.getBatch(id);
 	}
 	
 	@RequestMapping(value = "/inventory-batches")
-	public Page<InventoryBatch> getPagedInventoryBatches(InventoryBatch batch, Pageable pageable) {
-		return this.inventoryService.getPagedInventoryBatches(batch, pageable);
+	public Page<InventoryBatch> getPagedBatches(InventoryBatch batch, Pageable pageable) {
+		return batchService.getPagedBatches(batch, pageable);
 	}
 	
 	@RequestMapping(value = "/inventory-batches/get/all")
-	public List<InventoryBatch> getInventoryBatches(InventoryBatch batch, Sort sort) {
-		return this.inventoryService.getInventoryBatches(batch, sort);
+	public List<InventoryBatch> getBatches(InventoryBatch batch, Sort sort) {
+		return batchService.getBatches(batch, sort);
 	}
 	
 	@RequestMapping(value = "/inventory-batches", method = RequestMethod.POST)
-	public InventoryBatch saveInventoryBatch(@RequestBody InventoryBatch inventoryBatch) {
-		return this.inventoryService.saveInventoryBatch(inventoryBatch);
+	public InventoryBatch saveBatch(@RequestBody InventoryBatch inventoryBatch) {
+		return batchService.saveInventoryBatch(inventoryBatch);
+	}
+	
+	@RequestMapping(value = "/inventory-batches/save/list", method = RequestMethod.POST)
+	public List<InventoryBatch> saveBatches(@RequestBody List<InventoryBatch> inventoryBatches) {
+		return batchService.saveInventoryBatches(inventoryBatches);
 	}
 	
 	@RequestMapping(value = "/inventory-batches/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteInventoryBatch(@PathVariable("id") Long id) {
-		this.inventoryService.deleteInventoryBatch(id);
+	public ResponseEntity<?> deleteBatch(@PathVariable("id") Long id) {
+		batchService.deleteBatch(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
@@ -108,28 +132,28 @@ public class InventoryController {
 	 */
 	
 	@RequestMapping(value = "/inventory-batch-items/{id}")
-	public InventoryBatchItem getInventoryBatchItem(@PathVariable("id") Long id) {
-		return this.inventoryService.getInventoryBatchItem(id);
+	public InventoryBatchItem getBatchItem(@PathVariable("id") Long id) {
+		return batchItemService.getBatchItem(id);
 	}
 	
 	@RequestMapping(value = "/inventory-batch-items")
 	public Page<InventoryBatchItem> getPagedInventoryBatchItems(InventoryBatchItem inventoryBatchItem, Pageable pageable) {
-		return this.inventoryService.getPagedInventoryBatchItems(inventoryBatchItem, pageable);
+		return batchItemService.getPagedBatchItems(inventoryBatchItem, pageable);
 	}
 	
 	@RequestMapping(value = "/inventory-batch-items/get/all")
 	public List<InventoryBatchItem> getInventoryBatchItems(InventoryBatchItem inventoryBatchItem, Sort sort) {
-		return this.inventoryService.getInventoryBatchItems(inventoryBatchItem, sort);
+		return batchItemService.getBatchItems(inventoryBatchItem, sort);
 	}
 	
 	@RequestMapping(value = "/inventory-batch-items", method = RequestMethod.POST)
 	public InventoryBatchItem saveInventoryBatchItem(@RequestBody InventoryBatchItem inventoryBatchItem) {
-		return this.inventoryService.saveInventoryBatchItem(inventoryBatchItem);
+		return batchItemService.saveBatchItem(inventoryBatchItem);
 	}
 	
 	@RequestMapping(value = "/inventory-batch-items/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteInventoryBatchItem(@PathVariable("id") Long id) {
-		this.inventoryService.deleteInventoryBatchItem(id);
+		batchItemService.deleteBatchItem(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
@@ -139,27 +163,27 @@ public class InventoryController {
 	
 	@RequestMapping(value = "/couriers/{id}")
 	public Courier getCouerirs(@PathVariable("id") Long id) {
-		return this.courierService.getCourier(id);
+		return courierService.getCourier(id);
 	}
 	
 	@RequestMapping(value = "/couriers")
 	public Page<Courier> getPagedCouriers(Pageable pageable) {
-		return this.courierService.getPagedCouriers(pageable);
+		return courierService.getPagedCouriers(pageable);
 	}
 	
 	@RequestMapping(value = "/couriers/get/all")
 	public List<Courier> getCouriers() {
-		return this.courierService.getCouriers();
+		return courierService.getCouriers();
 	}
 	
 	@RequestMapping(value = "/couriers", method = RequestMethod.POST)
 	public Courier saveCourier(@RequestBody Courier courier) {
-		return this.courierService.saveCourier(courier);
+		return courierService.saveCourier(courier);
 	}
 	
 	@RequestMapping(value = "/couriers/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteCourier(@PathVariable("id") Long id) {
-		this.courierService.deleteCourier(id);
+		courierService.deleteCourier(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
@@ -169,38 +193,38 @@ public class InventoryController {
 	
 	@RequestMapping(value = "/shipments/{id}")
 	public Shipment getShipments(@PathVariable("id") Long id) {
-		return this.shipmentService.getShipment(id);
+		return shipmentService.getShipment(id);
 	}
 	
 	@RequestMapping(value = "/shipments")
 	public Page<Shipment> getPagedShipments(Shipment shipment, Pageable pageable) {
-		return this.shipmentService.getPagedShipments(shipment, pageable);
+		return shipmentService.getPagedShipments(shipment, pageable);
 	}
 	
 	@RequestMapping(value = "/shipments/get/all")
 	public List<Shipment> getShipments() {
-		return this.shipmentService.getShipments();
+		return shipmentService.getShipments();
 	}
 	
 	@RequestMapping(value = "/shipments", method = RequestMethod.POST)
 	public Shipment saveShipment(@RequestBody Shipment shipment) {
-		return this.shipmentService.saveShipment(shipment);
+		return shipmentService.saveShipment(shipment);
 	}
 	
 	@RequestMapping(value = "/saveShipments", method = RequestMethod.POST)
 	public List<Shipment> saveShipments(@RequestBody Shipment shipments) {
-		return this.shipmentService.saveShipments( shipments );
+		return shipmentService.saveShipments( shipments );
 	}
 	
 	@RequestMapping(value = "/shipments/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteShipment(@PathVariable("id") Long id) {
-		this.shipmentService.deleteShipment(id);
+		shipmentService.deleteShipment(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/shipments/confirm/complete/operation-review")
 	public OperationReviewShipmentDTO confirmOrderWhenGenerateShipment(@RequestBody OperationReviewShipmentDTO review) {
-		return this.shipmentService.confirmOperationReviewWhenCompleteShipment(review);
+		return shipmentService.confirmOperationReviewWhenCompleteShipment(review);
 	}
 	
 	/*
@@ -209,27 +233,28 @@ public class InventoryController {
 	
 	@RequestMapping(value = "/shipmentitems/{id}")
 	public ShipmentItem getShipmentItems(@PathVariable("id") Long id) {
-		return this.shipmentService.getShipmentItem(id);
+		return shipmentService.getShipmentItem(id);
 	}
 	
 	@RequestMapping(value = "/shipmentitems")
 	public Page<ShipmentItem> getPagedShipmentItems(Pageable pageable) {
-		return this.shipmentService.getPagedShipmentItems(pageable);
+		return shipmentService.getPagedShipmentItems(pageable);
 	}
 	
 	@RequestMapping(value = "/shipmentitems/get/all")
 	public List<ShipmentItem> getShipmentItems() {
-		return this.shipmentService.getShipmentItems();
+		return shipmentService.getShipmentItems();
 	}
 	
 	@RequestMapping(value = "/shipmentitems", method = RequestMethod.POST)
 	public ShipmentItem saveShipmentItem(@RequestBody ShipmentItem shipmentItem) {
-		return this.shipmentService.saveShipmentItem(shipmentItem);
+		return shipmentService.saveShipmentItem(shipmentItem);
 	}
 	
 	@RequestMapping(value = "/shipmentitems/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteShipmentItem(@PathVariable("id") Long id) {
-		this.shipmentService.deleteShipmentItem(id);
+		shipmentService.deleteShipmentItem(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+	
 }

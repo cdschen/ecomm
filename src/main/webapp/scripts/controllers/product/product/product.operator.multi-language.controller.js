@@ -3,7 +3,6 @@ angular.module('ecommApp')
 .controller('ProductMultiLanguageController', ['$scope', '$stateParams', 'ProductMultiLanguage',
     function($scope, $stateParams, ProductMultiLanguage) {
 
-        var $ = angular.element;
         $scope.multiLanguage = {};
 
         $scope.saveLanguage = function(mlAddForm, multiLanguage) {
@@ -14,7 +13,7 @@ angular.module('ecommApp')
             } else if ($scope.action === 'update') {
                 multiLanguage.productId = $stateParams.id;
                 ProductMultiLanguage.save({}, multiLanguage, function(ml) {
-                    $scope.product.multiLanguages.push(angular.copy(ml));
+                    $scope.product.multiLanguages.push(ml);
                     mlAddForm.$setPristine();
                     $scope.multiLanguage = {};
                 });
@@ -36,8 +35,6 @@ angular.module('ecommApp')
                 });
             }
         };
-
-        $scope.removingLanguage = undefined;
 
         $scope.showRemoveLanguage = function(ml, $index) {
             $scope.removingLanguage = ml;

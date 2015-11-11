@@ -2,18 +2,20 @@
     <div id="operator-slider">
         <div class="panel panel-default">
             <div class="panel-body">
-                <button type="button" class="close" ng-click="closeTunnelWarehouseSlide()">
+                <button type="button" class="close" ng-click="toggleTunnelWarehouseSlide()">
                     <span aria-hidden="true">×</span>
                 </button>
-                <h3>可选的仓库</h3>
+                <h3 class="text-success">
+                    <strong>可选的仓库</strong>
+                </h3>
                 <hr>
-                <div class="row">
-                    <div class="col-md-3" ng-repeat="warehouse in operateWarehouses" style="margin-bottom:10px;">
-                        <button type="button" class="btn btn-block" ng-class="{'btn-info': warehouse.selected}" ng-click="selectTunnelDeployWarehouse(warehouse)">
-                            {{warehouse.name}} <span class="glyphicon glyphicon-ok" style="color:white" ng-show="warehouse.selected"></span>
+                <ul class="list-unstyled">
+                    <li ng-repeat="warehouse in optionalWarehouses | orderBy: 'name'" style="margin-bottom: 5px">
+                        <button type="button" class="btn btn-{{warehouse.selected ? 'info' : 'default'}}" ng-click="toggleWarehouse(warehouse)">
+                            <span class="glyphicon glyphicon-record" ng-show="warehouse.selected"></span> {{warehouse.name}}
                         </button>
-                    </div>
-                </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

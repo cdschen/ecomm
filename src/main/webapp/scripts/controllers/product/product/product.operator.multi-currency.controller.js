@@ -3,8 +3,7 @@ angular.module('ecommApp')
 .controller('ProductMultiCurrencyController', ['$scope', '$stateParams', 'ProductMultiCurrency',
     function($scope, $stateParams, ProductMultiCurrency) {
 
-        var $ = angular.element;
-        var defaultMultiCurrency = {
+        $scope.defaultMultiCurrency = {
             priceL1: 0.00,
             priceL2: 0.00,
             priceL3: 0.00,
@@ -16,19 +15,20 @@ angular.module('ecommApp')
             priceL9: 0.00,
             priceL10: 0.00
         };
-        $scope.multiCurrency = angular.copy(defaultMultiCurrency);
+
+        $scope.multiCurrency = angular.copy($scope.defaultMultiCurrency);
 
         $scope.saveCurrency = function(mcAddForm, multiCurrency) {
             if ($scope.action === 'create') {
                 $scope.product.multiCurrencies.push(angular.copy(multiCurrency));
                 mcAddForm.$setPristine();
-                $scope.multiCurrency = angular.copy(defaultMultiCurrency);
+                $scope.multiCurrency = angular.copy($scope.defaultMultiCurrency);
             } else if ($scope.action === 'update') {
                 multiCurrency.productId = $stateParams.id;
                 ProductMultiCurrency.save({}, multiCurrency, function(mc) {
-                    $scope.product.multiCurrencies.push(angular.copy(mc));
+                    $scope.product.multiCurrencies.push(mc);
                     mcAddForm.$setPristine();
-                    $scope.multiCurrency = defaultMultiCurrency;
+                    $scope.multiCurrency =  angular.copy($scope.defaultMultiCurrency);
                 });
             }
         };
@@ -46,8 +46,6 @@ angular.module('ecommApp')
                 });
             }
         };
-
-        $scope.removingCurrency = undefined;
 
         $scope.showRemoveCurrency = function(mc, $index) {
             $scope.removingCurrency = mc;

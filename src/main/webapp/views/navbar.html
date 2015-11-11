@@ -49,7 +49,7 @@
                                 <a ui-sref="brand" has-any-role="SYSTEM_ADMIN,BRAND_ADMIN">品牌管理</a>
                             </li>
                             <li>
-                                <a ui-sref="madefrom" has-any-role="SYSTEM_ADMIN,SOURCE_ADMIN">产地管理</a>
+                                <a ui-sref="source" has-any-role="SYSTEM_ADMIN,SOURCE_ADMIN">产地管理</a>
                             </li>
                             <li>
                                 <a ui-sref="tag" has-any-role="SYSTEM_ADMIN,TAG_ADMIN">标签管理</a>
@@ -76,7 +76,17 @@
                             </li>
                         </ul>
                     </li>
-                    <li><a href="javascript:void(0)" has-any-role="SYSTEM_ADMIN,PURCHASE_ADMIN">采购</a></li>
+                    <li ui-sref-active="active" class="dropdown">
+                        <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" has-any-role="SYSTEM_ADMIN,PURCHASE_ADMIN,RECEIVE_ADMIN">采购 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a ui-sref="purchaseOrder" has-any-role="SYSTEM_ADMIN,PURCHASE_ADMIN">采购单管理</a>
+                            </li>
+                            <li>
+                                <a ui-sref="purchaseOrderDelivery" has-any-role="SYSTEM_ADMIN,RECEIVE_ADMIN">收货单管理</a>
+                            </li>
+                        </ul>
+                    </li>
                     <li><a href="javascript:void(0)" has-any-role="SYSTEM_ADMIN,CUSTOMER_ADMIN">客户</a></li>
                 </ul>
                 <p class="navbar-text navbar-right" style="margin-right:0">

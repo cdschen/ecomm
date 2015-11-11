@@ -2,7 +2,7 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">品牌管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ng-click="toggleBrandSlide('create')">创建</a>
+        <a class="btn btn-info btn-xs" ng-click="toggleBrandSlide('create')">创建</a>
     </li>
 </ol>
 <div class="container-fluid">
@@ -10,23 +10,23 @@
         <div class="panel-heading">
             <h3 class="panel-title">品牌列表</h3>
         </div>
-        <table class="table table-condensed clear-marginbottom-table" ng-show="page.content.length > 0">
+        <table class="table table-condensed" ng-if="page.content.length > 0">
             <thead>
                 <tr>
-                    <th>编号</th>
-                    <th>品牌</th>
-                    <th>操作</th>
+                    <th width="10%">编号</th>
+                    <th width="80%">品牌</th>
+                    <th width="10%">操作</th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="brand in page.content">
-                    <th width="10%">
+                    <th>
                         {{brand.id}}
                     </th>
-                    <td width="80%">
+                    <td>
                         {{brand.name}}
                     </td>
-                    <td width="10%">
+                    <td>
                         <button type="button" class="btn btn-info btn-xs" ng-click="updateBrand(brand)">
                             <span class="glyphicon glyphicon-edit"></span> 编辑
                         </button>
@@ -41,19 +41,13 @@
                     <td colspan="20">
                         <nav class="page-list">
                             <ul class="pagination pagination-sm">
-                                <li ng-class="{disabled: page.first}">
-                                    <a href="javascript:void(0)" ng-click="turnPage(page.number - 1)">&laquo;</a>
-                                </li>
-                                <li ng-repeat="i in query.totalPagesList" ng-class="{active: i == page.number}">
-                                    <a href="javascript:void(0)" ng-click="turnPage(i)">{{i+1}}</a>
-                                </li>
-                                <li ng-class="{disabled: page.last}">
-                                    <a href="javascript:void(0)" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                <li ng-repeat="i in query.list" ng-class="{active: i.value === page.number}">
+                                    <a href="" ng-click="turnPage(i.value)">{{i.label}}</a>
                                 </li>
                             </ul>
                             <div class="page-total">
                                 共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
-                                <select class="form-control" style="display: inline; padding:0" ng-model="query.pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                <select class="form-control" style="display: inline; padding:0" ng-model="query.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
                                 </select>
                             </div>
                         </nav>
@@ -61,7 +55,7 @@
                 </tr>
             </tfoot>
         </table>
-        <div class="panel-body" ng-show="page.content.length == 0">
+        <div class="panel-body" ng-if="page.content.length == 0">
             <div class="alert alert-warning">
                 <span class="glyphicon glyphicon-info-sign"></span> 没有任何数据被检索到
             </div>
@@ -69,7 +63,7 @@
     </div>
 </div>
 <section ng-include="template.operator.url"></section>
-<!-- brand delete Modal -->
+<!-- Brand Delete Modal -->
 <div class="modal fade" id="brandDeleteModal">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -79,7 +73,7 @@
                     <span class="glyphicon glyphicon-question-sign"></span> <strong>确定删除</strong>
                 </h4>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="border-top:none">
                 <button type="button" class="btn btn-danger" ng-click="removeBrand()">确定</button>
             </div>
         </div>

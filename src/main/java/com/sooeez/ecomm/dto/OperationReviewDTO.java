@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.sooeez.ecomm.domain.Courier;
 import com.sooeez.ecomm.domain.Order;
+import com.sooeez.ecomm.domain.PurchaseOrder;
 
 public class OperationReviewDTO implements Serializable {
 
@@ -37,6 +38,8 @@ public class OperationReviewDTO implements Serializable {
 	private Courier selectedCourier;
 	// 指定出库的仓库id
 	private Long assignWarehouseId;
+	/* 收货单验证 */
+	private List<PurchaseOrder> purchaseOrders;
 	
 
 	public boolean isConfirmable() {
@@ -109,6 +112,14 @@ public class OperationReviewDTO implements Serializable {
 
 	public void setResultMap(Map<String, Object> resultMap) {
 		this.resultMap = resultMap;
+	}
+
+	public List<PurchaseOrder> getPurchaseOrders() {
+		return purchaseOrders;
+	}
+
+	public void setPurchaseOrders(List<PurchaseOrder> purchaseOrders) {
+		this.purchaseOrders = purchaseOrders;
 	}
 
 }

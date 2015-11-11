@@ -1,10 +1,7 @@
-'use strict';
-
 angular.module('ecommApp')
 
 .factory('orderService', ['$resource', '$http', function($resource, $http) {
 
-    var $ = angular.element;
     var operationReview;
     var order = $resource('/api/orders/:id', {}, {});
 
@@ -46,15 +43,18 @@ angular.module('ecommApp')
                 var exitShopTunnels = false;
                 $.each(order.shop.tunnels, function() {
                     var tunnel = this;
-                    $.each(tunnel.warehouses, function() {
-                        var warehouse = this;
-                        if (warehouse.id === item.warehouseId) {
-                            item.assignTunnel = angular.copy(tunnel);
-                            item.assignTunnel.defaultWarehouse = angular.copy(this);
-                            exitShopTunnels = true;
-                            return false;
-                        }
-                    });
+                    // 判断通道是不是仓库通道，并且行为是包含
+                    if (tunnel.type === 1 && tunnel.behavior === 1) {
+                        $.each(tunnel.warehouses, function() {
+                            var warehouse = this;
+                            if (warehouse.id === item.warehouseId) {
+                                item.assignTunnel = angular.copy(tunnel);
+                                item.assignTunnel.defaultWarehouse = angular.copy(this);
+                                exitShopTunnels = true;
+                                return false;
+                            }
+                        });
+                    }
                     if (exitShopTunnels) {
                         return false;
                     }
@@ -70,12 +70,10 @@ angular.module('ecommApp')
                                 var tunnel = this;
                                 if (tunnel.id === productShopTunnel.tunnelId) {
                                     item.assignTunnel = angular.copy(tunnel);
-                                    $.each(tunnel.warehouses, function() {
-                                        if (item.assignTunnel.defaultWarehouseId === this.id) {
-                                            item.assignTunnel.defaultWarehouse = angular.copy(this);
-                                            return false;
-                                        }
-                                    });
+                                    // 如何选择的通道是一个供应商通道
+                                    if (!tunnel.defaultWarehouse) {
+                                        item.assignTunnel = angular.copy(order.shop.defaultTunnel);
+                                    }
                                     return false;
                                 }
                             });

@@ -64,6 +64,7 @@ public class OrderService {
 	
 	// Service
 	@Autowired private InventoryService inventoryService;
+	@Autowired private InventoryBatchService inventoryBatchService;
 	@Autowired private ProcessService processService;
 	@Autowired private ShopService shopService;
 	@PersistenceContext private EntityManager em;
@@ -79,7 +80,7 @@ public class OrderService {
 			
 			Process processQuery = new Process();
 			processQuery.setObjectType(1);
-			processQuery.setDeleted(false);
+			processQuery.setEnabled(true);
 			List<Process> processes = processService.getProcesses(processQuery, null);
 			if (processes != null && processes.size() > 0) {
 				for (Process process : processes) {
@@ -134,7 +135,8 @@ public class OrderService {
 				grandTotal = grandTotal.add(order.getShippingFee());
 			}
 			if (order.getSubtotal() != null) {
-				tax = order.getSubtotal().multiply(new BigDecimal(0.15));
+				/* *3/23 */
+				tax = order.getSubtotal().multiply( new BigDecimal( 3 ) ).divide( new BigDecimal( 23 ), 2, BigDecimal.ROUND_DOWN );
 			}
 		}
 
@@ -362,20 +364,24 @@ public class OrderService {
 				boolean exitShopTunnels = false;
 				// 循环当前订单所属店铺的所有通道
 				for (ShopTunnel tunnel: order.getShop().getTunnels()) {
-					// 循环每个通道下的仓库
-					for (Warehouse warehouse: tunnel.getWarehouses()) {
-						// 判断当前仓库id是否和item上指定的仓库id一样
-						if (warehouse.getId().longValue() == item.getWarehouseId().longValue()) {
-							// 设置指定通道，和设置指定通道的默认仓库
-							ShopTunnel assignTunnel = new ShopTunnel();
-							BeanUtils.copyProperties(tunnel, assignTunnel);
-							item.setAssignTunnel(assignTunnel);
-							item.getAssignTunnel().setDefaultWarehouse(warehouse);
-							System.out.println("item assign tunnel, orderid:" + order.getId() + ", itemid:" + item.getId() + ", tunnelid:" + tunnel.getId() + ", warehouseId:" + warehouse.getId());
-							exitShopTunnels = true;
-							break;
+					// 判断通道是不是仓库通道，并且行为是包含
+					if (tunnel.getType().intValue() == 1 && tunnel.getBehavior().intValue() == 1) {
+						// 循环每个通道下的仓库
+						for (Warehouse warehouse: tunnel.getWarehouses()) {
+							// 判断当前仓库id是否和item上指定的仓库id一样
+							if (warehouse.getId().longValue() == item.getWarehouseId().longValue()) {
+								// 设置指定通道，和设置指定通道的默认仓库
+								ShopTunnel assignTunnel = new ShopTunnel();
+								BeanUtils.copyProperties(tunnel, assignTunnel);
+								item.setAssignTunnel(assignTunnel);
+								item.getAssignTunnel().setDefaultWarehouse(warehouse);
+								System.out.println("item assign tunnel, orderid:" + order.getId() + ", itemid:" + item.getId() + ", tunnelid:" + tunnel.getId() + ", warehouseId:" + warehouse.getId());
+								exitShopTunnels = true;
+								break;
+							}
 						}
 					}
+					
 					if (exitShopTunnels) {
 						break;
 					}
@@ -395,12 +401,9 @@ public class OrderService {
 								// 判断店铺通过的id是不是和商品指定通道的id相等
 								if (tunnel.getId().longValue() == productShopTunnel.getTunnelId()) {
 									item.setAssignTunnel(tunnel);
-									for (Warehouse warehouse: tunnel.getWarehouses()) {
-										// 判断当前仓库id是否和item上指定的仓库id一样
-										if (warehouse.getId().longValue() == item.getAssignTunnel().getDefaultWarehouseId().longValue()) {
-											item.getAssignTunnel().setDefaultWarehouse(warehouse);
-											break;
-										}
+									// 如何选择的通道是一个供应商通道
+									if (tunnel.getDefaultWarehouse() == null) {
+										item.setAssignTunnel(order.getShop().getDefaultTunnel());
 									}
 									break;
 								}
@@ -507,7 +510,7 @@ public class OrderService {
 		
 		// 查询出这些仓库的每个商品的库存
 		List<Inventory> inventories = inventoryService.getInventories(inventoryQuery, null);
-		List<Product> products = inventoryService.refreshInventory(inventories);
+		List<Product> products = inventoryBatchService.refreshInventory(inventories);
 		// 循环出每个商品下在每个仓库中的库存
 		products.forEach(product -> {
 			System.out.println("product: " + product.getName());
@@ -529,6 +532,8 @@ public class OrderService {
 				// 循环item
 				for (OrderItem item: order.getItems()) {
 					// 循环products
+					
+					System.out.println("item.getProduct().getSku():" + item.getProduct());
 					boolean exitProductsEach = false;
 					boolean matchItemInventory = false;
 					for (Product product: products) {
@@ -631,7 +636,7 @@ public class OrderService {
 					break;
 				}
 			}
-			this.shopService.initShopDefaultTunnel(o.getShop());
+			//this.shopService.initShopDefaultTunnel(o.getShop());
 			this.checkItemProductShopTunnel(o);
 		});
 		
@@ -1437,7 +1442,7 @@ public class OrderService {
 								 ") " +
 							 ") " +
 						 ") " +
-						 "AND deleted = false " +
+						 "AND enabled = false " +
 						 "LIMIT 1";
 				Query query =  em.createNativeQuery( sql , Product.class);
 				query.setParameter(1, shop.getId());
@@ -1703,7 +1708,7 @@ public class OrderService {
 											 ") " +
 										 ") " +
 									 ") " +
-									 "AND deleted = false " +
+									 "AND enabled = false " +
 									 "LIMIT 1";
 							Query query =  em.createNativeQuery( sql , Product.class);
 							query.setParameter(1, shop.getId());

@@ -2,12 +2,7 @@ angular.module('ecommApp')
 
 .controller('OutInventorySheetController', ['$rootScope', '$scope', 'Warehouse', 'Utils', 'Inventory', 'InventoryBatch', 'Auth',
     function($rootScope, $scope, Warehouse, Utils, Inventory, InventoryBatch, Auth) {
-
-        var $ = angular.element;
-
-        $scope.page = undefined;
-
-        $scope.warehouses = [];
+        
         $scope.types = [{
             label: '全部',
             value: null
@@ -23,8 +18,7 @@ angular.module('ecommApp')
         }];
 
         $scope.defautlQuery = {
-            pageSize: 20,
-            totalPagesList: [],
+            size: 20,
             warehouse: undefined,
             batch: {
                 operateTimeStart: undefined,
@@ -35,10 +29,13 @@ angular.module('ecommApp')
                 operate: 2
             }
         };
+
         $scope.query = angular.copy($scope.defautlQuery);
 
+        $scope.warehouses = [];
+
         Warehouse.getAll({
-            deleted: false,
+            enabled: true,
             sort: ['name'],
             warehouseIds: Auth.refreshManaged('warehouse')
         }).then(function(warehouses) {
@@ -48,7 +45,7 @@ angular.module('ecommApp')
         $scope.searchData = function(query, number) {
             InventoryBatch.get({
                 page: number ? number : 0,
-                size: query.pageSize,
+                size: query.size,
                 warehouseId: query.warehouse ? query.warehouse.id : null,
                 warehouseIds: Auth.refreshManaged('warehouse'),
                 operateTimeStart: query.batch.operateTimeStart,
@@ -57,9 +54,9 @@ angular.module('ecommApp')
                 outInventoryTimeEnd: query.batch.outInventoryTimeEnd,
                 type: query.batch.type ? query.batch.type.value : null,
                 operate: query.batch.operate
-            }).$promise.then(function(page) {
+            },function(page) {
                 $scope.page = page;
-                query.totalPagesList = Utils.setTotalPagesList(page);
+                Utils.initList(page, query);
             });
         };
 
@@ -86,23 +83,14 @@ angular.module('ecommApp')
             });
         };
 
-        $('#sandbox-container-create .input-daterange').datepicker({
+        $('#sandbox-container-create .input-daterange,#sandbox-container-out-inventory .input-daterange').datepicker({
             format: 'yyyy/mm/dd',
             clearBtn: true,
             language: 'zh-CN',
             orientation: 'top left',
             todayHighlight: true,
+            autoclose: true
         });
-
-        $('#sandbox-container-out-inventory .input-daterange').datepicker({
-            format: 'yyyy/mm/dd',
-            clearBtn: true,
-            language: 'zh-CN',
-            orientation: 'top left',
-            todayHighlight: true,
-        });
-
-        $scope.invalidingBatch = undefined;
 
         $scope.showInvalidBatch = function(batch) {
             $scope.invalidingBatch = batch;
@@ -110,9 +98,6 @@ angular.module('ecommApp')
         };
 
         $scope.invalidBatch = function() {
-            console.clear();
-            console.log('invalidBatch');
-            console.log($scope.invalidingBatch);
             $scope.invalidingBatch.type = 0;
             $scope.invalidingBatch.orderBatches.length = 0;
             InventoryBatch.save({}, $scope.invalidingBatch, function() {
