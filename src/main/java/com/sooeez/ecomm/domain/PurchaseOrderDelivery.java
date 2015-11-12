@@ -15,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.NotFound;
@@ -39,6 +41,7 @@ public class PurchaseOrderDelivery implements Serializable {
 	private Long purchaseOrderId;
 
 	// #收货时间
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "receive_time", nullable = false)
 	private Date receiveTime;
 

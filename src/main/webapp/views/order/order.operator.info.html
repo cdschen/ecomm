@@ -30,7 +30,7 @@
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">店铺编号*</label>
                 <div class="col-md-3">
-                    <ui-select ng-model="order.shop" on-select="changeShop($item)" ng-disabled="id">
+                    <ui-select ng-model="order.shop" on-select="changeShop($item)" ng-disabled="id" required>
                         <ui-select-match placeholder="店铺(必选)">{{$select.selected.name}}</ui-select-match>
                         <ui-select-choices repeat="shop in shops | filter: $select.search">
                             <div ng-bind-html="shop.name | highlight: $select.search"></div>
@@ -46,7 +46,7 @@
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">店铺订单号*</label>
                 <div class="col-md-3">
-                    <input class="form-control" type="text" ng-model="order.externalSn" placeholder="(必填)" />
+                    <input class="form-control" type="text" ng-model="order.externalSn" placeholder="(必填)" required />
                 </div>
                 <label class="control-label col-md-2" ng-show="id">商品总件数</label>
                 <div class="col-md-3" ng-show="id">
@@ -57,7 +57,7 @@
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">运费金额*</label>
                 <div class="col-md-3">
-                    <input class="form-control" type="number" ng-model="order.shippingFee" placeholder="(必填)" />
+                    <input class="form-control" type="number" ng-model="order.shippingFee" placeholder="(必填)" required />
                 </div>
                 <label class="control-label col-md-2" ng-show="id">已发货商品总件数</label>
                 <div class="col-md-3" ng-show="id">
@@ -67,7 +67,7 @@
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">收件人姓名*</label>
                 <div class="col-md-3">
-                    <input class="form-control" type="text" ng-model="order.receiveName" placeholder="(必填)" />
+                    <input class="form-control" type="text" ng-model="order.receiveName" placeholder="(必填)" required />
                 </div>
                 <label class="control-label col-md-2" ng-show="id">商品包含的税金</label>
                 <div class="col-md-3" ng-show="id">
@@ -77,11 +77,17 @@
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">收件人电话*</label>
                 <div class="col-md-3">
-                    <input class="form-control" type="text" ng-model="order.receivePhone" placeholder="(必填)" />
+                    <input class="form-control" type="text" ng-model="order.receivePhone" placeholder="(必填)" required />
                 </div>
                 <label class="control-label col-md-2" ng-show="id">商品总金额</label>
                 <div class="col-md-3" ng-show="id">
                     {{ order.subtotal | currency : '$' }}
+                </div>
+            </div>
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">收件地址*</label>
+                <div class="col-md-3">
+                    <input class="form-control" type="text" ng-model="order.receiveAddress" placeholder="(必填)" required />
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -122,12 +128,6 @@
                 <label class="control-label col-md-2" ng-show="id">总共完成的退款金额</label>
                 <div class="col-md-3" ng-show="id">
                     {{ order.totalRefunded | currency : '$' }}
-                </div>
-            </div>
-            <div class="form-group has-feedback">
-                <label class="control-label col-md-2">收件地址*</label>
-                <div class="col-md-3">
-                    <input class="form-control" type="text" ng-model="order.receiveAddress" placeholder="(必填)" />
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -192,11 +192,7 @@
     <div class="panel-body">
         <div class="row">
             <div class="col-md-2">
-                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="save(order)"
-                        ng-disabled="
-                        !orderOperatorForm.$valid || !order.shop || !order.externalSn
-                        || !order.shippingFee || !order.receiveName || !order.receivePhone || !order.receiveAddress
-                        ">
+                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="save(order, orderOperatorForm.$valid)">
                     <span class="glyphicon glyphicon-floppy-saved"></span> 保存
                 </button>
             </div>

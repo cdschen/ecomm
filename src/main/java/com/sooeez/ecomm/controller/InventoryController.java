@@ -222,9 +222,14 @@ public class InventoryController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/shipments/confirm/complete/operation-review")
+	@RequestMapping(value = "/shipment/confirm/complete/operation-review")
 	public OperationReviewShipmentDTO confirmOrderWhenGenerateShipment(@RequestBody OperationReviewShipmentDTO review) {
 		return shipmentService.confirmOperationReviewWhenCompleteShipment(review);
+	}
+	
+	@RequestMapping(value = "/shipments/confirm/complete/operation-review")
+	public OperationReviewShipmentDTO confirmOrderWhenGenerateShipments(@RequestBody OperationReviewShipmentDTO review) {
+		return shipmentService.confirmOperationReviewWhenCompleteShipments(review);
 	}
 	
 	/*

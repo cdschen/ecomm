@@ -41,8 +41,6 @@ angular.module('ecommApp')
             }
         ];
 
-        $scope.shipmentCompleteSlideChecked = false;
-
         /* 查询采购单分页数据所需查询参数 */
         function getQueryParamJSON()
         {

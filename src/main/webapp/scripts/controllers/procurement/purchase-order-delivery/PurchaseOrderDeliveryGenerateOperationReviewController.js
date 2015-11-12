@@ -6,11 +6,6 @@ angular.module('ecommApp')
         var $ = angular.element;
         $scope.operateDate = Date.now();
         $scope.operationReview = purchaseOrderDeliveryService.getOperationReviewCompletePurchaseOrderDelivery;
-        $scope.defaultHeight = function(){
-            return {
-                height: $(window).height() / 2.2
-            };
-        };
 
         function updateCreateTime() {
             $scope.operateDate = new Date();

@@ -64,33 +64,74 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
         purchaseOrder.bookingType = purchaseOrder.bookingType.value;
     }
 
-    $scope.save = function(purchaseOrder) {
-        //console.clear();
-        console.log('[' + $scope.action + '] save purchaseOrder');
-        console.log(purchaseOrder);
+    $scope.save = function(purchaseOrder, formValid) {
 
-        refreshField(purchaseOrder);
+        var isQualified = true;
 
-        purchaseOrder.creator = {
-            id : $rootScope.user().id
-        };
-
-        purchaseOrder.totalCreditQty = purchaseOrder.totalCreditQty ? purchaseOrder.totalCreditQty : 0;
-        purchaseOrder.totalDeliveredQty = purchaseOrder.totalDeliveredQty ? purchaseOrder.totalDeliveredQty : 0;
-        purchaseOrder.totalPurcahsedQty = purchaseOrder.totalPurcahsedQty ? purchaseOrder.totalPurcahsedQty : 0;
-
-        purchaseOrderService.save({
-            action: $scope.action
-        }, purchaseOrder, function(purchaseOrder) {
-            console.log('[' + $scope.action + '] save purchaseOrder complete:');
-            console.log(purchaseOrder);
-            console.log('purchaseOrder.isSupplierProductCodeChanged: ' + purchaseOrder.isSupplierProductCodeChanged);
-            if( purchaseOrder.isSupplierProductCodeChanged )
+        /* 如果表单验证不通过 */
+        if( !formValid )
+        {
+            //|| !purchaseOrder.supplier || !purchaseOrder.currency
+            //|| !purchaseOrder.bookingType || !purchaseOrder.receiveName || !purchaseOrder.receivePhone
+            if( !purchaseOrder.supplier )
             {
-                toastr.success('供应商编号和采购单价已经自动保存， 下次采购时会自动帮您填');
+                toastr.warning('请选择一个［供应商］');
             }
-            $state.go('purchaseOrder');
-        });
+            if( !purchaseOrder.currency )
+            {
+                toastr.warning('请选择一种［结算货币］');
+            }
+            if( !purchaseOrder.bookingType )
+            {
+                toastr.warning('请选择一种［订货方式］');
+            }
+            if( !purchaseOrder.receiveName )
+            {
+                toastr.warning('请填写［收货人姓名］');
+            }
+            if( !purchaseOrder.receivePhone )
+            {
+                toastr.warning('请填写［收货人电话］');
+            }
+            isQualified = false;
+        }
+        /* 如果没有添加采购详情 */
+        if( !purchaseOrder.items || purchaseOrder.items.length < 1 )
+        {
+            toastr.warning('请添加至少一个［采购商品］');
+            isQualified = false;
+        }
+
+        /* 如果验证全部通过 */
+        if( isQualified )
+        {
+            //console.clear();
+            console.log('[' + $scope.action + '] save purchaseOrder');
+            console.log(purchaseOrder);
+
+            refreshField(purchaseOrder);
+
+            purchaseOrder.creator = {
+                id : $rootScope.user().id
+            };
+
+            purchaseOrder.totalCreditQty = purchaseOrder.totalCreditQty ? purchaseOrder.totalCreditQty : 0;
+            purchaseOrder.totalDeliveredQty = purchaseOrder.totalDeliveredQty ? purchaseOrder.totalDeliveredQty : 0;
+            purchaseOrder.totalPurcahsedQty = purchaseOrder.totalPurcahsedQty ? purchaseOrder.totalPurcahsedQty : 0;
+
+            purchaseOrderService.save({
+                action: $scope.action
+            }, purchaseOrder, function(purchaseOrder) {
+                console.log('[' + $scope.action + '] save purchaseOrder complete:');
+                console.log(purchaseOrder);
+                console.log('purchaseOrder.isSupplierProductCodeChanged: ' + purchaseOrder.isSupplierProductCodeChanged);
+                if( purchaseOrder.isSupplierProductCodeChanged )
+                {
+                    toastr.success('供应商编号和采购单价已经自动保存， 下次采购时会自动帮您填');
+                }
+                $state.go('purchaseOrder');
+            });
+        }
     };
 
     $scope.action = 'create';

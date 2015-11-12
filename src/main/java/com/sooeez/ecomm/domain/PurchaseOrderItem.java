@@ -62,7 +62,7 @@ public class PurchaseOrderItem implements Serializable {
 	 */
 	
 	@Transient
-	private SupplierProductCodeMap supplierProductCodeMap;
+	private SupplierProduct supplierProductCodeMap;
 	
 	/*
 	 * OperationReview Params
@@ -213,11 +213,11 @@ public class PurchaseOrderItem implements Serializable {
 		this.ignoreCheck = ignoreCheck;
 	}
 
-	public SupplierProductCodeMap getSupplierProductCodeMap() {
+	public SupplierProduct getSupplierProductCodeMap() {
 		return supplierProductCodeMap;
 	}
 
-	public void setSupplierProductCodeMap(SupplierProductCodeMap supplierProductCodeMap) {
+	public void setSupplierProductCodeMap(SupplierProduct supplierProductCodeMap) {
 		this.supplierProductCodeMap = supplierProductCodeMap;
 	}
 

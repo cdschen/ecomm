@@ -2,6 +2,7 @@ package com.sooeez.ecomm.dto;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.sooeez.ecomm.domain.Shipment;
@@ -29,8 +30,10 @@ public class OperationReviewShipmentDTO implements Serializable {
 	private boolean confirmable = true;
 
 	/* Logic-Related Attributes */
-	/* 发货单验证 */
+	/* 单发货单验证 */
 	private Shipment shipment;
+	/* 多发货单验证 */
+	private List<Shipment> shipments;
 	
 
 	public boolean isConfirmable() {
@@ -87,6 +90,14 @@ public class OperationReviewShipmentDTO implements Serializable {
 
 	public void setShipment(Shipment shipment) {
 		this.shipment = shipment;
+	}
+
+	public List<Shipment> getShipments() {
+		return shipments;
+	}
+
+	public void setShipments(List<Shipment> shipments) {
+		this.shipments = shipments;
 	}
 
 }

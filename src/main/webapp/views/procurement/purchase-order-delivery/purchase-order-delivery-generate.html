@@ -55,15 +55,15 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="purchaseOrders in page.content" ng-class="{active: purchaseOrders.active}">
+                <tr ng-repeat="purchaseOrder in page.content" ng-class="{active: purchaseOrders.active}">
                     <td>
                         <input type="checkbox" ng-model="purchaseOrders.isSelected">
                     </td>
                     <td>
-                        {{purchaseOrders.shop.name}}
+                        {{purchaseOrder.shop.name}}
                     </td>
                     <td>
-                        <strong>{{purchaseOrders.id}}</strong>
+                        <strong>{{purchaseOrder.id}}</strong>
                     </td>
                     <td>
                         <table class="table table-condensed">
@@ -74,7 +74,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="item in purchaseOrders.items"  class="text-center">
+                                <tr ng-repeat="item in purchaseOrder.items"  class="text-center">
                                     <td>
                                         {{item.product.name}}
                                     </td>
@@ -86,12 +86,12 @@
                         </table>
                     </td>
                     <td>
-                        <table width="90%" style="margin:0 auto;" class="table-striped" ng-repeat="purchaseOrderDelivery in purchaseOrders.purchaseOrderDeliveries" ng-show="purchaseOrderDelivery.items.length > 0">
+                        <table width="90%" style="margin:0 auto;" class="table-striped" ng-repeat="purchaseOrderDelivery in purchaseOrder.purchaseOrderDeliveries" ng-show="purchaseOrderDelivery.items.length > 0">
                             <thead>
                             <tr>
                                 <th width="20%" class="text-center" rowspan="2">收货时间</th>
                                 <th width="20%" class="text-center" rowspan="2">收货人</th>
-                                <th width="20%" class="text-center" rowspan="2">采购单价</th>
+                                <th width="20%" class="text-center" rowspan="2" has-any-role="SYSTEM_ADMIN">采购单价</th>
                                 <th width="40%" class="text-center" colspan="3">数量</th>
                             </tr>
                             <tr>
@@ -102,14 +102,17 @@
                             <tr ng-repeat="item in purchaseOrderDelivery.items" class="text-center">
                                 <td>{{ purchaseOrderDelivery.receiveTime | date : 'yyyy-MM-dd HH:mm:ss' }}</td>
                                 <td>{{ purchaseOrderDelivery.receiveUser.username }}</td>
-                                <td>{{ item.realPurchaseUnitPrice | currency : '' }}</td>
+                                <td has-any-role="SYSTEM_ADMIN">{{ item.realPurchaseUnitPrice | currency : '' }}</td>
                                 <td>{{ item.receiveQty | number : 0 }}</td>
                                 <td>{{ item.creditQty | number : 0 }}</td>
                             </tr>
                         </table>
                     </td>
-                    <td>
-                        <!--<a href="javascript:void(0);" class="btn btn-primary btn-block" ng-click="openGenerateSingleShipmentModal(order)">生成发货单</a>-->
+                    <td>{{ purchaseOrderDelivery.id }}
+                        <a ui-sref="purchaseOrderDelivery.receive({id:purchaseOrder.id})" class="btn btn-primary btn-xs">
+                            <span class="glyphicon glyphicon-edit"></span>
+                            收货
+                        </a>
                     </td>
                 </tr>
             </tbody>

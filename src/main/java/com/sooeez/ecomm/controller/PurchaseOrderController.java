@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sooeez.ecomm.domain.PurchaseOrder;
 import com.sooeez.ecomm.domain.PurchaseOrderItem;
-import com.sooeez.ecomm.domain.SupplierProductCodeMap;
+import com.sooeez.ecomm.domain.SupplierProduct;
 import com.sooeez.ecomm.service.PurchaseOrderService;
 
 @RestController
@@ -105,22 +105,22 @@ public class PurchaseOrderController {
 	 */
 	
 	@RequestMapping(value = "/supplierproductcodemaps/{id}")
-	public SupplierProductCodeMap getSupplierProductCodeMap(@PathVariable("id") Long id) {
+	public SupplierProduct getSupplierProductCodeMap(@PathVariable("id") Long id) {
 		return this.purchaseOrderService.getSupplierProductCodeMap(id);
 	}
 	
 	@RequestMapping(value = "/supplierproductcodemaps")
-	public Page<SupplierProductCodeMap> getPagedSupplierProductCodeMaps(Pageable pageable) {
+	public Page<SupplierProduct> getPagedSupplierProductCodeMaps(Pageable pageable) {
 		return this.purchaseOrderService.getPagedSupplierProductCodeMaps(pageable);
 	}
 	
 	@RequestMapping(value = "/supplierproductcodemaps/get/all")
-	public List<SupplierProductCodeMap> getSupplierProductCodeMaps(Sort sort) {
+	public List<SupplierProduct> getSupplierProductCodeMaps(Sort sort) {
 		return this.purchaseOrderService.getSupplierProductCodeMaps(sort);
 	}
 	
 	@RequestMapping(value = "/supplierproductcodemaps", method = RequestMethod.POST)
-	public SupplierProductCodeMap saveSupplierProductCodeMap(@RequestBody SupplierProductCodeMap supplierProductCodeMap) {
+	public SupplierProduct saveSupplierProductCodeMap(@RequestBody SupplierProduct supplierProductCodeMap) {
 		return this.purchaseOrderService.saveSupplierProductCodeMap(supplierProductCodeMap);
 	}
 	
@@ -131,12 +131,12 @@ public class PurchaseOrderController {
 	}
 	
 	@RequestMapping(value = "/supplierproductcodemaps/get/supplierProductCode/{supplierProductCode}")
-	public SupplierProductCodeMap getSupplierProductCodeMap(@PathVariable("supplierProductCode") String supplierProductCode) {
+	public SupplierProduct getSupplierProductCodeMap(@PathVariable("supplierProductCode") String supplierProductCode) {
 		return this.purchaseOrderService.getSupplierProductCodeMap(supplierProductCode);
 	}
 	
 	@RequestMapping(value = "/supplierproductcodemaps/get/productId/{productId}")
-	public SupplierProductCodeMap getSupplierProductCodeMapByProductId(@PathVariable("productId") Long productId) {
+	public SupplierProduct getSupplierProductCodeMapByProductId(@PathVariable("productId") Long productId) {
 		return this.purchaseOrderService.getSupplierProductCodeMapByProductId(productId);
 	}
 	

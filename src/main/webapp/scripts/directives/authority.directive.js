@@ -8,7 +8,8 @@ angular.module('ecommApp')
                 element.removeClass('hidden');
             };
             var setHidden = function() {
-                element.addClass('hidden');
+                //element.addClass('hidden');
+                element.remove();
             };
             var defineVisibility = function(reset) {
                 var result;
@@ -38,7 +39,8 @@ angular.module('ecommApp')
                 element.removeClass('hidden');
             };
             var setHidden = function() {
-                element.addClass('hidden');
+                //element.addClass('hidden');
+                element.remove();
             };
             var defineVisibility = function(reset) {
                 var result;

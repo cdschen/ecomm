@@ -48,9 +48,9 @@ public class PurchaseOrderDeliveryService {
 	
 	public PurchaseOrderDelivery savePurchaseOrderDelivery(PurchaseOrderDelivery purchaseOrderDelivery) {
 		/* If id equals to null then is add action */
-		System.out.println("purchaseOrderDelivery.getId(): " + purchaseOrderDelivery.getId());
 		if( purchaseOrderDelivery.getId() == null )
 		{
+			purchaseOrderDelivery.setReceiveTime( new Date() );
 			purchaseOrderDelivery.setStatus( 1 );	// 初始状态为：待入库
 		}
 		return this.purchaseOrderDeliveryRepository.save(purchaseOrderDelivery);
