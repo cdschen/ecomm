@@ -506,7 +506,7 @@ public class OrderService {
 	public void confirmProductInventoryNotEnough(OperationReviewDTO review) {
 		
 		List<Order> orders = review.getOrders();
-		Inventory inventoryQuery = this.collectWarehouseIds(review.getOrders());
+		Inventory inventoryQuery = collectWarehouseIds(review.getOrders());
 		
 		// 查询出这些仓库的每个商品的库存
 		List<Inventory> inventories = inventoryService.getInventories(inventoryQuery, null);
@@ -533,7 +533,7 @@ public class OrderService {
 				for (OrderItem item: order.getItems()) {
 					// 循环products
 					
-					System.out.println("item.getProduct().getSku():" + item.getProduct());
+					System.out.println("item.getProduct().getSku():" + item.getProduct().getSku());
 					boolean exitProductsEach = false;
 					boolean matchItemInventory = false;
 					for (Product product: products) {

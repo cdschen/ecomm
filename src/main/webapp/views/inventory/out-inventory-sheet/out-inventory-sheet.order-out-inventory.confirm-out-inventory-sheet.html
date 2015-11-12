@@ -105,80 +105,76 @@
                         </div>
                     </div>
                 </div>
-                <div style="padding-right:8px;">
-                    <table class="table table-bordered table-condensed clear-marginbottom-table">
-                        <thead>
-                            <tr>
-                                <th colspan="2" class="text-center">订单详情</th>
-                                <th colspan="4" class="text-center">操作规定复核结果</th>
-                            </tr>
-                            <tr>
-                                <th width="10%">订单编号</th>
-                                <th width="70%">商品信息</th>
-                                <th width="5%" class="text-center">A</th>
-                                <th width="5%" class="text-center">B</th>
-                                <th width="5%" class="text-center">C</th>
-                                <th width="5%" class="text-center">操作</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-                <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultHeight()">
-                    <table class="table table-bordered table-condensed clear-marginbottom-table">
-                        <tbody>
-                            <tr ng-class="{'active': order.ignoreCheck}" ng-repeat="order in operationReview().orders">
-                                <td width="10%">
-                                    <strong>{{order.id}}</strong>
-                                </td>
-                                <td width="70%">
-                                    <table class="table table-bordered table-condensed clear-marginbottom-table">
-                                        <tbody>
-                                            <tr ng-class="{'active': order.ignoreCheck}" ng-repeat="item in order.items">
-                                                <td width="40%">
-                                                    {{item.name}}
-                                                </td>
-                                                <td width="20%">
-                                                    {{item.qtyOrdered}}
-                                                </td>
-                                                <td width="40%">
-                                                    {{item.assignTunnel.defaultWarehouse.name}}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                                <td width="5%" class="text-center">
-                                    <div ng-show="!order.ignoreCheck" ng-switch on="order.checkMap.differentWarehouseError">
+                <table class="table table-bordered table-condensed clear-marginbottom-table">
+                    <thead>
+                        <tr>
+                            <th colspan="4" class="text-center">订单详情</th>
+                            <th colspan="4" class="text-center">操作规定复核结果</th>
+                        </tr>
+                        <tr>
+                            <th width="10%">订单编号</th>
+                            <th width="37%">商品名称</th>
+                            <th width="10%">数量</th>
+                            <th width="23%">仓库</th>
+                            <th width="5%" class="text-center">A</th>
+                            <th width="5%" class="text-center">B</th>
+                            <th width="5%" class="text-center">C</th>
+                            <th width="5%" class="text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-class="{'active': order.ignoreCheck}" ng-repeat="order in operationReview().orders">
+                            <td width="10%">
+                                <strong>{{order.id}}</strong>
+                            </td>
+                            <td width="70%" colspan="3">
+                                <table class="table table-condensed clear-marginbottom-table">
+                                    <thead>
+                                        <tr ng-class="{'active': order.ignoreCheck}" ng-repeat="item in order.items">
+                                            <td width="53%">
+                                                {{item.name}}
+                                            </td>
+                                            <td width="14.5%">
+                                                {{item.qtyOrdered}}
+                                            </td>
+                                            <td width="32.5%">
+                                                {{item.assignTunnel.defaultWarehouse.name}}
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </td>
+                            <td width="5%" class="text-center">
+                                <div ng-show="!order.ignoreCheck" ng-switch on="order.checkMap.differentWarehouseError">
+                                    <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
+                                    <span class="glyphicon glyphicon-remove-circle text-danger" ng-switch-when="true"></span>
+                                </div>
+                            </td>
+                            <td width="5%" class="text-center">
+                                <div ng-show="!order.ignoredMap.productInventoryNotEnough">
+                                    <div ng-show="!order.ignoreCheck" ng-switch on="order.checkMap.productInventoryNotEnoughError">
                                         <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
-                                        <span class="glyphicon glyphicon-remove-circle text-danger" ng-switch-when="true"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true"></span>
                                     </div>
-                                </td>
-                                <td width="5%" class="text-center">
-                                    <div ng-show="!order.ignoredMap.productInventoryNotEnough">
-                                        <div ng-show="!order.ignoreCheck" ng-switch on="order.checkMap.productInventoryNotEnoughError">
-                                            <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
-                                            <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true"></span>
-                                        </div>
+                                </div>
+                            </td>
+                            <td width="5%" class="text-center">
+                                <div ng-show="!order.ignoredMap.orderExistOutInventorySheet">
+                                    <div ng-show="!order.ignoreCheck" ng-switch on="order.checkMap.orderExistOutInventorySheetError">
+                                        <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
+                                        <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true"></span>
                                     </div>
-                                </td>
-                                <td width="5%" class="text-center">
-                                    <div ng-show="!order.ignoredMap.orderExistOutInventorySheet">
-                                        <div ng-show="!order.ignoreCheck" ng-switch on="order.checkMap.orderExistOutInventorySheetError">
-                                            <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
-                                            <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true"></span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td width="5%" class="text-center">
-                                    <div ng-switch on="order.ignoreCheck">
-                                        <button type="button" class="btn btn-danger btn-xs btn-block" ng-click="moveOut(order)" ng-switch-when="false">移出</button>
-                                        <button type="button" class="btn btn-success btn-xs btn-block" ng-click="recover(order)" ng-switch-when="true">恢复</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                </div>
+                            </td>
+                            <td width="5%" class="text-center">
+                                <div ng-switch on="order.ignoreCheck">
+                                    <button type="button" class="btn btn-danger btn-xs btn-block" ng-click="moveOut(order)" ng-switch-when="false">移出</button>
+                                    <button type="button" class="btn btn-success btn-xs btn-block" ng-click="recover(order)" ng-switch-when="true">恢复</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

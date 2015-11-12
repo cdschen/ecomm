@@ -1,0 +1,138 @@
+<div pageslide ps-open="snapshotSlideChecked" ps-side="left" ps-speed="0.25" ps-size="100%">
+    <div id="operator-slider">
+        <div class="panel panel-info">
+            <div class="panel-body">
+                <button type="button" class="close" ng-click="toggleSnapshot()">&times;</button>
+                <hr>    
+                <table class="table table-condensed" ng-show="snapshotPage.content.length > 0">
+                    <thead>
+                        <tr>
+                            <th width="18%">商品 &amp; SKU</th>
+                            <th width="15%">仓库</th>
+                            <th width="8%">操作</th>
+                            <th width="8%">状态</th>
+                            <th width="8%">数量</th>
+                            <th width="10%">操作员</th>
+                            <th width="10%">入库 | 出库 时间</th>
+                            <th width="28%">库存快照</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in snapshotPage.content">
+                            <td>
+                                <p>
+                                    {{item.product.name}}
+                                </p>
+                                <p>
+                                    ({{item.product.sku}})
+                                </p>
+                            </td>
+                            <td>
+                                {{item.warehouse.name}} ({{item.position.name}})
+                            </td>
+                            <td ng-switch on="item.batchOperate">
+                                <span ng-switch-when="1">入库</span>
+                                <span ng-switch-when="2">出库</span>
+                            </td>
+                            <td ng-switch on="item.batchType">
+                                <span ng-switch-when="0">作废</span>
+                                <span ng-switch-when="1" class="text-warning">待出库</span>
+                                <span ng-switch-when="2">已出库</span>
+                            </td>
+                            <td ng-switch on="item.batchOperate">
+                                <span ng-switch-when="1">{{item.changedQuantity}}</span>
+                                <span ng-switch-when="2">{{Math.abs(item.changedQuantity)}} / {{Math.abs(item.actualQuantity)}}</span>
+                            </td>
+                            <td ng-switch on="item.batchOperate">
+                                <span ng-switch-when="1">{{item.user.username}}</span>
+                                <span ng-switch-when="2">{{item.executeOperator.username}}</span>
+                            </td>
+                            <td ng-switch on="item.batchOperate">
+                                <span ng-switch-when="1">{{item.createTime | date: 'yyyy/MM/dd hh:mm:ss'}}</span>
+                                <span ng-switch-when="2">{{item.lastTime | date: 'yyyy/MM/dd hh:mm:ss'}}</span>
+                            </td>
+                            <td>
+                                <div class="row" ng-show="item.batchType == null || item.batchType == 2">
+                                    <div class="col-md-6">
+                                        <div class="panel panel-default" style="margin:0">
+                                            <div class="panel-heading" style="padding:3px">
+                                                <h3 class="panel-title" style="font-size:12px">操作之前</h3>
+                                            </div>
+                                            <table class="table table-bordered table-condensed clear-marginbottom-table" style="font-size:12px" ng-show="item.inventorySnapshot.before != null">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="active" width="50%">总数</th>
+                                                        <td width="50%">{{item.inventorySnapshot.before.total}}</td>
+                                                    </tr>
+                                                </thead>
+                                                <thead ng-repeat="position in item.inventorySnapshot.before.positions">
+                                                    <tr ng-repeat="(name, quantity) in position">
+                                                        <th class="active" width="50%">
+                                                            {{name}}
+                                                        </th>
+                                                        <td width="50%">{{quantity}}</td>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                            <div class="panel-body" ng-show="item.inventorySnapshot.before == null" style="padding:3px">
+                                                <div class="alert alert-warning" style="font-size:12px;margin:0;padding:3px">
+                                                    没有任何记录
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="panel panel-default" style="margin:0">
+                                            <div class="panel-heading" style="padding:3px">
+                                                <h3 class="panel-title" style="font-size:12px">操作之后</h3>
+                                            </div>
+                                            <table class="table table-bordered table-condensed clear-marginbottom-table" style="font-size:12px" ng-show="item.inventorySnapshot.after != null">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="active" width="50%">总数</th>
+                                                        <td width="50%">{{item.inventorySnapshot.after.total}}</td>
+                                                    </tr>
+                                                </thead>
+                                                <thead ng-repeat="position in item.inventorySnapshot.after.positions">
+                                                    <tr ng-repeat="(name, quantity) in position">
+                                                        <th class="active" width="50%">
+                                                            {{name}}
+                                                        </th>
+                                                        <td width="50%">{{quantity}}</td>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                            <div class="panel-body" ng-show="item.inventorySnapshot.after == null" style="padding:3px">
+                                                <div class="alert alert-warning" style="font-size:12px;margin:0;padding:3px">
+                                                    没有任何记录
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="20">
+                                <nav class="page-list">
+                                    <ul class="pagination pagination-sm">
+                                        <li ng-repeat="i in snapshotQuery.list" ng-class="{active: i.value === snapshotPage.number}">
+                                            <a href="" ng-click="turnSnapshotPage(i.value)">{{i.label}}</a>
+                                        </li>
+                                    </ul>
+                                    <div class="page-total">
+                                        共 <strong>{{ snapshotPage.totalElements }}</strong> 条, 每页显示
+                                        <select class="form-control" style="display: inline; padding:0" ng-model="snapshotQuery.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnSnapshotPage(0)">
+                                        </select>
+                                    </div>
+                                </nav>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -62,6 +62,18 @@
                 </ui-select>
             </div>
         </div>
+        <!-- product.barcode -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productForm.barcode.$dirty && productForm.barcode.$valid), 'has-warning':(productForm.barcode.$dirty && productForm.barcode.$invalid) }">
+            <label class="control-label col-md-2">条码 <span class="text-danger"></span></label>
+            <div class="col-md-6">
+                <input type="text" name="barcode" ng-model="product.barcode" placeholder="(选填)" class="form-control" ng-maxlength="50"/>
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productForm.barcode.$dirty && productForm.barcode.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productForm.barcode.$dirty && productForm.barcode.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productForm.barcode.$error" ng-show="productForm.barcode.$dirty && productForm.barcode.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
         <!-- product.sku -->
         <div class="form-group has-feedback" ng-class="{'has-success':(productForm.sku.$dirty && productForm.sku.$valid), 'has-warning':(productForm.sku.$dirty && productForm.sku.$invalid) }">
             <label class="control-label col-md-2">SKU <span class="text-danger">*</span></label>

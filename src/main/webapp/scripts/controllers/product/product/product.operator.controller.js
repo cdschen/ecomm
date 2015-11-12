@@ -140,16 +140,6 @@ angular.module('ecommApp')
                         $scope.product = product;
                         setDefaultProductShopTunnel(product.shopTunnels);
                         return product;
-                    }).then(function(product) {
-                        $scope.title = product.productType.label;
-                        if (product.productType.value === 1) {
-                            Product.getAll({
-                                productType: 0,
-                                enabled: true
-                            }).then(function(members) {
-                                $scope.members = members;
-                            });
-                        }
                     });
             }
         });

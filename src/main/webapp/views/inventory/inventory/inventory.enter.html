@@ -1,3 +1,5 @@
+<style type="text/css">
+</style>
 <ol class="breadcrumb">
     <li><a ui-sref="dashboard">首页</a></li>
     <li><a ui-sref="inventory">库存管理</a></li>
@@ -19,9 +21,6 @@
                             <div ng-bind-html="warehouse.name | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
-                </div>
-                <div class="col-md-5">
-                    
                 </div>
             </div>
         </div>
@@ -72,13 +71,15 @@
                 <tbody>
                     <tr>
                         <td width="36%">
-                            <ui-select ng-model="item.product" ng-show="batch.warehouse">
-                                <ui-select-match placeholder="选择或搜索一个商品">{{$select.selected.sku + ' : ' + $select.selected.name}}</ui-select-match>
-                                <ui-select-choices repeat="product in products | filter: $select.search">
-                                    <div ng-bind-html="product.sku | highlight: $select.search"></div>
-                                    <small ng-bind-html="product.name | highlight: $select.search"></small>
-                                </ui-select-choices>
-                            </ui-select>
+                            <div class="form-group has-feedback" ng-class="{'has-success':(itemAddForm.product.$dirty && itemAddForm.product.$valid && item.product.id), 'has-warning':(itemAddForm.product.$dirty && itemAddForm.product.$invalid) }">
+                                <input type="text" name="product" ng-model="item.product" ng-show="batch.warehouse" placeholder="请输入商品" required min="1" class="form-control" uib-typeahead="product as product.name + '(' + product.sku + ')' for product in getProduct($viewValue)" typeahead-loading="loadingLocations" typeahead-no-results="noResults" typeahead-wait-ms="350"/>
+                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="itemAddForm.product.$dirty && itemAddForm.product.$valid && item.product.id"></span>
+                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="itemAddForm.product.$dirty && itemAddForm.product.$invalid"></span>
+                                <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
+                                <div ng-show="noResults">
+                                    <i class="glyphicon glyphicon-remove"></i> No Results Found
+                                </div>
+                            </div>
                         </td>
                         <td width="16%">
                             <ui-select ng-model="item.position" ng-show="batch.warehouse.enablePosition">
@@ -101,7 +102,7 @@
                             </div>
                         </td>
                         <td width="16%">
-                            <button type="submit" class="btn btn-info" ng-disabled="!itemAddForm.$valid || !item.product">添加</button>
+                            <button type="submit" class="btn btn-info" ng-disabled="!itemAddForm.$valid || !item.product.id">添加</button>
                         </td>
                     </tr>
                 </tbody>
