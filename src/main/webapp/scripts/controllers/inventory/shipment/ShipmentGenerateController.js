@@ -149,6 +149,18 @@ angular.module('ecommApp')
 
         $scope.toggleShipmentSheetSlide = function(){
             $scope.generateShipmentSheetCheckListSlideChecked = !$scope.generateShipmentSheetCheckListSlideChecked;
+
+            /* 如果打开弹出层，则显示弹出层滚动条并隐藏body滚动条，反之亦然 */
+            if( $scope.generateShipmentSheetCheckListSlideChecked )
+            {
+                $('body').css('overflow','hidden');
+                $('[ps-open="generateShipmentSheetCheckListSlideChecked"]').css('overflow','auto');
+            }
+            else
+            {
+                $('body').css('overflow','auto');
+                $('[ps-open="generateShipmentSheetCheckListSlideChecked"]').css('overflow','hidden');
+            }
         };
 
 

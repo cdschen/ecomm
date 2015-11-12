@@ -133,7 +133,7 @@
                 <p class="text-danger">
                     <strong>详情：</strong>
                 </p>
-                <div style="padding-right:8px;">
+                <div>
                     <table class="table table-bordered table-condensed clear-marginbottom-table">
                         <thead>
                             <tr>
@@ -156,10 +156,6 @@
                                 <th width="16%" class="text-center">操作</th>
                             </tr>
                         </thead>
-                    </table>
-                </div>
-                <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultHeight()">
-                    <table class="table table-bordered table-condensed clear-marginbottom-table">
                         <tbody ng-repeat="purchaseOrder in operationReview().purchaseOrders">
                             <tr style="font-size: 12px;">
                                 <th colspan="12">
@@ -190,7 +186,7 @@
                                 <th class="text-center">总金额</th>
                                 <th class="text-center">状态</th>
                                 <th class="text-center" colspan="2">收货信息</th>
-                                <th class="text-center">入库信息</th>
+                                <th class="text-center" colspan="2">入库信息</th>
                                 <th class="text-center">备注</th>
                             </tr>
                             <tr ng-show="purchaseOrder.isShown" style="font-size: 12px;">

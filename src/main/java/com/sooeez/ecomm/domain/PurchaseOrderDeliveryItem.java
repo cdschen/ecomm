@@ -2,7 +2,9 @@ package com.sooeez.ecomm.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -51,6 +55,15 @@ public class PurchaseOrderDeliveryItem implements Serializable {
 	//	#转credit数量
 	@Column(name = "credit_qty", nullable = false)
 	private Long creditQty;
+	
+	//	#保质期
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "expire_date")
+	private Date expireDate;
+	
+	//	#留言
+	@Column(name = "comment")
+	private String comment;
 	
 
 	/*
@@ -148,6 +161,26 @@ public class PurchaseOrderDeliveryItem implements Serializable {
 
 	public void setProduct(Product product) {
 		this.product = product;
+	}
+
+
+	public Date getExpireDate() {
+		return expireDate;
+	}
+
+
+	public void setExpireDate(Date expireDate) {
+		this.expireDate = expireDate;
+	}
+
+
+	public String getComment() {
+		return comment;
+	}
+
+
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 
 

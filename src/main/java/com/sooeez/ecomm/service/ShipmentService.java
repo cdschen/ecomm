@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.sooeez.ecomm.domain.Order;
@@ -24,6 +25,7 @@ import com.sooeez.ecomm.domain.ShipmentItem;
 import com.sooeez.ecomm.domain.Shop;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.dto.OperationReviewShipmentDTO;
+import com.sooeez.ecomm.repository.ObjectProcessRepository;
 import com.sooeez.ecomm.repository.OrderRepository;
 import com.sooeez.ecomm.repository.ShipmentItemRepository;
 import com.sooeez.ecomm.repository.ShipmentRepository;
@@ -37,6 +39,7 @@ public class ShipmentService {
 	@Autowired private OrderRepository orderRepository;
 	@Autowired private ShipmentRepository shipmentRepository;
 	@Autowired private ShipmentItemRepository shipmentItemRepository;
+	@Autowired private ObjectProcessRepository objectProcessRepository;
 	
 	/*
 	 * Shipment
@@ -226,6 +229,7 @@ public class ShipmentService {
 	}
 
 	/* 如果验证全都通过，并且操作类型是 CONFIRM 则执行完成操作 */
+	@Transactional
 	public void executeShipmentCompletion(OperationReviewShipmentDTO review)
 	{
 		/* 假设有可生成发货单的订单 */
@@ -236,6 +240,24 @@ public class ShipmentService {
 		/* 如果有可完成的发货单 */
 		if( shipment != null )
 		{
+			/* 更新订单状态至：店铺的完成状态 */
+			Order order = this.orderRepository.findOne( shipment.getOrderId() );
+			
+			Integer qtyTotalRecentDispatched = order.getQtyTotalItemShipped() + shipment.getQtyTotalItemShipped();
+			
+			/* 更新订单的［运送数量］ */
+			this.orderRepository.updateQtyTotalItemShipped( qtyTotalRecentDispatched, order.getId() );
+			
+			/* 如果［当前总发货数量］大于等于［订购数量］ */
+			if( qtyTotalRecentDispatched >= order.getQtyTotalItemOrdered() )
+			{
+				Long stepId = order.getShop().getCompleteStep().getId();
+				Long processId = order.getShop().getCompleteStep().getProcessId();
+				Integer objectType = order.getShop().getCompleteStep().getType();
+				this.objectProcessRepository.updateStepId( stepId, order.getId(), processId, objectType);
+			}
+			
+			
 			/* 取得操作员信息 */
 			Number excuteOperatorId = (Number) review.getDataMap().get("executeOperatorId");
 			Long finalExecuteOperatorId = excuteOperatorId.longValue();
@@ -264,6 +286,7 @@ public class ShipmentService {
 		}
 	}
 
+	@Transactional
 	public OperationReviewShipmentDTO confirmOperationReviewWhenCompleteShipment(OperationReviewShipmentDTO review)
 	{
 		Shipment reviewShipment = review.getShipment();
@@ -316,6 +339,80 @@ public class ShipmentService {
 		else
 		{
 			review.getCheckMap().put("emptyReceiveAddressError", true);
+		}
+		
+		/* 设置可确认性 */
+		this.setConfirmable(review);
+		
+		
+		/* 如果验证全都通过，并且操作类型是 CONFIRM 则执行完成操作 */
+		if( review.isConfirmable() &&
+			review.getAction().equals(OperationReviewDTO.CONFIRM) )
+		{
+			/* 执行完成发货单操作 */
+			this.executeShipmentCompletion( review );
+		}
+		
+		return review;
+		
+	}
+
+	@Transactional
+	public OperationReviewShipmentDTO confirmOperationReviewWhenCompleteShipments(OperationReviewShipmentDTO review)
+	{
+		List<Shipment> reviewShipments = review.getShipments();
+		
+		for( Shipment reviewShipment : reviewShipments )
+		{
+			/* 验证 1 ： 是否指定快递公司 */
+			if( reviewShipment.getCourierId() != null && ! reviewShipment.getCourierId().equals("") )
+			{
+				review.getCheckMap().put("emptyCourierError", false);
+			}
+			else
+			{
+				review.getCheckMap().put("emptyCourierError", true);
+			}
+			
+			/* 验证 2 ： 是否指定快递单号 */
+			if( reviewShipment.getShipNumber() != null && ! reviewShipment.getShipNumber().trim().equals("") )
+			{
+				review.getCheckMap().put("emptyShipNumberError", false);
+			}
+			else
+			{
+				review.getCheckMap().put("emptyShipNumberError", true);
+			}
+			
+			/* 验证 3 ： 订单的收件人姓名是否为空 */
+			if( reviewShipment.getReceiveName() != null && ! reviewShipment.getReceiveName().trim().equals("") )
+			{
+				review.getCheckMap().put("emptyReceiveNameError", false);
+			}
+			else
+			{
+				review.getCheckMap().put("emptyReceiveNameError", true);
+			}
+
+			/* 验证 4 ： 订单的收件人电话是否为空 */
+			if( reviewShipment.getReceivePhone() != null && ! reviewShipment.getReceivePhone().trim().equals("") )
+			{
+				review.getCheckMap().put("emptyReceivePhoneError", false);
+			}
+			else
+			{
+				review.getCheckMap().put("emptyReceivePhoneError", true);
+			}
+
+			/* 验证 5 ： 订单的收件人地址是否为空 */
+			if( reviewShipment.getReceiveAddress() != null && ! reviewShipment.getReceiveAddress().trim().equals("") )
+			{
+				review.getCheckMap().put("emptyReceiveAddressError", false);
+			}
+			else
+			{
+				review.getCheckMap().put("emptyReceiveAddressError", true);
+			}
 		}
 		
 		/* 设置可确认性 */

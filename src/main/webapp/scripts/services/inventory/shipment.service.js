@@ -3,7 +3,7 @@ angular.module('ecommApp')
 
 .factory('shipmentService', ['$resource', '$http', function($resource, $http) {
 
-    var operationReviewCompleteShipment;
+    var operationReviewCompleteShipment, operationReviewCompleteShipments;
     var shipment = $resource('/api/shipments/:id', {}, {});
 
         shipment.getAll = function(params)
@@ -30,15 +30,28 @@ angular.module('ecommApp')
 
         shipment.confirmOperationReviewWhenCompleteShipment = function(reviewDTO)
         {
-            return $http.post('/api/shipments/confirm/complete/operation-review', reviewDTO)
+            return $http.post('/api/shipment/confirm/complete/operation-review', reviewDTO)
                 .then(function(res) {
                     return (operationReviewCompleteShipment = res.data);
+                });
+        };
+
+        shipment.confirmOperationReviewWhenCompleteShipments = function(reviewDTO)
+        {
+            return $http.post('/api/shipments/confirm/complete/operation-review', reviewDTO)
+                .then(function(res) {
+                    return (operationReviewCompleteShipments = res.data);
                 });
         };
 
         shipment.getOperationReviewCompleteShipment = function()
         {
             return operationReviewCompleteShipment;
+        };
+
+        shipment.getOperationReviewCompleteShipments = function()
+        {
+            return operationReviewCompleteShipments;
         };
 
         shipment.getSelectedShipment = function()

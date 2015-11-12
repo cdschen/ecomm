@@ -30,6 +30,18 @@ angular.module('ecommApp')
                 roles: [ROLES.SYSTEM_ADMIN, ROLES.RECEIVE_ADMIN]
             }
         })
+        .state('purchaseOrderDelivery.receive', {
+            url: '/purchase-order-delivery-receive/:id',
+            views: {
+                'content@': {
+                    templateUrl: 'views/procurement/purchase-order-delivery/purchase-order-delivery-receive.html?' + t,
+                    controller: 'PurchaseOrderDeliveryReceive'
+                }
+            },
+            data: {
+                roles: [ROLES.SYSTEM_ADMIN, ROLES.RECEIVE_ADMIN]
+            }
+        })
         .state('purchaseOrderDelivery.enterInventory', {
             url: '/enter-inventory/:id',
             views: {

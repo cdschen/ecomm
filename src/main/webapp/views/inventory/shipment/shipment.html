@@ -101,6 +101,7 @@
                     <th style="padding: 2px">
                         <select class="form-control input-sm" ng-change="batchManipulation()" ng-model="batchManipulationValue">
                             <option selected="selected" value="batchManipulation">批量操作</option>
+                            <option value="shipmentComplete">完成</option>
                             <option value="shipmentExport">导出</option>
                             <option value="shipmentPrint">打印</option>
                             <option value="shipmentObsolete">作废</option>
@@ -127,7 +128,7 @@
                     </td>
                     <td>
                         {{
-                            shipment.shipStatus == 1 ? '待取件' :
+                            shipment.shipStatus == 1 ? '待打印' :
                             shipment.shipStatus == 2 ? '已发出' :
                             shipment.shipStatus == 3 ? '已签收' :
                             shipment.shipStatus == 4 ? '派送异常' :
@@ -244,4 +245,5 @@
 </div>
 
 <section ng-include="template.shipmentComplete.url" ng-controller="ShipmentCompleteController" onload="init()"></section>
+<section ng-include="template.shipmentsComplete.url" ng-controller="ShipmentsCompleteController" onload="init()"></section>
 

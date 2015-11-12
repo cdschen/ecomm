@@ -29,7 +29,7 @@
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">供应商*</label>
                 <div class="col-md-3">
-                    <ui-select ng-model="purchaseOrder.supplier" ng-disabled="id">
+                    <ui-select ng-model="purchaseOrder.supplier" ng-disabled="id" required>
                         <ui-select-match placeholder="供应商(必选)">{{$select.selected.name}}</ui-select-match>
                         <ui-select-choices repeat="supplier in suppliers | filter: $select.search">
                             <div ng-bind-html="supplier.name | highlight: $select.search"></div>
@@ -57,7 +57,7 @@
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">订货方式*</label>
                 <div class="col-md-3">
-                    <ui-select ng-model="purchaseOrder.bookingType" ng-disabled="id">
+                    <ui-select ng-model="purchaseOrder.bookingType" ng-disabled="id" required>
                         <ui-select-match placeholder="订货方式(必选)">{{$select.selected.name}}</ui-select-match>
                         <ui-select-choices repeat="bookingType in bookingTypes | filter: $select.search">
                             <div ng-bind-html="bookingType.name | highlight: $select.search"></div>
@@ -75,7 +75,7 @@
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">收货人姓名*</label>
                 <div class="col-md-3">
-                    <input class="form-control" type="text" ng-model="purchaseOrder.receiveName" placeholder="(必填)" />
+                    <input class="form-control" type="text" ng-model="purchaseOrder.receiveName" placeholder="(必填)" required />
                 </div>
                 <label class="control-label col-md-2">Credit总金额</label>
                 <div class="col-md-3">
@@ -88,7 +88,7 @@
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">收货人电话*</label>
                 <div class="col-md-3">
-                    <input class="form-control" type="text" ng-model="purchaseOrder.receivePhone" placeholder="(必填)" />
+                    <input class="form-control" type="text" ng-model="purchaseOrder.receivePhone" placeholder="(必填)" required />
                 </div>
                 <label class="control-label col-md-2">采购总金额</label>
                 <div class="col-md-3">
@@ -157,12 +157,7 @@
     <div class="panel-body">
         <div class="row">
             <div class="col-md-2">
-                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="save(purchaseOrder)"
-                        ng-disabled="
-                        !purchaseOrderOperatorForm.$valid || !purchaseOrder.supplier || !purchaseOrder.currency
-                        || !purchaseOrder.bookingType || !purchaseOrder.receiveName || !purchaseOrder.receivePhone
-                        || !purchaseOrder.items || purchaseOrder.items.length < 1
-                        ">
+                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="save(purchaseOrder, purchaseOrderOperatorForm.$valid)">
                     <span class="glyphicon glyphicon-floppy-saved"></span> 保存
                 </button>
             </div>
