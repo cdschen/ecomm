@@ -4,14 +4,17 @@
     <li class="active">出库单</li>
 </ol>
 <div class="container-fluid">
-    <div class="panel panel-default">
-        <form name="batchForm" novalidate ng-submit="">
+    <form name="batchForm" novalidate>
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">出库单</h3>
+            </div>
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-5">
                         <div class="panel panel-info" style="height:215px">
                             <div class="panel-heading" style="padding:5px;">
-                                <h4 class="panel-title"><strong>出库单基本信息</strong></h4>
+                                <h4 class="panel-title">基本信息</h4>
                             </div>
                             <table class="table table-bordered table-condensed clear-marginbottom-table">
                                 <tr>
@@ -44,7 +47,7 @@
                     <div class="col-md-5">
                         <div class="panel panel-info" style="height:215px">
                             <div class="panel-heading" style="padding:5px;">
-                                <h4 class="panel-title"><strong>备注</strong></h4>
+                                <h4 class="panel-title">备注</h4>
                             </div>
                             <div class="panel-body">
                                 <textarea class="form-control" rows="7"></textarea>
@@ -61,73 +64,72 @@
                     </div>
                 </div>
             </div>
+            <hr>
             <div class="panel-body">
-                <div class="panel panel-default">
-                    <table class="table table-bordered table-condensed clear-marginbottom-table">
-                        <thead>
-                            <tr>
-                                <th width="25%">SKU</th>
-                                <th width="25%">商品名称</th>
-                                <th width="20%">库位</th>
-                                <th width="15%">应出</th>
-                                <th width="15%">实出</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="product in products">
-                                <td>
-                                    {{product.sku}}
-                                </td>
-                                <td>
-                                    {{product.name}}
-                                </td>
-                                <td colspan="3">
-                                    <ng-form name="positionForm" novalidate ng-repeat="position in product.positions">
-                                        <table class="table table-bordered table-condensed clear-marginbottom-table">
-                                            <tbody>
-                                                <tr>
-                                                    <td width="40%">
-                                                        {{position.name}}
-                                                    </td>
-                                                    <td width="30%">
-                                                        {{Math.abs(position.total)}}
-                                                    </td>
-                                                    <td width="30%">
-                                                        <div class="form-group has-feedback" style="margin-bottom: 0" ng-class="{'has-success':(positionForm.actualTotal.$dirty && positionForm.actualTotal.$valid), 'has-warning':(positionForm.actualTotal.$dirty && positionForm.actualTotal.$invalid) }">
-                                                            <input type="number" class="form-control input-sm" name="actualTotal" ng-model="position.actualTotal" required min="1" ng-maxlength="5" />
-                                                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="positionForm.actualTotal.$dirty && positionForm.actualTotal.$valid"></span>
-                                                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="positionForm.actualTotal.$dirty && positionForm.actualTotal.$invalid"></span>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </ng-form>
-                                    <ng-form name="productForm" noalidate>
-                                        <table class="table table-bordered table-condensed clear-marginbottom-table">
-                                            <tbody>
-                                                <tr>
-                                                    <th class="success" width="40%">总数</th>
-                                                    <td width="30%">
-                                                        {{Math.abs(product.total)}}
-                                                    </td>
-                                                    <td width="30%">
-                                                        <div class="form-group has-feedback" style="margin-bottom: 0" ng-class="{'has-success':(productForm.actualTotal.$dirty && productForm.actualTotal.$valid), 'has-warning':(productForm.actualTotal.$dirty && productForm.actualTotal.$invalid) }">
-                                                            <input type="number" class="form-control input-sm" name="actualTotal" ng-model="product.actualTotal" required min="1" ng-maxlength="5" />
-                                                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productForm.actualTotal.$dirty && productForm.actualTotal.$valid"></span>
-                                                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productForm.actualTotal.$dirty && productForm.actualTotal.$invalid"></span>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </ng-form>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th width="15%">SKU</th>
+                            <th width="35%">商品名称</th>
+                            <th width="20%">库位</th>
+                            <th width="15%">应出</th>
+                            <th width="15%">实出</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="product in products">
+                            <td>
+                                {{product.sku}}
+                            </td>
+                            <td>
+                                {{product.name}}
+                            </td>
+                            <td colspan="3">
+                                <ng-form name="positionForm" novalidate ng-repeat="position in product.positions">
+                                    <table class="table table-condensed clear-marginbottom-table">
+                                        <thead>
+                                            <tr>
+                                                <td width="40%">
+                                                    {{position.name}}
+                                                </td>
+                                                <td width="30%">
+                                                    {{Math.abs(position.total)}}
+                                                </td>
+                                                <td width="30%">
+                                                    <div class="form-group has-feedback" style="margin-bottom: 0" ng-class="{'has-success':(positionForm.actualTotal.$dirty && positionForm.actualTotal.$valid), 'has-warning':(positionForm.actualTotal.$dirty && positionForm.actualTotal.$invalid) }">
+                                                        <input type="number" class="form-control input-sm" name="actualTotal" ng-model="position.actualTotal" required min="1" ng-maxlength="5" />
+                                                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="positionForm.actualTotal.$dirty && positionForm.actualTotal.$valid"></span>
+                                                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="positionForm.actualTotal.$dirty && positionForm.actualTotal.$invalid"></span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </ng-form>
+                                <!-- <ng-form name="productForm" noalidate>
+                                    <table class="table table-condensed clear-marginbottom-table">
+                                        <thead>
+                                            <tr>
+                                                <th class="success" width="40%">总数</th>
+                                                <td width="30%">
+                                                    {{Math.abs(product.total)}}
+                                                </td>
+                                                <td width="30%">
+                                                    <div class="form-group has-feedback" style="margin-bottom: 0" ng-class="{'has-success':(productForm.actualTotal.$dirty && productForm.actualTotal.$valid), 'has-warning':(productForm.actualTotal.$dirty && productForm.actualTotal.$invalid) }">
+                                                        <input type="number" class="form-control input-sm" name="actualTotal" ng-model="product.actualTotal" required min="1" ng-maxlength="5" />
+                                                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productForm.actualTotal.$dirty && productForm.actualTotal.$valid"></span>
+                                                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productForm.actualTotal.$dirty && productForm.actualTotal.$invalid"></span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </ng-form> -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>

@@ -33,9 +33,8 @@ module.exports = function(config) {
             '../main/webapp/bower_components/angular-ui-router/release/angular-ui-router.js',
             '../main/webapp/bower_components/angular-ui-select/dist/select.js',
             '../main/webapp/bower_components/bootstrap/dist/js/bootstrap.js',
-            '../main/webapp/bower_components/bootstrap-datepicker/js/bootstrap-datepicker.js',
+            '../main/webapp/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
             '../main/webapp/bower_components/ng-pageslide/dist/angular-pageslide-directive.js',
-            '../main/webapp/bower_components/ngTinyScrollbar/dist/ng-tiny-scrollbar.min.js',
             '../main/webapp/bower_components/angular-toastr/dist/angular-toastr.tpls.js',
             '../main/webapp/bower_components/angular-mocks/angular-mocks.js',
             // endbower

@@ -24,15 +24,16 @@ angular.module('ecommApp')
 
         $scope.sum = angular.copy($scope.defaultSum);
 
-        $scope.changeProductType = function($item) {
-            if ($item.value === 1) {
-                Product.getAll({
-                    productType: 0,
-                    enabled: true
-                }).then(function(members) {
-                    $scope.members = members;
-                });
-            }
+        $scope.getProduct = function(val) {
+            return Product.get({
+                page: 0,
+                size: 30,
+                enabled: true,
+                productType: 0,
+                nameOrSku: val
+            }).$promise.then(function(page) {
+                return page.content;
+            });
         };
 
         $scope.save = function(product) {

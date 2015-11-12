@@ -23,20 +23,21 @@
         </tr>
     </tbody>
 </table>
-<form name="memberForm" novalidate ng-repeat="member in product.members" >
+<form name="memberForm" novalidate ng-repeat="member in product.members">
     <table class="table clear-marginbottom-table">
         <tbody>
             <tr>
                 <td width="30%">
                     <span ng-show="!member.editable">{{member.product.name + '(' + member.product.sku + ')'}}</span>
-                    <span ng-show="member.editable">
-                        <ui-select ng-model="member.product">
-                            <ui-select-match placeholder="商品(必选)">{{$select.selected.name + '(' + $select.selected.sku + ')'}}</ui-select-match>
-                            <ui-select-choices group-by="'sku'" repeat="member in members | filter: $select.search">
-                                <div ng-bind-html="member.name | highlight: $select.search"></div>
-                            </ui-select-choices>
-                        </ui-select>
-                    </span>
+                    <div class="form-group has-feedback" ng-show="member.editable" ng-class="{'has-success':(memberAddForm.product.$dirty && memberAddForm.product.$valid && item.product.id), 'has-warning':(memberAddForm.product.$dirty && memberAddForm.product.$invalid) }">
+                        <input type="text" name="product" ng-model="member.product" placeholder="请输入商品" required min="1" class="form-control" uib-typeahead="product as product.name + '(' + product.sku + ')' for product in getProduct($viewValue)" typeahead-loading="loadingLocations" typeahead-no-results="noResults" typeahead-wait-ms="350" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="memberAddForm.product.$dirty && memberAddForm.product.$valid && member.product.id"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="memberAddForm.product.$dirty && memberAddForm.product.$invalid"></span>
+                        <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
+                        <div ng-show="noResults">
+                            <i class="glyphicon glyphicon-remove"></i> No Results Found
+                        </div>
+                    </div>
                 </td>
                 <td width="5%">{{member.product.priceL1 | currency:'':2}}</td>
                 <td width="5%">{{member.product.priceL2 | currency:'':2}}</td>
@@ -57,7 +58,7 @@
                     </div>
                 </td>
                 <td width="10%">
-                    <button type="button" class="btn btn-success" ng-click="saveUpdateMember(member, memberForm, $index)" ng-show="member.editable" ng-disabled="!memberForm.quantity.$valid || !member.product">
+                    <button type="button" class="btn btn-success" ng-click="saveUpdateMember(member, memberForm, $index)" ng-show="member.editable" ng-disabled="!memberForm.quantity.$valid || !member.product.id">
                         <span class="glyphicon glyphicon-floppy-saved"></span>
                     </button>
                     <button type="button" class="btn btn-info" ng-click="updateMember(member, $index)" ng-show="!member.editable">
@@ -97,18 +98,14 @@
         <tbody>
             <tr>
                 <td width="30%">
-                    <div class="input-group">
-                        <ui-select ng-model="member.product">
-                            <ui-select-match placeholder="商品(必选)">{{$select.selected.name + '(' + $select.selected.sku + ')'}}</ui-select-match>
-                            <ui-select-choices group-by="'sku'" repeat="member in members | filter: $select.search">
-                                <div ng-bind-html="member.name | highlight: $select.search"></div>
-                            </ui-select-choices>
-                        </ui-select>
-                        <span class="input-group-btn">
-                            <button type="button" ng-click="member.product = undefined" class="btn btn-default">
-                                <span class="glyphicon glyphicon-trash"></span>
-                        </button>
-                        </span>
+                    <div class="form-group has-feedback" ng-class="{'has-success':(memberAddForm.product.$dirty && memberAddForm.product.$valid && member.product.id), 'has-warning':(memberAddForm.product.$dirty && memberAddForm.product.$invalid) }">
+                        <input type="text" name="product" ng-model="member.product" placeholder="请输入商品" required min="1" class="form-control" uib-typeahead="product as product.name + '(' + product.sku + ')' for product in getProduct($viewValue)" typeahead-loading="loadingLocations" typeahead-no-results="noResults" typeahead-wait-ms="350" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="memberAddForm.product.$dirty && memberAddForm.product.$valid && member.product.id"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="memberAddForm.product.$dirty && memberAddForm.product.$invalid"></span>
+                        <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
+                        <div ng-show="noResults">
+                            <i class="glyphicon glyphicon-remove"></i> No Results Found
+                        </div>
                     </div>
                 </td>
                 <td width="5%">{{member.product.priceL1 | currency:'':2}}</td>
@@ -129,7 +126,7 @@
                     </div>
                 </td>
                 <td width="10%">
-                    <button type="button" class="btn btn-success" ng-click="saveMember(memberAddForm, member)" ng-disabled="!memberAddForm.$valid || !member.product">添加</button>
+                    <button type="button" class="btn btn-success" ng-click="saveMember(memberAddForm, member)" ng-disabled="!memberAddForm.$valid || !member.product.id">添加</button>
                 </td>
             </tr>
         </tbody>
