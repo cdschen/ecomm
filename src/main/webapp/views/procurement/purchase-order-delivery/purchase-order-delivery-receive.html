@@ -108,9 +108,9 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="item in items | orderBy: 'product.name'">
+                        <tr ng-repeat="item in items | orderBy: ['supplierProduct.supplierProductName', 'supplierProduct.product.name']">
                             <td>
-                                {{ item.product.name }}
+                                {{ item.supplierProduct.product ? item.supplierProduct.product.name : item.supplierProduct.supplierProductName }}
                             </td>
                             <td>
                                 <input type="number" ng-model="item.realPurchaseUnitPrice" placeholder="(选填)"

@@ -37,7 +37,7 @@ angular.module('ecommApp')
                     var purchaseOrderDeliveryItem =
                     {
                         purchaseOrderItemId : this.id,
-                        product : this.product,
+                        supplierProduct : this.supplierProduct,
                         realPurchaseUnitPrice : this.estimatePurchaseUnitPrice,
                         receiveQty : this.purchaseQty,
                         creditQty : 0
