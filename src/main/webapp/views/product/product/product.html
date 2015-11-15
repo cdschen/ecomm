@@ -16,14 +16,9 @@
             <table class="table table-condensed clear-marginbottom-table">
                 <thead>
                     <tr>
-                        <td width="12%">
+                        <td width="24%">
                             <div class="form-group">
-                                <input type="text" ng-model="query.product.sku" class="form-control" placeholder="SKU">
-                            </div>
-                        </td>
-                        <td width="12%">
-                            <div class="form-group">
-                                <input type="text" ng-model="query.product.name" class="form-control" placeholder="商品名称">
+                                <input type="text" ng-model="query.product.nameOrSku" class="form-control" placeholder="输入：SKU，商品名称">
                             </div>
                         </td>
                         <td width="12%">
@@ -85,15 +80,15 @@
                             <input type="checkbox" ng-model="selectAll">
                         </th>
                         <th width="10%">SKU</th>
-                        <th width="14%">商品名称</th>
-                        <th width="20%">销售</th>
-                        <th width="15%">成本</th>
-                        <th width="17%">库存</th>
-                        <th width="14%">状态</th>
-                        <th width="8%" style="padding: 2px">
-                            <select class="form-control input-sm" ng-disabled="true">
+                        <th width="36%">商品名称</th>
+                        <th width="10%">销售</th>
+                        <th width="10%">成本</th>
+                        <th width="10%">库存</th>
+                        <th width="18%">状态</th>
+                        <th width="4%" style="padding: 2px">
+                           <!--  <select class="form-control input-sm" ng-disabled="true">
                                 <option value="default">批量操作</option>
-                            </select>
+                            </select> -->
                         </th>
                     </tr>
                 </thead>
@@ -119,7 +114,7 @@
                             &nbsp;
                         </td>
                         <td>
-                            <a href="javascript:void(0)" popover-template="template.popover.url" ng-click="updateStep(product)" popover-trigger="focus" class="btn btn-success btn-xs" ng-repeat="process in product.processes" style="margin:0 5px 5px 0">
+                            <a tabindex="0" href="javascript:void(0)" uib-popover-template="template.popover.url" ng-click="updateStep(product)" popover-trigger="focus" class="btn btn-success btn-xs" ng-repeat="process in product.processes" style="margin:0 5px 5px 0">
                             {{process.step.name}}
                         </a>
                             <a href="javascript:void(0)" class="btn btn-info btn-xs pull-right" ng-click="toggleProcessSlide(product)">...</a>

@@ -362,7 +362,7 @@ angular.module('ecommApp')
             if (item.outBatch) {
                 $.each(products, function() {
                     var product = this;
-                    if (product.sku === item.product.sku) {
+                    if (product.id === item.product.id) {
                         console.log('noPositionSelectedBatch:');
                         noPositionSelectedBatch(product, item, action);
                         return false;
@@ -372,7 +372,7 @@ angular.module('ecommApp')
             } else {
                 $.each(products, function() {
                     var product = this;
-                    if (product.sku === item.product.sku) {
+                    if (product.id === item.product.id) {
                         console.log('noPositionAndBatch:');
                         noPositionAndBatch(product, item, action);
                         return false;

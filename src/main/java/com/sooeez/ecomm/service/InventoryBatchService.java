@@ -132,7 +132,7 @@ public class InventoryBatchService {
 						boolean hasEle = false;
 						if (position.getId().longValue() == item.getPosition().getId().longValue()) {
 							existPosition = true;
-							position.setTotal(position.getTotal() + item.getChangedQuantity().longValue());
+							position.setTotal(position.getTotal().longValue() + item.getChangedQuantity().longValue());
 							product.setTotal(product.getTotal().longValue() + item.getChangedQuantity().longValue());
 							snapshot += "{\"" + position.getName() + "\":" + position.getTotal() + "}";
 						} else {
@@ -266,14 +266,18 @@ public class InventoryBatchService {
 							for (int i = 0, len = product.getPositions().size() - 1; i < len; i++) {
 								position = product.getPositions().get(i);
 								if (position.getId().longValue() == item.getPosition().getId().longValue()) {
-									snapshot += "{\"" + position.getName() + "\":" + (position.getTotal() + item.getActualQuantity().longValue()) + "},";
+									position.setTotal(position.getTotal().longValue() + item.getActualQuantity().longValue());
+									product.setTotal(product.getTotal().longValue() + item.getActualQuantity().longValue());
+									snapshot += "{\"" + position.getName() + "\":" + position.getTotal().longValue() + "},";
 								} else {
-									snapshot += "{\"" + position.getName() + "\":" + position.getTotal() + "},";
+									snapshot += "{\"" + position.getName() + "\":" + position.getTotal().longValue() + "},";
 								}
 							}
-							position = product.getPositions().get(product.getPositions().size()-1);
+							position = product.getPositions().get(product.getPositions().size() - 1);
 							if (position.getId().longValue() == item.getPosition().getId().longValue()) {
-								snapshot += "{\"" + position.getName() + "\":" + (position.getTotal() + item.getChangedQuantity().longValue()) + "}";
+								position.setTotal(position.getTotal().longValue() + item.getChangedQuantity().longValue());
+								product.setTotal(product.getTotal().longValue() + item.getChangedQuantity().longValue());
+								snapshot += "{\"" + position.getName() + "\":" + position.getTotal() + "}";
 							} else {
 								snapshot += "{\"" + position.getName() + "\":" + position.getTotal() + "}";
 							}
@@ -297,11 +301,7 @@ public class InventoryBatchService {
 				
 				batchItems.forEach(item -> {
 					if (item.getProduct().getId() != null && item.getWarehouse().getId() != null && item.getOutBatch().getId() != null) {
-						if (item.getPosition() != null && item.getPosition().getId() != null) {
-							this.inventoryRepository.updateInventoryByProductIdAndWarehouseIdAndPositionIdAndBatchId(item.getActualQuantity(), item.getProduct().getId(), item.getWarehouse().getId(), item.getPosition().getId(), item.getOutBatch().getId());
-						} else {
-							this.inventoryRepository.updateInventoryByProductIdAndWarehouseIdAndBatchId(item.getActualQuantity(), item.getProduct().getId(), item.getWarehouse().getId(), item.getOutBatch().getId());
-						}
+						inventoryRepository.updateInventoryByProductIdAndWarehouseIdAndPositionIdAndBatchId(item.getActualQuantity(), item.getProduct().getId(), item.getWarehouse().getId(), item.getPosition().getId(), item.getOutBatch().getId());
 					} else {
 						System.out.println("没有修改库存的item:" + item.getId());
 					}

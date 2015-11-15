@@ -102,7 +102,7 @@
         <div class="form-group has-feedback" ng-class="{'has-success':(productForm.shortName.$dirty && productForm.shortName.$valid), 'has-warning':(productForm.shortName.$dirty && productForm.shortName.$invalid) }">
             <label class="control-label col-md-2">简称 <span class="text-danger">*</span></label>
             <div class="col-md-6">
-                <input type="text" name="shortName" ng-model="product.shortName" placeholder="(必填)" class="form-control" required ng-maxlength="50" />
+                <input type="text" name="shortName" ng-model="product.shortName" placeholder="(必填，商品打印在快递单上的名字)" class="form-control" required ng-maxlength="50" />
                 <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productForm.shortName.$dirty && productForm.shortName.$valid"></span>
                 <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productForm.shortName.$dirty && productForm.shortName.$invalid"></span>
             </div>

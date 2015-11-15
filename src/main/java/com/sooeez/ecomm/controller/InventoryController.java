@@ -20,8 +20,6 @@ import com.sooeez.ecomm.domain.InventoryBatch;
 import com.sooeez.ecomm.domain.InventoryBatchItem;
 import com.sooeez.ecomm.domain.Shipment;
 import com.sooeez.ecomm.domain.ShipmentItem;
-import com.sooeez.ecomm.domain.Warehouse;
-import com.sooeez.ecomm.domain.WarehousePosition;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.dto.OperationReviewShipmentDTO;
 import com.sooeez.ecomm.service.CourierService;

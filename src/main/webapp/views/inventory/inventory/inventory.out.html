@@ -4,7 +4,12 @@
     <li class="active">出库</li>
 </ol>
 <div class="container-fluid">
-    <div class="panel panel-default">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                出库
+            </h3>
+        </div>
         <div class="panel-body">
             <div class="col-md-3">
                 <ui-select ng-model="batch.warehouse" on-select="changeWarehouse($item, $model)">
@@ -15,80 +20,73 @@
                 </ui-select>
             </div>
         </div>
-        <form>
-            <table class="table table-bordered table-condensed clear-marginbottom-table">
-                <thead>
-                    <tr>
-                        <th width="36%">SKU | 商品名称</th>
-                        <th width="18%">出库库位 (可选)</th>
-                        <th width="18%">批次号 (可选)</th>
-                        <th width="10%">保有数量</th>
-                        <th width="10%">出库数量</th>
-                        <th width="8%">操作</th>
-                    </tr>
-                </thead>
-            </table>
-        </form>
         <!-- item table -->
-        <form name="itemForm" novalidate ng-repeat="item in batch.items">
-            <table class="table table-bordered table-condensed clear-marginbottom-table">
-                <tbody>
-                    <tr>
-                        <td width="36%">
-                            {{item.product.sku + ' : ' + item.product.name}}
-                        </td>
-                        <td width="18%">
-                            {{item.position.name}}
-                        </td>
-                        <td width="18%">
-                            {{item.outBatch.id}}
-                        </td>
-                        <td width="10%">
-                        </td>
-                        <td width="10%">
-                            {{item.changedQuantity}}
-                        </td>
-                        <td width="8%">
-                            <a href="" class="btn btn-danger btn-xs" ng-click="showRemoveItem(item, $index)">
-                                <span class="glyphicon glyphicon-trash"></span> 删除
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </form>
+        <table class="table table-condensed clear-marginbottom-table">
+            <thead>
+                <tr>
+                    <th width="36%">SKU | 商品名称</th>
+                    <th width="18%">出库库位 (可选)</th>
+                    <th width="18%">批次号 (可选)</th>
+                    <th width="10%">保有数量</th>
+                    <th width="10%">出库数量</th>
+                    <th width="8%">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in batch.items">
+                    <td width="36%">
+                        {{item.product.sku + ' : ' + item.product.name}}
+                    </td>
+                    <td width="18%">
+                        {{item.position.name}}
+                    </td>
+                    <td width="18%">
+                        {{item.outBatch.id}}
+                    </td>
+                    <td width="10%">
+                    </td>
+                    <td width="10%">
+                        {{item.changedQuantity}}
+                    </td>
+                    <td width="8%">
+                        <a href="" class="btn btn-danger btn-xs" ng-click="showRemoveItem(item, $index)">
+                            <span class="glyphicon glyphicon-trash"></span> 删除
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <!-- item add form -->
         <form name="itemAddForm" novalidate ng-submit="saveItem(item, itemAddForm)">
-            <table class="table table-bordered table-condensed clear-marginbottom-table">
+            <table class="table  table-condensed clear-marginbottom-table">
                 <tbody>
                     <tr>
                         <td width="36%">
                             <ui-select ng-model="item.product" on-select="changeProduct($item)" ng-show="products.length > 0">
-                                <ui-select-match placeholder="选择或搜索商品">{{$select.selected.sku + ' : ' + $select.selected.name}}</ui-select-match>
+                                <ui-select-match placeholder="选择或搜索商品">{{$select.selected.name + '(' + $select.selected.sku + ')'}}</ui-select-match>
                                 <ui-select-choices repeat="product in products | filter: $select.search">
-                                    <div ng-bind-html="product.sku | highlight: $select.search"></div>
-                                    <small ng-bind-html="product.name | highlight: $select.search"></small>
+                                    <small ng-bind-html="product.name + '(' + product.sku + ')' | highlight: $select.search"></small>
                                 </ui-select-choices>
                             </ui-select>
                         </td>
                         <td width="18%">
                             <div class="input-group" ng-show="batch.warehouse.positions && batch.warehouse.positions.length > 0 && item.product.existPosition == true">
-                                <ui-select ng-model="item.position" on-select="changePosition($item)" >
+                                <ui-select ng-model="item.position" on-select="changePosition($item)">
                                     <ui-select-match placeholder="选择库位">{{$select.selected.name}}</ui-select-match>
-                                    <ui-select-choices repeat="position in item.product.positions | filter: $select.search">
+                                    <ui-select-choices repeat="position in item.product.positions | filter: $select.search | filter: {name: '!default'}">
                                         <div ng-bind-html="position.name | highlight: $select.search"></div>
                                     </ui-select-choices>
                                 </ui-select>
                                 <span class="input-group-btn">
                                     <button type="button" ng-click="changePosition('remove')" class="btn btn-default">
                                         <span class="glyphicon glyphicon-trash"></span>
-                                    </button>
+                                </button>
                                 </span>
                             </div>
                         </td>
                         <td width="18%">
                             <div class="input-group" ng-show="item.product">
-                                <ui-select ng-model="item.outBatch" on-select="changeOutBatch($item)" >
+                                <ui-select ng-model="item.outBatch" on-select="changeOutBatch($item)">
                                     <ui-select-match placeholder="选择批次">{{$select.selected.id + ''}}</ui-select-match>
                                     <ui-select-choices repeat="batch in batches | filter: $select.search">
                                         <div ng-bind-html="batch.id + '' | highlight: $select.search"></div>
@@ -97,7 +95,7 @@
                                 <span class="input-group-btn">
                                     <button type="button" ng-click="changeOutBatch('remove')" class="btn btn-default">
                                         <span class="glyphicon glyphicon-trash"></span>
-                                    </button>
+                                </button>
                                 </span>
                             </div>
                         </td>
@@ -138,7 +136,6 @@
                     </div>
                 </div>
             </form>
-        </div>
         </div>
     </div>
     <!-- item delete Modal -->

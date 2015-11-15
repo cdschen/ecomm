@@ -87,6 +87,10 @@ public class InventoryBatchItem implements Serializable {
 	@Column(name = "batch_operate")
 	private Integer batchOperate;
 
+	@Lob
+	@Column(name = "memo")
+	private String memo;
+
 	/*
 	 * Related Properties
 	 */
@@ -366,6 +370,14 @@ public class InventoryBatchItem implements Serializable {
 
 	public void setWarehouseIds(Long[] warehouseIds) {
 		this.warehouseIds = warehouseIds;
+	}
+
+	public String getMemo() {
+		return memo;
+	}
+
+	public void setMemo(String memo) {
+		this.memo = memo;
 	}
 
 }
