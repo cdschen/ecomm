@@ -42,6 +42,7 @@ public class SupplierProductService {
 		{
 			supplierProduct.setCreateTime( new Date() );
 		}
+		supplierProduct.setLastUpdate( new Date() );
 		return this.supplierProductRepository.save( supplierProduct );
 	}
 	
@@ -61,33 +62,77 @@ public class SupplierProductService {
 		return this.supplierProductRepository.findAll( getSupplierProductSpecification( supplierProduct ) , pageable);
 	}
 	
-	private Specification<SupplierProduct> getSupplierProductSpecification(SupplierProduct supplierProduct) {
-
+	private Specification<SupplierProduct> getSupplierProductSpecification(SupplierProduct supplierProduct)
+	{
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			if (supplierProduct.getQuerySupplierProductId() != null) {
-				predicates.add( cb.equal( root.get("id"), supplierProduct.getQuerySupplierProductId() ) );
-			}
-			if (supplierProduct.getQuerySupplierId() != null) {
-				predicates.add( cb.equal( root.get("supplierId"), supplierProduct.getQuerySupplierId() ) );
-			}
-			if ( StringUtils.hasText( supplierProduct.getQueryProductSku() ) )
+			
+			/* 采购单详情模糊查询 */
+			if( StringUtils.hasText( supplierProduct.getQueryPurchaseOrderItemFuzzySearchParam() ) )
 			{
 				Subquery<Product> productSubquery = query.subquery( Product.class );
 				Root<Product> productRoot = productSubquery.from( Product.class );
-				productSubquery.select( productRoot.get("sku") );
-				productSubquery.where( cb.like( root.get("productId"), supplierProduct.getQueryProductSku() ) );
-				predicates.add(cb.in(root.get("productId")).value(productSubquery));
+				productSubquery.select( productRoot.get("id") );
+				productSubquery.where
+				(
+					cb.or
+					(
+						/* 模糊匹配产品： */
+						/* sku */
+						/* barcode */
+						/* name */
+						cb.like( productRoot.get("sku"), "%" + supplierProduct.getQueryPurchaseOrderItemFuzzySearchParam() + "%" ),
+						cb.like( productRoot.get("barcode"), "%" + supplierProduct.getQueryPurchaseOrderItemFuzzySearchParam() + "%" ),
+						cb.like( productRoot.get("name"), "%" + supplierProduct.getQueryPurchaseOrderItemFuzzySearchParam() + "%" )
+					)
+				);
+				predicates.add
+				(
+					cb.or
+					(
+						/* 或者产品编号匹配 */
+						cb.in( root.get("productId") ).value(productSubquery),
+							
+						/* 模糊匹配供应商产品： */
+						/* supplierProductCode */
+						/* supplierProductName */
+						cb.like( root.get("supplierProductCode"), "%" + supplierProduct.getQueryPurchaseOrderItemFuzzySearchParam() + "%" ),
+						cb.like( root.get("supplierProductName"), "%" + supplierProduct.getQueryPurchaseOrderItemFuzzySearchParam() + "%" )
+					)
+				);
 			}
+			
+			if (supplierProduct.getQuerySupplierId() != null)
+			{
+				predicates.add( cb.equal( root.get("supplierId"), supplierProduct.getQuerySupplierId() ) );
+			}
+			
+			if (supplierProduct.getQueryCreatorId() != null)
+			{
+				predicates.add( cb.equal( root.get("creatorId"), supplierProduct.getQueryCreatorId() ) );
+			}
+			
 			if ( StringUtils.hasText( supplierProduct.getQueryProductBarcode() ) )
 			{
 				Subquery<Product> productSubquery = query.subquery( Product.class );
 				Root<Product> productRoot = productSubquery.from( Product.class );
-				productSubquery.select( productRoot.get("barcode") );
-				productSubquery.where( cb.like( root.get("productId"), supplierProduct.getQueryProductBarcode() ) );
-				predicates.add(cb.in(root.get("productId")).value(productSubquery));
+				productSubquery.select( productRoot.get("id") );
+				productSubquery.where( cb.like( productRoot.get("barcode"), supplierProduct.getQueryProductBarcode() ) );
+				predicates.add( cb.in( root.get("productId") ).value(productSubquery) );
 			}
-			if (supplierProduct.getQueryCreateTimeStart() != null && supplierProduct.getQueryCreateTimeEnd() != null) {
+			
+			if ( StringUtils.hasText( supplierProduct.getQuerySupplierProductCode() ) )
+			{
+				predicates.add( cb.like( root.get("supplierProductCode"), "%" + supplierProduct.getQuerySupplierProductCode() + "%" ) );
+			}
+			
+			if ( StringUtils.hasText( supplierProduct.getQuerySupplierProductName() ) )
+			{
+				predicates.add( cb.like( root.get("supplierProductName"), "%" + supplierProduct.getQuerySupplierProductName() + "%" ) );
+			}
+			
+			if (supplierProduct.getQueryCreateTimeStart() != null && supplierProduct.getQueryCreateTimeEnd() != null)
+			{
 				try {
 					predicates.add(cb.between(root.get("createTime"),
 							new SimpleDateFormat("yyyy-MM-dd").parse(supplierProduct.getQueryCreateTimeStart()),
@@ -110,7 +155,9 @@ public class SupplierProductService {
 					e.printStackTrace();
 				}
 			}
-			if (supplierProduct.getQueryLastUpdateStart() != null && supplierProduct.getQueryLastUpdateEnd() != null) {
+			
+			if (supplierProduct.getQueryLastUpdateStart() != null && supplierProduct.getQueryLastUpdateEnd() != null)
+			{
 				try {
 					predicates.add(cb.between(root.get("lastUpdate"),
 							new SimpleDateFormat("yyyy-MM-dd").parse(supplierProduct.getQueryLastUpdateStart()),
@@ -133,6 +180,7 @@ public class SupplierProductService {
 					e.printStackTrace();
 				}
 			}
+			
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
 	}

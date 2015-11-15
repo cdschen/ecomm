@@ -53,23 +53,23 @@ var OrderOperatorController = function($scope, $state, $stateParams, toastr, ord
             }
             if( !order.externalSn )
             {
-                toastr.warning('请选填写［店铺订单号］');
+                toastr.warning('请填写［店铺订单号］');
             }
             if( !order.shippingFee )
             {
-                toastr.warning('请选填写［运费金额］');
+                toastr.warning('请填写［运费金额］');
             }
             if( !order.receiveName )
             {
-                toastr.warning('请选填写［收件人姓名］');
+                toastr.warning('请填写［收件人姓名］');
             }
             if( !order.receivePhone )
             {
-                toastr.warning('请选填写［收件人电话］');
+                toastr.warning('请填写［收件人电话］');
             }
             if( !order.receiveAddress )
             {
-                toastr.warning('请选填写［收件地址］');
+                toastr.warning('请填写［收件地址］');
             }
             isQualified = false;
         }

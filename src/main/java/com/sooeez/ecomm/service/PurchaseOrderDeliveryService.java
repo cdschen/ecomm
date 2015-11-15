@@ -19,11 +19,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.PurchaseOrder;
 import com.sooeez.ecomm.domain.PurchaseOrderDelivery;
 import com.sooeez.ecomm.domain.PurchaseOrderDeliveryItem;
 import com.sooeez.ecomm.domain.PurchaseOrderItem;
+import com.sooeez.ecomm.domain.SupplierProduct;
 import com.sooeez.ecomm.domain.User;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.repository.PurchaseOrderDeliveryItemRepository;
@@ -439,14 +439,14 @@ public class PurchaseOrderDeliveryService {
 						( purchaseOrderItem.getCreditQty() != null && purchaseOrderItem.getCreditQty() > 0 ) ||
 						( purchaseOrderItem.getBackOrderQty() != null && purchaseOrderItem.getBackOrderQty() > 0 ) )
 					{
-						Product insertableProduct = new Product();
+						SupplierProduct insertableSupplierProduct = new SupplierProduct();
 //						PurchaseOrderItem insertablePurchaseOrderItem = new PurchaseOrderItem();
 						PurchaseOrderDeliveryItem insertablePurchaseOrderDeliveryItem = new PurchaseOrderDeliveryItem();
 
 						/* 保存数据到可插入的［收货单详情］ */
-						insertableProduct.setId( purchaseOrderItem.getProduct().getId() );
+						insertableSupplierProduct.setId( purchaseOrderItem.getSupplierProduct().getId() );
 //						insertablePurchaseOrderItem.setId( purchaseOrderItem.getId() );
-						insertablePurchaseOrderDeliveryItem.setProduct( insertableProduct );
+						insertablePurchaseOrderDeliveryItem.setSupplierProduct( insertableSupplierProduct );
 //						insertablePurchaseOrderDeliveryItem.setPurchaseOrderItem( insertablePurchaseOrderItem );
 						insertablePurchaseOrderDeliveryItem.setPurchaseOrderItemId( purchaseOrderItem.getId() );
 						insertablePurchaseOrderDeliveryItem.setRealPurchaseUnitPrice( purchaseOrderItem.getRealPurchaseUnitPrice() );

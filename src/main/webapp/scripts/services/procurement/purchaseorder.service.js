@@ -23,20 +23,6 @@ angular.module('ecommApp')
                 });
         };
 
-        purchaseOrder.getSupplierProductCodeMapBySupplierProductCode = function(supplierProductCode)
-        {
-            return $http.get('/api/supplierproductcodemaps/get/supplierProductCode/' + supplierProductCode, {}).then(function(res) {
-                return res.data;
-            });
-        };
-
-        purchaseOrder.getSelectedProductFromSupplierProductCode = function(productId)
-        {
-            return $http.get('/api/supplierproductcodemaps/get/productId/' + productId, {}).then(function(res) {
-                return res.data;
-            });
-        };
-
         /* 批量选中 */
         purchaseOrder.selectedPurchaseOrders = [];
         /* 单个选中 */

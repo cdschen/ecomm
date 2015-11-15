@@ -92,9 +92,9 @@ public class SupplierProduct implements Serializable {
 
 	@Transient
 	private Long querySupplierId;
-
+	
 	@Transient
-	private Long querySupplierProductId;
+	private Long queryCreatorId;
 
 	@Transient
 	private String queryProductSku;
@@ -123,6 +123,20 @@ public class SupplierProduct implements Serializable {
 	/* 供应商产品最后更新结束日期 */
 	@Transient
 	private String queryLastUpdateEnd;
+
+	/* 采购单里，采购详情得模糊查询 */
+	@Transient
+	private String queryPurchaseOrderItemFuzzySearchParam;
+	
+	
+	
+	/*
+	 * 采购单：采购［供应商新品］时，临时用到的毫秒，匹配［供应商产品］和［采购单详情］是否关联
+	 */
+	@Transient
+	private Long currentTimeMillis;
+	
+	
 
 	//
 
@@ -231,12 +245,12 @@ public class SupplierProduct implements Serializable {
 		this.querySupplierId = querySupplierId;
 	}
 
-	public Long getQuerySupplierProductId() {
-		return querySupplierProductId;
+	public Long getQueryCreatorId() {
+		return queryCreatorId;
 	}
 
-	public void setQuerySupplierProductId(Long querySupplierProductId) {
-		this.querySupplierProductId = querySupplierProductId;
+	public void setQueryCreatorId(Long queryCreatorId) {
+		this.queryCreatorId = queryCreatorId;
 	}
 
 	public String getQueryProductSku() {
@@ -301,6 +315,22 @@ public class SupplierProduct implements Serializable {
 
 	public void setQueryLastUpdateEnd(String queryLastUpdateEnd) {
 		this.queryLastUpdateEnd = queryLastUpdateEnd;
+	}
+
+	public String getQueryPurchaseOrderItemFuzzySearchParam() {
+		return queryPurchaseOrderItemFuzzySearchParam;
+	}
+
+	public void setQueryPurchaseOrderItemFuzzySearchParam(String queryPurchaseOrderItemFuzzySearchParam) {
+		this.queryPurchaseOrderItemFuzzySearchParam = queryPurchaseOrderItemFuzzySearchParam;
+	}
+
+	public Long getCurrentTimeMillis() {
+		return currentTimeMillis;
+	}
+
+	public void setCurrentTimeMillis(Long currentTimeMillis) {
+		this.currentTimeMillis = currentTimeMillis;
 	}
 
 

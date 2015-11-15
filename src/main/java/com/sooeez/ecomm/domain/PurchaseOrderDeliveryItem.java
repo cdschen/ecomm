@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -41,8 +40,8 @@ public class PurchaseOrderDeliveryItem implements Serializable {
 	@Column(name = "purchase_order_item_id", nullable = false)
 	private Long purchaseOrderItemId;
 	
-	@Column(name = "product_id", nullable = false, insertable = false, updatable = false)
-	private Long productId;
+	@Column(name = "supplier_product_id", nullable = false, insertable = false, updatable = false)
+	private Long supplierProductId;
 	
 	//	#商品实际采购单价
 	@Column(name = "real_purchase_unit_price")
@@ -72,8 +71,8 @@ public class PurchaseOrderDeliveryItem implements Serializable {
 
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
-	@JoinColumn(name = "product_id")
-	private Product product;
+	@JoinColumn(name = "supplier_product_id")
+	private SupplierProduct supplierProduct;
 
 //	@OneToOne
 //	@NotFound(action = NotFoundAction.IGNORE)
@@ -114,13 +113,13 @@ public class PurchaseOrderDeliveryItem implements Serializable {
 	}
 
 
-	public Long getProductId() {
-		return productId;
+	public Long getSupplierProductId() {
+		return supplierProductId;
 	}
 
 
-	public void setProductId(Long productId) {
-		this.productId = productId;
+	public void setSupplierProductId(Long supplierProductId) {
+		this.supplierProductId = supplierProductId;
 	}
 
 
@@ -154,13 +153,13 @@ public class PurchaseOrderDeliveryItem implements Serializable {
 	}
 
 
-	public Product getProduct() {
-		return product;
+	public SupplierProduct getSupplierProduct() {
+		return supplierProduct;
 	}
 
 
-	public void setProduct(Product product) {
-		this.product = product;
+	public void setSupplierProduct(SupplierProduct supplierProduct) {
+		this.supplierProduct = supplierProduct;
 	}
 
 

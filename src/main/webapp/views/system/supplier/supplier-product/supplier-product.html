@@ -1,0 +1,167 @@
+<ol class="breadcrumb">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li class="active">供应商产品管理</li>
+    <li class="pull-right" id="breadcrumb-li">
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="supplierProduct.operator">创建供应商产品</a>
+    </li>
+</ol>
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <form name="searchForm" novalidate ng-submit="search()">
+            <table class="table" style="margin:0">
+                <tbody>
+                    <tr>
+                        <td width="8%">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="产品Barcode" ng-model="query.queryProductBarcode">
+                            </div>
+                        </td>
+                        <td width="8%">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="供应商产品编号" ng-model="query.querySupplierProductCode">
+                            </div>
+                        </td>
+                        <td width="8%">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="供应商产品名称" ng-model="query.querySupplierProductName">
+                            </div>
+                        </td>
+                        <td width="4%">
+                            <ui-select ng-model="query.querySupplier" theme="bootstrap">
+                                <ui-select-match placeholder="供应商">{{$select.selected.name}}</ui-select-match>
+                                <ui-select-choices repeat="supplier in suppliers | filter: $select.search">
+                                    <div ng-bind-html="supplier.name | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                        </td>
+                        <td width="4%">
+                            <ui-select ng-model="query.queryCreator" theme="bootstrap">
+                                <ui-select-match placeholder="创建人">{{$select.selected.name}}</ui-select-match>
+                                <ui-select-choices repeat="creator in creators | filter: $select.search">
+                                    <div ng-bind-html="creator.username | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                        </td>
+                        <td width="15%">
+                            <div class="form-group">
+                                <div class="input-daterange input-group">
+                                    <input type="text" class="form-control" placeholder="创建起始时间" ng-model="query.queryCreateTimeStart" style="">
+                                    <span class="input-group-addon">到</span>
+                                    <input type="text" class="form-control" placeholder="创建结束时间" ng-model="query.queryCreateTimeEnd">
+                                </div>
+                            </div>
+                        </td>
+                        <td width="18%">
+                            <div class="form-group">
+                                <div class="input-daterange input-group">
+                                    <input type="text" class="form-control" placeholder="最近更新起始时间" ng-model="query.queryLastUpdateStart" style="">
+                                    <span class="input-group-addon">到</span>
+                                    <input type="text" class="form-control" placeholder="最近更新结束时间" ng-model="query.queryLastUpdateEnd">
+                                </div>
+                            </div>
+                        </td>
+
+                        <td width="12%">
+                            <div class="form-group pull-right">
+                                <button type="reset" class="btn btn-default" ng-click="reset()">
+                                    <span class="glyphicon glyphicon-refresh"></span> 重置
+                                </button>
+                                <button type="submit" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-search"></span> 搜索
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <div class="panel-body" style="padding:0"></div>
+        <table class="table table-bordered table-condensed" ng-show="page">
+            <thead>
+                <tr>
+                    <th width="2%" class="text-center">
+                        <input type="checkbox" name="supplierProductId" ng-model="isCheckedAll" ng-click="checkAllSupplierProducts()">
+                    </th>
+                    <th width="10%" class="text-center">产品Barcode</th>
+                    <th width="10%" class="text-center">供应商产品编号</th>
+                    <th width="10%" class="text-center">供应商产品名称</th>
+                    <th width="10%" class="text-center">默认采购价格</th>
+                    <th width="10%" class="text-center">供应商</th>
+                    <th width="10%" class="text-center">创建人</th>
+                    <th width="10%" class="text-center">创建时间</th>
+                    <th width="10%" class="text-center">最近更新时间</th>
+                    <th style="padding: 2px">
+                        <select class="form-control input-sm" ng-change="batchManipulation()" ng-model="batchManipulationValue">
+                            <option selected="selected" value="batchManipulation">批量操作</option>
+                            <option value="supplierProductExport">导出</option>
+                            <option value="supplierProductPrint">打印</option>
+                        </select>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="supplierProduct in page.content" class="text-center" style="font-size: 12px;">
+                    <td>
+                        <input type="checkbox" ng-model="supplierProduct.isSelected">
+                    </td>
+                    <td>
+                        {{ supplierProduct.product.barcode }}
+                    </td>
+                    <td>
+                        {{ supplierProduct.supplierProductCode }}
+                    </td>
+                    <td>
+                        {{ supplierProduct.supplierProductName }}
+                    </td>
+                    <td>
+                        {{ supplierProduct.defaultPurchasePrice | currency : '' }}
+                    </td>
+                    <td>
+                        {{ supplierProduct.supplier.name }}
+                    </td>
+                    <td>
+                        {{ supplierProduct.creator.username }}
+                    </td>
+                    <td>
+                        {{ supplierProduct.createTime | date : 'yyyy-MM-dd HH:mm:ss' }}
+                    </td>
+                    <td>
+                        {{ supplierProduct.lastUpdate | date : 'yyyy-MM-dd HH:mm:ss' }}
+                    </td>
+                    <td style="text-align: center;">
+                        <a ui-sref="supplierProduct.operator({id:supplierProduct.id})" class="btn btn-info btn-xs">
+                            <span class="glyphicon glyphicon-edit"></span> 编辑
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot ng-hide="!page || page.content.length == 0">
+                <tr>
+                    <td colspan="20">
+                        <nav class="page-list">
+                            <ul class="pagination pagination-sm">
+                                <li ng-class="{disabled: page.first}">
+                                    <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
+                                </li>
+                                <li ng-repeat="i in totalPagesList" ng-class="{active: i == page.number}">
+                                    <a href="" ng-click="turnPage(i)">{{i+1}}</a>
+                                </li>
+                                <li ng-class="{disabled: page.last}">
+                                    <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                </li>
+                            </ul>
+                            <div class="page-total">
+                                共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
+                                <select class="form-control" style="display: inline; padding:0" ng-model="pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                </select>
+                            </div>
+                        </nav>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="panel-body" ng-show="!page || page.content.length == 0">
+            <div class="alert alert-warning">没有任何数据被检索到</div>
+        </div>
+    </div>
+</div>
