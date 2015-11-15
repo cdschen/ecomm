@@ -1,15 +1,14 @@
-var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stateParams, $filter, toastr, purchaseOrderService, Supplier, Currency) {
-
-    var t = $.now(); 
+var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stateParams, $filter, toastr, $timeout, $interval, purchaseOrderService, Supplier, Currency, supplierProductService) {
+    var t = $.now();
 
     $scope.template = {
         info: {
-            url: 'views/procurement/purchase-order/purchase-order.operator.info.html?' + t,
-            items: {
-                url: 'views/procurement/purchase-order/purchase-order.operator.info.items.html?' + t
-            }
+            url: 'views/procurement/purchase-order/purchase-order.operator.info.html?' + t
         }
     };
+
+    $scope.holdSelectedSupplier = {};
+    $scope.supplierProducts = [];
 
     $scope.actionLabel = ($stateParams.id && $stateParams.id !== '') ? '编辑' : '创建';
 
@@ -22,19 +21,6 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
 
     $scope.init = function()
     {
-        /* Activate Date Picker */
-        $('input[ng-model="purchaseOrder.estimateReceiveDate"]').datepicker({
-            format: 'yyyy-mm-dd',
-            clearBtn: true,
-            language: 'zh-CN',
-            orientation: 'top left',
-            todayHighlight: true,
-            autoclose: true
-        });
-        if( $scope.purchaseOrder )
-        {
-            $('input[ng-model="purchaseOrder.estimateReceiveDate"]').datepicker('setDate', $scope.purchaseOrder.estimateReceiveDate);
-        }
     };
 
     Currency.getAll().then(function(currencies) {
@@ -50,6 +36,16 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
 
     function initField(purchaseOrder)
     {
+        /* Activate Date Picker */
+        $('input[ng-model="purchaseOrder.estimateReceiveDate"]').datepicker({
+            format: 'yyyy-mm-dd',
+            clearBtn: true,
+            language: 'zh-CN',
+            orientation: 'bottom left',
+            todayHighlight: true,
+            autoclose: true
+        }).datepicker('setDate', new Date(purchaseOrder.estimateReceiveDate));
+
         if( purchaseOrder.bookingType )
         {
             purchaseOrder.bookingType = $scope.bookingTypes[purchaseOrder.bookingType - 1];
@@ -65,6 +61,8 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
     }
 
     $scope.save = function(purchaseOrder, formValid) {
+
+        console.log( purchaseOrder );
 
         var isQualified = true;
 
@@ -129,6 +127,8 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
                 {
                     toastr.success('供应商编号和采购单价已经自动保存， 下次采购时会自动帮您填');
                 }
+
+                toastr.success('成功' + ( $scope.id ? '编辑' : '保存' ) + '［采购单］及［采购单详情］');
                 $state.go('purchaseOrder');
             });
         }
@@ -136,7 +136,9 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
 
     $scope.action = 'create';
 
-    if ($stateParams.id && $stateParams.id !== '') {
+    if ($stateParams.id && $stateParams.id !== '')
+    {
+        $scope.id = $stateParams.id;
         $scope.action = 'update';
         purchaseOrderService.get({
             id: $stateParams.id
@@ -144,19 +146,233 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
             .then(function(purchaseOrder) {
                 console.log('[' + $scope.action + '] loading purchaseOrder');
                 console.log(purchaseOrder);
-                $scope.purchaseOrder = purchaseOrder;
 
-                initField(purchaseOrder);
+                $timeout(function(){
+                    initField(purchaseOrder);
+                }, 500);
+
+                for( var itemIndex in purchaseOrder.items )
+                {
+                    purchaseOrder.items[ itemIndex].estimatePurchaseUnitPrice = Number( Math.floor( purchaseOrder.items[ itemIndex].estimatePurchaseUnitPrice ) ).toFixed( 2 );
+                }
+
+                $scope.purchaseOrder = purchaseOrder;
+                $scope.filterSupplierProduct();
+                $scope.holdSelectedSupplier = angular.copy( $scope.purchaseOrder.supplier );
+
                 return purchaseOrder;
             });
     }
+    else
+    {
+        $scope.purchaseOrder = {
+            items : [],
+            estimateReceiveDate : ''
+        };
+
+        $timeout(function()
+        {
+            /* Activate Date Picker */
+            $('input[ng-model="purchaseOrder.estimateReceiveDate"]').datepicker({
+                format: 'yyyy-mm-dd',
+                clearBtn: true,
+                language: 'zh-CN',
+                orientation: 'bottom left',
+                todayHighlight: true,
+                autoclose: true
+            });
+        });
+    }
+
+    /*
+     切换供应商前准备工作：
+     1.
+     如果 $scope.purchaseOrder.items.length > 0 =>  则提醒用户［当前供应商采购的产品，确定继续切换供应商？］，如果用户点击［是］，则调用 $scope.filterSupplierProduct();
+     否则 => 调用 $scope.filterSupplierProduct();
+     */
+
+    $scope.checkChangeSupplier = function()
+    {
+        if( $scope.purchaseOrder.items && $scope.purchaseOrder.items.length > 0 )
+        {
+            if( $scope.holdSelectedSupplier.id !== $scope.purchaseOrder.supplier.id )
+            {
+                $('#changeSupplierConfirmModal').modal('show').on('hidden.bs.modal', function()
+                {
+                    $timeout(function(){
+                        $scope.purchaseOrder.supplier = angular.copy( $scope.holdSelectedSupplier );
+                    });
+                });
+            }
+        }
+        else
+        {
+            $scope.changeSupplierConfirm();
+        }
+    };
+
+    $scope.checkChangeSupplierConfirm = function()
+    {
+        $scope.changeSupplierConfirm();
+
+        $('#changeSupplierConfirmModal').modal('hide');
+    };
+
+    /* 确认切换供应商 */
+    $scope.changeSupplierConfirm = function()
+    {
+        $scope.holdSelectedSupplier = angular.copy( $scope.purchaseOrder.supplier );
+
+        if( $scope.purchaseOrder.items )
+        {
+            $scope.purchaseOrder.items.length = 0;
+        }
+
+        $scope.filterSupplierProduct();
+    };
+
+    /* 模糊搜索：延迟 500 毫秒，相同模糊匹配关键词则不进行搜索 */
+    $scope.queryPurchaseOrderItemFuzzySearchParamHold = '';
+    $scope.delayFuzzySearch = function()
+    {
+        if( $scope.queryPurchaseOrderItemFuzzySearchParam !== $scope.queryPurchaseOrderItemFuzzySearchParamHold )
+        {
+            if( $scope.isSupplierSelected() )
+            {
+                $timeout.cancel( $scope.delayFuzzySearchTimeout );
+
+                $scope.delayFuzzySearchTimeout = $timeout(function()
+                {
+                    $scope.filterSupplierProduct();
+                }, 500);
+            }
+        }
+        $scope.queryPurchaseOrderItemFuzzySearchParamHold = $scope.queryPurchaseOrderItemFuzzySearchParam;
+    };
+
+    $scope.filterSupplierProduct = function()
+    {
+        supplierProductService.get( getQueryParamJSON(), function(page)
+        {
+            $scope.supplierProducts = page.content;
+
+            for( var supplierProductIndex in $scope.supplierProducts )
+            {
+                $scope.supplierProducts[supplierProductIndex].purchaseQty = 1;
+                $scope.supplierProducts[supplierProductIndex].defaultPurchasePrice = Number( $scope.supplierProducts[supplierProductIndex].defaultPurchasePrice ).toFixed( 2 );
+            }
+        });
+    };
+
+    /* 监听 $scope.purchaseOrder 对象的任何一个属性的改动 */
+    $scope.$watch('purchaseOrder', function()
+    {
+        if( $scope.purchaseOrder )
+        {
+            var items = $scope.purchaseOrder.items;
+            var totalPurchasedQty = 0;
+            var totalEstimatePurchasedAmount = 0;
+            if( items )
+            {
+                for( var itemIndex in items )
+                {
+                    totalPurchasedQty += items[itemIndex].purchaseQty;
+                    totalEstimatePurchasedAmount += ( items[itemIndex].purchaseQty * items[itemIndex].estimatePurchaseUnitPrice );
+                }
+                $scope.purchaseOrder.totalPurchasedQty = totalPurchasedQty;
+                $scope.purchaseOrder.totalEstimatePurchasedAmount = totalEstimatePurchasedAmount;
+            }
+        }
+    }, true);
+
+    /* 查询采购单分页数据所需查询参数 */
+    function getQueryParamJSON()
+    {
+        return {
+            page: 0,
+            size: 2000,
+            sort: ['supplierProductName,desc'],
+            queryPurchaseOrderItemFuzzySearchParam: $scope.queryPurchaseOrderItemFuzzySearchParam ? $scope.queryPurchaseOrderItemFuzzySearchParam : null,
+            querySupplierId: $scope.purchaseOrder.supplier ? $scope.purchaseOrder.supplier.id : null
+        };
+    }
+    /* 检查是否选择供应商 */
+    $scope.isSupplierSelected = function()
+    {
+        var isPass = true;
+        if( ! $scope.purchaseOrder.supplier )
+        {
+            toastr.warning('请选择一个［供应商］来继续');
+            isPass = false;
+        }
+        return isPass;
+    };
+
+
+    /*
+         添加［供应商产品］至 $scope.purchaseOrder.items
+         如果［供应商产品］编号存在［采购单详情］供应商产品 ID 中：
+     */
+
+    $scope.addSupplierProductToPurchaseOrderItemMouseHeld = function( supplierProduct )
+    {
+        $scope.addSupplierProductToPurchaseOrderItemMouseHeldInterval = $interval(function(){
+            $scope.addSupplierProductToPurchaseOrderItem( supplierProduct );
+        }, 60);
+    };
+    $scope.addSupplierProductToPurchaseOrderItemMouseRelease = function()
+    {
+        $interval.cancel( $scope.addSupplierProductToPurchaseOrderItemMouseHeldInterval );
+    };
+    $scope.addSupplierProductToPurchaseOrderItem = function( supplierProduct )
+    {
+        var item =
+        {
+            supplierProduct : supplierProduct,
+            purchaseQty : supplierProduct.purchaseQty,
+            estimatePurchaseUnitPrice : supplierProduct.defaultPurchasePrice
+        };
+
+        var isExisted = false;
+
+        if( $scope.purchaseOrder.items.length > 0 )
+        {
+            $.each($scope.purchaseOrder.items, function()
+            {
+                this.estimatePurchaseUnitPrice = Number( this.estimatePurchaseUnitPrice).toFixed( 2 );
+                supplierProduct.defaultPurchasePrice = Number( supplierProduct.defaultPurchasePrice).toFixed( 2 );
+
+                if
+                (
+                    this.supplierProduct.id === supplierProduct.id &&
+                    this.estimatePurchaseUnitPrice === supplierProduct.defaultPurchasePrice
+                )
+                {
+                    this.purchaseQty =  Number( this.purchaseQty ) + Number( supplierProduct.purchaseQty );
+                    isExisted = true;
+                }
+                else if( this.supplierProduct.supplierProductCode === supplierProduct.supplierProductCode )
+                {
+                    toastr.warning('该［产品］的供应商产品编号已存在于［采购产品］列表中，请不要添加价格不一样的同［供应商编号］的［产品］，因为无法累加');
+                    isExisted = true;
+                }
+
+            });
+        }
+
+        if( ! isExisted )
+        {
+            $scope.purchaseOrder.items.push( item );
+        }
+    };
 
     $('#orderTabs a').click(function(e) {
         e.preventDefault();
         $(this).tab('show');
     });
+
 };
 
-PurchaseOrderOperatorController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', '$filter', 'toastr', 'purchaseOrderService', 'Supplier', 'Currency'];
+PurchaseOrderOperatorController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', '$filter', 'toastr', '$timeout', '$interval', 'purchaseOrderService', 'Supplier', 'Currency', 'supplierProductService'];
 
 angular.module('ecommApp').controller('PurchaseOrderOperatorController', PurchaseOrderOperatorController);

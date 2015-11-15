@@ -18,11 +18,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.PurchaseOrder;
 import com.sooeez.ecomm.domain.PurchaseOrderItem;
 import com.sooeez.ecomm.domain.Supplier;
 import com.sooeez.ecomm.domain.SupplierProduct;
+import com.sooeez.ecomm.domain.User;
 import com.sooeez.ecomm.repository.PurchaseOrderItemRepository;
 import com.sooeez.ecomm.repository.PurchaseOrderRepository;
 import com.sooeez.ecomm.repository.SupplierProductRepository;
@@ -34,7 +34,7 @@ public class PurchaseOrderService {
 	
 	@Autowired PurchaseOrderItemRepository purchaseOrderItemRepository;
 	
-	@Autowired SupplierProductRepository supplierProductCodeMapRepository;
+	@Autowired SupplierProductRepository supplierProductRepository;
 	
 	@PersistenceContext private EntityManager em;
 	
@@ -56,71 +56,108 @@ public class PurchaseOrderService {
 		}
 		/* execute no matter create or update */
 		purchaseOrder.setLastUpdate( new Date() );
-		
+
 		Boolean isSupplierProductCodeChanged = false;
 		
 		if( purchaseOrder.getItems() != null )
 		{
-			for (PurchaseOrderItem item : purchaseOrder.getItems())
+			List<SupplierProduct> allSupplierProducts = new ArrayList<SupplierProduct>();
+			
+			for ( PurchaseOrderItem item : purchaseOrder.getItems() )
 			{
-//				System.out.println("item.getProduct().getName(): " + item.getProduct().getName());
-//				System.out.println("item.getSupplierProductCode(): " + item.getSupplierProductCode());
-				
-				if( item.getSupplierProductCodeMap() != null &&
-					item.getSupplierProductCodeMap().getSupplierProductCode() != null )
+				if
+				(
+					item.getSupplierProduct() != null &&
+					item.getSupplierProduct().getSupplierProductCode() != null
+				)
 				{
 					/* 1. 获得供应商产品编码信息 */
-					String sql = "SELECT * FROM t_supplier_product_code_map " +
-								 "WHERE product_id = ?1";
+					String sql = "SELECT * FROM t_supplier_product " +
+								 "WHERE supplier_product_code = ?1";
 					Query query =  em.createNativeQuery( sql, SupplierProduct.class );
-					query.setParameter( 1, item.getProduct().getId() );
+					query.setParameter( 1, item.getSupplierProduct().getSupplierProductCode() );
 					
-					SupplierProduct supplierProductCodeMap = null;
+					SupplierProduct supplierProduct = null;
 
 					/* 2. 供应商产品编码是否存在于数据库中 */
 					if( ! query.getResultList().isEmpty() )
 					{
 						/* 2.1 存在于数据库中，则对比传入的［采购单价］与［默认采购单价］是否一致 */
-						supplierProductCodeMap = (SupplierProduct) query.getSingleResult();
+						supplierProduct = (SupplierProduct) query.getSingleResult();
 						
 //						System.out.println("item.getEstimatePurchaseUnitPrice(): " + item.getEstimatePurchaseUnitPrice());
 //						System.out.println("supplierProductCodeMap.getDefaultPurchasePrice(): " + supplierProductCodeMap.getDefaultPurchasePrice());
 						
 						/* 2.1.1 传入的［采购单价］与［默认采购单价］或［供应商编号］与数据库存储的［供应商编号］不一致，则更新［采购单价］或［供应商编号］到数据库 */
-						if( ( item.getEstimatePurchaseUnitPrice() != null && item.getEstimatePurchaseUnitPrice().compareTo( supplierProductCodeMap.getDefaultPurchasePrice() ) != 0 ) ||
-							( ! item.getSupplierProductCodeMap().getSupplierProductCode().trim().equals( supplierProductCodeMap.getSupplierProductCode() ) ) )
+						if
+						(
+							( item.getEstimatePurchaseUnitPrice() != null && item.getEstimatePurchaseUnitPrice().compareTo( supplierProduct.getDefaultPurchasePrice() ) != 0 ) ||
+							( ! item.getSupplierProduct().getSupplierProductCode().trim().equals( supplierProduct.getSupplierProductCode() ) )
+						)
 						{
 							isSupplierProductCodeChanged = true;
-							supplierProductCodeMap.setDefaultPurchasePrice( item.getEstimatePurchaseUnitPrice() );
-							supplierProductCodeMap.setSupplierProductCode( item.getSupplierProductCodeMap().getSupplierProductCode() );
 							
-							this.supplierProductCodeMapRepository.save( supplierProductCodeMap );
+							supplierProduct.setDefaultPurchasePrice( item.getEstimatePurchaseUnitPrice() );
+							supplierProduct.setSupplierProductCode( item.getSupplierProduct().getSupplierProductCode() );
 						}
 					}
 					else
 					{
 						isSupplierProductCodeChanged = true;
-						supplierProductCodeMap = new SupplierProduct();
-						Product product = new Product();
-						Supplier supplier = new Supplier();
 						
-						product.setId( item.getProduct().getId() );
+						supplierProduct = new SupplierProduct();
+						Supplier supplier = new Supplier();
+						User creator = new User();
+						
 						supplier.setId( purchaseOrder.getSupplier().getId() );
+						creator.setId( purchaseOrder.getCreator().getId() );
 
-						supplierProductCodeMap.setProduct( product );
-						supplierProductCodeMap.setSupplier( supplier );
-						supplierProductCodeMap.setDefaultPurchasePrice( item.getEstimatePurchaseUnitPrice() );
-						supplierProductCodeMap.setSupplierProductCode( item.getSupplierProductCodeMap() != null ? item.getSupplierProductCodeMap().getSupplierProductCode().trim() : null );
+						supplierProduct.setSupplier( supplier );
+						supplierProduct.setSupplierProductName( item.getSupplierProduct() != null ? item.getSupplierProduct().getSupplierProductName().trim() : null );
+						supplierProduct.setSupplierProductCode( item.getSupplierProduct() != null ? item.getSupplierProduct().getSupplierProductCode().trim() : null );
+						supplierProduct.setDefaultPurchasePrice( item.getEstimatePurchaseUnitPrice() );
 
-						this.supplierProductCodeMapRepository.save( supplierProductCodeMap );
+						supplierProduct.setCreateTime( new Date() );
+						supplierProduct.setLastUpdate( new Date() );
+						supplierProduct.setCreator( creator );
+					}
+
+					item.setSupplierProduct( null );
+
+					/* 临时存储，在［供应商产品］列表插入及更新完成，再通过临时存储的［采购详情］列表批量更新刚刚插入或更新到［供应商产品］表里的数据 */
+					Long currentTimeMillis = System.currentTimeMillis();
+					
+					item.setCurrentTimeMillis( currentTimeMillis );
+					supplierProduct.setCurrentTimeMillis( currentTimeMillis );
+					
+					allSupplierProducts.add( supplierProduct );
+				}
+			}
+			
+			/* 批量插入或更新［供应商产品］ */
+			if( allSupplierProducts.size() > 0 )
+			{
+				allSupplierProducts = this.supplierProductRepository.save( allSupplierProducts );
+			}
+			
+
+			for ( PurchaseOrderItem item : purchaseOrder.getItems() )
+			{
+				/* 匹配［采购详情］与［供应商产品］ */
+				for( SupplierProduct allSupplierProduct : allSupplierProducts )
+				{
+					if( item.getCurrentTimeMillis().equals( allSupplierProduct.getCurrentTimeMillis() ) )
+					{
+						SupplierProduct supplierProduct = new SupplierProduct();
+						supplierProduct.setId( allSupplierProduct.getId() );
+						
+						item.setSupplierProduct( supplierProduct );
 					}
 				}
 			}
 		}
-		
-		PurchaseOrder returnedPurchaseOrder = this.purchaseOrderRepository.save(purchaseOrder);
+		PurchaseOrder returnedPurchaseOrder = this.purchaseOrderRepository.save( purchaseOrder );
 		returnedPurchaseOrder.setIsSupplierProductCodeChanged( isSupplierProductCodeChanged );
-		
 		return returnedPurchaseOrder;
 	}
 	
@@ -129,28 +166,7 @@ public class PurchaseOrderService {
 	}
 	
 	public PurchaseOrder getPurchaseOrder(Long id) {
-		PurchaseOrder purchaseOrder = this.purchaseOrderRepository.findOne(id);
-		if( purchaseOrder.getItems() != null && purchaseOrder.getItems().size() > 0 )
-		{
-			for( PurchaseOrderItem purchaseOrderItem : purchaseOrder.getItems() )
-			{
-				/* 1. 获得供应商产品编码信息 */
-				String sql = "SELECT * FROM t_supplier_product_code_map " +
-							 "WHERE product_id = ?1";
-				Query query =  em.createNativeQuery( sql, SupplierProduct.class );
-				query.setParameter( 1, purchaseOrderItem.getProduct().getId() );
-				
-				SupplierProduct supplierProductCodeMap = null;
-
-				/* 2. 供应商产品编码是否存在于数据库中 */
-				if( ! query.getResultList().isEmpty() )
-				{
-					supplierProductCodeMap = (SupplierProduct) query.getSingleResult();
-				}
-				purchaseOrderItem.setSupplierProductCodeMap( supplierProductCodeMap );
-			}
-		}
-		return purchaseOrder;
+		return this.purchaseOrderRepository.findOne(id);
 	}
 	
 	public List<PurchaseOrder> getPurchaseOrders(PurchaseOrder purchaseOrder, Sort sort) {
@@ -241,60 +257,24 @@ public class PurchaseOrderService {
 	 * SupplierProductCodeMap
 	 */
 	
-	public SupplierProduct saveSupplierProductCodeMap(SupplierProduct supplierProductCodeMap) {
-		return this.supplierProductCodeMapRepository.save(supplierProductCodeMap);
+	public SupplierProduct saveSupplierProduct(SupplierProduct supplierProductCodeMap) {
+		return this.supplierProductRepository.save(supplierProductCodeMap);
 	}
 
-	public void deleteSupplierProductCodeMap(Long id) {
-		this.supplierProductCodeMapRepository.delete(id);
+	public void deleteSupplierProduct(Long id) {
+		this.supplierProductRepository.delete(id);
 	}
 
-	public SupplierProduct getSupplierProductCodeMap(Long id) {
-		return this.supplierProductCodeMapRepository.findOne(id);
+	public SupplierProduct getSupplierProduct(Long id) {
+		return this.supplierProductRepository.findOne(id);
 	}
 
-	public List<SupplierProduct> getSupplierProductCodeMaps(Sort sort) {
-		return this.supplierProductCodeMapRepository.findAll(sort);
+	public List<SupplierProduct> getSupplierProducts(Sort sort) {
+		return this.supplierProductRepository.findAll(sort);
 	}
 
-	public Page<SupplierProduct> getPagedSupplierProductCodeMaps(Pageable pageable) {
-		return this.supplierProductCodeMapRepository.findAll(pageable);
-	}
-
-	public SupplierProduct getSupplierProductCodeMap(String supplierProductCode)
-	{
-		String sql = "SELECT * FROM t_supplier_product_code_map " +
-					 "WHERE supplier_product_code = ?1";
-		Query query =  em.createNativeQuery( sql, SupplierProduct.class );
-		query.setParameter( 1, supplierProductCode );
-		
-		SupplierProduct supplierProductCodeMap = null;
-
-		/* 2. 供应商产品编码是否存在于数据库中 */
-		if( ! query.getResultList().isEmpty() )
-		{
-			/* 2.1 存在与数据库中，则将获取的信息返回到前端 */
-			supplierProductCodeMap = (SupplierProduct) query.getSingleResult();
-		}
-		return supplierProductCodeMap;
-	}
-
-	public SupplierProduct getSupplierProductCodeMapByProductId(Long productId)
-	{
-		String sql = "SELECT * FROM t_supplier_product_code_map " +
-					 "WHERE product_id = ?1";
-		Query query =  em.createNativeQuery( sql, SupplierProduct.class );
-		query.setParameter( 1, productId );
-		
-		SupplierProduct supplierProductCodeMap = null;
-
-		/* 2. 供应商产品编码是否存在于数据库中 */
-		if( ! query.getResultList().isEmpty() )
-		{
-			/* 2.1 存在与数据库中，则将获取的信息返回到前端 */
-			supplierProductCodeMap = (SupplierProduct) query.getSingleResult();
-		}
-		return supplierProductCodeMap;
+	public Page<SupplierProduct> getPagedSupplierProducts(Pageable pageable) {
+		return this.supplierProductRepository.findAll(pageable);
 	}
 	
 }
