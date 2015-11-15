@@ -74,9 +74,9 @@
                             </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="item in purchaseOrder.items"  class="text-center">
+                                <tr ng-repeat="item in purchaseOrder.items | orderBy: ['supplierProduct.supplierProductName', 'supplierProduct.product.name']"  class="text-center">
                                     <td>
-                                        {{item.product.name}}
+                                        {{ item.supplierProduct.product ? item.supplierProduct.product.name : item.supplierProduct.supplierProductName }}
                                     </td>
                                     <td>
                                         {{item.purchaseQty}}
