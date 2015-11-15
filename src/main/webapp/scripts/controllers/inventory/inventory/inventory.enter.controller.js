@@ -15,7 +15,7 @@ angular.module('ecommApp')
         };
 
         $scope.defaultBatch = {
-            operate: 1,
+            operate: 1, // 入库操作
             operateTime: undefined,
             memo: '',
             warehouse: undefined,
@@ -50,8 +50,9 @@ angular.module('ecommApp')
             format: 'yyyy-mm-dd',
             clearBtn: true,
             language: 'zh-CN',
-            orientation: 'top left',
+            orientation: 'bottom left',
             todayHighlight: true,
+            autoclose: true
         });
 
         Warehouse.getAll({

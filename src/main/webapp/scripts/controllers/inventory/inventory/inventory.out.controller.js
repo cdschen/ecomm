@@ -1,19 +1,22 @@
 angular.module('ecommApp')
 
-.controller('InventoryOutController', ['$rootScope', '$scope', '$state', '$stateParams', 'Warehouse', 'Product', 'InventoryBatch', 'Utils', 'Inventory',
-    function($rootScope, $scope, $state, $stateParams, Warehouse, Product, InventoryBatch, Utils, Inventory) {
+.controller('InventoryOutController', ['$rootScope', '$scope', '$state', '$stateParams', 'Warehouse', 'Product', 'InventoryBatch', 'Utils', 'Inventory', 'Auth',
+    function($rootScope, $scope, $state, $stateParams, Warehouse, Product, InventoryBatch, Utils, Inventory, Auth) {
 
-        var $ = angular.element;
         $scope.warehouses = [];
+
         $scope.products = [];
+
         $scope.defaultBatch = {
-            operate: 2,
+            operate: 2, // 出库操作
+            type: 1, // 出库状态，待完成
             operateTime: undefined,
-            memo: '',
             warehouse: undefined,
             user: $rootScope.user(),
+            memo: '',
             items: []
         };
+
         $scope.defaultItem = {
             product: undefined,
             warehouse: undefined,
@@ -22,10 +25,13 @@ angular.module('ecommApp')
             changedQuantity: 1,
             expireDate: undefined
         };
+
         $scope.keepQuantity = 0;
+
         $scope.batches = [];
 
         $scope.batch = angular.copy($scope.defaultBatch);
+
         $scope.item = angular.copy($scope.defaultItem);
 
         function setKeepQuantity(item) {
@@ -35,7 +41,7 @@ angular.module('ecommApp')
                         if (item.outBatch) {
                             $scope.keepQuantity = item.outBatch.total;
                         } else {
-                             $scope.keepQuantity = item.position.total;
+                            $scope.keepQuantity = item.position.total;
                         }
                     } else {
                         if (item.outBatch) {
@@ -72,13 +78,17 @@ angular.module('ecommApp')
             }
         }
 
-        Warehouse.getAll().then(function(warehouses) {
+        Warehouse.getAll({
+            enabled: true,
+            sort: ['name'],
+            warehouseIds: Auth.refreshManaged('warehouse')
+        }).then(function(warehouses) {
             $scope.warehouses = warehouses;
             if ($stateParams.id && $stateParams.id !== '') {
                 $.each(warehouses, function() {
                     if (this.id === parseInt($stateParams.id)) {
                         $scope.batch.warehouse = angular.copy(this);
-                        return;
+                        return false;
                     }
                 });
             }
@@ -86,7 +96,7 @@ angular.module('ecommApp')
             if ($scope.batch.warehouse) {
                 Inventory.getAll({
                     warehouseId: $scope.batch.warehouse.id,
-                    ssort: ['productId', 'inventoryBatchId']
+                    sort: ['productId', 'inventoryBatchId']
                 }).then(function(inventories) {
                     $scope.products = Inventory.refresh(inventories);
                 });
@@ -151,7 +161,7 @@ angular.module('ecommApp')
             setKeepQuantity($scope.item);
         };
 
-         $scope.removingItem = undefined;
+        $scope.removingItem = undefined;
 
         $scope.showRemoveItem = function(item, $index) {
             console.clear();
@@ -167,7 +177,7 @@ angular.module('ecommApp')
             console.clear();
             console.log('removeItem:');
             console.log($scope.removingItem);
- 
+
             if (angular.isDefined($scope.removingItem)) {
                 $scope.batch.items.splice($scope.removingItem.$index, 1);
                 Inventory.refrechProducts($scope.products, $scope.removingItem, 'remove');
@@ -185,10 +195,10 @@ angular.module('ecommApp')
             console.log('saveBatch:');
             console.log(batch);
 
-            // InventoryBatch.save({}, $scope.batch, function(batch) {
-            //     console.log(batch);
-            //     $state.go('inventory');
-            // });
+            InventoryBatch.save({}, $scope.batch, function(batch) {
+                console.log(batch);
+                $state.go('inventory');
+            });
         };
 
     }

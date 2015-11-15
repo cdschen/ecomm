@@ -5,6 +5,8 @@ angular.module('ecommApp')
 
         var t = $.now();
 
+        $scope.Math = Math;
+
         $scope.template = {
             snapshot: {
                 url: '/views/inventory/inventory/inventory.snapshot-slide.html?' + t

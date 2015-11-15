@@ -155,7 +155,6 @@ public class ProductService {
 			if (StringUtils.hasText(product.getNameOrSku())) {
 				predicates.add(cb.or(cb.like(root.get("name"), "%" + product.getNameOrSku() + "%"), 
 						cb.like(root.get("sku"), "%" + product.getNameOrSku() + "%")));
-				return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};

@@ -24,47 +24,39 @@
                 </div>
             </div>
         </div>
-        <form>
-            <table class="table table-condensed clear-marginbottom-table">
-                <tbody>
-                    <tr>
-                        <th width="36%">SKU | 商品名称</th>
-                        <th width="16%">入库库位</th>
-                        <th width="16%">入库数量</th>
-                        <th width="16%">保质期</th>
-                        <th width="16%">操作</th>
-                    </tr>
-                </tbody>
-            </table>
-        </form>
         <!-- item table -->
-        <form name="itemForm" novalidate ng-repeat="item in batch.items">
-            <table class="table table-condensed clear-marginbottom-table">
-                <tbody>
-                    <tr>
-                        <td width="36%">
-                            {{item.product.sku + ' : ' + item.product.name}}
-                        </td>
-                        <td width="16%">
-                            <span ng-show="item.position.name != 'default'">
-                                {{item.position.name}}
-                            </span>
-                        </td>
-                        <td width="16%">
-                            {{item.changedQuantity}}
-                        </td>
-                        <td width="16%">
-                            {{item.expireDate}}
-                        </td>
-                        <td width="16%">
-                            <a href="" class="btn btn-danger btn-xs" ng-click="showRemoveItem(item, $index)">
-                                <span class="glyphicon glyphicon-trash"></span> 删除
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </form>
+        <table class="table table-condensed clear-marginbottom-table">
+            <thead>
+                <tr>
+                    <th width="36%">SKU | 商品名称</th>
+                    <th width="16%">入库库位</th>
+                    <th width="16%">入库数量</th>
+                    <th width="16%">保质期</th>
+                    <th width="16%">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in batch.items">
+                    <td width="36%">
+                        {{item.product.sku + ' : ' + item.product.name}}
+                    </td>
+                    <td width="16%">
+                        {{item.position.name}}
+                    </td>
+                    <td width="16%">
+                        {{item.changedQuantity}}
+                    </td>
+                    <td width="16%">
+                        {{item.expireDate}}
+                    </td>
+                    <td width="16%">
+                        <a href="" class="btn btn-danger btn-xs" ng-click="showRemoveItem(item, $index)">
+                            <span class="glyphicon glyphicon-trash"></span> 删除
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <!-- item add form -->
         <form name="itemAddForm" novalidate ng-submit="saveItem(item, itemAddForm)">
             <table class="table table-condensed clear-marginbottom-table">
@@ -72,7 +64,7 @@
                     <tr>
                         <td width="36%">
                             <div class="form-group has-feedback" ng-class="{'has-success':(itemAddForm.product.$dirty && itemAddForm.product.$valid && item.product.id), 'has-warning':(itemAddForm.product.$dirty && itemAddForm.product.$invalid) }">
-                                <input type="text" name="product" ng-model="item.product" ng-show="batch.warehouse" placeholder="请输入商品" required min="1" class="form-control" uib-typeahead="product as product.name + '(' + product.sku + ')' for product in getProduct($viewValue)" typeahead-loading="loadingLocations" typeahead-no-results="noResults" typeahead-wait-ms="350"/>
+                                <input type="text" name="product" ng-model="item.product" ng-show="batch.warehouse" placeholder="请输入商品" required min="1" class="form-control" uib-typeahead="product as product.name + '(' + product.sku + ')' for product in getProduct($viewValue)" typeahead-loading="loadingLocations" typeahead-no-results="noResults" typeahead-wait-ms="350" />
                                 <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="itemAddForm.product.$dirty && itemAddForm.product.$valid && item.product.id"></span>
                                 <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="itemAddForm.product.$dirty && itemAddForm.product.$invalid"></span>
                                 <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
