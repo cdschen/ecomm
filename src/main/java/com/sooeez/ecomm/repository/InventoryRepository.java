@@ -14,10 +14,6 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long>, Jpa
 	List<Inventory> findAllByWarehouseId(Long id);
 	
 	@Modifying
-	@Query("update Inventory set quantity = quantity + ?1 where productId = ?2 and warehouseId = ?3 and inventoryBatchId = ?4")
-	void updateInventoryByProductIdAndWarehouseIdAndBatchId(Long quantity, Long productId, Long warehouseId, Long inventoryBatchId);
-	
-	@Modifying
 	@Query("update Inventory set quantity = quantity + ?1 where productId = ?2 and warehouseId = ?3 and warehousePositionId = ?4 and inventoryBatchId = ?5")
 	void updateInventoryByProductIdAndWarehouseIdAndPositionIdAndBatchId(Long quantity, Long productId, Long warehouseId, Long warehousePositionId, Long inventoryBatchId);
 

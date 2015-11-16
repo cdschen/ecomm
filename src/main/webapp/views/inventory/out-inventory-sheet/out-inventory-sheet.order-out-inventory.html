@@ -54,8 +54,10 @@
                         </th>
                         <th width="10%">店铺</th>
                         <th width="10%">订单编号</th>
-                        <th width="34%">商品信息</th>
-                        <th width="34%">配货信息</th>
+                        <th width="30%">商品名称</th>
+                        <th width="5%">数量</th>
+                        <th width="25%">仓库</th>
+                        <th width="10%">配货信息</th>
                         <th width="10%" style="padding: 2px">
                             <select class="form-control input-sm" ng-change="selectOperator()" ng-model="selectOperatorValue">
                                 <option value="default">操作</option>
@@ -75,17 +77,17 @@
                         <td>
                             <strong>{{order.id}}</strong>
                         </td>
-                        <td>
-                            <table class="table table-condensed">
+                        <td colspan="3">
+                            <table class="table table-condensed clear-marginbottom-table">
                                 <thead>
                                     <tr ng-repeat="item in order.items">
-                                        <td width="40%">
+                                        <td width="50%">
                                             {{item.name}}
                                         </td>
-                                        <td width="20%">
+                                        <td width="8.5%">
                                             {{item.qtyOrdered}}
                                         </td>
-                                        <td width="40%">
+                                        <td width="41.5%">
                                             <section ng-show="item.assignTunnel">
                                                 <ui-select ng-model="item.assignTunnel.defaultWarehouse" on-select="selectItemWarehouse(item, $item)">
                                                     <ui-select-match placeholder="请选择仓库">{{$select.selected.name}}</ui-select-match>
@@ -108,14 +110,8 @@
                         <td colspan="20">
                             <nav class="page-list">
                                 <ul class="pagination pagination-sm">
-                                    <li ng-class="{disabled: page.first}">
-                                        <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
-                                    </li>
-                                    <li ng-repeat="i in query.list" ng-class="{active: i == page.number}">
-                                        <a href="" ng-click="turnPage(i)">{{i+1}}</a>
-                                    </li>
-                                    <li ng-class="{disabled: page.last}">
-                                        <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
+                                    <li ng-repeat="i in query.list" ng-class="{active: i.value === page.number}">
+                                        <a href="" ng-click="turnPage(i.value)">{{i.label}}</a>
                                     </li>
                                 </ul>
                                 <div class="page-total">

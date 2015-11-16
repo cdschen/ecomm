@@ -36,9 +36,6 @@ public class PurchaseOrderItem implements Serializable {
 	@Column(name = "purchase_order_id", nullable = false)
 	private Long purchaseOrderId;
 
-	@Column(name = "product_id", nullable = false, insertable = false, updatable = false)
-	private Long productId;
-
 	//	#采购数量
 	@Column(name = "purchase_qty", nullable = false)
 	private Long purchaseQty;
@@ -54,15 +51,8 @@ public class PurchaseOrderItem implements Serializable {
 
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
-	@JoinColumn(name = "product_id")
-	private Product product;
-	
-	/*
-	 * Irrelevant Properties
-	 */
-	
-	@Transient
-	private SupplierProductCodeMap supplierProductCodeMap;
+	@JoinColumn(name = "supplier_product_id")
+	private SupplierProduct supplierProduct;
 	
 	/*
 	 * OperationReview Params
@@ -94,11 +84,18 @@ public class PurchaseOrderItem implements Serializable {
 	@Transient
 	private Boolean ignoreCheck = false;
 
+	
+	/*
+	 * 采购单：采购［供应商新品］时，临时用到的毫秒，匹配［供应商产品］和［采购单详情］是否关联
+	 */
+	@Transient
+	private Long currentTimeMillis;
+	
+	
+	
+	
 
 	//
-	
-	@Transient
-	private String supplierProductCode;
 
 
 	public Long getId() {
@@ -117,14 +114,6 @@ public class PurchaseOrderItem implements Serializable {
 		this.purchaseOrderId = purchaseOrderId;
 	}
 
-	public Long getProductId() {
-		return productId;
-	}
-
-	public void setProductId(Long productId) {
-		this.productId = productId;
-	}
-
 	public Long getPurchaseQty() {
 		return purchaseQty;
 	}
@@ -139,22 +128,6 @@ public class PurchaseOrderItem implements Serializable {
 
 	public void setEstimatePurchaseUnitPrice(BigDecimal estimatePurchaseUnitPrice) {
 		this.estimatePurchaseUnitPrice = estimatePurchaseUnitPrice;
-	}
-
-	public Product getProduct() {
-		return product;
-	}
-
-	public void setProduct(Product product) {
-		this.product = product;
-	}
-
-	public String getSupplierProductCode() {
-		return supplierProductCode;
-	}
-
-	public void setSupplierProductCode(String supplierProductCode) {
-		this.supplierProductCode = supplierProductCode;
 	}
 
 	public Long getPendingQty() {
@@ -213,12 +186,20 @@ public class PurchaseOrderItem implements Serializable {
 		this.ignoreCheck = ignoreCheck;
 	}
 
-	public SupplierProductCodeMap getSupplierProductCodeMap() {
-		return supplierProductCodeMap;
+	public SupplierProduct getSupplierProduct() {
+		return supplierProduct;
 	}
 
-	public void setSupplierProductCodeMap(SupplierProductCodeMap supplierProductCodeMap) {
-		this.supplierProductCodeMap = supplierProductCodeMap;
+	public void setSupplierProduct(SupplierProduct supplierProduct) {
+		this.supplierProduct = supplierProduct;
+	}
+
+	public Long getCurrentTimeMillis() {
+		return currentTimeMillis;
+	}
+
+	public void setCurrentTimeMillis(Long currentTimeMillis) {
+		this.currentTimeMillis = currentTimeMillis;
 	}
 
 }

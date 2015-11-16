@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sooeez.ecomm.domain.PurchaseOrder;
 import com.sooeez.ecomm.domain.PurchaseOrderItem;
-import com.sooeez.ecomm.domain.SupplierProductCodeMap;
+import com.sooeez.ecomm.domain.SupplierProduct;
 import com.sooeez.ecomm.service.PurchaseOrderService;
 
 @RestController
@@ -105,39 +105,29 @@ public class PurchaseOrderController {
 	 */
 	
 	@RequestMapping(value = "/supplierproductcodemaps/{id}")
-	public SupplierProductCodeMap getSupplierProductCodeMap(@PathVariable("id") Long id) {
-		return this.purchaseOrderService.getSupplierProductCodeMap(id);
+	public SupplierProduct getSupplierProduct(@PathVariable("id") Long id) {
+		return this.purchaseOrderService.getSupplierProduct(id);
 	}
 	
 	@RequestMapping(value = "/supplierproductcodemaps")
-	public Page<SupplierProductCodeMap> getPagedSupplierProductCodeMaps(Pageable pageable) {
-		return this.purchaseOrderService.getPagedSupplierProductCodeMaps(pageable);
+	public Page<SupplierProduct> getPagedSupplierProducts(Pageable pageable) {
+		return this.purchaseOrderService.getPagedSupplierProducts(pageable);
 	}
 	
 	@RequestMapping(value = "/supplierproductcodemaps/get/all")
-	public List<SupplierProductCodeMap> getSupplierProductCodeMaps(Sort sort) {
-		return this.purchaseOrderService.getSupplierProductCodeMaps(sort);
+	public List<SupplierProduct> getSupplierProducts(Sort sort) {
+		return this.purchaseOrderService.getSupplierProducts(sort);
 	}
 	
 	@RequestMapping(value = "/supplierproductcodemaps", method = RequestMethod.POST)
-	public SupplierProductCodeMap saveSupplierProductCodeMap(@RequestBody SupplierProductCodeMap supplierProductCodeMap) {
-		return this.purchaseOrderService.saveSupplierProductCodeMap(supplierProductCodeMap);
+	public SupplierProduct saveSupplierProduct(@RequestBody SupplierProduct supplierProduct) {
+		return this.purchaseOrderService.saveSupplierProduct(supplierProduct);
 	}
 	
 	@RequestMapping(value = "/supplierproductcodemaps/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteSupplierProductCodeMap(@PathVariable("id") Long id) {
-		this.purchaseOrderService.deleteSupplierProductCodeMap(id);
+	public ResponseEntity<?> deleteSupplierProduct(@PathVariable("id") Long id) {
+		this.purchaseOrderService.deleteSupplierProduct(id);
 		return new ResponseEntity<>(HttpStatus.OK);
-	}
-	
-	@RequestMapping(value = "/supplierproductcodemaps/get/supplierProductCode/{supplierProductCode}")
-	public SupplierProductCodeMap getSupplierProductCodeMap(@PathVariable("supplierProductCode") String supplierProductCode) {
-		return this.purchaseOrderService.getSupplierProductCodeMap(supplierProductCode);
-	}
-	
-	@RequestMapping(value = "/supplierproductcodemaps/get/productId/{productId}")
-	public SupplierProductCodeMap getSupplierProductCodeMapByProductId(@PathVariable("productId") Long productId) {
-		return this.purchaseOrderService.getSupplierProductCodeMapByProductId(productId);
 	}
 	
 }

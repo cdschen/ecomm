@@ -38,7 +38,6 @@ angular.module('ecommApp')
             }).then(function(page) {
                 console.log(page);
                 $.each(page.content, function() {
-                    //Shop.initShopDefaultTunnel(this.shop);
                     orderService.checkItemProductShopTunnel(this);
                 });
                 $scope.page = page;
@@ -90,6 +89,12 @@ angular.module('ecommApp')
 
         $scope.toggleOutInventorySheetSlide = function() {
             $scope.confirmOutInventorySheetSlideChecked = !$scope.confirmOutInventorySheetSlideChecked;
+            $('body').css('overflow', 'auto');
+            $('div[ps-open="confirmOutInventorySheetSlideChecked"]').css('overflow', 'hidden');
+            if ($scope.confirmOutInventorySheetSlideChecked) {
+                $('body').css('overflow', 'hidden');
+                $('div[ps-open="confirmOutInventorySheetSlideChecked"]').css('overflow', 'auto');
+            }
         };
 
         $scope.selectAllOrders = function() {

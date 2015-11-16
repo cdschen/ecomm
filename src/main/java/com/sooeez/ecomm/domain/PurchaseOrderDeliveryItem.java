@@ -2,6 +2,7 @@ package com.sooeez.ecomm.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -37,8 +40,8 @@ public class PurchaseOrderDeliveryItem implements Serializable {
 	@Column(name = "purchase_order_item_id", nullable = false)
 	private Long purchaseOrderItemId;
 	
-	@Column(name = "product_id", nullable = false, insertable = false, updatable = false)
-	private Long productId;
+	@Column(name = "supplier_product_id", nullable = false, insertable = false, updatable = false)
+	private Long supplierProductId;
 	
 	//	#商品实际采购单价
 	@Column(name = "real_purchase_unit_price")
@@ -52,6 +55,15 @@ public class PurchaseOrderDeliveryItem implements Serializable {
 	@Column(name = "credit_qty", nullable = false)
 	private Long creditQty;
 	
+	//	#保质期
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "expire_date")
+	private Date expireDate;
+	
+	//	#留言
+	@Column(name = "comment")
+	private String comment;
+	
 
 	/*
 	 * Related Properties
@@ -59,8 +71,8 @@ public class PurchaseOrderDeliveryItem implements Serializable {
 
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
-	@JoinColumn(name = "product_id")
-	private Product product;
+	@JoinColumn(name = "supplier_product_id")
+	private SupplierProduct supplierProduct;
 
 //	@OneToOne
 //	@NotFound(action = NotFoundAction.IGNORE)
@@ -101,13 +113,13 @@ public class PurchaseOrderDeliveryItem implements Serializable {
 	}
 
 
-	public Long getProductId() {
-		return productId;
+	public Long getSupplierProductId() {
+		return supplierProductId;
 	}
 
 
-	public void setProductId(Long productId) {
-		this.productId = productId;
+	public void setSupplierProductId(Long supplierProductId) {
+		this.supplierProductId = supplierProductId;
 	}
 
 
@@ -141,13 +153,33 @@ public class PurchaseOrderDeliveryItem implements Serializable {
 	}
 
 
-	public Product getProduct() {
-		return product;
+	public SupplierProduct getSupplierProduct() {
+		return supplierProduct;
 	}
 
 
-	public void setProduct(Product product) {
-		this.product = product;
+	public void setSupplierProduct(SupplierProduct supplierProduct) {
+		this.supplierProduct = supplierProduct;
+	}
+
+
+	public Date getExpireDate() {
+		return expireDate;
+	}
+
+
+	public void setExpireDate(Date expireDate) {
+		this.expireDate = expireDate;
+	}
+
+
+	public String getComment() {
+		return comment;
+	}
+
+
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 
 

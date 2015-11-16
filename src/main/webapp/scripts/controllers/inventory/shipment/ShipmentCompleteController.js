@@ -3,7 +3,6 @@ angular.module('ecommApp')
 .controller('ShipmentCompleteController', ['$scope', '$location', '$interval', 'toastr', 'shipmentService', 'courierService', 'Utils',
     function($scope, $location, $interval, toastr, shipmentService, courierService, Utils) {
 
-        var $ = angular.element;
         $scope.operatePickupTime = Date.now();
         $scope.operationReviewCompleteShipment = shipmentService.getOperationReviewCompleteShipment;
 
@@ -11,12 +10,6 @@ angular.module('ecommApp')
         courierService.getAll().then(function(coureirs) {
             $scope.coureirs = coureirs;
         });
-
-        $scope.defaultHeight = function(){
-            return {
-                height: $(window).height() / 9
-            };
-        };
 
         function updatePickupTime() {
             $scope.operatePickupTime = new Date();

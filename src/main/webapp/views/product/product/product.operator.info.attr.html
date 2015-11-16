@@ -62,6 +62,18 @@
                 </ui-select>
             </div>
         </div>
+        <!-- product.barcode -->
+        <div class="form-group has-feedback" ng-class="{'has-success':(productForm.barcode.$dirty && productForm.barcode.$valid), 'has-warning':(productForm.barcode.$dirty && productForm.barcode.$invalid) }">
+            <label class="control-label col-md-2">条码 <span class="text-danger"></span></label>
+            <div class="col-md-6">
+                <input type="text" name="barcode" ng-model="product.barcode" placeholder="(选填)" class="form-control" ng-maxlength="50"/>
+                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productForm.barcode.$dirty && productForm.barcode.$valid"></span>
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productForm.barcode.$dirty && productForm.barcode.$invalid"></span>
+            </div>
+            <span class="col-md-4 help-block" ng-messages="productForm.barcode.$error" ng-show="productForm.barcode.$dirty && productForm.barcode.$invalid">
+                <span ng-messages-include="views/error-messages.html" ></span>
+            </span>
+        </div>
         <!-- product.sku -->
         <div class="form-group has-feedback" ng-class="{'has-success':(productForm.sku.$dirty && productForm.sku.$valid), 'has-warning':(productForm.sku.$dirty && productForm.sku.$invalid) }">
             <label class="control-label col-md-2">SKU <span class="text-danger">*</span></label>
@@ -90,7 +102,7 @@
         <div class="form-group has-feedback" ng-class="{'has-success':(productForm.shortName.$dirty && productForm.shortName.$valid), 'has-warning':(productForm.shortName.$dirty && productForm.shortName.$invalid) }">
             <label class="control-label col-md-2">简称 <span class="text-danger">*</span></label>
             <div class="col-md-6">
-                <input type="text" name="shortName" ng-model="product.shortName" placeholder="(必填)" class="form-control" required ng-maxlength="50" />
+                <input type="text" name="shortName" ng-model="product.shortName" placeholder="(必填，商品打印在快递单上的名字)" class="form-control" required ng-maxlength="50" />
                 <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="productForm.shortName.$dirty && productForm.shortName.$valid"></span>
                 <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="productForm.shortName.$dirty && productForm.shortName.$invalid"></span>
             </div>

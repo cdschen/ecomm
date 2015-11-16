@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-
-
 import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.ProcessStep;
 import com.sooeez.ecomm.domain.Product;
@@ -91,12 +89,12 @@ public class ProductService {
 			product.setLastUpdate(new Date());
 		}
 
-		return this.productRepository.save(product);
+		return productRepository.save(product);
 	}
 
 	@Transactional
 	public void deleteProduct(Long id) {
-		this.productRepository.delete(id);
+		productRepository.delete(id);
 	}
 	
 	public Boolean existsProduct(Product product) {
@@ -104,15 +102,15 @@ public class ProductService {
 	}
 
 	public Product getProduct(Long id) {
-		return this.productRepository.findOne(id);
+		return productRepository.findOne(id);
 	}
 
 	public List<Product> getProducts(Product product, Sort sort) {
-		return this.productRepository.findAll(getProductSpecification(product), sort);
+		return productRepository.findAll(getProductSpecification(product), sort);
 	}
 
 	public Page<Product> getPagedProducts(Product product, Pageable pageable) {
-		return this.productRepository.findAll(getProductSpecification(product), pageable);
+		return productRepository.findAll(getProductSpecification(product), pageable);
 	}
 	
 	private Specification<Product> getProductSpecification(Product product) {
@@ -152,6 +150,11 @@ public class ProductService {
 				objectProcessSubquery.select(objectProcessRoot.get("objectId"));
 				objectProcessSubquery.where(objectProcessRoot.get("stepId").in((Object[]) product.getStatusIds()));
 				predicates.add(cb.in(root.get("id")).value(objectProcessSubquery));
+			}
+			
+			if (StringUtils.hasText(product.getNameOrSku())) {
+				predicates.add(cb.or(cb.like(root.get("name"), "%" + product.getNameOrSku() + "%"), 
+						cb.like(root.get("sku"), "%" + product.getNameOrSku() + "%")));
 			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};

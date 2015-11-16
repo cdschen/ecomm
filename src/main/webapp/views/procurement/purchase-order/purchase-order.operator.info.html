@@ -5,19 +5,187 @@
     <div class="panel panel-default">
         <div class="panel-body">
 
-            <h4 class="text-success">
-                <strong>采购单详情</strong>
-            </h4>
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <input type="text" ng-model="$root.queryPurchaseOrderItemFuzzySearchParam" ng-keyup="delayFuzzySearch()" class="form-control" placeholder="过滤条件：产品sku/barcode/名称，供应商编号/名称" />
+                            </div>
+                            <label class="control-label col-md-1">供应商*</label>
+                            <div class="col-md-3">
+                                <ui-select ng-model="purchaseOrder.supplier" on-select="checkChangeSupplier()" required>
+                                    <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
+                                    <ui-select-choices repeat="supplier in suppliers | filter: $select.search">
+                                        <div ng-bind-html="supplier.name | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!--
+
+                 供应商产品
+
+                 -->
+                <div class="col-md-6">
+                    <div class="panel panel-default" style="height:600px;">
+                        <div class="panel-body">
+
+                            <h4 class="text-success text-center">当前供应商产品</h4>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th width="20%">商品sku</th>
+                                        <th width="25%">商品名称</th>
+                                        <th width="15%">供应商编号</th>
+                                        <th width="15%">采购数量</th>
+                                        <th width="15%">默认单价</th>
+                                        <th width="10%">操作</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <div style="overflow:auto; height:484px;">
+                                <table class="table">
+                                    <tbody>
+                                        <tr ng-repeat="supplierProduct in supplierProducts" class="pagination-ul" >
+                                            <td width="20%">
+                                                {{ supplierProduct.product ? supplierProduct.product.sku : '' }}
+                                            </td>
+                                            <td width="25%">
+                                                {{ supplierProduct.product ? supplierProduct.product.name : supplierProduct.supplierProductName }}
+                                            </td>
+                                            <td width="15%">
+                                                {{ supplierProduct.supplierProductCode }}
+                                            </td>
+                                            <td width="15%">
+                                                <input type="text" ng-model="supplierProduct.purchaseQty" ng-blur="rebuildPurchaseQtyNumeric( supplierProduct )" class="form-control input-sm" placeholder="(必填)" />
+                                            </td>
+                                            <td width="15%">
+                                                <input type="text" ng-model="supplierProduct.defaultPurchasePrice" ng-blur="rebuildPurchasePriceNumeric( supplierProduct, 'defaultPurchasePrice' )" class="form-control input-sm" placeholder="(选填)" />
+                                            </td>
+                                            <td width="10%">
+                                                <a class="btn btn-sm btn-success" ng-mousedown="addSupplierProductToPurchaseOrderItemMouseHeld( supplierProduct )" ng-mouseup="addSupplierProductToPurchaseOrderItemMouseRelease()">添加</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--
+
+                 采购产品
+
+                 -->
+                <div class="col-md-6">
+
+                    <div class="panel panel-default" style="height:600px;">
+                        <div class="panel-body">
+
+                            <h4 class="text-success text-center">采购单详情</h4>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th width="20%">商品sku</th>
+                                        <th width="25%">商品名称</th>
+                                        <th width="15%">供应商编号</th>
+                                        <th width="15%">采购数量</th>
+                                        <th width="15%">采购单价</th>
+                                        <th width="10%">操作</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <div style="overflow:auto; height:484px;">
+                                <table class="table">
+                                    <tbody>
+                                        <tr ng-repeat="item in purchaseOrder.items" class="pagination-ul" >
+                                            <td width="20%">
+                                                {{ item.supplierProduct && item.supplierProduct.product ? item.supplierProduct.product.sku : '' }}
+                                            </td>
+                                            <td width="25%">
+                                                {{ item.supplierProduct && item.supplierProduct.product ? item.supplierProduct.product.name : item.supplierProduct.supplierProductName }}
+                                            </td>
+                                            <td width="15%">
+                                                {{ item.supplierProduct ? item.supplierProduct.supplierProductCode : '' }}
+                                            </td>
+                                            <td width="15%">
+                                                <input type="text" ng-model="item.purchaseQty" ng-blur="rebuildPurchaseQtyNumeric( item )" class="form-control input-sm" placeholder="(必填)" />
+                                            </td>
+                                            <td width="15%">
+                                                <input type="text" ng-model="item.estimatePurchaseUnitPrice" ng-blur="rebuildPurchasePriceNumeric( item, 'estimatePurchaseUnitPrice' )" class="form-control input-sm" placeholder="(选填)" />
+                                            </td>
+                                            <td width="10%">
+                                                <a class="btn btn-sm btn-success" ng-click="removeItemFromPurchaseOrderItems( item )">移除</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
             <hr/>
 
+            <!--
+
+             采购供应商新品
+
+             -->
+            <h4 class="text-success text-center">供应商新品</h4>
+            <p class="text-center">（若<span class="text-success">［当前供应商产品］</span>列表里没有列出您想要的产品，则可以在这里手动加入采购单，手动加入［采购单详情］列表的产品在保存采购单时，系统会自动为您将该产品保存至供应商所对应的［供应商产品］中）</p>
+            <div class="form-group has-feedback">
+
+                <label class="control-label col-md-2">供应商产品名称*</label>
+                <div class="col-md-2">
+                    <input class="form-control" type="text" ng-model="newSupplierProduct.supplierProductName" />
+                </div>
+
+                <label class="control-label col-md-1">供应商编号*</label>
+                <div class="col-md-1">
+                    <input class="form-control" type="text" ng-model="newSupplierProduct.supplierProductCode" />
+                </div>
+
+                <label class="control-label col-md-1">采购价格</label>
+                <div class="col-md-1">
+                    <input class="form-control" type="text" ng-model="newSupplierProduct.defaultPurchasePrice" ng-blur="rebuildPurchasePriceNumeric( newSupplierProduct, 'defaultPurchasePrice' )" />
+                </div>
+
+                <label class="control-label col-md-1">采购数量</label>
+                <div class="col-md-1">
+                    <input class="form-control" type="text" ng-model="newSupplierProduct.purchaseQty" ng-blur="rebuildPurchaseQtyNumeric( newSupplierProduct )" />
+                </div>
+
+                <div class="col-md-2">
+                    <a class="btn btn-success pull-right" ng-click="addNewSupplierProductToPurchaseOrderItem()">添加供应商新品</a>
+                </div>
+
+            </div>
+
+            <hr/>
+
+            <!--
+
+             采购单信息
+
+             -->
+            <h4 class="text-success text-center">采购单信息</h4>
             <div class="form-group has-feedback" ng-show="id">
-                <label class="control-label col-md-2">采购单创建时间</label>
+                <label class="control-label col-md-3">采购单创建时间</label>
                 <div class="col-md-3">
                     <p class="form-control-static">
                         {{ purchaseOrder.createTime | date : 'yyyy-MM-dd HH:mm:ss' }}
                     </p>
                 </div>
-                <label class="control-label col-md-2">采购单最近更新时间</label>
+                <label class="control-label col-md-3">采购单最近更新时间</label>
                 <div class="col-md-3">
                     <p class="form-control-static">
                         {{ purchaseOrder.lastUpdate | date : 'yyyy-MM-dd HH:mm:ss' }}
@@ -25,40 +193,48 @@
                 </div>
             </div>
 
-            <!-- 供应商 & 结算货币 -->
             <div class="form-group has-feedback">
-                <label class="control-label col-md-2">供应商*</label>
-                <div class="col-md-3">
-                    <ui-select ng-model="purchaseOrder.supplier" ng-disabled="id">
-                        <ui-select-match placeholder="供应商(必选)">{{$select.selected.name}}</ui-select-match>
-                        <ui-select-choices repeat="supplier in suppliers | filter: $select.search">
-                            <div ng-bind-html="supplier.name | highlight: $select.search"></div>
-                        </ui-select-choices>
-                    </ui-select>
-                </div>
                 <label class="control-label col-md-2">结算货币*</label>
                 <div class="col-md-3">
                     <ui-select ng-model="purchaseOrder.currency" ng-disabled="id">
-                        <ui-select-match placeholder="结算货币(必选)">{{$select.selected.name}}</ui-select-match>
+                        <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
                         <ui-select-choices repeat="currency in currencies | filter: $select.search">
                             <div ng-bind-html="currency.name | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
                 </div>
-            </div>
-
-            <div class="form-group has-feedback">
                 <label class="control-label col-md-2">预计到货时间</label>
                 <div class="col-md-3">
-                    <input type="text" class="form-control" placeholder="(可选)" ng-model="purchaseOrder.estimateReceiveDate">
+                    <style>
+                        .form-control::-webkit-input-placeholder
+                        {
+                            font-size:12px; padding:3px;
+                        }
+                        .form-control:-moz-placeholder /* Firefox 18- */
+                        {
+                            font-size:12px; padding:3px;
+                        }
+                        .form-control::-moz-placeholder /* Firefox 19+ */
+                        {
+                            font-size:12px; padding:3px;
+                        }
+                        .form-control:-ms-input-placeholder
+                        {
+                            font-size:12px; padding:3px;
+                        }
+                        .has-feedback .form-control {
+                            padding:5px;
+                        }
+                    </style>
+                    <input type="text" class="form-control" placeholder="(选填,YYYY-MM-DD)" ng-model="purchaseOrder.estimateReceiveDate">
                 </div>
             </div>
 
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">订货方式*</label>
                 <div class="col-md-3">
-                    <ui-select ng-model="purchaseOrder.bookingType" ng-disabled="id">
-                        <ui-select-match placeholder="订货方式(必选)">{{$select.selected.name}}</ui-select-match>
+                    <ui-select ng-model="purchaseOrder.bookingType" ng-disabled="id" required>
+                        <ui-select-match placeholder="(必选)">{{$select.selected.name}}</ui-select-match>
                         <ui-select-choices repeat="bookingType in bookingTypes | filter: $select.search">
                             <div ng-bind-html="bookingType.name | highlight: $select.search"></div>
                         </ui-select-choices>
@@ -75,7 +251,7 @@
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">收货人姓名*</label>
                 <div class="col-md-3">
-                    <input class="form-control" type="text" ng-model="purchaseOrder.receiveName" placeholder="(必填)" />
+                    <input class="form-control" type="text" ng-model="purchaseOrder.receiveName" placeholder="(必填)" required />
                 </div>
                 <label class="control-label col-md-2">Credit总金额</label>
                 <div class="col-md-3">
@@ -88,7 +264,7 @@
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">收货人电话*</label>
                 <div class="col-md-3">
-                    <input class="form-control" type="text" ng-model="purchaseOrder.receivePhone" placeholder="(必填)" />
+                    <input class="form-control" type="text" ng-model="purchaseOrder.receivePhone" placeholder="(必填)" required />
                 </div>
                 <label class="control-label col-md-2">采购总金额</label>
                 <div class="col-md-3">
@@ -151,20 +327,35 @@
         </div>
     </div>
 </form>
-<div class="panel panel-default" ng-include="template.info.items.url">
-</div>
+
 <div class="panel panel-default">
     <div class="panel-body">
         <div class="row">
             <div class="col-md-2">
-                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="save(purchaseOrder)"
-                        ng-disabled="
-                        !purchaseOrderOperatorForm.$valid || !purchaseOrder.supplier || !purchaseOrder.currency
-                        || !purchaseOrder.bookingType || !purchaseOrder.receiveName || !purchaseOrder.receivePhone
-                        || !purchaseOrder.items || purchaseOrder.items.length < 1
-                        ">
+                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="save(purchaseOrder, purchaseOrderOperatorForm.$valid)">
                     <span class="glyphicon glyphicon-floppy-saved"></span> 保存
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- changeSupplierConfirmModal -->
+<div class="modal fade" id="changeSupplierConfirmModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">切换供应商</h3>
+            </div>
+            <div class="modal-body">
+                <p>切换<span class="text-success">［供应商］</span>将移除右侧<span class="text-success">［采购产品］</span>的所有数据，确定继续切换？</p>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group">
+                    <button class="btn btn-primary" type="button" ng-click="checkChangeSupplierConfirm()">是的，我很确定</button>
+                    <button class="btn btn-warning" type="button" data-dismiss="modal">保持现状</button>
+                </div>
             </div>
         </div>
     </div>

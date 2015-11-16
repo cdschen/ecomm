@@ -61,6 +61,9 @@ public class Product implements Serializable {
 	@Column(name = "default_currency_id", nullable = false, insertable = false, updatable = false)
 	private Integer defaultCurrencyId;
 
+	@Column(name = "barcode")
+	private String barcode;
+
 	@Column(name = "sku", nullable = false)
 	private String sku;
 
@@ -237,6 +240,10 @@ public class Product implements Serializable {
 	// 检查唯一
 	@Transient
 	private Boolean checkUnique;
+
+	// 用作商品名称或sku的or查询
+	@Transient
+	private String nameOrSku;
 
 	/*
 	 * Constructor
@@ -687,6 +694,22 @@ public class Product implements Serializable {
 
 	public void setCheckUnique(Boolean checkUnique) {
 		this.checkUnique = checkUnique;
+	}
+
+	public String getNameOrSku() {
+		return nameOrSku;
+	}
+
+	public void setNameOrSku(String nameOrSku) {
+		this.nameOrSku = nameOrSku;
+	}
+
+	public String getBarcode() {
+		return barcode;
+	}
+
+	public void setBarcode(String barcode) {
+		this.barcode = barcode;
 	}
 
 }

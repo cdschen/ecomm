@@ -19,6 +19,7 @@ angular.module('ecommApp')
 
         $scope.defautlQuery = {
             size: 20,
+            sort: ['operateTime,desc'],
             warehouse: undefined,
             batch: {
                 operateTimeStart: undefined,
@@ -46,6 +47,7 @@ angular.module('ecommApp')
             InventoryBatch.get({
                 page: number ? number : 0,
                 size: query.size,
+                sort: query.sort,
                 warehouseId: query.warehouse ? query.warehouse.id : null,
                 warehouseIds: Auth.refreshManaged('warehouse'),
                 operateTimeStart: query.batch.operateTimeStart,

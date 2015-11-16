@@ -1,186 +1,153 @@
-var PurchaseOrderOperatorInformationController = function($scope, $state, $stateParams, purchaseOrderService, Product) {
+var PurchaseOrderOperatorInformationController = function($scope, $state, $stateParams, toastr) {
 
-    if ($stateParams.id && $stateParams.id !== '') {
-        $scope.id = $stateParams.id;
-    }
-    else
+
+    $scope.defaultSupplierProduct =
     {
-        $scope.purchaseOrder = {
-            items:[]
-        };
-    }
+        supplierProductName : '',
+        supplierProductCode : '',
+        purchaseQty : 1,
+        defaultPurchasePrice : '0.00'
+    };
+    $scope.newSupplierProduct = angular.copy( $scope.defaultSupplierProduct );
 
-    Product.getAll().then(function(products) {
-        $scope.products = products;
-    });
+
 
     /**
-     * BEGIN Items Area
+     * 功能函数：起始
      */
-    $scope.pushItem = function(itemAddForm, selectedProduct) {
-        //console.clear();
-        console.log('[' + $scope.action + '] saveItem complete:');
-        //console.log('selectedProduct: ');
-        //console.log(selectedProduct);
-        //console.log('selectedProduct.selectedPrice: ');
-        //console.log(selectedProduct.selectedPrice);
 
-        var isRepeated = false;
-        var selectedPrice = selectedProduct.selectedPrice;
 
-        console.log('selectedProduct:');
-        console.log(selectedProduct);
 
-        for(var existedItem in $scope.purchaseOrder.items)
+    /*
+        添加新的［供应商产品］至 $scope.purchaseOrder.items
+     */
+    $scope.addNewSupplierProductToPurchaseOrderItem = function()
+    {
+        if( $scope.isSupplierSelected() )
         {
-            //console.log('selectedProduct.id: ' + selectedProduct.id);
-            //console.log('$scope.purchaseOrder.items[existedItem].productId: ' + $scope.purchaseOrder.items[existedItem].product.id);
-            //console.log('selectedPrice: ' + selectedPrice);
-            //console.log('$scope.purchaseOrder.items[existedItem].estimatePurchaseUnitPrice: ' + $scope.purchaseOrder.items[existedItem].estimatePurchaseUnitPrice);
+            var isQualified = true;
 
-            //console.log(selectedProduct);
-            //console.log($scope.purchaseOrder.items[existedItem]);
-            if(selectedProduct.id === $scope.purchaseOrder.items[existedItem].product.id &&
-                selectedPrice === $scope.purchaseOrder.items[existedItem].estimatePurchaseUnitPrice)
+            if( ! $scope.newSupplierProduct.supplierProductName )
             {
+                toastr.warning('请填写［供应商产品名称］');
+                isQualified = false;
+            }
+            if( ! $scope.newSupplierProduct.supplierProductCode )
+            {
+                toastr.warning('请填写［供应商产品编号］');
+                isQualified = false;
+            }
 
-                console.log('$scope.purchaseOrder.items[existedItem]');
-                console.log($scope.purchaseOrder.items[existedItem]);
-                $scope.purchaseOrder.items[existedItem].purchaseQty += selectedProduct.purchaseQty;
-                $scope.purchaseOrder.items[existedItem].supplierProductCodeMap = {
-                    supplierProductCode : $scope.purchaseOrder.supplierProductCode
-                };
-                isRepeated = true;
+            if( ! isNewSupplierProductCodeExistedInBothPlace( $scope.newSupplierProduct ) )
+            {
+                if( isQualified )
+                {
+                    var item =
+                    {
+                        supplierProduct : angular.copy( $scope.newSupplierProduct ),
+                        purchaseQty : $scope.newSupplierProduct.purchaseQty,
+                        estimatePurchaseUnitPrice : $scope.newSupplierProduct.defaultPurchasePrice
+                    };
+
+                    $scope.purchaseOrder.items.push( item );
+
+                    toastr.success('成功添加：［' + item.supplierProduct.supplierProductName + '］ 至［采购产品］列表中');
+                }
             }
         }
-
-        if( ! isRepeated )
-        {
-            var item = {
-                product: {
-                    id: selectedProduct.id,
-                    externalSku: selectedProduct.externalSku,
-                    sku: selectedProduct.sku,
-                    externalName: selectedProduct.externalName,
-                    name: selectedProduct.name,
-                    unitWeight: selectedProduct.unitWeight,
-                    unitCost: selectedProduct.unitCost,
-                    unitGst: selectedProduct.unitGst
-                },
-                supplierProductCodeMap: {
-                    supplierProductCode : $scope.purchaseOrder.supplierProductCode
-                },
-                purchaseQty: selectedProduct.purchaseQty,
-                estimatePurchaseUnitPrice: selectedProduct.selectedPrice
-            };
-
-            console.log('item');
-            console.log(item);
-
-            //console.log(item);
-            //
-            //console.log($scope.purchaseOrder);
-
-            $scope.purchaseOrder.items.push(item);
-        }
+        $scope.newSupplierProduct = angular.copy( $scope.defaultSupplierProduct );
     };
 
-    /* 监听 $scope.purchaseOrder 对象的任何一个属性的改动 */
-    $scope.$watch('purchaseOrder', function()
+    /*
+         移除 $scope.purchaseOrder.items 里的［item］
+     */
+    $scope.removeItemFromPurchaseOrderItems = function( item )
     {
-        if( $scope.purchaseOrder )
+        $.each($scope.purchaseOrder.items, function(index)
         {
-            var items = $scope.purchaseOrder.items;
-            var totalPurchasedQty = 0;
-            var totalEstimatePurchasedAmount = 0;
-            if( items )
+            if( this === item )
             {
-                for( var itemIndex in items )
-                {
-                    totalPurchasedQty += items[itemIndex].purchaseQty;
-                    totalEstimatePurchasedAmount += ( items[itemIndex].purchaseQty * items[itemIndex].estimatePurchaseUnitPrice );
-                }
-                $scope.purchaseOrder.totalPurchasedQty = totalPurchasedQty;
-                $scope.purchaseOrder.totalEstimatePurchasedAmount = totalEstimatePurchasedAmount;
+                $scope.purchaseOrder.items.splice(index, 1);
+                return false;
             }
-        }
-    }, true);
+        });
 
-    $scope.checkSupplierProductCode = function()
+    };
+
+
+
+    /**
+     * 辅助函数：起始
+     */
+
+    /*
+        检查该［当前供应商新品］是否存在于：
+            1. ［当前供应商产品］列表
+            2. ［采购产品］列表
+     */
+    function isNewSupplierProductCodeExistedInBothPlace( newSupplierProduct )
     {
-        if( $scope.purchaseOrder.supplierProductCode )
+        var isPass = false;
+        if( $scope.supplierProducts.length > 0 )
         {
-            purchaseOrderService.getSupplierProductCodeMapBySupplierProductCode( $scope.purchaseOrder.supplierProductCode ).then(function(supplierProductCodeMap) {
-                //console.log('supplierProductCodeMap');
-                //console.log(supplierProductCodeMap);
-                if( supplierProductCodeMap )
+            $.each( $scope.supplierProducts, function()
+            {
+                /* 检查［当前供应商产品］列表 */
+                if( this.supplierProductCode === newSupplierProduct.supplierProductCode )
                 {
-                    $scope.purchaseOrder.selectedProduct = supplierProductCodeMap.product;
-                    $scope.purchaseOrder.selectedProduct.selectedPrice = supplierProductCodeMap.defaultPurchasePrice;
-                    $scope.purchaseOrder.supplierProductCode = supplierProductCodeMap.supplierProductCode;
+                    toastr.warning('该新品的供应商产品编号已存在于［当前供应商产品］列表中，请用其他编号');
+                    isPass = true;
                 }
             });
         }
-    };
 
-    $scope.checkSelectedProductFromSupplierProductCode = function()
-    {
-        purchaseOrderService.getSelectedProductFromSupplierProductCode( $scope.purchaseOrder.selectedProduct.id ).then(function(supplierProductCodeMap) {
-            //console.log('supplierProductCodeMap');
-            //console.log(supplierProductCodeMap);
-            if( supplierProductCodeMap )
+        if( $scope.purchaseOrder.items.length > 0 )
+        {
+            $.each( $scope.purchaseOrder.items, function()
             {
-                $scope.purchaseOrder.selectedProduct = supplierProductCodeMap.product;
-                $scope.purchaseOrder.selectedProduct.selectedPrice = supplierProductCodeMap.defaultPurchasePrice;
-                $scope.purchaseOrder.supplierProductCode = supplierProductCodeMap.supplierProductCode;
-            }
-        });
+                /* 检查［当前供应商产品］列表 */
+                if( this.supplierProduct.supplierProductCode === newSupplierProduct.supplierProductCode )
+                {
+                    toastr.warning('该新品的供应商产品编号已存在于［采购产品］列表中，请用其他编号');
+                    isPass = true;
+                }
+            });
+        }
+        return isPass;
+    }
+
+
+    /* 重新构建［供应商产品］采购数量 */
+    $scope.rebuildPurchaseQtyNumeric = function( supplierProduct )
+    {
+        if( $.isNumeric( supplierProduct.purchaseQty ) )
+        {
+            supplierProduct.purchaseQty = Number( Math.floor( supplierProduct.purchaseQty ) ).toFixed( 0 );
+
+            supplierProduct.purchaseQty = supplierProduct.purchaseQty > 1 ? supplierProduct.purchaseQty : 1;
+        }
+        else
+        {
+            supplierProduct.purchaseQty = 1;
+        }
     };
-
-    $scope.removingItem = undefined;
-
-    $scope.showRemoveItem = function(item, $index) {
-        console.clear();
-        console.log('showRemoveItem $index: ' + $index);
-        console.log(item);
-
-        $scope.removingItem = item;
-        $scope.removingItem.$index = $index;
-        $('#itemDeleteModal').modal('show');
-    };
-
-    $scope.removeItem = function() {
-        console.clear();
-        console.log('removeItem:');
-
-        if (angular.isDefined($scope.removingItem)) {
-            $scope.purchaseOrder.items.splice($scope.removingItem.$index, 1);
-            $('#itemDeleteModal').modal('hide');
+    /* 重新构建［采购价格］ */
+    $scope.rebuildPurchasePriceNumeric = function( product, field )
+    {
+        if( $.isNumeric( product[ field ] ) )
+        {
+            product[ field ] = Number( product[ field ] ).toFixed( 2 );
+        }
+        else
+        {
+            product[ field ] = 0;
         }
     };
 
 
-    $scope.updateItem = function(item) {
-        //console.clear();
-        console.log('updateItem:');
-        console.log(item);
-        item.editable = true;
-    };
-
-    $scope.saveUpdateItem = function(item, itemForm) {
-        //console.clear();
-        console.log('[' + $scope.action + '] saveUpdateItem complete:');
-        console.log(item);
-        item.editable = false;
-        itemForm.$setPristine();
-
-    };
-    /**
-     * BEGIN Items Area
-     */
 
 };
 
-PurchaseOrderOperatorInformationController.$inject = ['$scope', '$state', '$stateParams', 'purchaseOrderService', 'Product'];
+PurchaseOrderOperatorInformationController.$inject = ['$scope', '$state', '$stateParams', 'toastr', '$timeout', 'supplierProductService'];
 
 angular.module('ecommApp').controller('PurchaseOrderOperatorInformationController', PurchaseOrderOperatorInformationController);

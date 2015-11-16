@@ -51,8 +51,7 @@ angular.module('ecommApp')
                 page: number ? number : 0,
                 size: query.size,
                 sort: query.sort,
-                sku: query.product.sku,
-                name: query.product.name,
+                nameOrSku: query.product.nameOrSku,
                 enabled: query.product.enabled,
                 statusIds: Process.refreshStatus(query.statuses)
             }, function(page) {
@@ -105,7 +104,7 @@ angular.module('ecommApp')
         /*
          *  Process
          */
-        
+
         $scope.toggleProcessSlide = function(product) {
             $scope.processSlideChecked = !$scope.processSlideChecked;
             if ($scope.processSlideChecked) {
@@ -139,11 +138,12 @@ angular.module('ecommApp')
 
         $scope.toggleDetailsSlide = function(product) {
             $scope.detailsSlideChecked = !$scope.detailsSlideChecked;
+            $('body').css('overflow', 'auto');
+            $('div[ps-open="detailsSlideChecked"]').css('overflow', 'hidden');
             if ($scope.detailsSlideChecked) {
+                $('body').css('overflow', 'hidden');
+                $('div[ps-open="detailsSlideChecked"]').css('overflow', 'auto');
                 $scope.processProduct = product;
-                $scope.defaultHeight = {
-                    height: $(window).height() - 100
-                };
             }
         };
 

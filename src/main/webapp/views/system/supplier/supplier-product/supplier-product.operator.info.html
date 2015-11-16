@@ -1,0 +1,88 @@
+<p>&nbsp;</p>
+<form name="supplierProductOperatorForm" class="form-horizontal" novalidate>
+    <div class="row">
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+
+            <h4 class="text-success">
+                <strong>供应商产品详情</strong>
+            </h4>
+            <hr/>
+
+            <div class="form-group has-feedback" ng-show="id">
+                <label class="control-label col-md-2">供应商产品创建时间</label>
+                <div class="col-md-3">
+                    <p class="form-control-static">
+                        {{ supplierProduct.createTime | date : 'yyyy-MM-dd HH:mm:ss' }}
+                    </p>
+                </div>
+                <label class="control-label col-md-2">供应商产品最近更新时间</label>
+                <div class="col-md-3">
+                    <p class="form-control-static">
+                        {{ purchaseOrder.lastUpdate | date : 'yyyy-MM-dd HH:mm:ss' }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">供应商*</label>
+                <div class="col-md-3">
+                    <ui-select ng-model="supplierProduct.supplier" required>
+                        <ui-select-match placeholder="供应商(必选)">{{$select.selected.name}}</ui-select-match>
+                        <ui-select-choices repeat="supplier in suppliers | filter: $select.search">
+                            <div ng-bind-html="supplier.name | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+                <label class="control-label col-md-2">产品</label>
+                <div class="col-md-3">
+                    <div class="input-group col-md-12">
+                        <div class="has-feedback" ng-class="{'has-success':(itemAddForm.product.$dirty && itemAddForm.product.$valid && item.product.id), 'has-warning':(itemAddForm.product.$dirty && itemAddForm.product.$invalid) }">
+                            <input type="text" ng-model="supplierProduct.product" placeholder="(选填，输入商品名称或Sku)" min="1" class="form-control" uib-typeahead="product as product.name + '(' + product.sku + ')' for product in getProduct($viewValue)" typeahead-loading="loadingLocations" typeahead-no-results="noResults" typeahead-wait-ms="350"/>
+                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="itemAddForm.product.$dirty && itemAddForm.product.$valid && item.product.id"></span>
+                            <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="itemAddForm.product.$dirty && itemAddForm.product.$invalid"></span>
+                            <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
+                            <div ng-show="noResults">
+                                <i class="glyphicon glyphicon-remove"></i> No Results Found
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 供应商 & 产品 -->
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">供应商产品名称*</label>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" placeholder="(必填)" ng-model="supplierProduct.supplierProductName" required />
+                </div>
+                <label class="control-label col-md-2">默认采购价格</label>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" placeholder="(选填)" ng-model="supplierProduct.defaultPurchasePrice" />
+                </div>
+            </div>
+
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">供应商产品编号*</label>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" placeholder="(必填)" ng-model="supplierProduct.supplierProductCode" required />
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+<!--<div class="panel panel-default" ng-include="template.info.items.url">-->
+</div>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-2">
+                <button type="button" class="btn btn-success btn-lg btn-block" ng-click="save(supplierProduct, supplierProductOperatorForm.$valid)">
+                    <span class="glyphicon glyphicon-floppy-saved"></span> 保存
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

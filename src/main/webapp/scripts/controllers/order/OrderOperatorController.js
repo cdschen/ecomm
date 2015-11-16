@@ -1,5 +1,5 @@
 
-var OrderOperatorController = function($scope, $state, $stateParams, orderService, Shop, Currency) {
+var OrderOperatorController = function($scope, $state, $stateParams, toastr, orderService, Shop, Currency) {
 
     console.clear();
     var $ = angular.element;
@@ -40,20 +40,62 @@ var OrderOperatorController = function($scope, $state, $stateParams, orderServic
         $scope.shops = shops;
     });
 
-    $scope.save = function(order) {
-        //console.clear();
-        console.log('[' + $scope.action + '] save order');
-        console.log(order);
+    $scope.save = function(order, formValid) {
 
-        refreshField(order);
+        var isQualified = true;
+        //!order.shop || !order.externalSn
+        //|| !order.shippingFee || !order.receiveName || !order.receivePhone || !order.receiveAddress
+        if( ! formValid )
+        {
+            if( !order.shop )
+            {
+                toastr.warning('请选择一个［店铺］');
+            }
+            if( !order.externalSn )
+            {
+                toastr.warning('请填写［店铺订单号］');
+            }
+            if( !order.shippingFee )
+            {
+                toastr.warning('请填写［运费金额］');
+            }
+            if( !order.receiveName )
+            {
+                toastr.warning('请填写［收件人姓名］');
+            }
+            if( !order.receivePhone )
+            {
+                toastr.warning('请填写［收件人电话］');
+            }
+            if( !order.receiveAddress )
+            {
+                toastr.warning('请填写［收件地址］');
+            }
+            isQualified = false;
+        }
+        /* 如果没有添加订购详情 */
+        if( !order.items || order.items.length < 1 )
+        {
+            toastr.warning('请添加至少一个［订购商品］');
+            isQualified = false;
+        }
 
-        orderService.save({
-            action: $scope.action
-        }, order, function(order) {
-            console.log('[' + $scope.action + '] save order complete:');
+        if( isQualified )
+        {
+            //console.clear();
+            console.log('[' + $scope.action + '] save order');
             console.log(order);
-            $state.go('order');
-        });
+
+            refreshField(order);
+
+            orderService.save({
+                action: $scope.action
+            }, order, function(order) {
+                console.log('[' + $scope.action + '] save order complete:');
+                console.log(order);
+                $state.go('order');
+            });
+        }
     };
 
     $scope.action = 'create';
@@ -83,6 +125,6 @@ var OrderOperatorController = function($scope, $state, $stateParams, orderServic
     });
 };
 
-OrderOperatorController.$inject = ['$scope', '$state', '$stateParams', 'orderService', 'Shop', 'Currency'];
+OrderOperatorController.$inject = ['$scope', '$state', '$stateParams', 'toastr', 'orderService', 'Shop', 'Currency'];
 
 angular.module('ecommApp').controller('OrderOperatorController', OrderOperatorController);

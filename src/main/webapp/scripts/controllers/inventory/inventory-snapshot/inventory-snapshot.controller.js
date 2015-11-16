@@ -6,6 +6,7 @@ angular.module('ecommApp')
         $scope.Math = Math;
 
         $scope.warehouses = [];
+
         $scope.operates = [{
             label: '入库',
             value: 1
@@ -15,9 +16,8 @@ angular.module('ecommApp')
         }];
 
         $scope.defautlQuery = {
-            pageSize: 50,
-            totalPagesList: [],
-            sort: ['createTime,desc'],
+            size: 50,
+            sort: ['createTime,desc', 'id,desc'],
             warehouse: undefined,
             product: {
                 sku: '',
@@ -29,10 +29,11 @@ angular.module('ecommApp')
                 batchOperate: undefined,
             }
         };
+
         $scope.query = angular.copy($scope.defautlQuery);
 
         Warehouse.getAll({
-            deleted: false,
+            enabled: true,
             sort: ['name'],
             warehouseIds: Auth.refreshManaged('warehouse')
         }).then(function(warehouses) {
@@ -42,7 +43,7 @@ angular.module('ecommApp')
         $scope.searchData = function(query, number) {
             InventoryBatchItem.get({
                 page: number ? number : 0,
-                size: query.pageSize,
+                size: query.size,
                 sort: query.sort,
                 productSKU: query.product.sku,
                 productName: query.product.name,
@@ -56,7 +57,7 @@ angular.module('ecommApp')
                 $.each(page.content, function() {
                     this.inventorySnapshot = angular.fromJson(this.inventorySnapshot);
                 });
-                query.totalPagesList = Utils.setTotalPagesList(page);
+                Utils.initList(page, query);
             });
         };
 

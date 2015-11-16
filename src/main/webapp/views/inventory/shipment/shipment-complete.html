@@ -60,10 +60,10 @@
                                     </tr>
                                     <tr>
                                         <th width="20%" class="text-right">快递公司 :</th>
-                                        <td wdith="80%" colspan="3">
-                                            <div class="input-group col-md-12">
+                                        <td width="30%">
+                                            <div class="input-group">
                                                 <ui-select ng-model="operationReviewCompleteShipment().shipment.courier" on-select="changeCourier($item)">
-                                                    <ui-select-match placeholder="快递公司(非必选)">{{$select.selected.name}}</ui-select-match>
+                                                    <ui-select-match placeholder="快递公司">{{$select.selected.name}}</ui-select-match>
                                                     <ui-select-choices repeat="courier in couriers | filter: $select.search">
                                                         <div ng-bind-html="courier.name | highlight: $select.search"></div>
                                                     </ui-select-choices>
@@ -75,10 +75,8 @@
                                                 </span>
                                             </div>
                                         </td>
-                                    </tr>
-                                    <tr>
                                         <th width="20%" class="text-right">快递单号 : </th>
-                                        <td wdith="80%" colspan="3">
+                                        <td width="30%">
                                             <input type="text" class="form-control input-sm" ng-model="operationReviewCompleteShipment().shipment.shipNumber" ng-keyup="updateOperationReviewCompleteShipmentData()" />
                                         </td>
                                     </tr>
@@ -97,13 +95,11 @@
                                     </tr>
                                     <tr>
                                         <th width="20%" class="text-right">Email : </th>
-                                        <td wdith="80%" colspan="3">
+                                        <td wdith="30%">
                                             <input type="text" class="form-control input-sm" ng-model="operationReviewCompleteShipment().shipment.receiveEmail" ng-keyup="updateOperationReviewCompleteShipmentData()" />
                                         </td>
-                                    </tr>
-                                    <tr>
                                         <th width="20%" class="text-right">地址 : </th>
-                                        <td wdith="80%" colspan="3">
+                                        <td wdith="30%">
                                             <input type="text" class="form-control input-sm" ng-model="operationReviewCompleteShipment().shipment.receiveAddress" ng-keyup="updateOperationReviewCompleteShipmentData()" />
                                         </td>
                                     </tr>
@@ -234,7 +230,7 @@
                         </thead>
                     </table>
                 </div>
-                <div style="overflow-y:scroll; overflow-x:hidden" ng-style="defaultHeight()">
+                <div>
                     <table class="table table-bordered table-condensed clear-marginbottom-table">
                         <tbody>
                             <tr ng-repeat="shipmentItem in operationReviewCompleteShipment().shipment.shipmentItems">

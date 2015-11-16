@@ -173,7 +173,7 @@ public class PurchaseOrder implements Serializable {
 	private String queryCreateTimeEnd;
 
 	/*
-	 * Create Purchase Order Item Returned Params;
+	 * 创建采购单返回参数;
 	 */
 
 	@Transient
@@ -188,6 +188,11 @@ public class PurchaseOrder implements Serializable {
 
 	@Transient
 	private Boolean ignoreCheck = false;
+	
+	
+	/* 临时变量 */
+	@Transient
+	private List<SupplierProduct> supplierProducts;
 	
 
 	//
@@ -460,14 +465,6 @@ public class PurchaseOrder implements Serializable {
 		this.queryCreateTimeEnd = queryCreateTimeEnd;
 	}
 
-	public Boolean getIsSupplierProductCodeChanged() {
-		return isSupplierProductCodeChanged;
-	}
-
-	public void setIsSupplierProductCodeChanged(Boolean isSupplierProductCodeChanged) {
-		this.isSupplierProductCodeChanged = isSupplierProductCodeChanged;
-	}
-
 	public Map<String, Boolean> getCheckMap() {
 		return checkMap;
 	}
@@ -498,6 +495,22 @@ public class PurchaseOrder implements Serializable {
 
 	public void setPurchaseOrders(List<PurchaseOrder> purchaseOrders) {
 		this.purchaseOrders = purchaseOrders;
+	}
+
+	public List<SupplierProduct> getSupplierProducts() {
+		return supplierProducts;
+	}
+
+	public void setSupplierProducts(List<SupplierProduct> supplierProducts) {
+		this.supplierProducts = supplierProducts;
+	}
+
+	public Boolean getIsSupplierProductCodeChanged() {
+		return isSupplierProductCodeChanged;
+	}
+
+	public void setIsSupplierProductCodeChanged(Boolean isSupplierProductCodeChanged) {
+		this.isSupplierProductCodeChanged = isSupplierProductCodeChanged;
 	}
 	
 

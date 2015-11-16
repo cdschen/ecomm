@@ -104,6 +104,8 @@ angular.module('ecommApp')
                         toastr.warning('以下订单商品已经存在有出库单，可以从列表中移出后继续');
                     }
                 } else {
+                    $('body').css('overflow', 'auto');
+                    $('div[ps-open="confirmOutInventorySheetSlideChecked"]').css('overflow', 'hidden');
                     $state.go('outInventorySheet');
                 }
             });
