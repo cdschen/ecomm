@@ -230,8 +230,8 @@ public class Product implements Serializable {
 	@Transient
 	private Boolean existPosition = false;
 
-	@Transient
-	private List<InventoryProductDetailDTO> details = new ArrayList<>();
+//	@Transient
+//	private List<InventoryProductDetailDTO> details = new ArrayList<>();
 
 	// 某仓库中产品上的所有批次
 	@Transient
@@ -672,13 +672,13 @@ public class Product implements Serializable {
 		this.existPosition = existPosition;
 	}
 
-	public List<InventoryProductDetailDTO> getDetails() {
-		return details;
-	}
-
-	public void setDetails(List<InventoryProductDetailDTO> details) {
-		this.details = details;
-	}
+//	public List<InventoryProductDetailDTO> getDetails() {
+//		return details;
+//	}
+//
+//	public void setDetails(List<InventoryProductDetailDTO> details) {
+//		this.details = details;
+//	}
 
 	public List<InventoryBatch> getBatches() {
 		return batches;

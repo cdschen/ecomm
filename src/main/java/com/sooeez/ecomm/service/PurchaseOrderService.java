@@ -91,7 +91,7 @@ public class PurchaseOrderService {
 						/* 2.1.1 传入的［采购单价］与［默认采购单价］或［供应商编号］与数据库存储的［供应商编号］不一致，则更新［采购单价］或［供应商编号］到数据库 */
 						if
 						(
-							( item.getEstimatePurchaseUnitPrice() != null && item.getEstimatePurchaseUnitPrice().compareTo( supplierProduct.getDefaultPurchasePrice() ) != 0 ) ||
+							( item.getEstimatePurchaseUnitPrice() != null && supplierProduct.getDefaultPurchasePrice() != null && item.getEstimatePurchaseUnitPrice().compareTo( supplierProduct.getDefaultPurchasePrice() ) != 0 ) ||
 							( ! item.getSupplierProduct().getSupplierProductCode().trim().equals( supplierProduct.getSupplierProductCode() ) )
 						)
 						{
