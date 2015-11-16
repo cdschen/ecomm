@@ -16,7 +16,7 @@ angular.module('ecommApp')
             format: 'yyyy-mm-dd',
             clearBtn: true,
             language: 'zh-CN',
-            orientation: 'top left',
+            orientation: 'bottom left',
             todayHighlight: true,
             autoclose: true
         });
@@ -65,6 +65,24 @@ angular.module('ecommApp')
                 console.log('page:');
                 console.log(page);
                 $scope.page = page;
+                $.each(page.content, function(){
+                    var receive = this;
+                    var batches = this.batches;
+                    receive.enterableQty = 0;
+                    receive.enteredQty = 0;
+                    $.each(receive.items, function(){
+                        receive.enterableQty += this.receiveQty;
+                    });
+                    $.each(batches, function(){
+                        var batch = this;
+                        $.each(batch.items, function(){
+                            console.log(this.changedQuantity);
+                            if (this.changedQuantity) {
+                                receive.enteredQty += this.changedQuantity;
+                            }
+                        });
+                    });
+                }); 
                 $scope.totalPagesList = Utils.setTotalPagesList(page);
             });
         });
