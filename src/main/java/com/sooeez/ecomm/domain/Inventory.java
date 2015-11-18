@@ -40,7 +40,7 @@ public class Inventory implements Serializable {
 	private Long warehousePositionId;
 
 	// 入库, 批次ID
-	@Column(name = "inventory_batch_id", nullable = false)
+	@Column(name = "inventory_batch_id", nullable = false,insertable = false, updatable = false)
 	private Long inventoryBatchId;
 
 	@Column(name = "quantity", nullable = false)
@@ -61,12 +61,23 @@ public class Inventory implements Serializable {
 	@OneToOne
 	@JoinColumn(name = "warehouse_position_id")
 	private WarehousePosition position;
+	
+	@OneToOne
+	@JoinColumn(name = "inventory_batch_id")
+	private InventoryBatch batch;
+
+	/*
+	 * @Transient Properties
+	 */
 
 	@Transient
 	private List<Long> warehouseIds;
 
+	@Transient
+	private List<Long> productIds;
+
 	/*
-	 * @Transient Properties
+	 * Constructor
 	 */
 
 	public Inventory() {
@@ -154,6 +165,22 @@ public class Inventory implements Serializable {
 
 	public void setWarehouseIds(List<Long> warehouseIds) {
 		this.warehouseIds = warehouseIds;
+	}
+
+	public List<Long> getProductIds() {
+		return productIds;
+	}
+
+	public void setProductIds(List<Long> productIds) {
+		this.productIds = productIds;
+	}
+
+	public InventoryBatch getBatch() {
+		return batch;
+	}
+
+	public void setBatch(InventoryBatch batch) {
+		this.batch = batch;
 	}
 
 }

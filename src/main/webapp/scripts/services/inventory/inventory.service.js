@@ -2,7 +2,6 @@ angular.module('ecommApp')
 
 .factory('Inventory', ['$resource', '$http', function($resource, $http) {
 
-    var $ = angular.element;
     var inventory = $resource('/api/inventories/:id');
 
     inventory.getAll = function(params) {
@@ -39,7 +38,6 @@ angular.module('ecommApp')
     function printProducts(products) {
         console.log('==============================');
         $.each(products, function() {
-
             var product = this;
             var str = 'Product: (' + product.name + ', ' + product.total + ')';
             console.log(str);
@@ -67,59 +65,61 @@ angular.module('ecommApp')
                 });
             }
             console.log(str);
-
         });
         console.log('==============================');
     }
 
     inventory.refresh = function(inventories) {
+        console.log('inventory.refresh():');
+        console.log(inventories);
         var products = [];
         $.each(inventories, function() {
             var inventory = this,
                 existProduct = false;
             $.each(products, function() {
                 var product = this;
-                if (product.sku === inventory.product.sku) {
-                    if (inventory.position) {
-                        var existPosition = false;
-                        $.each(product.positions, function() {
-                            var position = this;
-                            if (position.id === inventory.position.id) {
-                                var existPositionBatch = false;
-                                $.each(position.batches, function() {
-                                    var batch = this;
-                                    if (batch.id === inventory.inventoryBatchId) {
-                                        batch.total += inventory.quantity;
-                                        existPositionBatch = true;
-                                        return false;
-                                    }
-                                });
-                                if (!existPositionBatch) {
-                                    position.batches.push({
-                                        id: inventory.inventoryBatchId,
-                                        total: inventory.quantity
-                                    });
+                if (product.id === inventory.product.id) {
+                    product.existPosition = true;
+                    var existPosition = false;
+                    $.each(product.positions, function() {
+                        var position = this;
+                        if (position.id === inventory.position.id) {
+                            existPosition = true;
+                            var existPositionBatch = false;
+                            $.each(position.batches, function() {
+                                var batch = this;
+                                if (batch.id === inventory.inventoryBatchId) {
+                                    existPositionBatch = true;
+                                    batch.total += inventory.quantity;
+                                    return false;
                                 }
-                                position.total += inventory.quantity;
-                                existPosition = true;
-                                return false;
+                            });
+                            if (!existPositionBatch) {
+                                position.batches.push({
+                                    id: inventory.inventoryBatchId,
+                                    total: inventory.quantity
+                                });
                             }
-                        });
-                        if (!existPosition) {
-                            inventory.position.total = inventory.quantity;
-                            inventory.position.batches = [{
-                                id: inventory.inventoryBatchId,
-                                total: inventory.quantity
-                            }];
-                            product.positions.push(inventory.position);
+                            position.total += inventory.quantity;
+                            return false;
                         }
-                        product.existPosition = true;
+                    });
+                    if (!existPosition) {
+                        inventory.position.total = inventory.quantity;
+                        inventory.position.batches = [{
+                            id: inventory.inventoryBatchId,
+                            total: inventory.quantity
+                        }];
+                        product.positions.push(inventory.position);
                     }
+                    
                     var detail = {
                         position: inventory.position,
                         quantity: inventory.quantity,
                         expireDate: inventory.expireDate,
-                        batchId: inventory.inventoryBatchId
+                        batchId: inventory.inventoryBatchId,
+                        purchaseOrderId: inventory.batch.purchaseOrderId,
+                        receiveId: inventory.batch.receiveId
                     };
                     product.total += inventory.quantity;
                     var existBatch = false;
@@ -143,21 +143,20 @@ angular.module('ecommApp')
                 }
             });
             if (!existProduct) {
-                inventory.product.positions = [];
-                if (inventory.position) {
-                    inventory.position.total = inventory.quantity;
-                    inventory.position.batches = [{
-                        id: inventory.inventoryBatchId,
-                        total: inventory.quantity
-                    }];
-                    inventory.product.positions.push(inventory.position);
-                    inventory.product.existPosition = true;
-                }
+                inventory.position.total = inventory.quantity;
+                inventory.position.batches = [{
+                    id: inventory.inventoryBatchId,
+                    total: inventory.quantity
+                }];
+                inventory.product.positions.push(inventory.position);
+                inventory.product.existPosition = true;
                 inventory.product.details = [{
                     position: inventory.position,
                     quantity: inventory.quantity,
                     expireDate: inventory.expireDate,
-                    batchId: inventory.inventoryBatchId
+                    batchId: inventory.inventoryBatchId,
+                    purchaseOrderId: inventory.batch.purchaseOrderId,
+                    receiveId: inventory.batch.receiveId
                 }];
                 inventory.product.total = inventory.quantity;
                 inventory.product.batches = [{

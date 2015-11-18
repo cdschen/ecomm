@@ -9,8 +9,8 @@
             <h3 class="panel-title">收货单入库</h3>
         </div>
         <div class="panel-body">
-            <p class="text-info">右边为入库单列表， 左边为需要入库的商品清单， 选择左边列表的商品，添加到右边列表</p>
-            <p class="text-info">默认添加按钮会忽略输入的数量，一次性把左边选中的商品，全数添加到右边的列表</p>
+            <p class="text-info">右边为入库单列表， 下边为需要入库的商品清单， 选择左边列表的商品，添加到下边列表</p>
+            <p class="text-info">默认添加按钮会忽略输入的数量，一次性把左边选中的商品，全数添加到下边的列表</p>
         </div>
         <hr style="margin: 0">
         <div class="panel-body">
@@ -33,6 +33,7 @@
                                 </td>
                                 <td>
                                     {{item.supplierProduct.product == null ? item.supplierProduct.supplierProductName : item.supplierProduct.product.name}}
+                                    <p>({{item.supplierProduct.product == null ? item.supplierProduct.supplierProductCode : item.supplierProduct.product.sku}})</p>
                                     <p ng-if="item.supplierProduct.product == null" class="text-warning">（没有绑定系统商品，不能入库）</p>
                                 </td>
                                 <td>
@@ -106,6 +107,7 @@
                 <tr ng-repeat="item in items | orderBy: 'product.name'">
                     <td>
                         {{item.product.name}}
+                        <p>{{item.product.sku}}</p>
                     </td>
                     <td>
                         <!--  {{item.warehouse.name}} -->
