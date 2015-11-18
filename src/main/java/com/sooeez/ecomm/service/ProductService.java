@@ -294,7 +294,7 @@ public class ProductService {
 									  "WHERE shop_id = ?1 " +
 								  ")" +
 							  ")" +
-						  ") AND deleted = false";
+						  ") AND enabled = true";
 		Query queryCount = em.createNativeQuery(sqlCount);
 		queryCount.setParameter(1, shop.getId());
 		BigInteger total_number = (BigInteger) queryCount.getSingleResult();
@@ -311,7 +311,7 @@ public class ProductService {
 								 "WHERE shop_id = ?1 " +
 							 ")" +
 						 ")" +
-					 ") AND deleted = false " +
+					 ") AND enabled = true " +
 					 "LIMIT ?2, ?3";
 		Query query =  em.createNativeQuery( sql , Product.class);
 		query.setParameter(1, shop.getId());
@@ -359,7 +359,7 @@ public class ProductService {
 							 ") " +
 						 ") " +
 					 ") " +
-					 "AND deleted = false " +
+					 "AND enabled = true " +
 					 "LIMIT 1";
 		Query query =  em.createNativeQuery( sql , Product.class);
 		query.setParameter(1, shop.getId());

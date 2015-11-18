@@ -92,7 +92,6 @@ angular.module('ecommApp')
                             console.log('page:');
                             console.log(page);
                             $.each(page.content, function() {
-                                Shop.initShopDefaultTunnel(this.shop);
                                 orderService.checkItemProductShopTunnel(this);
                             });
                             $scope.$parent.page = page;

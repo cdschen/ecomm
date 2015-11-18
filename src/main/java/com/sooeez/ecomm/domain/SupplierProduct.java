@@ -49,6 +49,10 @@ public class SupplierProduct implements Serializable {
 	@Column(name = "supplier_product_code")
 	private String  supplierProductCode;
 
+	//	#条码
+	@Column(name = "supplier_product_barcode")
+	private String  supplierProductBarcode;
+
 	//	#供应商产品名称
 	@Column(name = "supplier_product_name")
 	private String  supplierProductName;
@@ -171,6 +175,14 @@ public class SupplierProduct implements Serializable {
 
 	public void setSupplierProductCode(String supplierProductCode) {
 		this.supplierProductCode = supplierProductCode;
+	}
+
+	public String getSupplierProductBarcode() {
+		return supplierProductBarcode;
+	}
+
+	public void setSupplierProductBarcode(String supplierProductBarcode) {
+		this.supplierProductBarcode = supplierProductBarcode;
 	}
 
 	public BigDecimal getDefaultPurchasePrice() {

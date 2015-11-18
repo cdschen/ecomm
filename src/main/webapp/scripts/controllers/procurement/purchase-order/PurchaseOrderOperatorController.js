@@ -37,14 +37,17 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
     function initField(purchaseOrder)
     {
         /* Activate Date Picker */
-        $('input[ng-model="purchaseOrder.estimateReceiveDate"]').datepicker({
-            format: 'yyyy-mm-dd',
-            clearBtn: true,
-            language: 'zh-CN',
-            orientation: 'bottom left',
-            todayHighlight: true,
-            autoclose: true
-        }).datepicker('setDate', new Date(purchaseOrder.estimateReceiveDate));
+        if( purchaseOrder.estimateReceiveDate )
+        {
+            $('input[ng-model="purchaseOrder.estimateReceiveDate"]').datepicker({
+                format: 'yyyy-mm-dd',
+                clearBtn: true,
+                language: 'zh-CN',
+                orientation: 'bottom left',
+                todayHighlight: true,
+                autoclose: true
+            }).datepicker('setDate', new Date(purchaseOrder.estimateReceiveDate));
+        }
 
         if( purchaseOrder.bookingType )
         {
@@ -99,6 +102,16 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
             toastr.warning('请添加至少一个［采购商品］');
             isQualified = false;
         }
+        if( purchaseOrder.receiveEmail && ! echeck( purchaseOrder.receiveEmail ) )
+        {
+            toastr.warning('［收件人email］邮件格式不正确');
+            $('[ng-model="purchaseOrder.receiveEmail"]').css('border', '3px solid red');
+            isQualified = false;
+        }
+        else
+        {
+            $('[ng-model="purchaseOrder.receiveEmail"]').css('border', '1px solid #CCC');
+        }
 
         /* 如果验证全部通过 */
         if( isQualified )
@@ -133,6 +146,50 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
             });
         }
     };
+
+    function echeck(str)
+    {
+        var at='@';
+        var dot='.';
+        var lat=str.indexOf(at);
+        var lstr=str.length;
+        console.log(str.indexOf(at)===-1);
+        if (str.indexOf(at)===-1)
+        {
+            return false;
+        }
+
+        if (str.indexOf(at)===-1 || str.indexOf(at)===0 || str.indexOf(at)===lstr)
+        {
+            return false;
+        }
+
+        if (str.indexOf(dot)===-1 || str.indexOf(dot)===0 || str.indexOf(dot)===lstr)
+        {
+            return false;
+        }
+
+        if (str.indexOf(at,(lat+1))!==-1)
+        {
+            return false;
+        }
+
+        if (str.substring(lat-1,lat)===dot || str.substring(lat+1,lat+2)===dot)
+        {
+            return false;
+        }
+
+        if (str.indexOf(dot,(lat+2))===-1)
+        {
+            return false;
+        }
+
+        if (str.indexOf(' ')!==-1)
+        {
+            return false;
+        }
+        return true;
+    }
 
     $scope.action = 'create';
 

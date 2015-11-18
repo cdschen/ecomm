@@ -49,7 +49,7 @@
                     <th width="10%" style="padding: 2px">
                         <select class="form-control input-sm" ng-change="batchManipulation()" ng-model="batchManipulationValue">
                             <option selected="selected" value="batchManipulation">操作</option>
-                            <option value="generatePurchaseOrderDelivery">生成收货单</option>
+                            <!--<option value="generatePurchaseOrderDelivery">生成收货单</option>-->
                         </select>
                     </th>
                 </tr>
@@ -57,7 +57,7 @@
             <tbody>
                 <tr ng-repeat="purchaseOrder in page.content" ng-class="{active: purchaseOrders.active}">
                     <td>
-                        <input type="checkbox" ng-model="purchaseOrders.isSelected">
+                        <input type="checkbox" ng-model="purchaseOrder.isSelected">
                     </td>
                     <td>
                         {{purchaseOrder.shop.name}}

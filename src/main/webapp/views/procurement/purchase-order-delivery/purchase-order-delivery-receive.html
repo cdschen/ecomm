@@ -29,7 +29,7 @@
                             <label class="control-label col-md-3">名称 <span class="text-danger">*</span></label>
 
                             <div class="col-md-9">
-                                <input type="text" name="name" ng-model="purchaseOrderDeliveryItem.product.name"
+                                <input type="text" name="name" ng-model="purchaseOrderDeliveryItem.supplierProduct.supplierProductName"
                                        placeholder="(必填)" class="form-control"/>
                                 <span class="glyphicon glyphicon-ok form-control-feedback"
                                       ng-show="itemAddForm.name.$dirty && itemAddForm.name.$valid"></span>
@@ -37,32 +37,21 @@
                                       ng-show="itemAddForm.name.$dirty && itemAddForm.name.$invalid"></span>
                             </div>
                         </div>
-                        <div class="form-group has-feedback"
-                             ng-class="{'has-success':(itemAddForm.realPurchaseUnitPrice.$dirty && itemAddForm.realPurchaseUnitPrice.$valid), 'has-warning':(itemAddForm.realPurchaseUnitPrice.$dirty && itemAddForm.realPurchaseUnitPrice.$invalid) }">
-                            <label class="control-label col-md-3">价格 <span class="text-danger">*</span></label>
+                        <div class="form-group has-feedback">
+                            <label class="control-label col-md-3">价格</label>
 
                             <div class="col-md-9">
                                 <input type="number"
                                        ng-model="purchaseOrderDeliveryItem.realPurchaseUnitPrice" placeholder="(选填)"
-                                       class="form-control"/>
-                                <span class="glyphicon glyphicon-ok form-control-feedback"
-                                      ng-show="itemAddForm.realPurchaseUnitPrice.$dirty && itemAddForm.realPurchaseUnitPrice.$valid"></span>
-                                <span class="glyphicon glyphicon-warning-sign form-control-feedback"
-                                      ng-show="itemAddForm.realPurchaseUnitPrice.$dirty && itemAddForm.realPurchaseUnitPrice.$invalid"></span>
+                                       class="form-control" ng-blur="rebuildPriceNumeric( purchaseOrderDeliveryItem, 'realPurchaseUnitPrice' )"/>
                             </div>
                         </div>
-                        <div class="form-group has-feedback"
-                             ng-class="{'has-success':(itemAddForm.receiveQty.$dirty && itemAddForm.receiveQty.$valid), 'has-warning':(itemAddForm.receiveQty.$dirty && itemAddForm.receiveQty.$invalid) }">
+                        <div class="form-group has-feedback">
                             <label class="control-label col-md-3">数量 <span class="text-danger">*</span></label>
-
                             <div class="col-md-9">
                                 <input type="number" name="receiveQty"
                                        ng-model="purchaseOrderDeliveryItem.receiveQty" placeholder="(必填)"
-                                       class="form-control" required min="1" ng-maxlength="5"/>
-                                <span class="glyphicon glyphicon-ok form-control-feedback"
-                                      ng-show="itemAddForm.receiveQty.$dirty && itemAddForm.receiveQty.$valid"></span>
-                                <span class="glyphicon glyphicon-warning-sign form-control-feedback"
-                                      ng-show="itemAddForm.receiveQty.$dirty && itemAddForm.receiveQty.$invalid"></span>
+                                       class="form-control" ng-blur="rebuildQtyNumeric( purchaseOrderDeliveryItem, 'receiveQty' )"/>
                             </div>
                         </div>
                         <div class="form-group has-feedback">
@@ -98,45 +87,45 @@
                 <div class="col-md-9">
                     <table class="table table-condensed clear-marginbottom-table">
                         <thead>
-                        <tr>
-                            <th width="30%">商品</th>
-                            <th width="10">实际采购价格</th>
-                            <th width="10">数量</th>
-                            <th width="16%">保质期</th>
-                            <th width="20%">备注</th>
-                            <th width="14%">操作</th>
-                        </tr>
+                            <tr>
+                                <th width="30%">商品</th>
+                                <th width="10">实际采购价格</th>
+                                <th width="10">数量</th>
+                                <th width="16%">保质期</th>
+                                <th width="20%">备注</th>
+                                <th width="14%">操作</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="item in items | orderBy: ['supplierProduct.supplierProductName', 'supplierProduct.product.name']">
-                            <td>
-                                {{ item.supplierProduct.product ? item.supplierProduct.product.name : item.supplierProduct.supplierProductName }}
-                            </td>
-                            <td>
-                                <input type="number" ng-model="item.realPurchaseUnitPrice" placeholder="(选填)"
-                                       class="form-control input-sm"/>
-                            </td>
-                            <td>
-                                <input type="number" ng-model="item.receiveQty" placeholder="(必填)"
-                                       class="form-control input-sm" required min="1" ng-maxlength="5"/>
-                            </td>
-                            <td>
-                                <input type="text" ng-model="item.expireDate" placeholder="(选填，YYYY-MM-DD)"
-                                       class="form-control input-sm">
-                            </td>
-                            <td>
-                                <input type="text" ng-model="item.comment" placeholder="(选填)"
-                                       class="form-control input-sm">
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger btn-xs" ng-click="copyItem(item)">
-                                    <span class="glyphicon glyphicon-trash"></span> 克隆
-                                </button>
-                                <button type="button" class="btn btn-danger btn-xs" ng-click="showRemoveItemModal(item)">
-                                    <span class="glyphicon glyphicon-trash"></span> 删除
-                                </button>
-                            </td>
-                        </tr>
+                            <tr ng-repeat="item in items | orderBy: ['supplierProduct.supplierProductName', 'supplierProduct.product.name']">
+                                <td>
+                                    {{ item.supplierProduct.product ? item.supplierProduct.product.name : item.supplierProduct.supplierProductName }}
+                                </td>
+                                <td>
+                                    <input type="number" ng-model="item.realPurchaseUnitPrice" placeholder="(选填)"
+                                           class="form-control input-sm" ng-blur="rebuildPriceNumeric( item, 'realPurchaseUnitPrice' )" />
+                                </td>
+                                <td>
+                                    <input type="number" ng-model="item.receiveQty" placeholder="(必填)"
+                                           class="form-control input-sm" ng-blur="rebuildQtyNumeric( item, 'receiveQty' )"/>
+                                </td>
+                                <td>
+                                    <input type="text" ng-model="item.expireDate" placeholder="(选填，YYYY-MM-DD)"
+                                           class="form-control input-sm">
+                                </td>
+                                <td>
+                                    <input type="text" ng-model="item.comment" placeholder="(选填)"
+                                           class="form-control input-sm">
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-xs" ng-click="copyItem(item)">
+                                        <span class="glyphicon glyphicon-duplicate"></span> 克隆
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-xs" ng-click="showRemoveItemModal(item)">
+                                        <span class="glyphicon glyphicon-trash"></span> 删除
+                                    </button>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                     <hr style="">
