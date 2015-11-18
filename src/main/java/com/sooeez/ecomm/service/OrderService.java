@@ -427,10 +427,12 @@ public class OrderService {
 	public Inventory collectWarehouseIds(List<Order> orders) {
 		Inventory inventoryQuery = new Inventory();
 		List<Long> warehouseIds = new ArrayList<>();
+		inventoryQuery.setProductIds(new ArrayList<>());
 		// 先收集出，需要出库的item都来自那些仓库
 		for (Order order: orders) {
 			if (!order.getIgnoreCheck()) {
 				for (OrderItem item: order.getItems()) {
+					inventoryQuery.getProductIds().add(item.getProduct().getId().longValue());
 					boolean exist = false;
 					if (item.getAssignTunnel() != null) {
 						for (Long warehouseId: warehouseIds){
@@ -453,6 +455,10 @@ public class OrderService {
 			System.out.println(warehouseId);
 		});
 		inventoryQuery.setWarehouseIds(warehouseIds);
+		System.out.println("confirmDifferentWarehouse; productIds:");
+		inventoryQuery.getProductIds().forEach(productId -> {
+			System.out.println(productId);
+		});
 		return inventoryQuery;
 	}
 	

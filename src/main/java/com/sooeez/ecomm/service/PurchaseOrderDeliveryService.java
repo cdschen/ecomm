@@ -46,13 +46,59 @@ public class PurchaseOrderDeliveryService {
 	 * Tag
 	 */
 	
-	public PurchaseOrderDelivery savePurchaseOrderDelivery(PurchaseOrderDelivery purchaseOrderDelivery) {
-		/* If id equals to null then is add action */
+	public PurchaseOrderDelivery savePurchaseOrderDelivery(PurchaseOrderDelivery purchaseOrderDelivery)
+	{
+		/* 如果编号为空，则时插入操作
+		 */
 		if( purchaseOrderDelivery.getId() == null )
 		{
 			purchaseOrderDelivery.setReceiveTime( new Date() );
 			purchaseOrderDelivery.setStatus( 1 );	// 初始状态为：待入库
 		}
+		
+		/* 如果有收货详情，则累加采购单需要更新的收货数据，并更新采购单
+		 */
+		if( purchaseOrderDelivery.getItems() != null && purchaseOrderDelivery.getItems().size() > 0 )
+		{
+			/* 获取采购单
+			 */
+			PurchaseOrder purchaseOrder = this.purchaseOrderRepository.findOne( purchaseOrderDelivery.getPurchaseOrderId() );
+			purchaseOrder.setLastUpdate( new Date() );
+			
+			/* 初始化累加所用的［总收货数量］与［总收货金额］
+			 */
+			BigDecimal totalDeliveredAmount = purchaseOrder.getTotalDeliveredAmount() != null ? purchaseOrder.getTotalDeliveredAmount() : new BigDecimal( 0 );
+			Long totalDeliveredQty = purchaseOrder.getTotalDeliveredQty() != null ? purchaseOrder.getTotalDeliveredQty() : 0L;
+			
+			/* 将收货单详情［实际收货单价］和［收货数量］累加至［总收货数量］和［总收货金额］中
+			 */
+			for(PurchaseOrderDeliveryItem item : purchaseOrderDelivery.getItems() )
+			{
+				BigDecimal realPurchaseUnitPrice = item.getRealPurchaseUnitPrice() != null ? item.getRealPurchaseUnitPrice() : new BigDecimal( 0 );
+				Long receiveQty = item.getReceiveQty() != null ? item.getReceiveQty() : 0L;
+				
+				totalDeliveredAmount = totalDeliveredAmount.add( realPurchaseUnitPrice.multiply( new BigDecimal( receiveQty ) ) );
+				totalDeliveredQty += receiveQty;
+			}
+
+			purchaseOrder.setTotalDeliveredAmount( totalDeliveredAmount );
+			purchaseOrder.setTotalDeliveredQty( totalDeliveredQty );
+
+			if
+			(
+				/* 如果［采购总数量］与［收货总数量］完全匹配，则更新［采购单状态］为：［已收货］
+				 */
+				purchaseOrder.getTotalPurchasedQty() != null && purchaseOrder.getTotalDeliveredQty() != null &&
+				purchaseOrder.getTotalPurchasedQty().equals( purchaseOrder.getTotalDeliveredQty() )
+			)
+			{
+				/* 设置为状态为：已收货 */
+				purchaseOrder.setStatus( 2 );
+			}
+			
+			this.purchaseOrderRepository.save( purchaseOrder );
+		}
+		
 		return this.purchaseOrderDeliveryRepository.save(purchaseOrderDelivery);
 	}
 	

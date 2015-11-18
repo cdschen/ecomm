@@ -50,7 +50,7 @@
                 </div>
                 <label class="control-label col-md-2" ng-show="id">商品总件数</label>
                 <div class="col-md-3" ng-show="id">
-                    {{ order.qtyTotalItemOrdered }}
+                    <p class="form-control-static">{{ order.qtyTotalItemOrdered }}</p>
                 </div>
             </div>
             <!-- order.shipping_fee -->
@@ -61,7 +61,7 @@
                 </div>
                 <label class="control-label col-md-2" ng-show="id">已发货商品总件数</label>
                 <div class="col-md-3" ng-show="id">
-                    {{ order.qtyTotalItemShipped }}
+                    <p class="form-control-static">{{ order.qtyTotalItemShipped }}</p>
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -71,7 +71,7 @@
                 </div>
                 <label class="control-label col-md-2" ng-show="id">商品包含的税金</label>
                 <div class="col-md-3" ng-show="id">
-                    {{ order.tax | currency : '$' }}
+                    <p class="form-control-static">{{ order.tax | currency : '$' }}</p>
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -81,7 +81,7 @@
                 </div>
                 <label class="control-label col-md-2" ng-show="id">商品总金额</label>
                 <div class="col-md-3" ng-show="id">
-                    {{ order.subtotal | currency : '$' }}
+                    <p class="form-control-static">{{ order.subtotal | currency : '$' }}</p>
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -89,15 +89,19 @@
                 <div class="col-md-3">
                     <input class="form-control" type="text" ng-model="order.receiveAddress" placeholder="(必填)" required />
                 </div>
+                <label class="control-label col-md-2" ng-show="id">订单总金额</label>
+                <div class="col-md-3" ng-show="id">
+                    <p class="form-control-static">{{ order.grandTotal | currency : '$' }}</p>
+                </div>
             </div>
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">收件人email</label>
                 <div class="col-md-3">
                     <input class="form-control" type="text" ng-model="order.receiveEmail" placeholder="(选填)" />
                 </div>
-                <label class="control-label col-md-2" ng-show="id">订单总金额</label>
+                <label class="control-label col-md-2" ng-show="id">总共开出的发票金额</label>
                 <div class="col-md-3" ng-show="id">
-                    {{ order.grandTotal | currency : '$' }}
+                    <p class="form-control-static">{{ order.totalInvoiced | currency : '$' }}</p>
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -105,9 +109,9 @@
                 <div class="col-md-3">
                     <input class="form-control" type="text" ng-model="order.receiveCountry" placeholder="(选填)" />
                 </div>
-                <label class="control-label col-md-2" ng-show="id">总共开出的发票金额</label>
+                <label class="control-label col-md-2" ng-show="id">总共收到的付款金额</label>
                 <div class="col-md-3" ng-show="id">
-                    {{ order.totalInvoiced | currency : '$' }}
+                    <p class="form-control-static">{{ order.totalPaid | currency : '$' }}</p>
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -115,19 +119,15 @@
                 <div class="col-md-3">
                     <input class="form-control" type="text" ng-model="order.receiveProvince" placeholder="(选填)" />
                 </div>
-                <label class="control-label col-md-2" ng-show="id">总共收到的付款金额</label>
+                <label class="control-label col-md-2" ng-show="id">总共完成的退款金额</label>
                 <div class="col-md-3" ng-show="id">
-                    {{ order.totalPaid | currency : '$' }}
+                    <p class="form-control-static">{{ order.totalRefunded | currency : '$' }}</p>
                 </div>
             </div>
             <div class="form-group has-feedback">
                 <label class="control-label col-md-2">收件城市</label>
                 <div class="col-md-3">
                     <input class="form-control" type="text" ng-model="order.receiveCity" placeholder="(选填)" />
-                </div>
-                <label class="control-label col-md-2" ng-show="id">总共完成的退款金额</label>
-                <div class="col-md-3" ng-show="id">
-                    {{ order.totalRefunded | currency : '$' }}
                 </div>
             </div>
             <div class="form-group has-feedback">

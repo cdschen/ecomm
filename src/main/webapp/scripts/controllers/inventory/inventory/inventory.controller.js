@@ -47,6 +47,7 @@ angular.module('ecommApp')
                 sort: ['productId', 'inventoryBatchId']
             }).then(function(inventories) {
                 $scope.products = Inventory.refresh(inventories);
+                $rootScope.usingWarehouseId = $item.id;
             });
         };
 

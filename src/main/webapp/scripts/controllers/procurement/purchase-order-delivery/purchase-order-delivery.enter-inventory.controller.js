@@ -1,7 +1,7 @@
 angular.module('ecommApp')
 
-.controller('EnterInventoryOperatorController', ['$scope', '$rootScope', '$state', '$stateParams', 'toastr', 'Warehouse', 'purchaseOrderDeliveryService', 'InventoryBatch',
-    function($scope, $rootScope, $state, $stateParams, toastr, Warehouse, purchaseOrderDeliveryService, InventoryBatch) {
+.controller('EnterInventoryOperatorController', ['$scope', '$rootScope', '$state', '$stateParams', 'toastr', 'Warehouse', 'purchaseOrderDeliveryService', 'InventoryBatch', '$filter',
+    function($scope, $rootScope, $state, $stateParams, toastr, Warehouse, purchaseOrderDeliveryService, InventoryBatch, $filter) {
 
         $scope.defaultBatch = {
             operate: 1,
@@ -48,17 +48,40 @@ angular.module('ecommApp')
             purchaseOrderDeliveryService.get({
                 id: $stateParams.id
             }, {}, function(receive) {
-                console.log(receive)
+                console.log(receive);
                 $scope.receive = receive;
+                $.each(receive.batches, function() {
+                    var batch = this;
+                    $.each(batch.items, function() {
+                        console.log(this.changedQuantity);
+                        if (this.changedQuantity) {
+                            receive.enteredQty += this.changedQuantity;
+                        }
+                    });
+                });
                 $.each(receive.items, function() {
-                    this.addedQty = 0;
+                    var item = this;
+                    item.addedQty = 0;
+                    if (item.supplierProduct.product) {
+                        $.each(receive.batches, function() {
+                            var batch = this;
+                            $.each(batch.items, function() {
+                                if (this.product.id === item.supplierProduct.product.id) {
+                                    item.receiveQty -= this.changedQuantity;
+                                }
+                            });
+                        });
+                    }
+
                 });
             });
         }
 
         $scope.selectAll = function(receive, checkedAll) {
             $.each(receive.items, function() {
-                this.checked = checkedAll;
+                if (this.supplierProduct.product) {
+                    this.checked = checkedAll;
+                }
             });
         };
 
@@ -71,9 +94,11 @@ angular.module('ecommApp')
             }
 
             $.each($scope.receive.items, function() {
+                console.log(this.supplierProduct.supplierProductName + ':' + this.checked);
                 if (this.checked) {
                     if (this.receiveQty - this.addedQty > 0) {
-                        item.product = this.product;
+                        item.product = this.supplierProduct.product;
+                        item.expireDate = $filter('date')(this.expireDate, 'yyyy-MM-dd');
                         item.changedQuantity = this.receiveQty - this.addedQty;
                         $scope.items.push(angular.copy(item));
                         this.addedQty += this.receiveQty - this.addedQty;
@@ -97,9 +122,10 @@ angular.module('ecommApp')
             }
 
             $.each($scope.receive.items, function() {
+                console.log(this.supplierProduct.supplierProductName + ':' + this.checked);
                 if (this.checked) {
                     if (this.receiveQty - this.addedQty > 0) {
-                        item.product = this.product;
+                        item.product = this.supplierProduct.product;
                         if (this.receiveQty - this.addedQty - item.changedQuantity < 0) {
                             item.changedQuantity = this.receiveQty - this.addedQty;
                         }
@@ -117,14 +143,14 @@ angular.module('ecommApp')
         };
 
         $scope.removeItem = function(item) {
-            $.each($scope.items, function(index){
+            $.each($scope.items, function(index) {
                 if (this === item) {
                     $scope.items.splice(index, 1);
                     return false;
                 }
             });
             $.each($scope.receive.items, function() {
-                if (this.product.id === item.product.id) {
+                if (this.supplierProduct.product && this.supplierProduct.product.id === item.product.id) {
                     this.addedQty -= item.changedQuantity;
                 }
             });
@@ -135,6 +161,9 @@ angular.module('ecommApp')
             if ($scope.items.length > 0) {
                 $.each($scope.items, function() {
                     var item = this;
+                    if (!item.position) {
+                        item.position = item.warehouse.positions[0];
+                    }
                     var existItem = false;
                     $.each($scope.batches, function() {
                         var batch = this;

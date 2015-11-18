@@ -173,11 +173,13 @@ angular.module('ecommApp')
         $scope.batchManipulation = function()
         {
             var shipments = $scope.page.content;
+            var ids = [];
             shipmentService.selectedShipments.length = 0;
             $.each(shipments, function(){
                 var shipment = this;
                 if (shipment.isSelected) {
                     shipmentService.selectedShipments.push(angular.copy(shipment));
+                    ids.push( shipment.id );
                 }
             });
             if (shipmentService.selectedShipments.length > 0)
@@ -188,7 +190,8 @@ angular.module('ecommApp')
                 }
                 else if($scope.batchManipulationValue === 'shipmentExport')
                 {
-                    toastr.info('发货单导出！');
+                    window.location.href = '/api/shipment/export?ids=' + ids;
+                    toastr.info('批量导出发货单');
                 }
                 else if($scope.batchManipulationValue === 'shipmentPrint')
                 {

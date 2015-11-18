@@ -6,11 +6,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.sooeez.ecomm.domain.Order;
+import com.sooeez.ecomm.domain.OrderItem;
+import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Shipment;
 import com.sooeez.ecomm.domain.ShipmentItem;
 import com.sooeez.ecomm.domain.Shop;
@@ -41,6 +50,10 @@ public class ShipmentService {
 	@Autowired private ShipmentItemRepository shipmentItemRepository;
 	@Autowired private ObjectProcessRepository objectProcessRepository;
 	
+	// Service
+
+	@PersistenceContext private EntityManager em;
+	
 	/*
 	 * Shipment
 	 */
@@ -60,6 +73,76 @@ public class ShipmentService {
 	
 	public Shipment getShipment(Long id) {
 		return this.shipmentRepository.findOne(id);
+	}
+	
+	public void addShipmentToCell( Shipment shipment, Sheet sheet, CellStyle contentStyle, Integer rowIndex )
+	{
+    	/* 如果存在指定发货单 */
+    	if( shipment != null )
+    	{
+    		StringBuffer shippedProductsBuffer = new StringBuffer();
+    		
+    		List<ShipmentItem> shipmentItems = shipment.getShipmentItems();
+    		if( shipmentItems != null && shipmentItems.size() > 0 )
+    		{
+    			for( int i = 0; i < shipmentItems.size(); i++ )
+    			{
+    				if( ! shippedProductsBuffer.toString().equals("") )
+    				{
+    					shippedProductsBuffer.append(", ");
+    				}
+    				OrderItem orderItem = shipmentItems.get( i ).getOrderItem();
+    				if( orderItem != null && orderItem.getProduct() != null )
+    				{
+    					Product product = orderItem.getProduct();
+    					shippedProductsBuffer.append( product.getShortName() );
+    					shippedProductsBuffer.append( "*" );
+    					shippedProductsBuffer.append( orderItem.getQtyOrdered() );
+//    					shippedProductsBuffer.append( "\n" );
+    				}
+    			}
+    		}
+    		
+    		String[] contents =
+    		{
+    			shipment.getReceiveName(), shipment.getReceivePhone(), shipment.getReceivePhone(), shipment.getReceiveAddress(),
+    			shippedProductsBuffer.toString(),
+    			shipment.getReceivePost(), "", shipment.getShipNumber()
+    		};
+    		
+        	Row contentRow = sheet.createRow( rowIndex );
+        	for( int i = 0; i < contents.length; i++ )
+        	{
+            	Cell cell = contentRow.createCell( i );
+            	if( i == 0 || i == 3 || i == 4 )
+            	{
+                	cell.setCellStyle( contentStyle );
+            	}
+            	cell.setCellValue( contents[ i ] );
+        	}
+    	}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Shipment> getShipmentsByIds( Long[] ids )
+	{
+		List<Shipment> shipments = null;
+		StringBuffer shipmentIdsBuffer = new StringBuffer();
+		for( Long shipmentId : ids )
+		{
+			if( ! shipmentIdsBuffer.toString().equals("") )
+			{
+				shipmentIdsBuffer.append(", ");
+			}
+			shipmentIdsBuffer.append( shipmentId );
+		}
+
+		/* 1. 获得发货单集合 */
+		String sqlShipments = "SELECT * FROM t_shipment WHERE id IN( " + shipmentIdsBuffer.toString() + " )";
+		Query queryShipments = em.createNativeQuery( sqlShipments, Shipment.class );
+		shipments = queryShipments.getResultList();
+		
+		return shipments;
 	}
 	
 	public List<Shipment> getShipments() {

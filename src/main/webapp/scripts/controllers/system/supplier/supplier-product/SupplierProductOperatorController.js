@@ -70,6 +70,22 @@ var SupplierProductOperatorController = function($scope, $rootScope, $state, $st
         }
     };
 
+    /* 重新构建［价格］ */
+    $scope.rebuildPriceNumeric = function( product, field )
+    {
+        product[ field ] = Number( product[ field ] );
+        if( $.isNumeric( product[ field ] ) )
+        {
+            product[ field ] = product[ field ] > 0 ? product[ field ] : 0.00;
+
+            product[ field ] = Number( product[ field ] ).toFixed( 2 );
+        }
+        else
+        {
+            product[ field ] = 0.00;
+        }
+    };
+
     $scope.action = 'create';
 
     if ($stateParams.id && $stateParams.id !== '') {

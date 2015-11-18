@@ -53,9 +53,9 @@ var PurchaseOrderOperatorInformationController = function($scope, $state, $state
 
                     toastr.success('成功添加：［' + item.supplierProduct.supplierProductName + '］ 至［采购产品］列表中');
                 }
+                $scope.newSupplierProduct = angular.copy( $scope.defaultSupplierProduct );
             }
         }
-        $scope.newSupplierProduct = angular.copy( $scope.defaultSupplierProduct );
     };
 
     /*
@@ -134,13 +134,16 @@ var PurchaseOrderOperatorInformationController = function($scope, $state, $state
     /* 重新构建［采购价格］ */
     $scope.rebuildPurchasePriceNumeric = function( product, field )
     {
+        product[ field ] = Number( product[ field ] );
         if( $.isNumeric( product[ field ] ) )
         {
+            product[ field ] = product[ field ] > 0 ? product[ field ] : 0.00;
+
             product[ field ] = Number( product[ field ] ).toFixed( 2 );
         }
         else
         {
-            product[ field ] = 0;
+            product[ field ] = 0.00;
         }
     };
 

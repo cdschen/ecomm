@@ -125,18 +125,22 @@ angular.module('ecommApp')
         $scope.batchManipulation = function()
         {
             var purchaseOrders = $scope.page.content;
+            var ids = [];
             purchaseOrderService.selectedPurchaseOrders.length = 0;
-            $.each(purchaseOrders, function(){
+            $.each(purchaseOrders, function()
+            {
                 var purchaseOrder = this;
                 if (purchaseOrder.isSelected) {
                     purchaseOrderService.selectedPurchaseOrders.push(angular.copy( purchaseOrder ));
+                    ids.push( purchaseOrder.id );
                 }
             });
             if (purchaseOrderService.selectedPurchaseOrders.length > 0)
             {
                 if($scope.batchManipulationValue === 'purchaseOrderExport')
                 {
-                    toastr.info('采购单导出！');
+                    window.location.href = '/api/purchase-order/export?ids=' + ids;
+                    toastr.info('批量导出采购单');
                 }
                 else if($scope.batchManipulationValue === 'purchaseOrderPrint')
                 {

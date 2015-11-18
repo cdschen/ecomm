@@ -104,7 +104,7 @@ angular.module('ecommApp')
         {
             for( var purchaseOrder in $scope.page.content )
             {
-                $scope.page.content[purchaseOrder].isSelected = $scope.isCheckedAll;
+                $scope.page.content[ purchaseOrder ].isSelected = $scope.isCheckedAll;
             }
         };
 

@@ -59,7 +59,7 @@
                 </div>
                 <label class="control-label col-md-2">默认采购价格</label>
                 <div class="col-md-3">
-                    <input type="text" class="form-control" placeholder="(选填)" ng-model="supplierProduct.defaultPurchasePrice" />
+                    <input type="number" class="form-control" placeholder="(选填)" ng-model="supplierProduct.defaultPurchasePrice" ng-blur="rebuildPriceNumeric( supplierProduct, 'defaultPurchasePrice' )" min="0" />
                 </div>
             </div>
 
@@ -67,6 +67,13 @@
                 <label class="control-label col-md-2">供应商产品编号*</label>
                 <div class="col-md-3">
                     <input type="text" class="form-control" placeholder="(必填)" ng-model="supplierProduct.supplierProductCode" required />
+                </div>
+            </div>
+
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">供应商产品条码</label>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" placeholder="(必填)" ng-model="supplierProduct.supplierProductBarcode" />
                 </div>
             </div>
 
