@@ -43,6 +43,9 @@ public class WarehousePosition implements Serializable {
 	@Transient
 	private List<InventoryBatch> batches = new ArrayList<>();
 
+	@Transient
+	private Long stock;
+
 	/*
 	 * Constructor
 	 */
@@ -84,6 +87,14 @@ public class WarehousePosition implements Serializable {
 
 	public void setBatches(List<InventoryBatch> batches) {
 		this.batches = batches;
+	}
+
+	public Long getStock() {
+		return stock;
+	}
+
+	public void setStock(Long stock) {
+		this.stock = stock;
 	}
 
 }

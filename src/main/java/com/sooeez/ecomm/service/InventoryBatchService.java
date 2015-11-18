@@ -26,7 +26,6 @@ import com.sooeez.ecomm.domain.PurchaseOrderDelivery;
 import com.sooeez.ecomm.domain.PurchaseOrderDeliveryItem;
 import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.domain.WarehousePosition;
-import com.sooeez.ecomm.dto.InventoryProductDetailDTO;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.repository.InventoryBatchRepository;
 import com.sooeez.ecomm.repository.InventoryRepository;
@@ -225,6 +224,7 @@ public class InventoryBatchService {
 				inventory.setWarehouseId(item.getWarehouse().getId());
 				inventory.setPosition(item.getPosition());
 				inventory.setInventoryBatchId(batch.getId());
+				inventory.setBatch(batch);
 				inventory.setQuantity(item.getChangedQuantity());
 				inventory.setExpireDate(item.getExpireDate());
 
@@ -446,7 +446,7 @@ public class InventoryBatchService {
 			boolean existInventory = false;
 			for (Product product: products) {
 				if (product.getId().longValue() == inventory.getProduct().getId().longValue()) {
-					System.out.println("已在产品数组中匹配到相同的产品");
+					//System.out.println("已在产品数组中匹配到相同的产品");
 					existInventory = true;
 					boolean existPosition = false;
 					for (WarehousePosition position: product.getPositions()) {
@@ -568,8 +568,8 @@ public class InventoryBatchService {
 					|| (review.getCheckMap().get("orderExistOutInventorySheetError") && review.getIgnoredMap().get("orderExistOutInventorySheet")))) {
 			// 先收集出，需要出库的item都来自那些仓库
 			// 在这里正确情况，是只有一个出库的仓库id
-			Inventory inventoryQuery = new Inventory();
-			inventoryQuery = orderService.collectWarehouseIds(review.getOrders());
+			Inventory inventoryQuery = orderService.collectWarehouseIds(review.getOrders());
+			
 			// 查询库存
 			List<Inventory> inventories = inventoryService.getInventories(inventoryQuery, new Sort(Sort.Direction.ASC, "productId", "inventoryBatchId"));
 			List<Product> products = refreshInventoryWhenOneWarehouse(inventories);
@@ -584,20 +584,18 @@ public class InventoryBatchService {
 			inventoryBatch.setOperate(2); // 出库
 			inventoryBatch.getUser().setId(userId);
 			inventoryBatch.setExecuteOperator(null);
-			inventoryBatch.setOperateTime(new Date()); // 操作的时间
+			inventoryBatch.setOperateTime(new Date(System.currentTimeMillis())); // 操作的时间
 			inventoryBatch.setType(1); // 待完成
 			
 			// 开始计算出库细目
 			List<Order> orders = review.getOrders();
 			for (Order order: orders) {
 				if (!order.getIgnoreCheck()) {
-					
 					// 每张order在一个仓库下，都和一张出库单绑定
 					OrderBatch orderBatch = new OrderBatch();
 					orderBatch.setOrderId(order.getId());
 					orderBatch.setWarehouseId(warehouseId);
 					inventoryBatch.getOrderBatches().add(orderBatch);
-					
 					for (OrderItem item: order.getItems()) {
 						// 循环库存中的商品
 						if (products != null) {
@@ -608,18 +606,16 @@ public class InventoryBatchService {
 									boolean done = false;
 									// 循环这个库存商品下的批次
 									for (InventoryBatch outBatch: product.getBatches()) {
-										
 										// 循环这个库存商品下的库位
 										boolean exitPositionEach = false;
 										for (WarehousePosition position: product.getPositions()) {
 											// 循环每一个库位下的批次
 											for (InventoryBatch batch: position.getBatches()) {
-												
-												if (batch.getId().longValue() == outBatch.getId().longValue()) {
-													if (batch.getTotal().longValue() - temp < 0) {
-														
-														System.out.println("batch item C");
-														
+												long batchTotal = batch.getTotal().longValue();
+												long batchId = batch.getId().longValue();
+												long outBatchId = outBatch.getId().longValue();
+												if (batchId == outBatchId && batchTotal > 0) {
+													if (batchTotal - temp < 0) {
 														InventoryBatchItem batchItem = new InventoryBatchItem();
 														batchItem.getProduct().setId(product.getId());
 														batchItem.getWarehouse().setId(warehouseId);
@@ -627,16 +623,13 @@ public class InventoryBatchService {
 														batchItem.getUser().setId(userId);
 														batchItem.setExecuteOperator(null);
 														batchItem.getOutBatch().setId(batch.getId());
-														batchItem.setChangedQuantity(-batch.getTotal().longValue());
+														batchItem.setChangedQuantity(-batchTotal);
 														inventoryBatch.getItems().add(batchItem);
-														
-														position.setTotal(position.getTotal().longValue() - batch.getTotal().longValue());
-														temp = temp - batch.getTotal().longValue();
+														long positionTotal = position.getTotal().longValue();
+														position.setTotal(positionTotal - batchTotal);
+														temp = temp - batchTotal;
 														batch.setTotal(0l);
 													} else {
-														
-														System.out.println("batch item D");
-														
 														InventoryBatchItem batchItem = new InventoryBatchItem();
 														batchItem.getProduct().setId(product.getId());
 														batchItem.getWarehouse().setId(warehouseId);
@@ -646,17 +639,29 @@ public class InventoryBatchService {
 														batchItem.getOutBatch().setId(batch.getId());
 														batchItem.setChangedQuantity(-temp);
 														inventoryBatch.getItems().add(batchItem);
-														
-														batch.setTotal(batch.getTotal().longValue() - temp);
-														position.setTotal(position.getTotal().longValue() - temp);
+														batch.setTotal(batchTotal - temp);
+														long positionTotal = position.getTotal().longValue();
+														position.setTotal(positionTotal - temp);
 														exitPositionEach = true;
 														done = true;
 													}
 													break;
+												} else {
+													
 												}
 											}
 											if (exitPositionEach) {
 												break;
+											}
+										}
+										boolean nohas = nohasPositionBatchTotal(product.getPositions());
+										if (nohas) {
+											for (InventoryBatchItem batchItem: inventoryBatch.getItems()) {
+												if (batchItem.getProduct().getId().longValue() == item.getProduct().getId().longValue()) {
+													//匹配就加上
+													batchItem.setChangedQuantity(batchItem.getChangedQuantity() - temp);
+													break;
+												}
 											}
 										}
 										if (done) {
@@ -677,6 +682,23 @@ public class InventoryBatchService {
 		}
 		
 		return review;
+	}
+	
+	/*
+	 * 判断一个商品所有库位的所有批次的存量都为0的时候
+	 */
+	
+	public boolean nohasPositionBatchTotal(List<WarehousePosition> positions){
+		boolean b = true;
+		for (WarehousePosition position: positions) {
+			for (InventoryBatch batch: position.getBatches()) {
+				if (batch.getTotal() > 0) {
+					b = false;
+					break;
+				}
+			}
+		}
+		return b;
 	}
 	
 	public void console(List<Product> products) {
@@ -707,5 +729,110 @@ public class InventoryBatchService {
 		}
 		System.out.println("");
 		System.out.println("==============================");
+	}
+	
+	
+	/*
+	 * 计算一个出库单下面的所有item,把他转变成一个商品集合
+	 */
+	
+	public List<Product> refreshBatchItems(InventoryBatch batch) {
+		List<Product> products = new ArrayList<>();
+		List<InventoryBatchItem> items = batch.getItems();
+		batch.setTotal(0L);
+		for (InventoryBatchItem item: items) {
+			boolean existProduct = false;
+			batch.setTotal(batch.getTotal().longValue() + item.getChangedQuantity().longValue());
+			
+			// 循环商品
+			for (Product product: products) {
+				if (product.getId().longValue() == item.getProduct().getId().longValue()) {
+					existProduct = true;
+					boolean existPosition = false;
+					
+					// 循环当前商品的库位
+					for (WarehousePosition position: product.getPositions()) {
+						if (position.getId().longValue() == item.getPosition().getId().longValue()) {
+							existPosition = true;
+							position.setTotal(position.getTotal().longValue() + item.getChangedQuantity().longValue());
+							break;
+						}
+					}
+					
+					// 如果某库位不在集合中
+					if (!existPosition) {
+						
+						// 创建新库位，复制item的position
+						WarehousePosition position = new WarehousePosition();
+						BeanUtils.copyProperties(item.getPosition(), position);
+						
+						// 设置当前库位的应出库数量
+						position.setTotal(item.getChangedQuantity().longValue());
+						
+						// 把库位加入到商品库位集合
+						product.getPositions().add(position);
+						
+					}
+					break;
+				}
+			} 
+			
+			// 如果某商品不在集合中
+			if (!existProduct) {
+				
+				// 创建新的商品，复制item的product
+				Product product = new Product();
+				BeanUtils.copyProperties(item.getProduct(), product);
+				product.setPositions(new ArrayList<>());
+				
+				// 创建新库位，复制item的position
+				WarehousePosition position = new WarehousePosition();
+				BeanUtils.copyProperties(item.getPosition(), position);
+				
+				// 设置当前库位的应出库数量
+				position.setTotal(item.getChangedQuantity().longValue());
+				
+				// 把库位加入到商品库位集合
+				product.getPositions().add(position);
+				
+				// 把商品加入到商品集合
+				products.add(product);
+				
+			}
+			
+		}
+		
+		// 设置查询库存的条件
+		Inventory inventoryQuery = new Inventory();
+		inventoryQuery.setProductIds(new ArrayList<>());
+		inventoryQuery.setWarehouseId(batch.getWarehouse().getId().longValue());
+		
+		// 再次循环已经整理出来的商品集合
+		for (Product product: products) {
+			inventoryQuery.getProductIds().add(product.getId());
+		}
+		
+		// 查询出指定仓库和指定商品的库存
+		List<Inventory> inventories = inventoryService.getInventories(inventoryQuery, new Sort(Sort.Direction.ASC, "productId", "inventoryBatchId"));
+		List<Product> inventoryProducts = refreshInventoryWhenOneWarehouse(inventories);
+		
+		// 计算出库商品出库后应剩余库存
+		for (Product product: products) {
+			for (Product inventoryProduct: inventoryProducts) {
+				if (inventoryProduct.getId().longValue() == product.getId().longValue()) {
+					for (WarehousePosition position: product.getPositions()) {
+						for (WarehousePosition inventoryPosition: inventoryProduct.getPositions()) {
+							if (inventoryPosition.getId().longValue() == position.getId().longValue()) {
+								// 如果匹配到，这个库位出库后应剩余库存 = 当前库位库存 + 一个负数这个库位上应该出库的数量
+								System.out.println("正常库存：" + inventoryPosition.getTotal().longValue() + ", 应出数量：" + position.getTotal().longValue());
+								position.setStock(inventoryPosition.getTotal().longValue() + position.getTotal().longValue());
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return products;
 	}
 }

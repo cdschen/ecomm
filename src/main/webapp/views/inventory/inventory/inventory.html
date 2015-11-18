@@ -36,14 +36,14 @@
                         </td>
                         <td width="46%"></td>
                         <td width="14%">
-                            <div class="form-group pull-right">
+                            <!-- <div class="form-group pull-right">
                                 <button type="reset" class="btn btn-default" ng-click="reset()">
                                     <span class="glyphicon glyphicon-refresh"></span> 重置
                                 </button>
                                 <button type="submit" class="btn btn-default">
                                     <span class="glyphicon glyphicon-search"></span> 搜索
                                 </button>
-                            </div>
+                            </div> -->
                         </td>
                     </tr>
                 </thead>
@@ -58,11 +58,13 @@
                     <tr>
                         <th width="12%">SKU</th>
                         <th width="18%">商品名称</th>
-                        <th width="12%">库位</th>
-                        <th width="12%">数量</th>
-                        <th width="12%">有效期</th>
-                        <th width="12%">批次</th>
-                        <th width="22%">库存快照</th>
+                        <th width="10%">库位</th>
+                        <th width="10%">数量</th>
+                        <th width="10%">有效期</th>
+                        <th width="10%">批次</th>
+                        <th width="10%">采购单</th>
+                        <th width="10%">收货单</th>
+                        <th width="20%">库存快照</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -73,21 +75,31 @@
                         <td>
                             {{product.name}} {{product.id}}
                         </td>
-                        <td colspan="4">
-                            <table class="table table-bordered table-condensed clear-marginbottom-table">
-                                <tbody>
+                        <td colspan="6">
+                            <table class="table table-condensed clear-marginbottom-table">
+                                <thead>
                                     <tr ng-repeat="detail in product.details">
-                                        <td width="25%">
+                                        <td width="16.6%">
                                             {{detail.position.name}}
                                         </td>
-                                        <td width="25%">
+                                        <td width="16.6%">
                                             {{detail.quantity}}
                                         </td>
-                                        <td width="25%">
+                                        <td width="16.6%">
                                             {{detail.expireDate | date:'yyyy-MM-dd'}}
                                         </td>
-                                        <td width="25%">
+                                        <td width="16.6%">
                                             {{detail.batchId}}
+                                        </td>
+                                        <td width="16.6%">
+                                            <a ui-sref="purchaseOrder.operator({id:detail.purchaseOrderId})" class="btn btn-info btn-xs">
+                                                <span class="glyphicon glyphicon-search"></span> 采购单
+                                            </a>
+                                        </td>
+                                        <td width="16.6%">
+                                            <a ui-sref="purchaseOrderDelivery.receive({id:detail.receiveId})" class="btn btn-info btn-xs">
+                                                <span class="glyphicon glyphicon-search"></span> 收货单
+                                            </a>
                                         </td>
                                     </tr>
                                     <tr>
@@ -97,8 +109,10 @@
                                         </td>
                                         <td></td>
                                         <td></td>
+                                        <td></td>
+                                        <td></td>
                                     </tr>
-                                </tbody>
+                                </thead>
                             </table>
                         </td>
                         <td>

@@ -67,7 +67,9 @@ public class InventoryService {
 			if (inventory.getWarehouseIds() != null && inventory.getWarehouseIds().size() > 0) {
 				predicates.add(cb.in(root.get("warehouseId")).value(inventory.getWarehouseIds()));
 			}
-			
+			if (inventory.getProductIds() != null && inventory.getProductIds().size() > 0) {
+				predicates.add(cb.in(root.get("productId")).value(inventory.getProductIds()));
+			} 
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
 	}
