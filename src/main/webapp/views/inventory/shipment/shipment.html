@@ -165,7 +165,7 @@
                     </td>
                     <td style="text-align: center;">
                         <a class="btn btn-xs btn-success" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5" ng-click="showShipmentCompleteSlide( shipment )">完成</a>
-                        <a ng-href="/api/inventory-batches/download/100" class="btn btn-xs btn-info">导出</a>
+                        <a ng-href="/api/shipment/export?id={{ shipment.id }}" class="btn btn-xs btn-info">导出</a>
                         <a class="btn btn-xs btn-info">打印</a>
                         <a class="btn btn-xs btn-danger" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5" ng-click="showObsoleteShipmentModal( shipment )">作废</a>
                     </td>

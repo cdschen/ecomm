@@ -95,8 +95,10 @@ public class SupplierProductService {
 							
 						/* 模糊匹配供应商产品： */
 						/* supplierProductCode */
+						/* supplierProductBarcode */
 						/* supplierProductName */
 						cb.like( root.get("supplierProductCode"), "%" + supplierProduct.getQueryPurchaseOrderItemFuzzySearchParam() + "%" ),
+						cb.like( root.get("supplierProductBarcode"), "%" + supplierProduct.getQueryPurchaseOrderItemFuzzySearchParam() + "%" ),
 						cb.like( root.get("supplierProductName"), "%" + supplierProduct.getQueryPurchaseOrderItemFuzzySearchParam() + "%" )
 					)
 				);

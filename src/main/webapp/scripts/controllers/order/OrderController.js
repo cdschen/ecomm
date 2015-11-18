@@ -33,7 +33,7 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
     $scope.defaultQuery = {
         pageSize: 20,
         totalPagesList: [],
-        sort: ['id'],
+        sort: ['internalCreateTime,desc'],
         order: {},
         shop: {},
         status: []

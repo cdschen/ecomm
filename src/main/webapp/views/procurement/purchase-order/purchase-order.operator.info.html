@@ -9,8 +9,8 @@
                 <div class="col-md-12">
                     <form class="form-horizontal">
                         <div class="form-group">
-                            <div class="col-md-3">
-                                <input type="text" ng-model="$root.queryPurchaseOrderItemFuzzySearchParam" ng-keyup="delayFuzzySearch()" class="form-control" placeholder="过滤条件：产品sku/barcode/名称，供应商编号/名称" />
+                            <div class="col-md-4">
+                                <input type="text" ng-model="$root.queryPurchaseOrderItemFuzzySearchParam" ng-keyup="delayFuzzySearch()" class="form-control" placeholder="过滤条件：产品sku/条码/名称，供应商产品编号/条码/名称" />
                             </div>
                             <label class="control-label col-md-1">供应商*</label>
                             <div class="col-md-3">
@@ -38,11 +38,11 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th width="20%">商品sku</th>
+                                        <th width="20%">商品sku/条码</th>
                                         <th width="25%">商品名称</th>
                                         <th width="15%">供应商编号</th>
                                         <th width="15%">采购数量</th>
-                                        <th width="15%">默认单价</th>
+                                        <th width="15%">默认单价<br/>(不含GST)</th>
                                         <th width="10%">操作</th>
                                     </tr>
                                 </thead>
@@ -52,7 +52,8 @@
                                     <tbody>
                                         <tr ng-repeat="supplierProduct in supplierProducts" class="pagination-ul" >
                                             <td width="20%">
-                                                {{ supplierProduct.product ? supplierProduct.product.sku : '' }}
+                                                sku:{{ supplierProduct.product ? supplierProduct.product.sku : '' }}<br/>
+                                                条码:{{ supplierProduct.product ? supplierProduct.product.barcode : supplierProduct.supplierProductBarcode }}
                                             </td>
                                             <td width="25%">
                                                 {{ supplierProduct.product ? supplierProduct.product.name : supplierProduct.supplierProductName }}
@@ -91,11 +92,11 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th width="20%">商品sku</th>
+                                        <th width="20%">商品sku/条码</th>
                                         <th width="25%">商品名称</th>
                                         <th width="15%">供应商编号</th>
                                         <th width="15%">采购数量</th>
-                                        <th width="15%">采购单价</th>
+                                        <th width="15%">采购单价<br/>(不含GST)</th>
                                         <th width="10%">操作</th>
                                     </tr>
                                 </thead>
@@ -105,7 +106,8 @@
                                     <tbody>
                                         <tr ng-repeat="item in purchaseOrder.items" class="pagination-ul" >
                                             <td width="20%">
-                                                {{ item.supplierProduct && item.supplierProduct.product ? item.supplierProduct.product.sku : '' }}
+                                                sku:{{ item.supplierProduct && item.supplierProduct.product ? item.supplierProduct.product.sku : '' }}<br/>
+                                                条码:{{ item.supplierProduct && item.supplierProduct.product ? item.supplierProduct.product.barcode : item.supplierProduct.supplierProductBarcode }}
                                             </td>
                                             <td width="25%">
                                                 {{ item.supplierProduct && item.supplierProduct.product ? item.supplierProduct.product.name : item.supplierProduct.supplierProductName }}
@@ -142,26 +144,31 @@
              -->
             <h4 class="text-success text-center">供应商新品</h4>
             <p class="text-center">（若<span class="text-success">［当前供应商产品］</span>列表里没有列出您想要的产品，则可以在这里手动加入采购单，手动加入［采购单详情］列表的产品在保存采购单时，系统会自动为您将该产品保存至供应商所对应的［供应商产品］中）</p>
-            <div class="form-group has-feedback">
+            <div class="form-group has-feedback" style="font-size: 12px;">
 
-                <label class="control-label col-md-2">供应商产品名称*</label>
-                <div class="col-md-2">
-                    <input class="form-control" type="text" ng-model="newSupplierProduct.supplierProductName" />
+                <label class="control-label col-md-1">供应商产品名称</label>
+                <div class="col-md-1">
+                    <input class="form-control" type="text" ng-model="newSupplierProduct.supplierProductName" placeholder="(必填)" />
                 </div>
 
-                <label class="control-label col-md-1">供应商编号*</label>
+                <label class="control-label col-md-1">供应商产品编号</label>
                 <div class="col-md-1">
-                    <input class="form-control" type="text" ng-model="newSupplierProduct.supplierProductCode" />
+                    <input class="form-control" type="text" ng-model="newSupplierProduct.supplierProductCode" placeholder="(必填)" />
                 </div>
 
-                <label class="control-label col-md-1">采购价格</label>
+                <label class="control-label col-md-1">供应商产品条码</label>
                 <div class="col-md-1">
-                    <input class="form-control" type="text" ng-model="newSupplierProduct.defaultPurchasePrice" ng-blur="rebuildPurchasePriceNumeric( newSupplierProduct, 'defaultPurchasePrice' )" />
+                    <input class="form-control" type="text" ng-model="newSupplierProduct.supplierProductBarcode" placeholder="(选填)" />
+                </div>
+
+                <label class="control-label col-md-1">采购价格<br/>(不含GST)</label>
+                <div class="col-md-1">
+                    <input class="form-control" type="text" ng-model="newSupplierProduct.defaultPurchasePrice" placeholder="(选填)" ng-blur="rebuildPurchasePriceNumeric( newSupplierProduct, 'defaultPurchasePrice' )" />
                 </div>
 
                 <label class="control-label col-md-1">采购数量</label>
                 <div class="col-md-1">
-                    <input class="form-control" type="text" ng-model="newSupplierProduct.purchaseQty" ng-blur="rebuildPurchaseQtyNumeric( newSupplierProduct )" />
+                    <input class="form-control" type="text" ng-model="newSupplierProduct.purchaseQty" placeholder="(必填)" ng-blur="rebuildPurchaseQtyNumeric( newSupplierProduct )" />
                 </div>
 
                 <div class="col-md-2">

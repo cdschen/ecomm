@@ -40,8 +40,8 @@ var OrderOperatorController = function($scope, $state, $stateParams, toastr, ord
         $scope.shops = shops;
     });
 
-    $scope.save = function(order, formValid) {
-
+    $scope.save = function(order, formValid)
+    {
         var isQualified = true;
         //!order.shop || !order.externalSn
         //|| !order.shippingFee || !order.receiveName || !order.receivePhone || !order.receiveAddress
@@ -73,6 +73,26 @@ var OrderOperatorController = function($scope, $state, $stateParams, toastr, ord
             }
             isQualified = false;
         }
+        if( order.receiveEmail && ! echeck( order.receiveEmail ) )
+        {
+            toastr.warning('［收件人email］邮件格式不正确');
+            $('[ng-model="order.receiveEmail"]').css('border', '3px solid red');
+            isQualified = false;
+        }
+        else
+        {
+            $('[ng-model="order.receiveEmail"]').css('border', '1px solid #CCC');
+        }
+        if( order.senderEmail && ! echeck( order.senderEmail ) )
+        {
+            toastr.warning('［发件人email］邮件格式不正确');
+            $('[ng-model="order.senderEmail"]').css('border', '3px solid red');
+            isQualified = false;
+        }
+        else
+        {
+            $('[ng-model="order.senderEmail"]').css('border', '1px solid #CCC');
+        }
         /* 如果没有添加订购详情 */
         if( !order.items || order.items.length < 1 )
         {
@@ -82,21 +102,69 @@ var OrderOperatorController = function($scope, $state, $stateParams, toastr, ord
 
         if( isQualified )
         {
-            //console.clear();
-            console.log('[' + $scope.action + '] save order');
-            console.log(order);
-
             refreshField(order);
 
             orderService.save({
                 action: $scope.action
-            }, order, function(order) {
-                console.log('[' + $scope.action + '] save order complete:');
-                console.log(order);
+            }, order, function()
+            {
+                if ($stateParams.id && $stateParams.id !== '')
+                {
+                    toastr.success('编辑订单成功');
+                }
+                else
+                {
+                    toastr.success('创建订单成功');
+                }
                 $state.go('order');
             });
         }
     };
+
+
+    function echeck(str)
+    {
+        var at='@';
+        var dot='.';
+        var lat=str.indexOf(at);
+        var lstr=str.length;
+        console.log(str.indexOf(at)===-1);
+        if (str.indexOf(at)===-1)
+        {
+            return false;
+        }
+
+        if (str.indexOf(at)===-1 || str.indexOf(at)===0 || str.indexOf(at)===lstr)
+        {
+            return false;
+        }
+
+        if (str.indexOf(dot)===-1 || str.indexOf(dot)===0 || str.indexOf(dot)===lstr)
+        {
+            return false;
+        }
+
+        if (str.indexOf(at,(lat+1))!==-1)
+        {
+            return false;
+        }
+
+        if (str.substring(lat-1,lat)===dot || str.substring(lat+1,lat+2)===dot)
+        {
+            return false;
+        }
+
+        if (str.indexOf(dot,(lat+2))===-1)
+        {
+            return false;
+        }
+
+        if (str.indexOf(' ')!==-1)
+        {
+            return false;
+        }
+        return true;
+    }
 
     $scope.action = 'create';
 

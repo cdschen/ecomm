@@ -3,10 +3,16 @@ angular.module('ecommApp')
 .controller('PurchaseOrderDeliveryReceive', ['$scope', '$rootScope', '$state', '$stateParams', '$interval', '$timeout', 'toastr', 'purchaseOrderService', 'purchaseOrderDeliveryService',
     function($scope, $rootScope, $state, $stateParams, $interval, $timeout, toastr, purchaseOrderService, purchaseOrderDeliveryService) {
 
-        $scope.purchaseOrderDelivery = {
+        $scope.purchaseOrderDelivery =
+        {
             purchaseOrderId : null,
             receiveUser : $rootScope.user()
 
+        };
+        $scope.purchaseOrderDeliveryItem =
+        {
+            realPurchaseUnitPrice   :   0,
+            receiveQty  :   1
         };
 
         function updateReceiveTime() {
@@ -53,12 +59,28 @@ angular.module('ecommApp')
 
         $scope.saveItem = function(item, itemAddForm)
         {
-            item.creditQty = 0;
-            $scope.items.push(angular.copy(item));
+            var isQualified = true;
 
-            itemAddForm.$setPristine();
+            if( ! item.supplierProduct.supplierProductName )
+            {
+                toastr.warning('［名称］不能为空');
+                isQualified = false;
+            }
+            if( ! item.receiveQty )
+            {
+                toastr.warning('［数量］不能为空');
+                isQualified = false;
+            }
 
-            item = null;
+            if( isQualified )
+            {
+                item.creditQty = 0;
+                $scope.items.push(angular.copy(item));
+
+                itemAddForm.$setPristine();
+
+                item = null;
+            }
         };
 
         $scope.selectedRemoveItem = null;
@@ -84,6 +106,7 @@ angular.module('ecommApp')
         $scope.copyItem = function( item )
         {
             $scope.items.push( angular.copy( item ) );
+            console.log( item );
         };
 
         $scope.showConfirmReceiveModal = function()
@@ -107,6 +130,36 @@ angular.module('ecommApp')
             $timeout(function(){
                 $state.go('purchaseOrderDelivery.purchaseOrderDeliveryGenerate');
             }, 200);
+        };
+
+
+
+        /* 重新构建收货数量 */
+        $scope.rebuildQtyNumeric = function( item )
+        {
+            item.receiveQty = Number( item.receiveQty );
+            if( $.isNumeric( item.receiveQty ) )
+            {
+                item.receiveQty = Number( Math.floor( item.receiveQty ) );
+
+                item.receiveQty = item.receiveQty > 1 ? item.receiveQty : 1;
+            }
+            else
+            {
+                item.receiveQty = 1;
+            }
+        };
+        /* 重新构建收货单价 */
+        $scope.rebuildPriceNumeric = function( item )
+        {
+            if( $.isNumeric( item.realPurchaseUnitPrice ) )
+            {
+                item.realPurchaseUnitPrice = item.realPurchaseUnitPrice > 0 ? item.realPurchaseUnitPrice : 0;
+            }
+            else
+            {
+                item.realPurchaseUnitPrice = 0;
+            }
         };
     }
 ]);
