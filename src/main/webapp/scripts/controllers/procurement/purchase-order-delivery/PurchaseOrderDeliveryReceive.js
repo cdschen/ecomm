@@ -61,7 +61,7 @@ angular.module('ecommApp')
         {
             var isQualified = true;
 
-            if( ! item.supplierProduct.supplierProductName )
+            if( ! item.supplierProduct || ! item.supplierProduct.supplierProductName )
             {
                 toastr.warning('［名称］不能为空');
                 isQualified = false;

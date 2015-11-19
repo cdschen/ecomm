@@ -22,6 +22,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 @Entity
 @Table(name = "t_purchase_order")
 public class PurchaseOrder implements Serializable {
@@ -126,14 +129,17 @@ public class PurchaseOrder implements Serializable {
 
 	@OneToOne
 	@JoinColumn(name = "creator_id")
+	@NotFound(action = NotFoundAction.IGNORE)
 	private User creator;
 
 	@OneToOne
 	@JoinColumn(name = "supplier_id")
+	@NotFound(action = NotFoundAction.IGNORE)
 	private Supplier supplier;
 
 	@OneToOne
 	@JoinColumn(name = "currency_id")
+	@NotFound(action = NotFoundAction.IGNORE)
 	private Currency currency;
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

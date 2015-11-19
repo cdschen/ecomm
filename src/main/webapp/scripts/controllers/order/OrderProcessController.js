@@ -32,7 +32,7 @@ var OrderProcessController = function($scope, $filter, Process, ObjectProcess) {
                 console.log('refresh Processes:');
                 console.log(objectProcesses);
                 $scope.processOrder.processes = angular.copy(objectProcesses);
-                $scope.closeProcessSlide();
+                $scope.toggleProcessSlide();
             });
         });
 
@@ -57,7 +57,7 @@ var OrderProcessController = function($scope, $filter, Process, ObjectProcess) {
                     console.log('refresh Processes:');
                     console.log(objectProcesses);
                     $scope.processOrder.processes = angular.copy(objectProcesses);
-                    $scope.closeProcessSlide();
+                    $scope.toggleProcessSlide();
                 });
             });
         }

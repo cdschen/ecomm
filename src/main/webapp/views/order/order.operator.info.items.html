@@ -59,18 +59,14 @@
             <tr>
                 <td width="30%">
                     <!-- selectedProduct -->
-                    <div class="input-group">
-                        <ui-select ng-model="order.selectedProduct">
-                            <ui-select-match placeholder="商品(必选)">{{$select.selected.name + '(' + $select.selected.sku + ')'}}</ui-select-match>
-                            <ui-select-choices group-by="'sku'" repeat="product in products | filter: $select.search">
-                                <div ng-bind-html="product.name | highlight: $select.search"></div>
-                            </ui-select-choices>
-                        </ui-select>
-                        <span class="input-group-btn">
-                            <button type="button" ng-click="order.selectedProduct = undefined" class="btn btn-default">
-                                <span class="glyphicon glyphicon-trash"></span>
-                            </button>
-                        </span>
+                    <div class="form-group has-feedback" ng-class="{'has-success':(itemAddForm.product.$dirty && itemAddForm.product.$valid && item.product.id), 'has-warning':(itemAddForm.product.$dirty && itemAddForm.product.$invalid) }">
+                        <input type="text" name="product" ng-model="order.selectedProduct" placeholder="请输入商品名" required min="1" class="form-control" uib-typeahead="product as product.name + '(' + product.sku + ')' for product in getProduct($viewValue)" typeahead-loading="loadingLocations" typeahead-no-results="noResults" typeahead-wait-ms="350" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="itemAddForm.product.$dirty && itemAddForm.product.$valid && item.product.id"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="itemAddForm.product.$dirty && itemAddForm.product.$invalid"></span>
+                        <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
+                        <div ng-show="noResults">
+                            <i class="glyphicon glyphicon-remove"></i> No Results Found
+                        </div>
                     </div>
                 </td>
                 <td width="30%">
