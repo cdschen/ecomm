@@ -1,5 +1,5 @@
 
-var OrderOperatorController = function($scope, $state, $stateParams, toastr, orderService, Shop, Currency) {
+var OrderOperatorController = function($scope, $state, $stateParams, toastr, orderService, Shop, Currency, Product) {
 
     console.clear();
     var $ = angular.element;
@@ -39,6 +39,17 @@ var OrderOperatorController = function($scope, $state, $stateParams, toastr, ord
     Shop.getAll().then(function(shops) {
         $scope.shops = shops;
     });
+
+    $scope.getProduct = function(val) {
+        return Product.get({
+            page: 0,
+            size: 30,
+            enabled: true,
+            nameOrSku: val
+        }).$promise.then(function(page) {
+                return page.content;
+            });
+    };
 
     $scope.save = function(order, formValid)
     {
@@ -193,6 +204,6 @@ var OrderOperatorController = function($scope, $state, $stateParams, toastr, ord
     });
 };
 
-OrderOperatorController.$inject = ['$scope', '$state', '$stateParams', 'toastr', 'orderService', 'Shop', 'Currency'];
+OrderOperatorController.$inject = ['$scope', '$state', '$stateParams', 'toastr', 'orderService', 'Shop', 'Currency', 'Product'];
 
 angular.module('ecommApp').controller('OrderOperatorController', OrderOperatorController);

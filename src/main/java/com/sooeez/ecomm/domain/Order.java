@@ -25,6 +25,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "t_order")
@@ -203,6 +204,7 @@ public class Order implements Serializable {
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "object_id")
+	@Where( clause = "object_type = 1" )
 	private List<ObjectProcess> processes;
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

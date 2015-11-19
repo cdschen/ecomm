@@ -54,7 +54,6 @@ public class OrderController {
 	
 	@RequestMapping(value = "/orders/confirm/outinventory", method = RequestMethod.POST)
 	public OperationReviewDTO confirmOrderWhenGenerateOutInventory(@RequestBody OperationReviewDTO review) {
-		System.out.println("confirmOrderWhenGenerateOutInventory");
 		return this.orderService.confirmOrderWhenGenerateOutInventory(review);
 	}
 	
