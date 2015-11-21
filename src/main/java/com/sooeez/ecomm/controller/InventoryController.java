@@ -230,6 +230,12 @@ public class InventoryController {
 		return shipmentService.confirmOperationReviewWhenCompleteShipments(review);
 	}
 	
+	@RequestMapping(value = "/shipments/confirm/import/operation-review")
+	public OperationReviewShipmentDTO confirmOrderWhenImportShipments( @RequestBody OperationReviewShipmentDTO review )
+	{
+		return shipmentService.confirmOperationReviewWhenImportShipments( review );
+	}
+	
 	/*
 	 * ShipmentItem
 	 */

@@ -1,5 +1,7 @@
 package com.sooeez.ecomm.service;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,12 +28,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Order;
 import com.sooeez.ecomm.domain.OrderItem;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Shipment;
 import com.sooeez.ecomm.domain.ShipmentItem;
 import com.sooeez.ecomm.domain.Shop;
+import com.sooeez.ecomm.domain.User;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.dto.OperationReviewShipmentDTO;
 import com.sooeez.ecomm.repository.ObjectProcessRepository;
@@ -51,6 +55,7 @@ public class ShipmentService {
 	@Autowired private ObjectProcessRepository objectProcessRepository;
 	
 	// Service
+	@Autowired private ProcessService processService;
 
 	@PersistenceContext private EntityManager em;
 	
@@ -73,6 +78,24 @@ public class ShipmentService {
 	
 	public Shipment getShipment(Long id) {
 		return this.shipmentRepository.findOne(id);
+	}
+	
+	public String getShipStatusByTinyint( Integer shipStatus )
+	{
+		String strStatus = "";
+		
+		switch( shipStatus )
+		{
+			case 1: strStatus = "待打印"; break;
+			case 2: strStatus = "已打印"; break;
+			case 3: strStatus = "已发出"; break;
+			case 4: strStatus = "已签收"; break;
+			case 5: strStatus = "配送异常"; break;
+			case 6: strStatus = "已作废"; break;
+			default :strStatus = "未指定状态";
+		}
+		
+		return strStatus;
 	}
 	
 	public void addShipmentToCell( Shipment shipment, Sheet sheet, CellStyle contentStyle, Integer rowIndex )
@@ -107,17 +130,21 @@ public class ShipmentService {
     		{
     			shipment.getReceiveName(), shipment.getReceivePhone(), shipment.getReceivePhone(), shipment.getReceiveAddress(),
     			shippedProductsBuffer.toString(),
-    			shipment.getReceivePost(), "", shipment.getShipNumber()
+    			shipment.getOrderId().toString(), "", shipment.getShipNumber(),
+    			"", shipment.getId().toString(), /* this.getShipStatusByTinyint( shipment.getShipStatus() ) */ "正常" , shipment.getMemo()
     		};
     		
         	Row contentRow = sheet.createRow( rowIndex );
         	for( int i = 0; i < contents.length; i++ )
         	{
             	Cell cell = contentRow.createCell( i );
-            	if( i == 0 || i == 3 || i == 4 )
-            	{
+            	
+            	/* 如果是
+            	 */
+//            	if( i == 0 || i == 3 || i == 4 )
+//            	{
                 	cell.setCellStyle( contentStyle );
-            	}
+//            	}
             	cell.setCellValue( contents[ i ] );
         	}
     	}
@@ -508,6 +535,288 @@ public class ShipmentService {
 		{
 			/* 执行完成发货单操作 */
 			this.executeShipmentCompletion( review );
+		}
+		
+		return review;
+		
+	}
+
+	/* 批量导入发货单复核操作
+	 */
+
+	/* 设置是否通过 */
+	public void setImportConfirmable( OperationReviewShipmentDTO review )
+	{
+		/* 如果验证全都通过 */
+		if
+		(
+			! review.getCheckMap().get( "emptyMemoError" ) &&
+			! review.getCheckMap().get( "emptyOrderError" )
+		)
+		{
+			review.setConfirmable( true );
+		}
+		else
+		{
+			review.setConfirmable( false );
+		}
+	}
+
+	
+	/* 如果验证全都通过，并且操作类型是 CONFIRM 则执行完成操作 */
+	@Transactional
+	public void executeShipmentImport( OperationReviewShipmentDTO review )
+	{
+		/* 如果验证通过 */
+		Long executeOperatorId = Long.valueOf( (Integer) review.getDataMap().get( "operatorId" ) );
+
+		List<Shipment> reviewShipments = review.getShipments();
+		List<Shipment> insertableShipments = new ArrayList<Shipment>();
+		
+		for( Shipment reviewShipment : reviewShipments )
+		{
+			if( ! reviewShipment.getIgnoreCheck() )
+			{
+				insertableShipments.add( reviewShipment );
+			}
+		}
+		
+		if( insertableShipments.size() > 0 )
+		{
+			for( Shipment shipment : insertableShipments )
+			{
+				shipment.setLastUpdate( new Date() );
+				shipment.setExecuteOperatorId( executeOperatorId );
+				shipment.setReceiveName( shipment.getReceiveName() != null ? shipment.getReceiveName() : "" );
+				shipment.setReceiveEmail( shipment.getReceiveEmail() != null ? shipment.getReceiveEmail() : "" );
+				
+//				1. 如果发货单号，订单号，发货单状态匹配：
+//					状态为［正常］：
+//						改发货单快递单号
+//						改发货单状态为［已发货］
+//						改订单为［配送完成］
+//						将 productContent 追加到 memo 上面
+//						保存［备注］必填
+//					状态为［异常］：
+//						改发货单快递单号
+//						发货单状态为［异常］
+//						改订单状态为［错误］
+//						将 productContent 追加到 memo 上面
+//						保存［备注］必填
+//				2. 如果没有匹配：
+//					创建发货单：
+//						继续 1. 的流程
+				
+				boolean isAllMatch = false;
+
+				String sql = " SELECT * FROM t_shipment " +
+							 " WHERE id = ?1 " +
+							 " AND ship_status = ?2 " +
+							 " AND order_id = ?3 ";
+				Query query =  em.createNativeQuery( sql, Shipment.class );
+				query.setParameter( 1, shipment.getId() );
+				query.setParameter( 2, shipment.getShipStatus() );
+				query.setParameter( 3, shipment.getOrderId() );
+				if( ! query.getResultList().isEmpty() )
+				{
+					shipment = (Shipment) query.getSingleResult();
+					isAllMatch = true;
+				}
+				
+				/* 1. 如果发货单号，订单号，发货单状态匹配：
+				 */
+				if( isAllMatch )
+				{
+					boolean isStatusNormal = shipment.getShipStatus().equals( 1 );
+					/* a. 状态为［正常］：
+					 */
+					if( isStatusNormal )
+					{
+						executeShipmentImportInitUpdate( shipment, 3 );
+					}
+					/* b. 状态为［异常］：
+					 */
+					else
+					{
+						executeShipmentImportInitUpdate( shipment, 5 );
+					}
+					
+					this.shipmentRepository.save( shipment );
+				}
+				/* 2. 如果没有匹配：
+				 */
+				else
+				{
+					shipment.setCreateTime( new Date() );
+					shipment.setQtyTotalItemShipped( 0 );
+					shipment.setTotalWeight( 0 );
+					shipment.setShipfeeCost( new BigDecimal( 0 ) );
+					shipment.setOperatorId( executeOperatorId );
+					shipment = this.shipmentRepository.save( shipment );
+					
+					boolean isStatusNormal = shipment.getShipStatus().equals( 1 );
+					
+					if( isStatusNormal )
+					{
+						executeShipmentImportInitUpdate( shipment, 3 );
+					}
+					else
+					{
+						executeShipmentImportInitUpdate( shipment, 5 );
+					}
+					
+					this.shipmentRepository.save( shipment );
+				}
+				
+			}
+		}
+		review.getResultMap().put( "insertableShipmentsSize", insertableShipments.size() );
+	}
+
+	@Transactional
+	public void executeShipmentImportInitUpdate( Shipment shipment, Integer shipStatus )
+	{
+//		改发货单状态为［已发货］或者［异常］
+		shipment.setShipStatus( shipStatus );
+
+//		改订单为［配送完成］
+		Order order = this.orderRepository.findOne( shipment.getOrderId() );
+		
+		List<ObjectProcess> processess = order.getProcesses();
+		for ( ObjectProcess op: processess )
+		{
+			if
+			(
+				shipStatus == 3 &&
+				op.getProcessId().longValue() == order.getShop().getCompleteStep().getProcessId().longValue()
+			)
+			{
+				op.setStep(order.getShop().getCompleteStep());
+				
+				objectProcessRepository.save(op);
+			}
+			else if
+			(
+				shipStatus == 5 &&
+				op.getProcessId().longValue() == order.getShop().getErrorStep().getProcessId().longValue()
+			)
+			{
+				op.setStep( order.getShop().getErrorStep() );
+				
+				objectProcessRepository.save(op);
+			}
+		}
+		
+//		将 productContent 追加到 memo 上面，保存［备注］必填
+		StringBuffer productContentBuffer = new StringBuffer();
+		productContentBuffer.append( shipment.getProductContent() );
+		productContentBuffer.append( shipment.getMemo() );
+		shipment.setMemo( shipment.getMemo() );
+	}
+
+	@Transactional
+	public void executeShipmentImportInit( OperationReviewShipmentDTO review )
+	{
+		List<Shipment> reviewShipments = review.getShipments();
+		
+		Integer normalStatusCount = 0;
+		Integer excetionalStatusCount = 0;
+		Integer orderNotMatchCount = 0;
+
+		boolean isEmptyOrderError = false;
+		for( Shipment shipment : reviewShipments )
+		{
+			/* 如果发货单被移出
+			 */
+			if( ! shipment.getIgnoreCheck() )
+			{
+				String sql = "SELECT COUNT(1) FROM t_order WHERE id = ?1 ";
+				Query query =  em.createNativeQuery( sql );
+				query.setParameter( 1, shipment.getOrderId() );
+				BigInteger orderCount = (BigInteger) query.getSingleResult();
+				if( orderCount.compareTo( BigInteger.ZERO )==0 )
+				{
+					shipment.getCheckMap().put( "emptyOrderError", true );
+					
+					orderNotMatchCount++;
+					isEmptyOrderError = true;
+				}
+				/* 如果订单号匹配
+				 */
+				else
+				{
+					if( shipment.getShipStatus() != null )
+					{
+						switch( shipment.getShipStatus() )
+						{
+							case 1	:	normalStatusCount++; break;
+							case 5	:	excetionalStatusCount++; break;
+						}
+					}
+					else
+					{
+						review.getCheckMap().put( "emptyStatusError", true );
+					}
+					
+					shipment.getCheckMap().put( "emptyOrderError", false );
+				}
+			}
+			else
+			{
+				shipment.getCheckMap().put( "emptyOrderError", false );
+			}
+		}
+		review.getCheckMap().put( "emptyOrderError", isEmptyOrderError );
+		
+		review.getResultMap().put( "normalStatusCount", normalStatusCount );
+		review.getResultMap().put( "excetionalStatusCount", excetionalStatusCount );
+		review.getResultMap().put( "orderNotMatchCount", orderNotMatchCount );
+	}
+	
+	
+	@Transactional
+	public OperationReviewShipmentDTO confirmOperationReviewWhenImportShipments( OperationReviewShipmentDTO review )
+	{
+		List<Shipment> reviewShipments = review.getShipments();
+		
+		this.executeShipmentImportInit( review );
+
+		/* 验证 1 ： 异常发货单是否填写［memo］注释 */
+		boolean isExceptionMemoEmpty = false;
+		for( Shipment reviewShipment : reviewShipments )
+		{
+			if
+			(
+				reviewShipment.getShipStatus().equals( 5 ) &&
+				( reviewShipment.getMemo() == null || reviewShipment.getMemo().trim().equals("") ) &&
+				! reviewShipment.getIgnoreCheck()
+			)
+			{
+				reviewShipment.getCheckMap().put( "emptyMemoError", true );
+				
+				isExceptionMemoEmpty = true;
+			}
+			else
+			{
+				reviewShipment.getCheckMap().put( "emptyMemoError", false );
+			}
+		}
+		review.getCheckMap().put( "emptyMemoError", isExceptionMemoEmpty );
+		
+		/* 设置可确认性 */
+		this.setImportConfirmable( review );
+		
+		
+		
+		/* 如果验证全都通过，并且操作类型是 CONFIRM 则执行完成操作 */
+		if
+		(
+			review.isConfirmable() &&
+			review.getAction().equals( OperationReviewDTO.CONFIRM )
+		)
+		{
+			/* 执行完成发货单操作 */
+			this.executeShipmentImport( review );
 		}
 		
 		return review;
