@@ -29,17 +29,5 @@ angular.module('ecommApp')
             data: {
                 roles: [ROLES.SYSTEM_ADMIN, ROLES.SHIPMENT_ADMIN]
             }
-        })
-        .state('shipment.shipmentImport', {
-            url: '/shipment-import',
-            views: {
-                'content@': {
-                    templateUrl: 'views/inventory/shipment/shipment-import.html?' + t,
-                    controller: 'ShipmentImportController'
-                }
-            },
-            data: {
-                roles: [ROLES.SYSTEM_ADMIN, ROLES.SHIPMENT_ADMIN]
-            }
         });
 }]);

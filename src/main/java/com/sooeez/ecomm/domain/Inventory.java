@@ -36,14 +36,14 @@ public class Inventory implements Serializable {
 	@Column(name = "product_id", nullable = false, insertable = false, updatable = false)
 	private Long productId;
 
-	@Column(name = "warehouse_id", nullable = false)
+	@Column(name = "warehouse_id", nullable = false, insertable = false, updatable = false)
 	private Long warehouseId;
 
 	@Column(name = "warehouse_position_id", nullable = false, insertable = false, updatable = false)
 	private Long warehousePositionId;
 
 	// 入库, 批次ID
-	@Column(name = "inventory_batch_id", nullable = false,insertable = false, updatable = false)
+	@Column(name = "inventory_batch_id", nullable = false, insertable = false, updatable = false)
 	private Long inventoryBatchId;
 
 	@Column(name = "quantity", nullable = false)
@@ -64,9 +64,14 @@ public class Inventory implements Serializable {
 
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "warehouse_id")
+	private Warehouse warehouse;
+
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "warehouse_position_id")
 	private WarehousePosition position;
-	
+
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "inventory_batch_id")
@@ -187,6 +192,14 @@ public class Inventory implements Serializable {
 
 	public void setBatch(InventoryBatch batch) {
 		this.batch = batch;
+	}
+
+	public Warehouse getWarehouse() {
+		return warehouse;
+	}
+
+	public void setWarehouse(Warehouse warehouse) {
+		this.warehouse = warehouse;
 	}
 
 }

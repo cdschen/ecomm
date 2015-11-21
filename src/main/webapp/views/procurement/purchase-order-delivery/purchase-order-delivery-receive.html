@@ -12,11 +12,9 @@
             </h3>
         </div>
         <div class="panel-body">
-            <br/>
             <p class="text-info">右边为收货单列表， 左边为需要采购的商品清单， 选择左边列表的商品，添加到右边列表</p>
-            <br/>
+
             <p class="text-info">默认添加按钮会忽略输入的数量，一次性把左边选中的商品，全数添加到右边的列表</p>
-            <br/>
         </div>
         <hr style="margin: 0">
         <div class="panel-body">
@@ -25,14 +23,6 @@
                     <form name="itemAddForm" class="form-horizontal" novalidate>
                         <div class="form-group col-md-12">
                             <h3>添加新商品</h3>
-                        </div>
-                        <div class="form-group has-feedback">
-                            <label class="control-label col-md-3">保质期 </label>
-
-                            <div class="col-md-9 sandbox-container">
-                                <input type="text" class="form-control" ng-model="purchaseOrderDeliveryItem.expireDate"
-                                       placeholder="(选填，YYYY-MM-DD)">
-                            </div>
                         </div>
                         <div class="form-group has-feedback"
                              ng-class="{'has-success':(itemAddForm.name.$dirty && itemAddForm.name.$valid), 'has-warning':(itemAddForm.name.$dirty && itemAddForm.name.$invalid) }">
@@ -65,6 +55,14 @@
                             </div>
                         </div>
                         <div class="form-group has-feedback">
+                            <label class="control-label col-md-3">保质期 </label>
+
+                            <div class="col-md-9 sandbox-container">
+                                <input type="text" class="form-control" ng-model="purchaseOrderDeliveryItem.expireDate"
+                                       placeholder="(选填，YYYY-MM-DD)">
+                            </div>
+                        </div>
+                        <div class="form-group has-feedback">
                             <label class="control-label col-md-3">备注 </label>
 
                             <div class="col-md-9">
@@ -86,22 +84,16 @@
                     <table class="table table-condensed clear-marginbottom-table">
                         <thead>
                             <tr>
-                                <th width="16%">保质期</th>
                                 <th width="30%">商品</th>
                                 <th width="10">实际采购价格</th>
                                 <th width="10">数量</th>
+                                <th width="16%">保质期</th>
                                 <th width="20%">备注</th>
                                 <th width="14%">操作</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="item in items | orderBy: ['supplierProduct.supplierProductName', 'supplierProduct.product.name']">
-                                <td>
-                                    <div class="item-sandbox-container" >{{ item.unique }}
-                                        <input type="text" ng-model="item.expireDate" data-item-id="" placeholder="(选填，YYYY-MM-DD)"
-                                               class="form-control input-sm" ng-init="initItemDatepicker()">
-                                    </div>
-                                </td>
                                 <td>
                                     {{ item.supplierProduct.product ? item.supplierProduct.product.name : item.supplierProduct.supplierProductName }}
                                 </td>
@@ -112,6 +104,10 @@
                                 <td>
                                     <input type="number" ng-model="item.receiveQty" placeholder="(必填)"
                                            class="form-control input-sm" ng-blur="rebuildQtyNumeric( item, 'receiveQty' )"/>
+                                </td>
+                                <td>
+                                    <input type="text" ng-model="item.expireDate" placeholder="(选填，YYYY-MM-DD)"
+                                           class="form-control input-sm">
                                 </td>
                                 <td>
                                     <input type="text" ng-model="item.comment" placeholder="(选填)"

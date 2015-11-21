@@ -9,7 +9,7 @@ import com.sooeez.ecomm.domain.User;
 
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 	
-	User findOneByUsername(String username);
+	User findOneByUsernameAndEnabled(String username, Boolean enabled);
 
 	@Modifying
 	@Query("update User set password = ?1 where id = ?2")
