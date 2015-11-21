@@ -36,6 +36,8 @@ angular.module('ecommApp')
                     warehouseId: $rootScope.usingWarehouseId,
                     sort: ['productId', 'inventoryBatchId']
                 }).then(function(inventories) {
+                    // console.log('Inventory.getAll():');
+                    // console.log(inventories);
                     $scope.products = Inventory.refresh(inventories);
                 });
             }
@@ -102,5 +104,14 @@ angular.module('ecommApp')
                 $scope.searchSnapshot($scope.snapshotQuery);
             }
         };
+
+
+
+
+
+
+        Inventory.get({},function(){
+
+        });
     }
 ]);

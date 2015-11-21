@@ -3,10 +3,12 @@ package com.sooeez.ecomm.controller;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,7 @@ import com.sooeez.ecomm.domain.ProductMember;
 import com.sooeez.ecomm.domain.ProductMultiCurrency;
 import com.sooeez.ecomm.domain.ProductMultiLanguage;
 import com.sooeez.ecomm.domain.ProductShopTunnel;
+import com.sooeez.ecomm.dto.PageDTO;
 import com.sooeez.ecomm.service.ProductMemberService;
 import com.sooeez.ecomm.service.ProductMultiCurrencyService;
 import com.sooeez.ecomm.service.ProductMultiLanguageService;
@@ -78,8 +81,35 @@ public class ProductController {
 	}
 	
 	@RequestMapping(value = "/products")
-	public Page<Product> getPagedProducts(Product product, Pageable pageable) {
-		return productService.getPagedProducts(product, pageable);
+	public PageDTO<Product> getPagedProducts(Product product, Pageable pageable) {
+		Page<Product> page = productService.getPagedProducts(product, pageable);
+		PageDTO<Product> pageDTO = new PageDTO<>();
+		BeanUtils.copyProperties(page, pageDTO, "content", "sort");
+		List<Product> pList = new ArrayList<>();
+		page.getContent().forEach(p -> {
+			Product productDTO = new Product();
+			productDTO.setId(p.getId());
+			productDTO.setSku(p.getSku());
+			productDTO.setName(p.getName());
+			productDTO.setProcesses(p.getProcesses());
+			productDTO.setWarehouses(p.getWarehouses());
+			
+			productDTO.setPriceL1(p.getPriceL1());
+			productDTO.setPriceL2(p.getPriceL2());
+			productDTO.setPriceL3(p.getPriceL3());
+			productDTO.setPriceL4(p.getPriceL4());
+			productDTO.setPriceL5(p.getPriceL5());
+			productDTO.setPriceL6(p.getPriceL6());
+			productDTO.setPriceL7(p.getPriceL7());
+			productDTO.setPriceL8(p.getPriceL8());
+			productDTO.setPriceL9(p.getPriceL9());
+			productDTO.setPriceL10(p.getPriceL10());
+			productDTO.setWeight(p.getWeight());
+			
+			pList.add(productDTO);
+		});
+		pageDTO.setContent(pList);
+		return pageDTO;
 	}
 	
 	@RequestMapping(value = "/products/get/all")
@@ -88,7 +118,7 @@ public class ProductController {
 	}
 	
 	@RequestMapping(value = "/products", method = RequestMethod.POST)
-	public Product saveProduct(@RequestBody Product product, @RequestParam String action, HttpServletRequest request) {
+	public Product saveProduct(@RequestBody Product product) {
 		return productService.saveProduct(product);
 	}
 	

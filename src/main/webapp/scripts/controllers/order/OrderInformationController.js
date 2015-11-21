@@ -1,8 +1,5 @@
 
-var OrderInformationController = function($scope, $state, $stateParams, orderService, Product) {
-
-    var $ = angular.element;
-
+var OrderInformationController = function($scope, $state, $stateParams) {
 
     $scope.prices = [
         { name:'价格1', value:'priceL1' },
@@ -26,9 +23,9 @@ var OrderInformationController = function($scope, $state, $stateParams, orderSer
         $scope.order.items = [];
     }
 
-    Product.getAll().then(function(products) {
-        $scope.products = products;
-    });
+    // Product.getAll().then(function(products) {
+    //     $scope.products = products;
+    // });
 
     $scope.changeShop = function(shop)
     {
@@ -125,6 +122,6 @@ var OrderInformationController = function($scope, $state, $stateParams, orderSer
 
 };
 
-OrderInformationController.$inject = ['$scope', '$state', '$stateParams', 'orderService', 'Product'];
+OrderInformationController.$inject = ['$scope', '$state', '$stateParams'];
 
 angular.module('ecommApp').controller('OrderInformationController', OrderInformationController);

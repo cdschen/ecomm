@@ -3,7 +3,7 @@
   "browser": true,
   "esnext": true,
   "bitwise": true,
-  "camelcase": false,
+  "camelcase": true,
   "curly": true,
   "eqeqeq": true,
   "immed": true,
@@ -20,9 +20,6 @@
   "globals": {
     "$": false,
     "angular": false,
-    "ecommApp": false,
-    "XLSX": false,
-    "sheet_to_json": false
+    "ecommApp": false
   }
 }
-
