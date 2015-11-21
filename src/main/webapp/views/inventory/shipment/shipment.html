@@ -2,6 +2,7 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">发货管理</li>
     <li class="pull-right" id="breadcrumb-li">
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="shipment.shipmentImport">导入发货单</a>
         <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="shipment.shipmentGenerate">创建发货单</a>
     </li>
 </ol>
@@ -129,10 +130,11 @@
                     <td>
                         {{
                             shipment.shipStatus == 1 ? '待打印' :
-                            shipment.shipStatus == 2 ? '已发出' :
-                            shipment.shipStatus == 3 ? '已签收' :
-                            shipment.shipStatus == 4 ? '派送异常' :
-                            shipment.shipStatus == 5 ? '已作废' : '未指定状态'
+                            shipment.shipStatus == 2 ? '已打印' :
+                            shipment.shipStatus == 3 ? '已发出' :
+                            shipment.shipStatus == 4 ? '已签收' :
+                            shipment.shipStatus == 5 ? '派送异常' :
+                            shipment.shipStatus == 6 ? '已作废' : '未指定状态'
                         }}
                     </td>
                     <td class="text-left">
@@ -246,4 +248,3 @@
 
 <section ng-include="template.shipmentComplete.url" ng-controller="ShipmentCompleteController" onload="init()"></section>
 <section ng-include="template.shipmentsComplete.url" ng-controller="ShipmentsCompleteController" onload="init()"></section>
-
