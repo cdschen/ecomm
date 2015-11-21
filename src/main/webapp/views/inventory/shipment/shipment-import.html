@@ -1,0 +1,210 @@
+<ol class="breadcrumb">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li><a ui-sref="shipment">发货管理</a></li>
+    <li class="active">导入发货单</li>
+</ol>
+<style>
+    #drop {
+        border: 2px dashed #bbb;
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        padding: 25px;
+        text-align: center;
+        font: 20pt bold,'Vollkorn';
+        color: #bbb;
+    }
+</style>
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <div class="panel-body">
+
+            <div class="col-md-12">
+
+                <div class="col-md-12">
+                    <div id="drop" drag-and-drop="dragAndDrop">请将［发货单 Excel 文件］拖拽至此</div>
+                </div>
+
+                <!--<div class="form-group">-->
+                    <!--<button class="btn btn-primary btn-block" ng-click="getShipments()" ng-disabled=" ! dragAndDropDirective || dragAndDropDirective.progress < 100 ">执行批量导入发货单</button>-->
+                <!--</div>-->
+            </div>
+
+
+            <div class="col-md-12" ng-show="shipments.length > 0">
+
+                <div class="col-md-12">
+
+                    <table class="table table-responsive" ng-show="shipments.length > 0" style="margin:0;">
+                        <thead>
+                            <tr>
+                                <th colspan="3" class="text-center">
+                                    <h4>批量发货单验证结果</h4>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="text-center">类型</th>
+                                <th class="text-center">数量</th>
+                                <th class="text-center">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-center bg-success">
+                                <td>
+                                    正常发货单
+                                </td>
+                                <td>
+                                    {{ operationReviewImportShipment().resultMap.normalStatusCount }}
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr class="text-center bg-danger">
+                                <td>
+                                    未找到订单的发货单
+                                </td>
+                                <td>
+                                    {{ operationReviewImportShipment().resultMap.orderNotMatchCount }}
+                                </td>
+                                <td>
+                                    <div class="pull-right">
+                                        <button class="btn btn-xs btn-danger" ng-click="moveAllEmptyOrderErrorShipment( operationReviewImportShipment().shipments )">
+                                            全部移出
+                                        </button>
+                                        <button class="btn btn-xs btn-default" ng-click=" emptyOrderErrorTableShow = ! emptyOrderErrorTableShow ">
+                                            {{ ! emptyOrderErrorTableShow ? '展开列表' : '收缩列表' }}
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr ng-show=" emptyOrderErrorTableShow ">
+                                <td colspan="3">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>订单</th>
+                                            <th>发货单号</th>
+                                            <th>商品名称</th>
+                                            <th>状态</th>
+                                            <th>备注</th>
+                                            <th class="text-center">操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat=" exceptionalShipment in operationReviewImportShipment().shipments " ng-class="{'active': exceptionalShipment.ignoreCheck}" ng-show=" exceptionalShipment.checkMap.emptyOrderError || exceptionalShipment.ignoreCheck ">
+                                            <td>
+                                                {{ exceptionalShipment.orderId }}
+                                                <br/>
+                                                <span class="text-danger">{{ exceptionalShipment.checkMap.emptyOrderError ? '没有匹配到该订单号，请移出' : '' }}</span>
+                                            </td>
+                                            <td>
+                                                {{ exceptionalShipment.id }}
+                                            </td>
+                                            <td>
+                                                {{ exceptionalShipment.productContent }}
+                                            </td>
+                                            <td>
+                                                {{
+                                                exceptionalShipment.shipStatus == 1 ? '待打印' :
+                                                exceptionalShipment.shipStatus == 2 ? '已打印' :
+                                                exceptionalShipment.shipStatus == 3 ? '正常' :
+                                                exceptionalShipment.shipStatus == 4 ? '已签收' :
+                                                exceptionalShipment.shipStatus == 5 ? '异常' :
+                                                exceptionalShipment.shipStatus == 6 ? '已作废' : '未指定状态'
+                                                }}
+                                            </td>
+                                            <td>
+                                                <textarea class="form-control" rows="3" cols="10" style="resize:none;"  ng-disabled="true" ng-model="exceptionalShipment.memo"></textarea>
+                                            </td>
+                                            <td class="text-center">
+
+                                                <button type="button" class="btn btn-info btn-xs" ng-click="ignoreOrNotCheckOrder( exceptionalShipment )" ng-show=" exceptionalShipment.ignoreCheck ">
+                                                    恢复
+                                                </button>
+
+                                                <button type="button" class="btn btn-danger btn-xs" ng-click="ignoreOrNotCheckOrder( exceptionalShipment )" ng-show=" ! exceptionalShipment.ignoreCheck ">
+                                                    移出
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr class="text-center bg-warning">
+                                <td>
+                                    异常发货单
+                                </td>
+                                <td>
+                                    {{ operationReviewImportShipment().resultMap.excetionalStatusCount }}
+                                </td>
+                                <td>
+                                    <div class="pull-right">
+                                        <button class="btn btn-xs btn-default" ng-click=" exceptionalShipmentTableShow = ! exceptionalShipmentTableShow ">
+                                            {{ ! exceptionalShipmentTableShow ? '展开列表' : '收缩列表' }}
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr ng-show=" exceptionalShipmentTableShow ">
+                                <td colspan="3">
+                                    <table class="table table-responsive" style="margin:0;">
+                                        <thead>
+                                        <tr>
+                                            <th>订单</th>
+                                            <th>发货单号</th>
+                                            <th>商品名称</th>
+                                            <th>状态</th>
+                                            <th>备注</th>
+                                            <th class="text-center">操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat=" exceptionalShipment in operationReviewImportShipment().shipments " ng-show=" ! exceptionalShipment.ignoreCheck && ! exceptionalShipment.checkMap.emptyOrderError && exceptionalShipment.shipStatus == 5 ">
+                                            <td>
+                                                {{ exceptionalShipment.orderId }}
+                                            </td>
+                                            <td>
+                                                {{ exceptionalShipment.id }}
+                                            </td>
+                                            <td>
+                                                {{ exceptionalShipment.productContent }}
+                                            </td>
+                                            <td>
+                                                {{
+                                                exceptionalShipment.shipStatus == 1 ? '待打印' :
+                                                exceptionalShipment.shipStatus == 2 ? '已打印' :
+                                                exceptionalShipment.shipStatus == 3 ? '正常' :
+                                                exceptionalShipment.shipStatus == 4 ? '已签收' :
+                                                exceptionalShipment.shipStatus == 5 ? '异常' :
+                                                exceptionalShipment.shipStatus == 6 ? '已作废' : '未指定状态'
+                                                }}
+                                            </td>
+                                            <td>
+                                                <div class="form-group has-feedback" ng-class="{ 'has-warning' :  ! exceptionalShipment.ignoreCheck && exceptionalShipment.checkMap.emptyMemoError }">
+                                                    <textarea class="form-control" rows="3" cols="10" style="resize:none;"  ng-disabled="exceptionalShipment.ignoreCheck" ng-model="exceptionalShipment.memo" placeholder="{{ ! exceptionalShipment.ignoreCheck && exceptionalShipment.checkMap.emptyMemoError ? '请填写内容' : '' }}"></textarea>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <button class="btn btn-xs btn-success" ng-click="verifySavedChanges()" ng-disabled=" exceptionalShipment.ignoreCheck ">
+                                                    保存
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-12">
+                    <hr/>
+                </div>
+                <button class="btn btn-sm btn-success pull-right" ng-click="confirmImportShipments()">确认导入</button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
