@@ -16,6 +16,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 @Entity
 @Table(name = "t_inventory")
 public class Inventory implements Serializable {
@@ -55,14 +58,17 @@ public class Inventory implements Serializable {
 	 */
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "product_id")
 	private Product product;
 
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "warehouse_position_id")
 	private WarehousePosition position;
 	
 	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "inventory_batch_id")
 	private InventoryBatch batch;
 

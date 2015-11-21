@@ -26,6 +26,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.annotations.Where;
 
 import com.sooeez.ecomm.dto.InventoryProductDetailDTO;
 
@@ -197,6 +198,7 @@ public class Product implements Serializable {
 
 	@JoinColumn(name = "object_id")
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@Where(clause = "object_type = 2")
 	private List<ObjectProcess> processes;
 
 	@JoinColumn(name = "product_id")
