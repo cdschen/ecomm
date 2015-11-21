@@ -30,13 +30,23 @@ module.exports = function(config) {
             '../main/webapp/bower_components/angular-messages/angular-messages.js',
             '../main/webapp/bower_components/angular-resource/angular-resource.js',
             '../main/webapp/bower_components/angular-sanitize/angular-sanitize.js',
+<<<<<<< HEAD
+=======
+            '../main/webapp/bower_components/angular-toastr/dist/angular-toastr.tpls.js',
+>>>>>>> steven20151121
             '../main/webapp/bower_components/angular-ui-router/release/angular-ui-router.js',
             '../main/webapp/bower_components/angular-ui-select/dist/select.js',
             '../main/webapp/bower_components/bootstrap/dist/js/bootstrap.js',
             '../main/webapp/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
+<<<<<<< HEAD
             '../main/webapp/bower_components/ng-pageslide/dist/angular-pageslide-directive.js',
             '../main/webapp/bower_components/angular-toastr/dist/angular-toastr.tpls.js',
             '../main/webapp/bower_components/angular-loading-bar/build/loading-bar.js',
+=======
+            '../main/webapp/bower_components/js-xlsx/shim.js',
+            '../main/webapp/bower_components/js-xlsx/dist/xlsx.core.min.js',
+            '../main/webapp/bower_components/ng-pageslide/dist/angular-pageslide-directive.js',
+>>>>>>> steven20151121
             '../main/webapp/bower_components/angular-mocks/angular-mocks.js',
             // endbower
             '../main/webapp/scripts/**/*.js',

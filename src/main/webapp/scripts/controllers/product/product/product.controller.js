@@ -144,11 +144,15 @@ angular.module('ecommApp')
             if ($scope.detailsSlideChecked) {
                 $('body').css('overflow', 'hidden');
                 $('div[ps-open="detailsSlideChecked"]').css('overflow', 'auto');
+<<<<<<< HEAD
                 Product.get({
                     id: product.id
                 }, function(product){
                      $scope.processProduct = product;
                 });
+=======
+                $scope.processProduct = product;
+>>>>>>> steven20151121
             }
         };
 
