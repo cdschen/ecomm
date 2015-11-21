@@ -11,7 +11,7 @@
     <form name="productSearchForm" novalidate ng-submit="search(query)">
         <div class="panel panel-success">
             <div class="panel-heading">
-                <h3 class="panel-title">产品列表</h3>
+                <h3 class="panel-title">商品列表</h3>
             </div>
             <table class="table table-condensed clear-marginbottom-table">
                 <thead>
@@ -73,17 +73,19 @@
                     <span class="glyphicon glyphicon-info-sign"></span> 没有任何数据被检索到
                 </div>
             </div>
-            <table class="table table-condensed" ng-show="page.content.length > 0">
+            <table class="table table-condensed" ng-show="page.content.length > 0" >
                 <thead>
                     <tr>
                         <th width="2%">
                             <input type="checkbox" ng-model="selectAll">
                         </th>
                         <th width="10%">SKU</th>
-                        <th width="36%">商品名称</th>
-                        <th width="10%">销售</th>
-                        <th width="10%">成本</th>
-                        <th width="10%">库存</th>
+                        <th width="25">商品名称</th>
+                        <th width="10%">仓库</th>
+                        <th width="5%">总库存</th>
+                        <th width="5%">预购</th>
+                        <th width="5%">剩余</th>
+                        <th width="11%">保质期</th>
                         <th width="18%">状态</th>
                         <th width="4%" style="padding: 2px">
                            <!--  <select class="form-control input-sm" ng-disabled="true">
@@ -104,14 +106,24 @@
                             <span class="glyphicon glyphicon-th-large text-success" ng-show="product.productType == 1"></span>
                             <a href="javascript:void(0)" ng-click="toggleDetailsSlide(product)">{{product.name}}</a>
                         </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                        <td>
-                            &nbsp;
+                        <td colspan="5">
+                            <table class="table table-condensed clear-marginbottom-table">
+                                <thead>
+                                    <tr ng-repeat="warehouse in product.warehouses">
+                                        <td width="28%">
+                                            <strong>{{warehouse.name}}</strong>
+                                        </td>
+                                        <td width="14%">{{warehouse.total}}</td>
+                                        <td width="14%">{{warehouse.orderedQty}}</td>
+                                        <td width="14%">{{warehouse.total - warehouse.orderedQty}}</td>
+                                        <td width="30%">
+                                            <span ng-repeat="expireDate in expireDates">
+                                                {{expireDate | date: 'yyyy-MM-dd'}} 
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
                         </td>
                         <td>
                             <a tabindex="0" href="javascript:void(0)" uib-popover-template="template.popover.url" ng-click="updateStep(product)" popover-trigger="focus" class="btn btn-success btn-xs" ng-repeat="process in product.processes" style="margin:0 5px 5px 0">

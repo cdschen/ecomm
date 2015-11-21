@@ -1,6 +1,7 @@
 package com.sooeez.ecomm.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -61,7 +62,7 @@ public class Warehouse implements Serializable {
 
 	// 产品在一个仓库下的数量
 	@Transient
-	private Long total;
+	private Long total = 0l;
 
 	// 仓库id集
 	@Transient
@@ -70,6 +71,14 @@ public class Warehouse implements Serializable {
 	// 检查唯一
 	@Transient
 	private Boolean checkUnique;
+
+	// 把所有库存条目的保质期都列在仓库的这个属性上
+	@Transient
+	private List<Date> expireDates;
+
+	// 商品预购数量
+	@Transient
+	private Long orderedQty = 0l;
 
 	/*
 	 * Constructor
@@ -168,6 +177,22 @@ public class Warehouse implements Serializable {
 
 	public void setCheckUnique(Boolean checkUnique) {
 		this.checkUnique = checkUnique;
+	}
+
+	public List<Date> getExpireDates() {
+		return expireDates;
+	}
+
+	public void setExpireDates(List<Date> expireDates) {
+		this.expireDates = expireDates;
+	}
+
+	public Long getOrderedQty() {
+		return orderedQty;
+	}
+
+	public void setOrderedQty(Long orderedQty) {
+		this.orderedQty = orderedQty;
 	}
 
 }

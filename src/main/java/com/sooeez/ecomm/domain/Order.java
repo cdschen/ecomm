@@ -204,7 +204,7 @@ public class Order implements Serializable {
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "object_id")
-	@Where( clause = "object_type = 1" )
+	@Where(clause = "object_type = 1")
 	private List<ObjectProcess> processes;
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -269,6 +269,10 @@ public class Order implements Serializable {
 	// 店铺id集合
 	@Transient
 	private Long[] shopIds;
+
+	// order处理行为
+	@Transient
+	private String action;
 
 	//
 
@@ -392,11 +396,9 @@ public class Order implements Serializable {
 		return shipNumber;
 	}
 
-
 	public void setShipNumber(String shipNumber) {
 		this.shipNumber = shipNumber;
 	}
-
 
 	public String getShippingTimeStart() {
 		return shippingTimeStart;
@@ -704,6 +706,14 @@ public class Order implements Serializable {
 
 	public void setItems(List<OrderItem> items) {
 		this.items = items;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
 	}
 
 }

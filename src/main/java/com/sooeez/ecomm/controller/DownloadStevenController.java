@@ -103,8 +103,9 @@ public class DownloadStevenController {
     	
     	/* 初始化［发货单内容］字体 */
     	Font contentFont = workbook.createFont();
+    	contentFont.setBold( true );
     	contentFont.setFontName("宋体");
-    	contentFont.setFontHeightInPoints( (short) 10 );
+    	contentFont.setFontHeightInPoints( (short) 8 );
 
     	/* 初始化［发货单标题］样式 */
     	CellStyle titleStyle = workbook.createCellStyle();
@@ -117,7 +118,7 @@ public class DownloadStevenController {
     	contentStyle.setFont( contentFont );
 
     	/* 创建［发货单标题］ */
-    	String[] titles = { "收货人", "电话号", "手机号", "地址", "物品内容", "邮编", "", "快递单号", "", "发货单号", "状态", "备注" };
+    	String[] titles = { "收货人", "电话号", "手机号", "地址", "物品内容", "邮编", "", "快递单号" };
 
     	Row titleRow = sheet.createRow( 0 );
     	for( int i = 0; i < titles.length; i++ )
