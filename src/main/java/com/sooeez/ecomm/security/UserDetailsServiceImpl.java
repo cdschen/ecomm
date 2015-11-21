@@ -34,7 +34,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 		List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
 
-		User user = this.userRepository.findOneByUsername(username);
+		User user = userRepository.findOneByUsernameAndEnabled(username, true);
 
 		user.getRoles().forEach(role -> {
 			grantedAuthorities.add(new SimpleGrantedAuthority(role.getCode()));

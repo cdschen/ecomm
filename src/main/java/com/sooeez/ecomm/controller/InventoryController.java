@@ -1,5 +1,6 @@
 package com.sooeez.ecomm.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,16 @@ import com.sooeez.ecomm.domain.Courier;
 import com.sooeez.ecomm.domain.Inventory;
 import com.sooeez.ecomm.domain.InventoryBatch;
 import com.sooeez.ecomm.domain.InventoryBatchItem;
+import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Shipment;
 import com.sooeez.ecomm.domain.ShipmentItem;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.dto.OperationReviewShipmentDTO;
+import com.sooeez.ecomm.dto.PageDTO;
+import com.sooeez.ecomm.dto.inventory.InventoryBatchDTO;
+import com.sooeez.ecomm.dto.inventory.InventoryDTO;
+import com.sooeez.ecomm.dto.inventory.InventoryPositionDTO;
+import com.sooeez.ecomm.dto.inventory.InventoryProductDTO;
 import com.sooeez.ecomm.service.CourierService;
 import com.sooeez.ecomm.service.InventoryBatchItemService;
 import com.sooeez.ecomm.service.InventoryBatchService;
@@ -65,13 +72,52 @@ public class InventoryController {
 	}
 	
 	@RequestMapping(value = "/inventories")
-	public Page<Inventory> getPagedInventories(Inventory inventory, Pageable pageable) {
-		return inventoryService.getPagedInventories(inventory, pageable);
+	public PageDTO<Inventory> getPagedInventories(Inventory inventory, Pageable pageable) {
+		PageDTO<Inventory> page = new PageDTO<>();
+		page.setNumber(pageable.getPageNumber());
+		page.setSize(pageable.getPageSize());
+		page.setTotalElements(inventoryService.countAsInventory(pageable));
+//		page.setTotalPages(
+//				page.getTotalElements().longValue() % page.getSize().longValue() == 0 
+//					? (page.getTotalElements().longValue() / page.getSize().longValue()) 
+//							: (page.getTotalElements().longValue() / page.getSize().longValue() + 1 ));
+		return null;
+		//return inventoryService.getPagedInventories(inventory, pageable);
 	}
 	
 	@RequestMapping(value = "/inventories/get/all")
-	public List<Inventory> getInventories(Inventory inventory, Sort sort) {
-		return inventoryService.getInventories(inventory, sort);
+	public List<InventoryDTO> getInventories(Inventory inventory, Sort sort) {
+		
+		List<InventoryDTO> inventoriesDTO = new ArrayList<>();
+		inventoryService.getInventories(inventory, sort).forEach(inve -> {
+			InventoryDTO inventoryDTO = new InventoryDTO();
+			
+			InventoryProductDTO productDTO = new InventoryProductDTO();
+			productDTO.setId(inve.getProduct().getId());
+			productDTO.setSku(inve.getProduct().getSku());
+			productDTO.setName(inve.getProduct().getName());
+			inventoryDTO.setProduct(productDTO);
+			
+			InventoryPositionDTO positionDTO = new InventoryPositionDTO();
+			positionDTO.setId(inve.getPosition().getId());
+			positionDTO.setName(inve.getPosition().getName());
+			inventoryDTO.setPosition(positionDTO);
+			
+			InventoryBatchDTO batchDTO = new InventoryBatchDTO();
+			batchDTO.setId(inve.getBatch().getId());
+			batchDTO.setPurchaseOrderId(inve.getBatch().getPurchaseOrderId());
+			batchDTO.setReceiveId(inve.getBatch().getReceiveId());
+			inventoryDTO.setBatch(batchDTO);
+			
+			inventoryDTO.setId(inve.getId());
+			inventoryDTO.setInventoryBatchId(inve.getInventoryBatchId());
+			inventoryDTO.setQuantity(inve.getQuantity());
+			inventoryDTO.setExpireDate(inve.getExpireDate());
+			
+			inventoriesDTO.add(inventoryDTO);
+		});
+		
+		return inventoriesDTO;
 	}
 	
 	@RequestMapping(value = "/inventories", method = RequestMethod.POST)

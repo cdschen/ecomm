@@ -28,8 +28,6 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.Where;
 
-import com.sooeez.ecomm.dto.InventoryProductDetailDTO;
-
 @Entity
 @Table(name = "t_product")
 public class Product implements Serializable {
@@ -232,8 +230,8 @@ public class Product implements Serializable {
 	@Transient
 	private Boolean existPosition = false;
 
-//	@Transient
-//	private List<InventoryProductDetailDTO> details = new ArrayList<>();
+	// @Transient
+	// private List<InventoryProductDetailDTO> details = new ArrayList<>();
 
 	// 某仓库中产品上的所有批次
 	@Transient
@@ -246,6 +244,10 @@ public class Product implements Serializable {
 	// 用作商品名称或sku的or查询
 	@Transient
 	private String nameOrSku;
+
+	// 动作
+	@Transient
+	private String action;
 
 	/*
 	 * Constructor
@@ -674,13 +676,13 @@ public class Product implements Serializable {
 		this.existPosition = existPosition;
 	}
 
-//	public List<InventoryProductDetailDTO> getDetails() {
-//		return details;
-//	}
-//
-//	public void setDetails(List<InventoryProductDetailDTO> details) {
-//		this.details = details;
-//	}
+	// public List<InventoryProductDetailDTO> getDetails() {
+	// return details;
+	// }
+	//
+	// public void setDetails(List<InventoryProductDetailDTO> details) {
+	// this.details = details;
+	// }
 
 	public List<InventoryBatch> getBatches() {
 		return batches;
@@ -712,6 +714,14 @@ public class Product implements Serializable {
 
 	public void setBarcode(String barcode) {
 		this.barcode = barcode;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
 	}
 
 }

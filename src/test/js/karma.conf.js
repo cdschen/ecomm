@@ -36,6 +36,7 @@ module.exports = function(config) {
             '../main/webapp/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
             '../main/webapp/bower_components/ng-pageslide/dist/angular-pageslide-directive.js',
             '../main/webapp/bower_components/angular-toastr/dist/angular-toastr.tpls.js',
+            '../main/webapp/bower_components/angular-loading-bar/build/loading-bar.js',
             '../main/webapp/bower_components/angular-mocks/angular-mocks.js',
             // endbower
             '../main/webapp/scripts/**/*.js',

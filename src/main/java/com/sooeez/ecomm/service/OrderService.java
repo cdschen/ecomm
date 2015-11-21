@@ -203,9 +203,15 @@ public class OrderService {
 				+ "where `order`.id = orderItem.order_id "
 				+ "and `order`.id = process.object_id "
 				+ "and process.object_type = 1 "
-				+ "and `order`.shop_id = shop.id "
-				+ "and shop.deploy_process_step_id = process.step_id "
-				+ "and `order`.deleted = 0 ";
+				+ "and `order`.shop_id = shop.id ";
+		if (order.getAction() != null && order.getAction().indexOf("getOrderedQty") > -1) {
+			sqlString += "and (shop.init_process_step_id = process.step_id "
+					+ "or shop.deploy_process_step_id = process.step_id "
+					+ "or shop.error_process_step_id = process.step_id) ";
+		} else {
+			sqlString += "and shop.deploy_process_step_id = process.step_id ";
+		}
+			sqlString += "and `order`.deleted = 0 ";
 		if (order.getInternalCreateTimeStart() != null && order.getInternalCreateTimeEnd() != null) {
 			sqlString += "and `order`.internal_create_time between '" + order.getInternalCreateTimeStart() + "' "
 					+ "and '" + order.getInternalCreateTimeEnd() + "'";
@@ -231,11 +237,11 @@ public class OrderService {
 		}
 		if (StringUtils.hasText(order.getExternalSn())) {
 			sqlString += " and `order`.external_sn like '%" + order.getExternalSn() + "%'";
-			order.setExternalSn(null);;
+			order.setExternalSn(null);
 		}
 		if (StringUtils.hasText(order.getReceiveName())) {
 			sqlString += " and `order`.receive_name like '%" + order.getReceiveName() + "%'";
-			order.setReceiveName(null);;
+			order.setReceiveName(null);
 		}
 		if (order.getWarehouseId() != null) {
 			sqlString += " and(orderItem.warehouse_id = " + order.getWarehouseId()
@@ -1016,7 +1022,6 @@ public class OrderService {
 		
 		/* 验证 5 ： 订单的收货地址是否为空 */
 		this.confirmEmptyReceiveAddress(review);
-		
 		
 		/* 设置可确认性 */
 		this.setConfirmable(review);

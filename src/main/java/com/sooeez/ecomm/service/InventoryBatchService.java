@@ -222,6 +222,7 @@ public class InventoryBatchService {
 				Inventory inventory = new Inventory();
 				inventory.setProduct(item.getProduct());
 				inventory.setWarehouseId(item.getWarehouse().getId());
+				inventory.setWarehouse(item.getWarehouse());
 				inventory.setPosition(item.getPosition());
 				inventory.setInventoryBatchId(batch.getId());
 				inventory.setBatch(batch);
@@ -328,6 +329,9 @@ public class InventoryBatchService {
 						System.out.println("没有修改库存的item:" + item.getId());
 					}
 				});
+				
+				// 最后每次出库，都删除库存为0的记录
+				inventoryRepository.deleteByQuantity();
 				
 			}
 			
@@ -441,7 +445,7 @@ public class InventoryBatchService {
 	// 当只有一个仓库的时候，计算库存中商品的库存
 	public List<Product> refreshInventoryWhenOneWarehouse(List<Inventory> inventories) {
 		List<Product> products = new ArrayList<>();
-		System.out.println("inventories.size(): " + inventories.size());
+		System.out.println("refreshInventoryWhenOneWarehouse(): " + inventories.size());
 		for (Inventory inventory: inventories) {
 			boolean existInventory = false;
 			for (Product product: products) {
