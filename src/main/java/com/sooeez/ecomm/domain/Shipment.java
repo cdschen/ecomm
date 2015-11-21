@@ -3,9 +3,7 @@ package com.sooeez.ecomm.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -173,8 +171,7 @@ public class Shipment implements Serializable {
 	@JoinColumn(name = "courier_id", insertable = false, updatable = false)
 	private Courier courier;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.LAZY)
-//	@NotFound(action = NotFoundAction.IGNORE)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "shipment_id")
 	private List<ShipmentItem> shipmentItems;
 
@@ -223,24 +220,6 @@ public class Shipment implements Serializable {
 	/* 签收结束日期 */
 	@Transient
 	private String signupTimeEnd;
-	
-	/**
-	 * 复核操作
-	 */
-	/* 检查项 */
-	@Transient
-	private Map<String, Boolean> checkMap = new HashMap<>();
-
-	@Transient
-	private Boolean ignoreCheck = false;
-	
-	/**
-	 * 导入发货单验证，插入所需属性
-	 */
-	/* 物品内容
-	 */
-	@Transient
-	private String productContent;
 
 	public Long getId() {
 		return id;
@@ -600,30 +579,6 @@ public class Shipment implements Serializable {
 
 	public void setExecuteOperatorId(Long executeOperatorId) {
 		this.executeOperatorId = executeOperatorId;
-	}
-
-	public String getProductContent() {
-		return productContent;
-	}
-
-	public void setProductContent(String productContent) {
-		this.productContent = productContent;
-	}
-
-	public Map<String, Boolean> getCheckMap() {
-		return checkMap;
-	}
-
-	public void setCheckMap(Map<String, Boolean> checkMap) {
-		this.checkMap = checkMap;
-	}
-
-	public Boolean getIgnoreCheck() {
-		return ignoreCheck;
-	}
-
-	public void setIgnoreCheck(Boolean ignoreCheck) {
-		this.ignoreCheck = ignoreCheck;
 	}
 	
 	
