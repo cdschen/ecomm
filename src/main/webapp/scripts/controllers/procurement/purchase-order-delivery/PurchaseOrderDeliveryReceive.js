@@ -23,10 +23,23 @@ angular.module('ecommApp')
 
         $scope.items = [];
 
+        $scope.initItemDatepicker = function()
+        {
+            $('.item-sandbox-container input').datepicker({
+                format: 'yyyy-mm-dd',
+                clearBtn: true,
+                language: 'zh-CN',
+                orientation: 'top left',
+                todayHighlight: true,
+                autoclose: true
+            });
+        };
+
         $('.sandbox-container input').datepicker({
             format: 'yyyy-mm-dd',
             clearBtn: true,
             language: 'zh-CN',
+            orientation: 'top left',
             todayHighlight: true,
             autoclose: true
         });

@@ -146,8 +146,8 @@ angular.module('ecommApp')
                 $('div[ps-open="detailsSlideChecked"]').css('overflow', 'auto');
                 Product.get({
                     id: product.id
-                }, function(product){
-                     $scope.processProduct = product;
+                }, function(product) {
+                    $scope.processProduct = product;
                 });
             }
         };
