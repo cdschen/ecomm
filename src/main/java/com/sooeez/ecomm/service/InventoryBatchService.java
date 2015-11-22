@@ -106,11 +106,16 @@ public class InventoryBatchService {
 	public InventoryBatch saveInventoryBatch(InventoryBatch batch) {
 		
 		if (batch.getOperate().intValue() == 1) { // 正常入库并增加库存
-			
+			System.out.println("正常入库并增加库存");
 			batch.setOperateTime(new Date(System.currentTimeMillis()));
 			
 			Inventory inventoryQuery = new Inventory();
 			inventoryQuery.setWarehouseId(batch.getWarehouse().getId());
+			inventoryQuery.setProductIds(new ArrayList<>());
+			for (InventoryBatchItem item : batch.getItems()) {
+				item.setOutBatch(null);
+				inventoryQuery.getProductIds().add(item.getProduct().getId().longValue());
+			}
 			
 			List<Inventory> inventories = inventoryService.getInventories(inventoryQuery, new Sort(Sort.Direction.ASC, "productId", "inventoryBatchId"));
 			System.out.println("batch.getWarehouse().getId():" + batch.getWarehouse().getId());
@@ -253,13 +258,21 @@ public class InventoryBatchService {
 			if (batch.getType().intValue() == 2) { // 当出库单状态为已完成的时候，修改库存
 				
 				batch.setOutInventoryTime(new Date(System.currentTimeMillis()));
+				
+				List<InventoryBatchItem> batchItems = batch.getItems();
+				
 				Inventory inventoryQuery = new Inventory();
 				inventoryQuery.setWarehouseId(batch.getWarehouse().getId());
+				inventoryQuery.setProductIds(new ArrayList<>());
+				for (InventoryBatchItem item : batchItems) {
+					InventoryBatch outBatch = new InventoryBatch();
+					outBatch.setId(item.getOutBatchId().longValue());
+					item.setOutBatch(outBatch);
+					inventoryQuery.getProductIds().add(item.getProduct().getId().longValue());
+				}
 				
 				List<Inventory> inventories = inventoryService.getInventories(inventoryQuery, new Sort(Sort.Direction.ASC, "productId", "inventoryBatchId"));
 				List<Product> products = refreshInventoryWhenOneWarehouse(inventories);
-
-				List<InventoryBatchItem> batchItems = batch.getItems();
 
 				for (InventoryBatchItem item : batchItems) {
 
@@ -334,7 +347,7 @@ public class InventoryBatchService {
 				inventoryRepository.deleteByQuantity();
 				
 			}
-			
+
 		} else if (batch.getOperate() == 3) { // 调整入库
 
 		} else if (batch.getOperate() == 4) { // 调整出库
@@ -619,7 +632,7 @@ public class InventoryBatchService {
 												long batchId = batch.getId().longValue();
 												long outBatchId = outBatch.getId().longValue();
 												if (batchId == outBatchId && batchTotal > 0) {
-													if (batchTotal - temp < 0) {
+													if (batchTotal - temp <= 0) {
 														InventoryBatchItem batchItem = new InventoryBatchItem();
 														batchItem.getProduct().setId(product.getId());
 														batchItem.getWarehouse().setId(warehouseId);
@@ -646,6 +659,7 @@ public class InventoryBatchService {
 														batch.setTotal(batchTotal - temp);
 														long positionTotal = position.getTotal().longValue();
 														position.setTotal(positionTotal - temp);
+														
 														exitPositionEach = true;
 														done = true;
 													}

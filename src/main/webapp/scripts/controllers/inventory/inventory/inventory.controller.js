@@ -19,6 +19,42 @@ angular.module('ecommApp')
         };
         $scope.products = [];
 
+        $scope.defautlQuery = {
+            size: 50,
+            sort: ['productId', 'inventoryBatchId']
+        };
+
+        $scope.query = angular.copy($scope.defautlQuery);
+
+        $scope.searchData = function(query, number) {
+            Inventory.get({
+                page: number ? number : 0,
+                size: query.size,
+                sort: query.sort,
+                nameOrSku: query.nameOrSku,
+                warehouseId: $rootScope.usingWarehouseId
+            }, function(page) {
+                $scope.page = page;
+                Utils.initList(page, query);
+                $scope.products = Inventory.refresh(page.content);
+            });
+        };
+
+        $scope.turnPage = function(number) {
+            if (number > -1 && number < $scope.page.totalPages) {
+                $scope.searchData($scope.query, number);
+            }
+        };
+
+        $scope.search = function(query) {
+            $scope.searchData(query);
+        };
+
+        $scope.reset = function() {
+            $scope.query = angular.copy($scope.defautlQuery);
+            $scope.searchData($scope.query);
+        };
+
         Warehouse.getAll({
             enabled: true,
             sort: ['name'],
@@ -32,25 +68,16 @@ angular.module('ecommApp')
                         $scope.warehouse.selected = angular.copy(this);
                     }
                 });
-                Inventory.getAll({
-                    warehouseId: $rootScope.usingWarehouseId,
-                    sort: ['productId', 'inventoryBatchId']
-                }).then(function(inventories) {
-                    // console.log('Inventory.getAll():');
-                    // console.log(inventories);
-                    $scope.products = Inventory.refresh(inventories);
-                });
+            } else {
+                $scope.warehouse.selected = $scope.warehouses[0];
+                $rootScope.usingWarehouseId = $scope.warehouse.selected.id;
             }
+            $scope.search($scope.query);
         });
 
         $scope.changeWarehouse = function($item) {
-            Inventory.getAll({
-                warehouseId: $item.id,
-                sort: ['productId', 'inventoryBatchId']
-            }).then(function(inventories) {
-                $scope.products = Inventory.refresh(inventories);
-                $rootScope.usingWarehouseId = $item.id;
-            });
+            $rootScope.usingWarehouseId = $item.id;
+            $scope.search($scope.query);
         };
 
         /*
@@ -104,14 +131,5 @@ angular.module('ecommApp')
                 $scope.searchSnapshot($scope.snapshotQuery);
             }
         };
-
-
-
-
-
-
-        Inventory.get({},function(){
-
-        });
     }
 ]);

@@ -57,7 +57,7 @@ angular.module('ecommApp')
             console.log('-------------------------------------');
             $.each($scope.batch.items, function() {
                 var item = this;
-                console.log('item, id: ' + item.id + ', product: ' + item.product.name + ', position:' + item.position.name + ', 应出: ' + item.changedQuantity + ', 实出: ' + item.actualQuantity);
+                console.log('item, id: ' + item.id + ', product: ' + item.product.name + ', position:' + item.position.name + ', 应出: ' + item.changedQuantity + ', 实出: ' + item.actualQuantity + ', 对应的入库单号: ' + item.outBatchId);
             });
 
             // console.clear();

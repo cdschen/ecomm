@@ -11,8 +11,12 @@ import com.sooeez.ecomm.domain.Inventory;
 
 public interface InventoryRepository extends JpaRepository<Inventory, Long>, JpaSpecificationExecutor<Inventory> {
 
+
 	@Query(value = "select count(*) from (select product_id from t_inventory GROUP BY product_id order by product_id) res", nativeQuery = true)
 	Long countAsInventory();
+	
+	@Query(value = "select product_id from t_inventory GROUP BY product_id order by product_id limit ?1, ?2", nativeQuery = true)
+	List<Inventory> findPagedInventoryProductId(Integer offset, Integer size);
 
 	List<Inventory> findAllByWarehouseId(Long id);
 
