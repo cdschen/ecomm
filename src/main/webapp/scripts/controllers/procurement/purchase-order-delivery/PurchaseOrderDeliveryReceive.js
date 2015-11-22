@@ -23,10 +23,23 @@ angular.module('ecommApp')
 
         $scope.items = [];
 
+        $scope.initItemDatepicker = function()
+        {
+            $('.item-sandbox-container input').datepicker({
+                format: 'yyyy-mm-dd',
+                clearBtn: true,
+                language: 'zh-CN',
+                orientation: 'top left',
+                todayHighlight: true,
+                autoclose: true
+            });
+        };
+
         $('.sandbox-container input').datepicker({
             format: 'yyyy-mm-dd',
             clearBtn: true,
             language: 'zh-CN',
+            orientation: 'top left',
             todayHighlight: true,
             autoclose: true
         });
@@ -61,7 +74,7 @@ angular.module('ecommApp')
         {
             var isQualified = true;
 
-            if( ! item.supplierProduct.supplierProductName )
+            if( ! item.supplierProduct || ! item.supplierProduct.supplierProductName )
             {
                 toastr.warning('［名称］不能为空');
                 isQualified = false;

@@ -64,7 +64,7 @@
                     <tr>
                         <td width="36%">
                             <div class="form-group has-feedback" ng-class="{'has-success':(itemAddForm.product.$dirty && itemAddForm.product.$valid && item.product.id), 'has-warning':(itemAddForm.product.$dirty && itemAddForm.product.$invalid) }">
-                                <input type="text" name="product" ng-model="item.product" ng-show="batch.warehouse" placeholder="请输入商品" required min="1" class="form-control" uib-typeahead="product as product.name + '(' + product.sku + ')' for product in getProduct($viewValue)" typeahead-loading="loadingLocations" typeahead-no-results="noResults" typeahead-wait-ms="350" />
+                                <input type="text" name="product" ng-model="item.product" ng-show="batch.warehouse" placeholder="请输入商品名" required min="1" class="form-control" uib-typeahead="product as product.name + '(' + product.sku + ')' for product in getProduct($viewValue)" typeahead-loading="loadingLocations" typeahead-no-results="noResults" typeahead-wait-ms="350" />
                                 <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="itemAddForm.product.$dirty && itemAddForm.product.$valid && item.product.id"></span>
                                 <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="itemAddForm.product.$dirty && itemAddForm.product.$invalid"></span>
                                 <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>

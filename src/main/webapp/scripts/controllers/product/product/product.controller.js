@@ -53,7 +53,8 @@ angular.module('ecommApp')
                 sort: query.sort,
                 nameOrSku: query.product.nameOrSku,
                 enabled: query.product.enabled,
-                statusIds: Process.refreshStatus(query.statuses)
+                statusIds: Process.refreshStatus(query.statuses),
+                action: 'getInventories'
             }, function(page) {
                 $scope.page = page;
                 console.log(page);
@@ -143,7 +144,11 @@ angular.module('ecommApp')
             if ($scope.detailsSlideChecked) {
                 $('body').css('overflow', 'hidden');
                 $('div[ps-open="detailsSlideChecked"]').css('overflow', 'auto');
-                $scope.processProduct = product;
+                Product.get({
+                    id: product.id
+                }, function(product) {
+                    $scope.processProduct = product;
+                });
             }
         };
 

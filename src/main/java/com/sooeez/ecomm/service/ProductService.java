@@ -4,7 +4,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+
+
+
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -13,6 +17,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+
+
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,11 +30,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+
+
+
+import com.sooeez.ecomm.domain.Inventory;
 import com.sooeez.ecomm.domain.ObjectProcess;
+import com.sooeez.ecomm.domain.Order;
 import com.sooeez.ecomm.domain.ProcessStep;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Shop;
 import com.sooeez.ecomm.domain.Process;
+import com.sooeez.ecomm.domain.Warehouse;
+import com.sooeez.ecomm.dto.ProductSearchDTO;
 import com.sooeez.ecomm.dto.api.DTO_Product_Partner;
 import com.sooeez.ecomm.dto.api.DTO_Product_Self;
 import com.sooeez.ecomm.dto.api.general.DTO_Pagination;
@@ -46,8 +61,21 @@ public class ProductService {
 	@Autowired 
 	private ProductRepository productRepository;
 	
+	/*
+	 * Service
+	 */
+	
 	@Autowired 
 	private ProcessService processService;
+	
+	@Autowired 
+	private InventoryService inventoryService;
+	
+	@Autowired 
+	private OrderService orderService;
+	
+	@Autowired 
+	private WarehouseService warehouseService;
 
 	/*
 	 * Product
@@ -110,7 +138,18 @@ public class ProductService {
 	}
 
 	public Page<Product> getPagedProducts(Product product, Pageable pageable) {
-		return productRepository.findAll(getProductSpecification(product), pageable);
+		
+		Page<Product> page = productRepository.findAll(getProductSpecification(product), pageable); 
+		
+		// 是否获取商品库存
+		if (product.getAction() != null && product.getAction().indexOf("getInventories") > -1) {
+			
+			page.getContent().forEach(p -> {
+				setProductWarehouseInventories(p);
+			});
+		}
+		
+		return page;
 	}
 	
 	private Specification<Product> getProductSpecification(Product product) {
@@ -158,6 +197,65 @@ public class ProductService {
 			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
+	}
+	
+	/*
+	 * 获得一个商品在仓库中的库存，需要设置product的action=getInventories
+	 */
+	public void setProductWarehouseInventories(Product product) {
+		Warehouse warehouseQuery = new Warehouse();
+		warehouseQuery.setEnabled(true);;
+		List<Warehouse> warehouses = warehouseService.getWarehouses(warehouseQuery, new Sort(Sort.Direction.ASC, "name"));
+		product.setWarehouses(new ArrayList<>());
+		warehouses.forEach(warehouse -> {
+			Warehouse newWarehouse = new Warehouse();
+			newWarehouse.setId(warehouse.getId().longValue());
+			newWarehouse.setName(warehouse.getName());
+			product.getWarehouses().add(newWarehouse);
+		});
+		
+		Inventory inventoryQuery = new Inventory();
+		inventoryQuery.setProductId(product.getId().longValue());
+		List<Inventory> inventories = inventoryService.getInventories(inventoryQuery, null);
+		inventoryService.refreshInventoryFormOneProduct(inventories).forEach(inventoryWarehouse -> {
+			for (Warehouse warehouse: product.getWarehouses()) {
+				if (warehouse.getId().longValue() == inventoryWarehouse.getId().longValue()) {
+					BeanUtils.copyProperties(inventoryWarehouse, warehouse);
+				}
+			}
+		});
+		setProductWarehouseOrderedQuantity(product);
+	}
+	
+	/*
+	 * 通过订单检索，获得一个商品的预购数量，并且是针对当前商品所在仓库的库存中计算
+	 * 需要设置product的action=getOrderedQty
+	 */
+	public void setProductWarehouseOrderedQuantity(Product product) {
+		if (product.getWarehouses() != null && product.getWarehouses().size() > 0) {
+			Order orderQuery = new Order();
+			Long[] warehouseIds = new Long[product.getWarehouses().size()];
+			for (int i = 0, len = product.getWarehouses().size(); i < len; i++) {
+				warehouseIds[i] = product.getWarehouses().get(i).getId().longValue();
+			}
+			orderQuery.setWarehouseIds(warehouseIds);
+			orderQuery.setAction("getOrderedQty");
+			orderService.findAvailableDeployOrder(orderQuery);
+			List<Order> orders =  orderService.getOrders(orderQuery, null);
+			System.out.println("setProductWarehouseOrderedQuantity().orders: " + orders.size());
+			orders.forEach(order -> {
+				orderService.checkItemProductShopTunnel(order);
+				order.getItems().forEach(item -> {
+					for (Warehouse warehouse: product.getWarehouses()) {
+						if (item.getAssignTunnel().getDefaultWarehouse().getId().longValue() == warehouse.getId().longValue() 
+								&& item.getProduct().getId().longValue() == product.getId().longValue()) {
+							warehouse.setOrderedQty(warehouse.getOrderedQty().longValue() + item.getQtyOrdered().longValue());
+						}
+					}
+				});
+			});
+		}
+		
 	}
 	
 	/*

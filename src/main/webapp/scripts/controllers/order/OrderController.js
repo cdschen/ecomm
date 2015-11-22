@@ -60,6 +60,8 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
         objectType: 1
     }).then(function(processes) {
         $scope.processes = processes;
+        console.log('processes');
+        console.log(processes);
         Process.initStatus(processes);
     });
 
@@ -81,8 +83,12 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
             statusIds: Process.refreshStatus(query.status)
         }, function(page) {
             $scope.page = page;
+            console.log(page.content);
             query.totalPagesList = Utils.setTotalPagesList(page);
         });
+
+        console.log('orderService.getAll()');
+        console.log( orderService.getAll() );
     };
 
     $scope.searchData($scope.query);

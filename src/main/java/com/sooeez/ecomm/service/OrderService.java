@@ -74,24 +74,32 @@ public class OrderService {
 	 */
 	
 	@Transactional
-	public Order saveOrder(Order order) {
+	public Order saveOrder(Order order)
+	{
+		System.out.println("saveOrder(Order order)");
 		/* If id not null then is edit action */
-		if (order.getId() == null) {
-			
+		if (order.getId() == null)
+		{
 			Process processQuery = new Process();
 			processQuery.setObjectType(1);
 			processQuery.setEnabled(true);
 			List<Process> processes = processService.getProcesses(processQuery, null);
-			if (processes != null && processes.size() > 0) {
-				for (Process process : processes) {
-					if (process.getAutoApply() == true) {
+			if (processes != null && processes.size() > 0)
+			{
+				for (Process process : processes)
+				{
+					if (process.getAutoApply() == true)
+					{
 						ObjectProcess objectProcess = new ObjectProcess();
 						objectProcess.setObjectType(1);
 						objectProcess.setProcess(process);
 						ProcessStep step = new ProcessStep();
-						if (process.getDefaultStepId() != null) {
+						if (process.getDefaultStepId() != null)
+						{
 							step.setId(process.getDefaultStepId());
-						} else {
+						}
+						else
+						{
 							step.setId(process.getSteps().get(0).getId());
 						}
 						objectProcess.setStep(step);
@@ -101,10 +109,16 @@ public class OrderService {
 				}
 			}
 			
+			
 			order.setInternalCreateTime(new Date());
 		}
 		/* execute no matter create or update */
 		order.setLastUpdateTime(new Date());
+		
+//		for( ObjectProcess objectProcess : order.getProcesses() )
+//		{
+//			System.out.println( "==========    objectProcess.getProcess().getName(): " + objectProcess.getProcess().getName() );
+//		}
 
 		Integer qtyTotalItemOrdered = 0;
 		Integer weight = 0;
@@ -189,9 +203,15 @@ public class OrderService {
 				+ "where `order`.id = orderItem.order_id "
 				+ "and `order`.id = process.object_id "
 				+ "and process.object_type = 1 "
-				+ "and `order`.shop_id = shop.id "
-				+ "and shop.deploy_process_step_id = process.step_id "
-				+ "and `order`.deleted = 0 ";
+				+ "and `order`.shop_id = shop.id ";
+		if (order.getAction() != null && order.getAction().indexOf("getOrderedQty") > -1) {
+			sqlString += "and (shop.init_process_step_id = process.step_id "
+					+ "or shop.deploy_process_step_id = process.step_id "
+					+ "or shop.error_process_step_id = process.step_id) ";
+		} else {
+			sqlString += "and shop.deploy_process_step_id = process.step_id ";
+		}
+			sqlString += "and `order`.deleted = 0 ";
 		if (order.getInternalCreateTimeStart() != null && order.getInternalCreateTimeEnd() != null) {
 			sqlString += "and `order`.internal_create_time between '" + order.getInternalCreateTimeStart() + "' "
 					+ "and '" + order.getInternalCreateTimeEnd() + "'";
@@ -217,11 +237,11 @@ public class OrderService {
 		}
 		if (StringUtils.hasText(order.getExternalSn())) {
 			sqlString += " and `order`.external_sn like '%" + order.getExternalSn() + "%'";
-			order.setExternalSn(null);;
+			order.setExternalSn(null);
 		}
 		if (StringUtils.hasText(order.getReceiveName())) {
 			sqlString += " and `order`.receive_name like '%" + order.getReceiveName() + "%'";
-			order.setReceiveName(null);;
+			order.setReceiveName(null);
 		}
 		if (order.getWarehouseId() != null) {
 			sqlString += " and(orderItem.warehouse_id = " + order.getWarehouseId()
@@ -1003,7 +1023,6 @@ public class OrderService {
 		/* 验证 5 ： 订单的收货地址是否为空 */
 		this.confirmEmptyReceiveAddress(review);
 		
-		
 		/* 设置可确认性 */
 		this.setConfirmable(review);
 		
@@ -1020,24 +1039,29 @@ public class OrderService {
 		
 	}
 	
-	private Specification<Order> getOrderSpecification(Order order) {
-
+	private Specification<Order> getOrderSpecification(Order order)
+	{
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			predicates.add(cb.equal(root.get("deleted"), order.getDeleted() != null && order.getDeleted() ? true : false));
-			if (order.getOrderId() != null) {
+			if (order.getOrderId() != null)
+			{
 				predicates.add(cb.equal(root.get("id"), order.getOrderId()));
 			}
-			if (order.getShopId() != null) {
+			if (order.getShopId() != null)
+			{
 				predicates.add(cb.equal(root.get("shopId"), order.getShopId()));
 			}
-			if (order.getShopIds() != null && order.getShopIds().length > 0) {
+			if (order.getShopIds() != null && order.getShopIds().length > 0)
+			{
 				predicates.add(root.get("shopId").in(order.getShopIds()));
 			}
-			if (StringUtils.hasText(order.getReceiveName())) {
+			if (StringUtils.hasText(order.getReceiveName()))
+			{
 				predicates.add(cb.like(root.get("receiveName"), "%" + order.getReceiveName() + "%"));
 			}
-			if (order.getInternalCreateTimeStart() != null && order.getInternalCreateTimeEnd() != null) {
+			if (order.getInternalCreateTimeStart() != null && order.getInternalCreateTimeEnd() != null)
+			{
 				try {
 					predicates.add(cb.between(root.get("internalCreateTime"),
 							new SimpleDateFormat("yyyy-MM-dd").parse(order.getInternalCreateTimeStart()),
@@ -1045,14 +1069,18 @@ public class OrderService {
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
-			} else if (order.getInternalCreateTimeStart() != null) {
+			}
+			else if (order.getInternalCreateTimeStart() != null)
+			{
 				try {
 					predicates.add(cb.greaterThanOrEqualTo(root.get("internalCreateTime"), 
 							new SimpleDateFormat("yyyy-MM-dd").parse(order.getInternalCreateTimeStart())));
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
-			} else if (order.getInternalCreateTimeEnd() != null) {
+			}
+			else if (order.getInternalCreateTimeEnd() != null)
+			{
 				try {
 					predicates.add(cb.lessThanOrEqualTo(root.get("internalCreateTime"), 
 							new SimpleDateFormat("yyyy-MM-dd").parse(order.getInternalCreateTimeEnd())));
@@ -1060,7 +1088,8 @@ public class OrderService {
 					e.printStackTrace();
 				}
 			}
-			if (order.getShippingTimeStart() != null && order.getShippingTimeEnd() != null) {
+			if (order.getShippingTimeStart() != null && order.getShippingTimeEnd() != null)
+			{
 				try {
 					Subquery<Shipment> shipmentSubquery = query.subquery(Shipment.class);
 					Root<Shipment> shipmentRoot = shipmentSubquery.from(Shipment.class);
@@ -1072,7 +1101,9 @@ public class OrderService {
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
-			} else if (order.getShippingTimeStart() != null) {
+			}
+			else if (order.getShippingTimeStart() != null)
+			{
 				try {
 					Subquery<Shipment> shipmentSubquery = query.subquery(Shipment.class);
 					Root<Shipment> shipmentRoot = shipmentSubquery.from(Shipment.class);
@@ -1083,7 +1114,9 @@ public class OrderService {
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
-			} else if (order.getShippingTimeEnd() != null) {
+			}
+			else if (order.getShippingTimeEnd() != null)
+			{
 				try {
 					Subquery<Shipment> shipmentSubquery = query.subquery(Shipment.class);
 					Root<Shipment> shipmentRoot = shipmentSubquery.from(Shipment.class);
@@ -1103,14 +1136,17 @@ public class OrderService {
 				shipmentSubquery.where(shipmentRoot.get("shipNumber").in(order.getShipNumber()));
 				predicates.add(cb.in(root.get("id")).value(shipmentSubquery));
 			}
-			if (order.getStatusIds() != null) {
+			
+			if (order.getStatusIds() != null)
+			{
 				Subquery<ObjectProcess> objectProcessSubquery = query.subquery(ObjectProcess.class);
 				Root<ObjectProcess> objectProcessRoot = objectProcessSubquery.from(ObjectProcess.class);
 				objectProcessSubquery.select(objectProcessRoot.get("objectId"));
-				objectProcessSubquery.where(objectProcessRoot.get("stepId").in(order.getStatusIds()));
+				objectProcessSubquery.where(objectProcessRoot.get("stepId").in((Object[]) order.getStatusIds()));
 				predicates.add(cb.in(root.get("id")).value(objectProcessSubquery));
 			}
-			if (order.getOrderIds() != null && order.getOrderIds().size() > 0) {
+			if (order.getOrderIds() != null && order.getOrderIds().size() > 0)
+			{
 				predicates.add(cb.in(root.get("id")).value(order.getOrderIds()));
 			}
 			
@@ -1448,11 +1484,13 @@ public class OrderService {
 								 ") " +
 							 ") " +
 						 ") " +
-						 "AND enabled = false " +
+						 "AND enabled = true " +
 						 "LIMIT 1";
 				Query query =  em.createNativeQuery( sql , Product.class);
 				query.setParameter(1, shop.getId());
 				query.setParameter(2, dtoOrderItem.getSku());
+				System.out.println("shop.getId() :" + shop.getId());
+				System.out.println("dtoOrderItem.getSku(): " + dtoOrderItem.getSku());
 
 				if( ! query.getResultList().isEmpty() )
 				{
@@ -1500,7 +1538,7 @@ public class OrderService {
 					 * 		每个国家的销售税不是一样的，15% 属于Hardcode
 					 * 
 					 */
-					orderItem.setUnitGst( dtoOrderItem.getUnit_price().subtract( dtoOrderItem.getUnit_price().multiply( new BigDecimal( 0.15 ) ) ) );
+					orderItem.setUnitGst( dtoOrderItem.getUnit_price().multiply( new BigDecimal( 15 ).divide( new BigDecimal( 100 ) ) ) );
 				}
 				else
 				{
@@ -1526,7 +1564,7 @@ public class OrderService {
 			 * 
 			 */
 			/* 商品包含的税金 */
-			dtoOrder.setTax( subtotal.subtract( subtotal.multiply( new BigDecimal( 0.15 ) ) ) );
+			dtoOrder.setTax( subtotal.multiply( new BigDecimal( 15 ).divide( new BigDecimal( 100 ) ) ) );
 			/* 商品总件数 */
 			dtoOrder.setQty_total_item_ordered( qtyOrdered );
 			
@@ -1714,7 +1752,7 @@ public class OrderService {
 											 ") " +
 										 ") " +
 									 ") " +
-									 "AND enabled = false " +
+									 "AND enabled = true " +
 									 "LIMIT 1";
 							Query query =  em.createNativeQuery( sql , Product.class);
 							query.setParameter(1, shop.getId());
@@ -1766,7 +1804,7 @@ public class OrderService {
 								 * 		每个国家的销售税不是一样的，15% 属于Hardcode
 								 * 
 								 */
-								orderItem.setUnitGst( dtoOrderItem.getUnit_price().subtract( dtoOrderItem.getUnit_price().multiply( new BigDecimal( 0.15 ) ) ) );
+								orderItem.setUnitGst( dtoOrderItem.getUnit_price().multiply( new BigDecimal( 15 ).divide( new BigDecimal( 100 ) ) ) );
 							}
 							else
 							{
@@ -1792,7 +1830,7 @@ public class OrderService {
 						 * 
 						 */
 						/* 商品包含的税金 */
-						dtoOrder.setTax( subtotal.subtract( subtotal.multiply( new BigDecimal( 0.15 ) ) ) );
+						dtoOrder.setTax( subtotal.multiply( new BigDecimal( 15 ).divide( new BigDecimal( 100 ) ) ) );
 						/* 商品总件数 */
 						dtoOrder.setQty_total_item_ordered( qtyOrdered );
 					}
