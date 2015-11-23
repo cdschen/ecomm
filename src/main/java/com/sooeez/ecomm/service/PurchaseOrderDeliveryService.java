@@ -159,10 +159,13 @@ public class PurchaseOrderDeliveryService {
 	public void setConfirmable(OperationReviewDTO review)
 	{
 		/* 如果验证全都通过 */
-		if( ! review.getCheckMap().get("emptyPurchaseUnitPriceError") &&
+		if
+		(
+			! review.getCheckMap().get("emptyPurchaseUnitPriceError") &&
 			! review.getCheckMap().get("emptyReceiveQtyError") &&
 			! review.getCheckMap().get("differentReceiveQtyError") &&
-			! review.getCheckMap().get("isStatusObsoleteError") )
+			! review.getCheckMap().get("isStatusObsoleteError")
+		)
 		{
 			review.setConfirmable( true );
 		}
@@ -196,7 +199,8 @@ public class PurchaseOrderDeliveryService {
 			}
 			
 			/* 如果有一个验证不通过 */
-			if(
+			if
+			(
 				isEmptyPurchaseUnitPriceError ||
 				isEmptyReceiveQtyError ||
 				isDifferentReceiveQtyError ||
@@ -306,9 +310,12 @@ public class PurchaseOrderDeliveryService {
 						if( ! purchaseOrderItem.getIgnoreCheck() )
 						{
 							/* 如果［实际采购单价］为空或者［实际采购单价］小于或者等于 0，则采购单价为空 */
-							if( purchaseOrderItem.getRealPurchaseUnitPrice() == null ||
+							if
+							(
+								purchaseOrderItem.getRealPurchaseUnitPrice() == null ||
 								purchaseOrderItem.getRealPurchaseUnitPrice().compareTo(BigDecimal.ZERO) == -1 ||
-								purchaseOrderItem.getRealPurchaseUnitPrice().compareTo(BigDecimal.ZERO) == 0 )
+								purchaseOrderItem.getRealPurchaseUnitPrice().compareTo(BigDecimal.ZERO) == 0
+							)
 							{
 								purchaseOrderItem.getCheckMap().put("emptyPurchaseUnitPriceError", true);
 								isAnyError = true;
@@ -377,8 +384,11 @@ public class PurchaseOrderDeliveryService {
 						if( ! purchaseOrderItem.getIgnoreCheck() )
 						{
 							/* 如果［待收货数量］为空或者［实际收货数量］为空或者［待收货数量］和［实际收货数量］不相等，则商品实际收货数量不匹配 */
-							if( purchaseOrderItem.getPendingQty() == null || purchaseOrderItem.getRealReceivedQty() == null ||
-								purchaseOrderItem.getPendingQty() != purchaseOrderItem.getRealReceivedQty() )
+							if
+							(
+								purchaseOrderItem.getPendingQty() == null || purchaseOrderItem.getRealReceivedQty() == null ||
+								purchaseOrderItem.getPendingQty() != purchaseOrderItem.getRealReceivedQty()
+							)
 							{
 								purchaseOrderItem.getCheckMap().put("differentReceiveQtyError", true);
 								isAnyError = true;
@@ -480,10 +490,13 @@ public class PurchaseOrderDeliveryService {
 				for( PurchaseOrderItem purchaseOrderItem : purchaseOrder.getItems() )
 				{
 					/* 待收货数量,实际收货数量,Credit数量,等back order数量任意一个不等于空且大于0，则该［收货单］可插入 */
-					if( ( purchaseOrderItem.getPendingQty() != null && purchaseOrderItem.getPendingQty() > 0 ) ||
+					if
+					(
+						( purchaseOrderItem.getPendingQty() != null && purchaseOrderItem.getPendingQty() > 0 ) ||
 						( purchaseOrderItem.getRealReceivedQty() != null && purchaseOrderItem.getRealReceivedQty() > 0 ) ||
 						( purchaseOrderItem.getCreditQty() != null && purchaseOrderItem.getCreditQty() > 0 ) ||
-						( purchaseOrderItem.getBackOrderQty() != null && purchaseOrderItem.getBackOrderQty() > 0 ) )
+						( purchaseOrderItem.getBackOrderQty() != null && purchaseOrderItem.getBackOrderQty() > 0 )
+					)
 					{
 						SupplierProduct insertableSupplierProduct = new SupplierProduct();
 //						PurchaseOrderItem insertablePurchaseOrderItem = new PurchaseOrderItem();

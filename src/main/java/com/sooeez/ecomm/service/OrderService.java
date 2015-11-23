@@ -821,11 +821,14 @@ public class OrderService {
 	public void setConfirmable(OperationReviewDTO review)
 	{
 		/* 如果验证全都通过 */
-		if( ! review.getCheckMap().get("differentWarehouseError") &&
+		if
+		(
+			! review.getCheckMap().get("differentWarehouseError") &&
 			! review.getCheckMap().get("differentDeliveryMethodError") &&
 			! review.getCheckMap().get("emptyCourierAndShipNumberError") &&
 			! review.getCheckMap().get("warehouseExistOrderShipmentError") &&
-			! review.getCheckMap().get("emptyReceiveAddressError") )
+			! review.getCheckMap().get("emptyReceiveAddressError")
+		)
 		{
 			review.setConfirmable( true );
 		}
@@ -864,11 +867,14 @@ public class OrderService {
 			}
 			
 			/* 如果有一个验证不通过 */
-			if( isDifferentWarehouseError ||
+			if
+			(
+				isDifferentWarehouseError ||
 				isDifferentDeliveryMethodError ||
 				isEmptyCourierAndShipNumberError ||
 				isWarehouseExistOrderShipmentError ||
-				isEmptyReceiveAddressError )
+				isEmptyReceiveAddressError
+			)
 			{
 				review.setConfirmable( false );
 			}
@@ -889,7 +895,7 @@ public class OrderService {
 		
 		List<Order> orders = review.getOrders();
 		List<Order> shipmentGenerableOrders = new ArrayList<Order>();
-		for(Order order : orders)
+		for( Order order : orders )
 		{
 			/* 如果订单没有被移出，则添加到最终订单列表中 */
 			if( ! order.getIgnoreCheck() )
@@ -1028,8 +1034,11 @@ public class OrderService {
 		
 		
 		/* 如果验证全都通过，并且操作类型是 CONFIRM 则执行创建操作 */
-		if( review.isConfirmable() &&
-			review.getAction().equals(OperationReviewDTO.CONFIRM) )
+		if
+		(
+			review.isConfirmable() &&
+			review.getAction().equals(OperationReviewDTO.CONFIRM)
+		)
 		{
 			/* 执行生成发货单操作 */
 			this.executeShipmentGeneration( review );
