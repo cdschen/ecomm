@@ -589,6 +589,7 @@ public class ShipmentService {
 				shipment.setExecuteOperatorId( executeOperatorId );
 				shipment.setReceiveName( shipment.getReceiveName() != null ? shipment.getReceiveName() : "" );
 				shipment.setReceiveEmail( shipment.getReceiveEmail() != null ? shipment.getReceiveEmail() : "" );
+				shipment.setShipNumber( shipment.getShipNumber() );
 				
 //				1. 如果发货单号，订单号，发货单状态匹配：
 //					状态为［正常］：

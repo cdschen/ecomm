@@ -1320,18 +1320,18 @@ public class OrderService {
 				dtoShipment.setCourier_name( shipment.getCourier()!=null ? shipment.getCourier().getName() : null );
 				dtoShipment.setShip_number( shipment.getShipNumber() );
 				
-				String shipStatus = "未知状态";
+				String shipStatus = "";
 				if( shipment.getShipStatus()!=null )
 				{
 					switch ( shipment.getShipStatus() )
 					{
-						case 1: shipStatus="待取件"; break;
-						case 2: shipStatus="已发出"; break;
-						case 3: shipStatus="已签收"; break;
-						case 4: shipStatus="派送异常"; break;
-						case 5: shipStatus="作废"; break;
-			
-						default: shipStatus="未知状态"; break;
+						case 1: shipStatus = "待打印"; break;
+						case 2: shipStatus = "已打印"; break;
+						case 3: shipStatus = "已发出"; break;
+						case 4: shipStatus = "已签收"; break;
+						case 5: shipStatus = "配送异常"; break;
+						case 6: shipStatus = "已作废"; break;
+						default :shipStatus = "未指定状态";
 					}
 				}
 				dtoShipment.setShip_status( shipStatus );
