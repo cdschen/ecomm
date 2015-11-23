@@ -38,7 +38,7 @@ module.exports = function(config) {
             '../main/webapp/bower_components/angular-toastr/dist/angular-toastr.tpls.js',
             '../main/webapp/bower_components/angular-loading-bar/build/loading-bar.js',
             '../main/webapp/bower_components/js-xlsx/shim.js',
-            '../main/webapp/bower_components/js-xlsx/dist/xlsx.js',
+            '../main/webapp/bower_components/js-xlsx/dist/xlsx.core.min.js',
             '../main/webapp/bower_components/angular-mocks/angular-mocks.js',
             // endbower
             '../main/webapp/scripts/**/*.js',
