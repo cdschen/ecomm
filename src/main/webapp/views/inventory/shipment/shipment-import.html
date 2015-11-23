@@ -22,7 +22,15 @@
             <div class="col-md-12">
 
                 <div class="col-md-12">
-                    <div id="drop" drag-and-drop="dragAndDrop">请将［发货单 Excel 文件］拖拽至此</div>
+                    <label class="col-md-3 control-label">请选择要导入的发货单Excel文件:</label>
+                    <div class="col-md-3">
+                        <input type="file" class="form-control" input-file-reader="inputFileReader" />
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <br/>
+                    <div id="drop" drag-and-drop="dragAndDrop">或者您可以将［发货单 Excel 文件］拖拽至此进行自动校验</div>
                 </div>
 
                 <!--<div class="form-group">-->

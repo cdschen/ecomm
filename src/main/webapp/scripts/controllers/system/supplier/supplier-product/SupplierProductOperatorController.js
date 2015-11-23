@@ -25,9 +25,6 @@ var SupplierProductOperatorController = function($scope, $rootScope, $state, $st
                 return page.content;
             });
     };
-    Product.getAll().then(function(products) {
-        $scope.products = products;
-    });
 
     Supplier.getAll({
         deleted : 0

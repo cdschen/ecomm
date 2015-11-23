@@ -1,7 +1,7 @@
 angular.module('ecommApp')
 
-.controller('ShipmentImportController', ['$scope', '$timeout', 'toastr', 'shipmentService', '$rootScope',
-    function( $scope, $timeout, toastr, shipmentService, $rootScope )
+.controller('ShipmentImportController', ['$scope', '$timeout', 'toastr', 'shipmentService', '$rootScope', '$state',
+    function( $scope, $timeout, toastr, shipmentService, $rootScope, $state )
     {
         $scope.operationReviewImportShipment = shipmentService.getOperationReviewImportShipments;
 
@@ -17,7 +17,6 @@ angular.module('ecommApp')
 
         $scope.initDragAndDrop = function()
         {
-            $scope.shipments = [];
 
             var readers = $scope.dragAndDropDirective.readers;
             for( var readerIndex in readers )
@@ -31,6 +30,19 @@ angular.module('ecommApp')
                 {
                     toastr.warning('［' + reader.name + '］文件格式不正确，请拖拽后缀为［.xls］或［.xlsx］的文件');
                 }
+            }
+        };
+
+        $scope.initInputFileReader = function()
+        {
+            var reader = $scope.inputFileReaderDirective.reader;
+            if( reader.name.endsWith('.xls') || reader.name.endsWith('.xlsx') )
+            {
+                importShipmentsVerify( reader );
+            }
+            else
+            {
+                toastr.warning('［' + reader.name + '］文件格式不正确，请拖拽后缀为［.xls］或［.xlsx］的文件');
             }
         };
 
@@ -171,6 +183,7 @@ angular.module('ecommApp')
                     //
                     //}
                     toastr.success('成功导入 ' + review.resultMap.insertableShipmentsSize + ' 条发货单记录');
+                    $state.go('shipment');
                 }
 
             });
