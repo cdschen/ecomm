@@ -19,6 +19,8 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "t_inventory_batch_item")
 public class InventoryBatchItem implements Serializable {
@@ -120,6 +122,7 @@ public class InventoryBatchItem implements Serializable {
 	@JoinColumn(name = "execute_operator_id")
 	private User executeOperator = new User();
 
+	@JsonIgnore
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "out_batch_id")

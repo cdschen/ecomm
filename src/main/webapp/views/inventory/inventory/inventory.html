@@ -8,7 +8,7 @@
     </li>
 </ol>
 <div class="container-fluid">
-    <form>
+    <form name="inventoryForm" novalidate ng-submit="search(query)">
         <div class="panel panel-success">
             <div class="panel-heading">
                 <h3 class="panel-title">库存</h3>
@@ -16,14 +16,9 @@
             <table class="table table-condensed clear-marginbottom-table">
                 <thead>
                     <tr>
-                        <td width="12%">
+                        <td width="24%">
                             <div class="form-group">
-                                <input type="text" class="form-control" ng-model="p.sku" placeholder="SKU">
-                            </div>
-                        </td>
-                        <td width="12%">
-                            <div class="form-group">
-                                <input type="text" class="form-control" ng-model="p.name" placeholder="商品名称">
+                                <input type="text" ng-model="query.nameOrSku" class="form-control" placeholder="输入：SKU，商品名称">
                             </div>
                         </td>
                         <td width="16%">
@@ -36,24 +31,22 @@
                         </td>
                         <td width="46%"></td>
                         <td width="14%">
-                            <!-- <div class="form-group pull-right">
+                            <div class="form-group pull-right">
                                 <button type="reset" class="btn btn-default" ng-click="reset()">
                                     <span class="glyphicon glyphicon-refresh"></span> 重置
                                 </button>
                                 <button type="submit" class="btn btn-default">
                                     <span class="glyphicon glyphicon-search"></span> 搜索
                                 </button>
-                            </div> -->
+                            </div>
                         </td>
                     </tr>
                 </thead>
             </table>
-            <div class="panel-body" ng-show="products.length == 0">
-                <div class="alert alert-warning">
-                    没有任何数据被检索到
-                </div>
+            <div class="panel-body" ng-show="page == undefined || page.content.length == 0">
+                <div class="alert alert-warning">没有任何数据被检索到</div>
             </div>
-            <table class="table table-condensed" ng-show="products.length > 0">
+            <table class="table table-condensed" ng-show="page.content.length > 0">
                 <thead>
                     <tr>
                         <th width="12%">SKU</th>
@@ -68,7 +61,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="product in products | filter:{sku: p.sku, name: p.name}">
+                    <tr ng-repeat="product in products">
                         <td>
                             {{product.sku}}
                         </td>
@@ -122,6 +115,24 @@
                         </td>
                     </tr>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="20">
+                            <nav class="page-list">
+                                <ul class="pagination pagination-sm">
+                                    <li ng-repeat="i in query.list" ng-class="{active: i.value === page.number}">
+                                        <a href="" ng-click="turnPage(i.value)">{{i.label}}</a>
+                                    </li>
+                                </ul>
+                                <div class="page-total">
+                                    共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
+                                    <select class="form-control" style="display: inline; padding:0" ng-model="query.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                    </select>
+                                </div>
+                            </nav>
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </form>
