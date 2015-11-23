@@ -186,7 +186,7 @@ angular.module('ecommApp')
             {
                 if($scope.batchManipulationValue === 'shipmentComplete')
                 {
-                    $scope.showShipmentsCompleteSlide();
+                    //$scope.showShipmentsCompleteSlide();
                 }
                 else if($scope.batchManipulationValue === 'shipmentExport')
                 {
