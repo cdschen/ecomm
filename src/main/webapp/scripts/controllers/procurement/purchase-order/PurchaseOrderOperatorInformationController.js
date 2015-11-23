@@ -122,7 +122,7 @@ var PurchaseOrderOperatorInformationController = function($scope, $state, $state
     {
         if( $.isNumeric( supplierProduct.purchaseQty ) )
         {
-            supplierProduct.purchaseQty = Number( Math.floor( supplierProduct.purchaseQty ) ).toFixed( 0 );
+            supplierProduct.purchaseQty = Number( Math.floor( supplierProduct.purchaseQty ) );
 
             supplierProduct.purchaseQty = supplierProduct.purchaseQty > 1 ? supplierProduct.purchaseQty : 1;
         }
