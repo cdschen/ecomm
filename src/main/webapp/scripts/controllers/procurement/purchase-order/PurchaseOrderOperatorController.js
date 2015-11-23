@@ -347,7 +347,7 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
     {
         return {
             page: 0,
-            size: 2000,
+            size: 100,
             sort: ['supplierProductName,desc'],
             queryPurchaseOrderItemFuzzySearchParam: $scope.queryPurchaseOrderItemFuzzySearchParam ? $scope.queryPurchaseOrderItemFuzzySearchParam : null,
             querySupplierId: $scope.purchaseOrder.supplier ? $scope.purchaseOrder.supplier.id : null
