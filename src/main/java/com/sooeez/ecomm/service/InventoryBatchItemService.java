@@ -57,7 +57,7 @@ public class InventoryBatchItemService {
 	}
 	
 	private Specification<InventoryBatchItem> getBatchItemSpecification(InventoryBatchItem item) {
-
+		
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			if (item.getId() != null) {
