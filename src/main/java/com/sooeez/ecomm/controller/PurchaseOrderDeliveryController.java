@@ -51,27 +51,9 @@ public class PurchaseOrderDeliveryController {
 		{
 			PurchaseOrderDelivery fpod = new PurchaseOrderDelivery();
 			BeanUtils.copyProperties( opod, fpod, "batches", "items" );
+			fpod.setEnteredQty(purchaseOrderDeliveryService.getEnteredQty(fpod.getId().longValue()));
+			fpod.setEnterableQty(purchaseOrderDeliveryService.getEnterableQty(fpod.getId().longValue()));
 			fpods.add( fpod );
-//			Product productDTO = new Product();
-//			productDTO.setId(p.getId());
-//			productDTO.setSku(p.getSku());
-//			productDTO.setName(p.getName());
-//			productDTO.setProcesses(p.getProcesses());
-//			productDTO.setWarehouses(p.getWarehouses());
-//			
-//			productDTO.setPriceL1(p.getPriceL1());
-//			productDTO.setPriceL2(p.getPriceL2());
-//			productDTO.setPriceL3(p.getPriceL3());
-//			productDTO.setPriceL4(p.getPriceL4());
-//			productDTO.setPriceL5(p.getPriceL5());
-//			productDTO.setPriceL6(p.getPriceL6());
-//			productDTO.setPriceL7(p.getPriceL7());
-//			productDTO.setPriceL8(p.getPriceL8());
-//			productDTO.setPriceL9(p.getPriceL9());
-//			productDTO.setPriceL10(p.getPriceL10());
-//			productDTO.setWeight(p.getWeight());
-			
-//			fpos.add( productDTO );
 		});
 		pageDTO.setContent( fpods );
 		return pageDTO;

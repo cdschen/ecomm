@@ -624,8 +624,27 @@ public class PurchaseOrderDeliveryService {
 		
 	}
 	
+	// 得到这张收货单已入库的数量
+	public Long getEnteredQty(Long receiveId) {
+		
+		String sqlString = "SELECT sum(changed_quantity) FROM t_inventory_batch_item WHERE inventory_batch_id IN (SELECT id FROM t_inventory_batch WHERE receive_id = " + receiveId + ")";
+		System.out.println("sqlString: " + sqlString);
+		Object obj = em.createNativeQuery(sqlString).getSingleResult();
+		Long count = Long.valueOf(obj == null ? "0" : obj.toString());
+		System.out.println("getEnteredQty(): " + count);
+		return count;
+	}
 	
-
+	// 得到这张收货单应入库的数量
+	
+	public Long getEnterableQty(Long receiveId) {
+		String sqlString = "select sum(receive_qty) from t_purchase_order_delivery_item where purchase_order_delivery_id = " + receiveId;
+		System.out.println("sqlString: " + sqlString);
+		Long count = Long.valueOf(em.createNativeQuery(sqlString).getSingleResult().toString());
+		System.out.println("getEnterableQty(): " + count);
+		return count;
+	}
+	
 	/*
 	 * PurchaseOrderDeliveryItem
 	 */
@@ -649,5 +668,7 @@ public class PurchaseOrderDeliveryService {
 	public Page<PurchaseOrderDeliveryItem> getPagedPurchaseOrderDeliveryItems(Pageable pageable) {
 		return this.purchaseOrderDeliveryItemRepository.findAll(pageable);
 	}
+	
+	
 	
 }
