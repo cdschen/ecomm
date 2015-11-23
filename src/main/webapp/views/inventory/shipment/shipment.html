@@ -89,12 +89,11 @@
                     <th width="2%" class="text-center">
                         <input type="checkbox" name="orderId" ng-model="isCheckedAll" ng-click="checkAllOrders()">
                     </th>
-                    <th width="6%" class="text-center">店铺</th>
-                    <th width="6%" class="text-center">仓库</th>
-                    <th width="6%" class="text-center">订单号</th>
-                    <th width="6%" class="text-center">发货单号</th>
+                    <th width="8%" class="text-center">店铺</th>
+                    <th width="8%" class="text-center">仓库</th>
+                    <th width="12%" class="text-center">单号</th>
                     <th width="5%" class="text-center">状态</th>
-                    <th width="14%" class="text-center">时间（创建,更新,取件,签收）</th>
+                    <th width="16%" class="text-center">时间（创建,更新,取件,签收）</th>
                     <th width="6%" class="text-center">创建人</th>
                     <th width="6%" class="text-center">发货人</th>
                     <th width="10%" class="text-center">收件人</th>
@@ -121,11 +120,10 @@
                     <td>
                         {{ shipment.warehouse.name }}
                     </td>
-                    <td>
-                        {{ shipment.orderId }}
-                    </td>
-                    <td>
-                        {{ shipment.id }}
+                    <td class="text-left">
+                        订单: {{ shipment.orderId }}<br/>
+                        发货: {{ shipment.id }}<br/>
+                        快递: {{ shipment.shipNumber }}
                     </td>
                     <td>
                         {{
@@ -133,7 +131,7 @@
                             shipment.shipStatus == 2 ? '已打印' :
                             shipment.shipStatus == 3 ? '已发出' :
                             shipment.shipStatus == 4 ? '已签收' :
-                            shipment.shipStatus == 5 ? '派送异常' :
+                            shipment.shipStatus == 5 ? '配送异常' :
                             shipment.shipStatus == 6 ? '已作废' : '未指定状态'
                         }}
                     </td>

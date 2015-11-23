@@ -89,13 +89,12 @@
                     <th width="2%">
                         <input type="checkbox" name="orderId">
                     </th>
-                    <th width="10%">订单编号</th>
                     <th width="10%">店铺</th>
-                    <th width="10%">店铺单号</th>
-                    <th width="14%">时间（下单，导入，发出）</th>
+                    <th width="12%">单号</th>
+                    <th width="16%">时间（下单，导入，发出）</th>
                     <th width="6%">总金额</th>
                     <th width="10%">收件人</th>
-                    <th width="10%">商品信息</th>
+                    <th width="16%">商品信息</th>
                     <th width="12%">备注</th>
                     <th width="10%">状态</th>
                     <th width="6%" style="padding: 2px">
@@ -111,13 +110,13 @@
                         <input type="checkbox" name="orderId">
                     </td>
                     <td>
-                        {{order.id}}
-                    </td>
-                    <td>
                         {{order.shop.name}}
                     </td>
                     <td>
-                        {{order.externalSn}}
+                        订单:<br/>
+                        {{order.id}}<br/>
+                        店铺订单:<br/>
+                        {{order.externalSn}}<br/>
                     </td>
                     <td>
                         <div ng-show="order.internalCreateTime">
