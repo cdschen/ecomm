@@ -113,7 +113,7 @@
                         {{ purchaseOrderDelivery.receiveUser.username }}
                     </td>
                     <td>
-                        <a ui-sref="purchaseOrderDelivery.enterInventory({id:purchaseOrderDelivery.id})" class="btn btn-info btn-xs">
+                        <a has-any-role="SYSTEM_ADMIN,INVENTORY_ADMIN" ui-sref="purchaseOrderDelivery.enterInventory({id:purchaseOrderDelivery.id})" class="btn btn-info btn-xs">
                             <span class="glyphicon glyphicon-edit"></span> 入库
                         </a>
                     </td>
