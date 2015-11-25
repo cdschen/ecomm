@@ -12,7 +12,7 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-5">
-                        <div class="panel panel-info" style="height:215px">
+                        <div class="panel panel-info" style="height:260px">
                             <div class="panel-heading" style="padding:5px;">
                                 <h4 class="panel-title">基本信息</h4>
                             </div>
@@ -41,21 +41,26 @@
                                     <th width="30%">出库商品总件数</th>
                                     <td width="70%">{{Math.abs(batch.total)}}</td>
                                 </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <a href="" class="btn btn-success" ng-click="toggleDetailsSlide(batch)">查看相关订单</a>
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                     </div>
                     <div class="col-md-5">
-                        <div class="panel panel-info" style="height:215px">
+                        <div class="panel panel-info" style="height:260px">
                             <div class="panel-heading" style="padding:5px;">
                                 <h4 class="panel-title">备注</h4>
                             </div>
                             <div class="panel-body">
-                                <textarea class="form-control" rows="7" ng-model="batch.memo"></textarea>
+                                <textarea class="form-control" rows="9" ng-model="batch.memo"></textarea>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-2" ng-show="batch.type == 1">
-                        <div class="panel panel-default" style="height:215px">
+                        <div class="panel panel-default" style="height:260px">
                             <div class="panel-body">
                                 <button type="button" class="btn btn-success btn-lg btn-block" ng-click="outInventory()">确定</button>
                                 <a href="javascript:void(0)" class="btn btn-default btn-lg btn-block" ui-sref="outInventorySheet">取消</a>
@@ -105,8 +110,7 @@
                                             </tr>
                                         </thead>
                                     </table>
-                                </ng-form>
-                                
+                                </ng-form>    
                             </td>
                         </tr>
                     </tbody>
@@ -115,3 +119,4 @@
         </div>
     </form>
 </div>
+<section ng-include="template.details.url" ></section>

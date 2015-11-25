@@ -83,6 +83,9 @@
                                     <tr ng-repeat="item in order.items">
                                         <td width="50%">
                                             {{item.name}}
+                                            <p>
+                                                ({{item.product.sku}})
+                                            </p>
                                         </td>
                                         <td width="8.5%">
                                             {{item.qtyOrdered}}

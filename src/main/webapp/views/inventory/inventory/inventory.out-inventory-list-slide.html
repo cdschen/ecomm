@@ -1,0 +1,32 @@
+<div pageslide ps-open="outInventoryListSlideCheck" ps-side="left" ps-speed="0.25" ps-size="100%">
+    <div id="operator-slider">
+        <div class="panel panel-info">
+            <div class="panel-body">
+                <button type="button" class="close" ng-click="toggleOutInventoryList()">&times;</button>
+                
+                <table class="table table-condensed" ng-show="batch.items.length > 0">
+                    <thead>
+                        <tr>
+                            <th width="25%">SKU</th>
+                            <th width="25%">商品</th>
+                            <th width="25%">库位</th>
+                            <th width="25%">出库数量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in batch.items">
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

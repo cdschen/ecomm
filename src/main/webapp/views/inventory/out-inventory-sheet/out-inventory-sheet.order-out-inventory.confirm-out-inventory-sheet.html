@@ -133,6 +133,9 @@
                                         <tr ng-class="{'active': order.ignoreCheck}" ng-repeat="item in order.items">
                                             <td width="53%">
                                                 {{item.name}}
+                                                <p>
+                                                    (item.product.sku)
+                                                </p>
                                             </td>
                                             <td width="14.5%">
                                                 {{item.qtyOrdered}}

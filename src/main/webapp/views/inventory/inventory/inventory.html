@@ -3,7 +3,7 @@
     <li class="active">库存管理</li>
     <li class="pull-right" id="breadcrumb-li">
         <a class="btn btn-info btn-xs" ui-sref="inventory.enter({id:warehouse.selected.id})">入库</a>
-        <a class="btn btn-info btn-xs" ui-sref="inventory.out({id:warehouse.selected.id})">出库</a>
+        <!-- <a class="btn btn-info btn-xs" ui-sref="inventory.out({id:warehouse.selected.id})">出库</a> -->
         <a class="btn btn-info btn-xs">移库</a>
     </li>
 </ol>
@@ -51,13 +51,14 @@
                     <tr>
                         <th width="12%">SKU</th>
                         <th width="18%">商品名称</th>
-                        <th width="10%">库位</th>
-                        <th width="10%">数量</th>
-                        <th width="10%">有效期</th>
-                        <th width="10%">批次</th>
-                        <th width="10%">采购单</th>
-                        <th width="10%">收货单</th>
-                        <th width="20%">库存快照</th>
+                        <th width="8.75%">库位</th>
+                        <th width="8.75%">数量</th>
+                        <th width="8.75%">有效期</th>
+                        <th width="8.75%">批次</th>
+                        <th width="8.75%"></th>
+                        <th width="8.75%"></th>
+                        <th width="8.75%"></th>
+                        <th width="10%">库存快照</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,30 +69,35 @@
                         <td>
                             {{product.name}}
                         </td>
-                        <td colspan="6">
+                        <td colspan="7">
                             <table class="table table-condensed clear-marginbottom-table">
                                 <thead>
                                     <tr ng-repeat="detail in product.details">
-                                        <td width="16.6%">
+                                        <td width="14.28%">
                                             {{detail.position.name}}
                                         </td>
-                                        <td width="16.6%">
+                                        <td width="14.28%">
                                             {{detail.quantity}}
                                         </td>
-                                        <td width="16.6%">
+                                        <td width="14.28%">
                                             {{detail.expireDate | date:'yyyy-MM-dd'}}
                                         </td>
-                                        <td width="16.6%">
+                                        <td width="14.28%">
                                             {{detail.batchId}}
                                         </td>
-                                        <td width="16.6%">
+                                        <td width="14.28%">
                                             <a ui-sref="purchaseOrder.operator({id:detail.purchaseOrderId})" class="btn btn-info btn-xs">
                                                 <span class="glyphicon glyphicon-search"></span> 采购单
                                             </a>
                                         </td>
-                                        <td width="16.6%">
+                                        <td width="14.28%">
                                             <a ui-sref="purchaseOrderDelivery.receive({id:detail.receiveId})" class="btn btn-info btn-xs">
                                                 <span class="glyphicon glyphicon-search"></span> 收货单
+                                            </a>
+                                        </td>
+                                        <td width="14.28%">
+                                            <a href="" class="btn btn-danger btn-xs" ng-click="addOutInventory(product, detail)">
+                                                <span class="glyphicon glyphicon-plus"></span> 加入出库清单
                                             </a>
                                         </td>
                                     </tr>
@@ -100,10 +106,7 @@
                                         <td>
                                             <span class="text-success">总共：{{product.total}}</span>
                                         </td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td colspan="6"></td>
                                     </tr>
                                 </thead>
                             </table>
@@ -137,4 +140,5 @@
         </div>
     </form>
 </div>
+<section ng-include="template.outInventoryList.url"></section>
 <section ng-include="template.snapshot.url"></section>
