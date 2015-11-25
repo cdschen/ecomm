@@ -202,14 +202,29 @@ public class PurchaseOrderService {
 	{
     	/* 创建［发货单大标题］
     	 */
+    	Font bigTitleFont = workbook.createFont();
+    	bigTitleFont.setColor( HSSFColor.BLACK.index );
+    	bigTitleFont.setBold( true );
+    	bigTitleFont.setFontName("宋体");
+    	bigTitleFont.setFontHeightInPoints( (short) 16 );
+    	
     	Row bigTitleRow = sheet.getRow( 0 );
     	Cell bigTitleRowCell = bigTitleRow.getCell( 0 );
-    	bigTitleRowCell.setCellValue( "MDD --  " + purchaseOrder.getSupplier().getName() + "  Order   " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format( new Date() ) );
+    	bigTitleRowCell.getCellStyle().setFont( bigTitleFont );
+    	bigTitleRowCell.setCellValue( "MDD --  " + purchaseOrder.getSupplier().getName() + "  Order   " + new SimpleDateFormat("yyyy-MM-dd").format( new Date() ) );
+    	
+    	String companyName = purchaseOrder.getCompanyName() != null ? purchaseOrder.getCompanyName() : "";
+    	String receiveName = purchaseOrder.getReceiveName() != null ? purchaseOrder.getReceiveName() : "";
+    	String receivePhone = purchaseOrder.getReceivePhone() != null ? purchaseOrder.getReceivePhone() : "";
+    	String receiveMobile = purchaseOrder.getReceiveMobile() != null ? purchaseOrder.getReceiveMobile() : "";
+    	String receiveEmail = purchaseOrder.getReceiveEmail() != null ? purchaseOrder.getReceiveEmail() : "";
+    	String receiveAddress = purchaseOrder.getReceiveAddress() != null ? purchaseOrder.getReceiveAddress() : "";
+    	String deliverAttention = purchaseOrder.getDeliverAttention() != null ? purchaseOrder.getDeliverAttention() : "";
     	
     	String[] contactContents =
     	{
-    		"MDD", "", "Magic Group", "Magic Group Ltd (MDD).   Unit 1, 48 Ellice Road, Wairau Valley, Auckland",
-    		"0800 - 999 899  or 09-9729611", "Candy ZHANG", "027 652 8888", "candy@mdd.co.nz", "Please Deliver between 11am~7pm.   Thanks for your help  :)"
+    		"MDD", "", companyName, receiveAddress,
+    		receivePhone, receiveName, receiveMobile, receiveEmail, deliverAttention
     	};
     	for( int i = 0; i < contactContents.length; i++ )
     	{

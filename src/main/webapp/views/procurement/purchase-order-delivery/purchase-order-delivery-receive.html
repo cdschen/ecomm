@@ -88,7 +88,7 @@
                             <tr>
                                 <th width="16%">保质期</th>
                                 <th width="30%">商品</th>
-                                <th width="10">实际采购价格</th>
+                                <!--<th width="10">实际采购价格</th>-->
                                 <th width="10">数量</th>
                                 <th width="20%">备注</th>
                                 <th width="14%">操作</th>
@@ -105,10 +105,10 @@
                                 <td>
                                     {{ item.supplierProduct.product ? item.supplierProduct.product.name : item.supplierProduct.supplierProductName }}
                                 </td>
-                                <td>
-                                    <input type="number" ng-model="item.realPurchaseUnitPrice" placeholder="(选填)"
-                                           class="form-control input-sm" ng-blur="rebuildPriceNumeric( item, 'realPurchaseUnitPrice' )" />
-                                </td>
+                                <!--<td>-->
+                                    <!--<input type="number" ng-model="item.realPurchaseUnitPrice" placeholder="(选填)"-->
+                                           <!--class="form-control input-sm" ng-blur="rebuildPriceNumeric( item, 'realPurchaseUnitPrice' )" />-->
+                                <!--</td>-->
                                 <td>
                                     <input type="number" ng-model="item.receiveQty" placeholder="(必填)"
                                            class="form-control input-sm" ng-blur="rebuildQtyNumeric( item, 'receiveQty' )"/>
