@@ -1063,7 +1063,7 @@ public class OrderService {
 			}
 			if (order.getShopIds() != null && order.getShopIds().length > 0)
 			{
-				predicates.add(root.get("shopId").in(order.getShopIds()));
+				predicates.add(root.get("shopId").in((Object[]) order.getShopIds()));
 			}
 			if (StringUtils.hasText(order.getReceiveName()))
 			{

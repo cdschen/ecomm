@@ -30,13 +30,13 @@ angular.module('ecommApp')
                         if (Principal.get().managedWarehouses.length > 0) {
                             return [Principal.get().managedWarehouses];
                         } else {
-                            return [0];
+                            return [];
                         }
                     } else if (thing === 'shop') {
                         if (Principal.get().managedShops.length > 0) {
                             return [Principal.get().managedShops];
                         } else {
-                            return [0];
+                            return [];
                         }
                     }
                 }
