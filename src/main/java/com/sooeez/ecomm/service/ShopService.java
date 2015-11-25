@@ -88,7 +88,7 @@ public class ShopService {
 				predicates.add(cb.equal(root.get("enabled"), shop.getEnabled()));
 			}
 			if (shop.getShopIds() != null && shop.getShopIds().length > 0) {
-				predicates.add(root.get("id").in((Object)shop.getShopIds()));
+				predicates.add(root.get("id").in((Object[]) shop.getShopIds()));
 			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
