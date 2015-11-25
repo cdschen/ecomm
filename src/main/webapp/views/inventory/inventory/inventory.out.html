@@ -62,12 +62,22 @@
                 <tbody>
                     <tr>
                         <td width="36%">
-                            <ui-select ng-model="item.product" on-select="changeProduct($item)" ng-show="products.length > 0">
+                            <div class="form-group has-feedback" ng-class="{'has-success':(itemAddForm.product.$dirty && itemAddForm.product.$valid && item.product.id), 'has-warning':(itemAddForm.product.$dirty && itemAddForm.product.$invalid) }">
+                                <input type="text" name="product" ng-model="item.product" ng-show="batch.warehouse" placeholder="请输入SKU或商品名" required min="1" class="form-control" uib-typeahead="product as product.name + '(' + product.sku + ')' for product in getProduct($viewValue)" typeahead-loading="loadingLocations" typeahead-no-results="noResults" typeahead-wait-ms="350" />
+                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="itemAddForm.product.$dirty && itemAddForm.product.$valid && item.product.id"></span>
+                                <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="itemAddForm.product.$dirty && itemAddForm.product.$invalid"></span>
+                                <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
+                                <div ng-show="noResults">
+                                    <i class="glyphicon glyphicon-remove"></i> No Results Found
+                                </div>
+                            </div>
+                            <!-- <ui-select ng-model="item.product" on-select="changeProduct($item)" ng-show="products.length > 0">
                                 <ui-select-match placeholder="选择或搜索商品">{{$select.selected.name + '(' + $select.selected.sku + ')'}}</ui-select-match>
                                 <ui-select-choices repeat="product in products | filter: $select.search">
                                     <small ng-bind-html="product.name + '(' + product.sku + ')' | highlight: $select.search"></small>
                                 </ui-select-choices>
-                            </ui-select>
+                            </ui-select> -->
+                            
                         </td>
                         <td width="18%">
                             <div class="input-group" ng-show="batch.warehouse.positions && batch.warehouse.positions.length > 0 && item.product.existPosition == true">
@@ -118,12 +128,12 @@
         </form>
         <div class="panel-body">
             <form name="batchForm" class="form-horizontal" novalidate ng-submit="saveBatch(batch, batchForm)">
-                <div class="form-group has-feedback">
+                <!-- <div class="form-group has-feedback">
                     <label class="control-label col-md-2" for="name">订单号 <span class="text-danger"></span></label>
                     <div class="col-md-5">
                         <input type="text" class="form-control" name="orderId" ng-model="batch.orderId" placeholder="订单号" />
                     </div>
-                </div>
+                </div> -->
                 <div class="form-group has-feedback">
                     <label class="control-label col-md-2" for="name">备注 <span class="text-danger"></span></label>
                     <div class="col-md-5">
@@ -154,3 +164,4 @@
             </div>
         </div>
     </div>
+</div>

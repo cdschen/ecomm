@@ -8,6 +8,9 @@ angular.module('ecommApp')
         $scope.Math = Math;
 
         $scope.template = {
+            outInventoryList: {
+                url: '/views/inventory/inventory/inventory.out-inventory-list-slide.html?' + t
+            },
             snapshot: {
                 url: '/views/inventory/inventory/inventory.snapshot-slide.html?' + t
             }
@@ -78,6 +81,72 @@ angular.module('ecommApp')
         $scope.changeWarehouse = function($item) {
             $rootScope.usingWarehouseId = $item.id;
             $scope.search($scope.query);
+        };
+
+        /*
+         * 出库清单
+         */
+
+        $scope.outInventoryListSlideCheck = false;
+
+        $scope.toggleOutInventoryList = function() {
+            $scope.outInventoryListSlideCheck = !$scope.outInventoryListSlideCheck;
+            $('body').css('overflow', 'auto');
+            $('div[ps-open="outInventoryListSlideCheck"]').css('overflow', 'hidden');
+            if ($scope.outInventoryListSlideCheck) {
+                $('body').css('overflow', 'hidden');
+                $('div[ps-open="outInventoryListSlideCheck"]').css('overflow', 'auto');
+            }
+        };
+
+        $scope.defaultBatch = {
+            operate: 2, // 出库操作
+            type: 1, // 出库状态，待完成
+            operateTime: undefined,
+            warehouse: undefined,
+            user: {
+                id: $rootScope.user().id
+            },
+            memo: '',
+            items: []
+        };
+
+        $scope.batch = angular.copy($scope.defaultBatch);
+
+        $scope.defaultItem = {
+            product: undefined,
+            warehouse: undefined,
+            position: undefined,
+            outBatch: undefined,
+            user: {
+                id: $rootScope.user().id
+            },
+            changedQuantity: 0,
+            expireDate: undefined
+        };
+
+        $scope.item = angular.copy($scope.defaultItem);
+
+        $scope.addOutInventory = function(product, detail) {
+            $scope.detail = detail;
+            var warehouse = {
+                id: $scope.warehouse.selected.id
+            };
+            $scope.batch.warehouse = warehouse;
+
+            var item = {
+                product: product,
+                warehouse: $scope.warehouse.selected,
+                position: detail.position,
+                outBatch: {
+                    id: detail.batchId
+                },
+                changedQuantity: detail.quantity
+            };
+
+            $scope.batch.items.push(item);
+
+            $scope.toggleOutInventoryList();
         };
 
         /*
