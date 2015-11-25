@@ -42,7 +42,7 @@
     <li><a ui-sref="order">订单管理</a></li>
     <li class="active">订单打印</li>
 </ol>
-<table class="print-table" ng-show="page" style="width:98%;">
+<table class="print-table" ng-show="page" style="width:98%; margin:0 auto;">
     <tbody>
     <tr ng-repeat="order in page.content" ng-class="{active: order.active}">
         <td>
@@ -78,7 +78,7 @@
             <table class="print-table-inner bottom-receive-table">
                 <tr>
                     <td width="25%">购货人:&nbsp;&nbsp;&nbsp;{{ order.senderName }}</td>
-                    <td width="25%">下单时间:&nbsp;&nbsp;&nbsp;{{ order.internalCreateTime }}</td>
+                    <td width="25%">下单时间:&nbsp;&nbsp;&nbsp;{{ order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss' }}</td>
                     <td width="25%">支付方式:&nbsp;&nbsp;&nbsp;</td>
                     <td width="25%">订单编号:&nbsp;&nbsp;&nbsp;{{ order.id }}</td>
                 </tr>
@@ -113,17 +113,37 @@
             <table class="print-table-inner table-bordered order-detail-table">
                 <tr class="bg-success text-center" style="font-weight:bold;">
                     <td width="3%">数量</td>
-                    <td>商品名称</td>
-                    <td>货号</td>
-                    <td>价格</td>
-                    <td>小计</td>
+                    <td width="67%">商品名称</td>
+                    <td width="10%">货号</td>
+                    <td width="10%">价格</td>
+                    <td width="10%">小计</td>
                 </tr>
                 <tr ng-repeat="item in order.items">
-                    <td class="text-right">{{ item.qtyOrdered }}</td>
-                    <td class="text-left">{{ item.name ? item.name : item.externalName ? item.externalName : '' }}</td>
-                    <td class="text-left">{{ item.qtyOrdered }}</td>
-                    <td class="text-right">{{ item.unitPrice | currency : '' }}</td>
-                    <td class="text-right">{{ item.qtyOrdered }}</td>
+                    <td class="text-center">
+                        <span style="padding:3px;">
+                            {{ item.qtyOrdered }}
+                        </span>
+                    </td>
+                    <td class="text-left">
+                        <span style="padding:3px;">
+                            {{ item.name ? item.name : item.externalName ? item.externalName : '' }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <span style="padding:3px;">
+                            {{ item.qtyOrdered }}
+                        </span>
+                    </td>
+                    <td class="text-right">
+                        <span style="padding:3px;">
+                            {{ item.unitPrice | currency : '' }}
+                        </span>
+                    </td>
+                    <td class="text-right">
+                        <span style="padding:3px;">
+                            {{ item.unitPrice * item.qtyOrdered | currency : '' }}
+                        </span>
+                    </td>
                 </tr>
             </table>
             <br/><br/>
