@@ -29,5 +29,18 @@ angular.module('ecommApp')
             data: {
                 roles: [ROLES.SYSTEM_ADMIN, ROLES.ORDER_ADMIN]
             }
+        })
+        .state('order.print', {
+            parent: 'site',
+            url: '/order-print',
+            views: {
+                'content@': {
+                    templateUrl: 'views/order/order-print.html?' + t,
+                    controller: 'OrderPrintController'
+                }
+            },
+            data: {
+                roles: [ROLES.SYSTEM_ADMIN, ROLES.ORDER_ADMIN]
+            }
         });
 }]);

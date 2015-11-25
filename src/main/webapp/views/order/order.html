@@ -2,9 +2,14 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">订单管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="order.operator">创建</a>
-        <a href="javascript:void(0)" class="btn btn-info btn-xs">导入</a>
-        <a href="javascript:void(0)" class="btn btn-info btn-xs">导出</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="order.operator">
+            <span class="glyphicon glyphicon-plus-sign"></span>
+            创建订单
+        </a>
+        <!--<a href="javascript:void(0)" class="btn btn-info btn-xs">-->
+            <!--<span class="glyphicon glyphicon-open-file"></span>-->
+            <!--导入订单-->
+        <!--</a>-->
     </li>
 </ol>
 <div class="container-fluid">
@@ -163,8 +168,11 @@
                         <a href="javascript:void(0)" class="btn btn-info btn-xs pull-right" ng-click="toggleProcessSlide(order)">...</a>
                     </td>
                     <td>
-                        <a ui-sref="order.operator({id:order.id})" class="btn btn-info btn-xs">
+                        <a ui-sref="order.operator({id:order.id})" class="btn btn-info btn-xs" style="margin-bottom: 2px;">
                             <span class="glyphicon glyphicon-edit"></span> 编辑
+                        </a>
+                        <a ng-click="printSingle( order.id )" class="btn btn-info btn-xs">
+                            <span class="glyphicon glyphicon-print"></span> 打印
                         </a>
                     </td>
                 </tr>

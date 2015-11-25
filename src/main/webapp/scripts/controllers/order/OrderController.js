@@ -1,5 +1,5 @@
 
-var OrderController = function($scope, orderService, Utils, Process, ObjectProcess, Shop, Auth)
+var OrderController = function($scope, $location, orderService, Utils, Process, ObjectProcess, Shop, Auth)
 {
 
     /* Activate Date Picker */
@@ -168,8 +168,15 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
         }
     };
 
+
+    $scope.printSingle = function( orderId )
+    {
+        var url = '/order-print?orderId=' +( orderId || '');
+        $location.url( url );
+    };
+
 };
 
-OrderController.$inject = ['$scope', 'orderService', 'Utils', 'Process', 'ObjectProcess', 'Shop', 'Auth'];
+OrderController.$inject = ['$scope', '$location', 'orderService', 'Utils', 'Process', 'ObjectProcess', 'Shop', 'Auth'];
 
 angular.module('ecommApp').controller('OrderController', OrderController);

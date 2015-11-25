@@ -10,14 +10,14 @@ angular.module('ecommApp')
             return this.indexOf(suffix, this.length - suffix.length) !== -1;
         };
 
+        $scope.normalShipmentTableShow = false;
         $scope.emptyOrderErrorTableShow = false;
-        $scope.exceptionalShipmentTableShow = true;
+        $scope.exceptionalShipmentTableShow = false;
 
         $scope.shipments = [];
 
         $scope.initDragAndDrop = function()
         {
-
             var readers = $scope.dragAndDropDirective.readers;
             for( var readerIndex in readers )
             {
@@ -35,14 +35,18 @@ angular.module('ecommApp')
 
         $scope.initInputFileReader = function()
         {
-            var reader = $scope.inputFileReaderDirective.reader;
-            if( reader.name.endsWith('.xls') || reader.name.endsWith('.xlsx') )
+            var readers = $scope.inputFileReaderDirective.readers;
+            for( var readerIndex in readers )
             {
-                importShipmentsVerify( reader );
-            }
-            else
-            {
-                toastr.warning('［' + reader.name + '］文件格式不正确，请拖拽后缀为［.xls］或［.xlsx］的文件');
+                var reader = readers[ readerIndex ];
+                if( reader.name.endsWith('.xls') || reader.name.endsWith('.xlsx') )
+                {
+                    importShipmentsVerify( reader );
+                }
+                else
+                {
+                    toastr.warning('［' + reader.name + '］文件格式不正确，请拖拽后缀为［.xls］或［.xlsx］的文件');
+                }
             }
         };
 

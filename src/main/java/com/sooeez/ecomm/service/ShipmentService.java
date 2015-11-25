@@ -35,7 +35,6 @@ import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Shipment;
 import com.sooeez.ecomm.domain.ShipmentItem;
 import com.sooeez.ecomm.domain.Shop;
-import com.sooeez.ecomm.domain.User;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.dto.OperationReviewShipmentDTO;
 import com.sooeez.ecomm.repository.ObjectProcessRepository;
@@ -129,9 +128,8 @@ public class ShipmentService {
     		String[] contents =
     		{
     			shipment.getReceiveName(), shipment.getReceivePhone(), shipment.getReceivePhone(), shipment.getReceiveAddress(),
-    			shippedProductsBuffer.toString(),
-    			shipment.getOrderId().toString(), "", shipment.getShipNumber(),
-    			"", shipment.getId().toString(), /* this.getShipStatusByTinyint( shipment.getShipStatus() ) */ "正常" , shipment.getMemo()
+    			shippedProductsBuffer.toString(), shipment.getOrderId().toString(), shipment.getShipNumber(),
+    			shipment.getId().toString(), /* this.getShipStatusByTinyint( shipment.getShipStatus() ) */ "正常" , shipment.getMemo()
     		};
     		
         	Row contentRow = sheet.createRow( rowIndex );

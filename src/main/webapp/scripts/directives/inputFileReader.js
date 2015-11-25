@@ -10,22 +10,29 @@ angular.module('ecommApp')
                 {
                     $scope.inputFileReaderDirective =
                     {
-                        reader      :   {}
+                        readers      :   []
                     };
                 }
 
-                var reader = new FileReader();
-                reader.readAsBinaryString( changeEvent.target.files[0] );
-                reader.name = changeEvent.target.files[0].name;
-                $scope.inputFileReaderDirective.reader = reader;
-                if( $scope.initInputFileReader )
+                if ( changeEvent.target.files.length > 0 )
                 {
-                    /* Found initDragAndDrop function in controller */
-                    $scope.initInputFileReader();
-                }
-                else
-                {
-                    /* Don't find initDragAndDrop function in controller */
+                    for (var i=0, ii=changeEvent.target.files.length; i<ii; i++)
+                    {
+                        //var file = droppedFiles[i];
+                        var reader = new FileReader();
+                        reader.readAsBinaryString( changeEvent.target.files[i] );
+                        reader.name = changeEvent.target.files[i].name;
+                        $scope.inputFileReaderDirective.readers.push( reader );
+                    }
+                    if( $scope.initInputFileReader )
+                    {
+                        /* Found initDragAndDrop function in controller */
+                        $scope.initInputFileReader();
+                    }
+                    else
+                    {
+                        /* Don't find initDragAndDrop function in controller */
+                    }
                 }
             });
         }

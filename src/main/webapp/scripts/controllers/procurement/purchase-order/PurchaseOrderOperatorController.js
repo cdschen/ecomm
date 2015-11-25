@@ -223,8 +223,15 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
     else
     {
         $scope.purchaseOrder = {
-            items : [],
-            estimateReceiveDate : ''
+            items               :   [],
+            estimateReceiveDate :   '',
+            companyName         :   'Magic Group',
+            receiveName         :   'Candy ZHANG',
+            receivePhone        :   '0800 - 999 899  or 09-9729611',
+            receiveMobile       :   '027 652 8888',
+            receiveEmail        :   'candy@mdd.co.nz',
+            receiveAddress      :   'Magic Group Ltd (MDD).   Unit 1, 48 Ellice Road, Wairau Valley, Auckland',
+            deliverAttention    :   'Please Deliver between 11am~7pm.   Thanks for your help  :)'
         };
 
         $timeout(function()

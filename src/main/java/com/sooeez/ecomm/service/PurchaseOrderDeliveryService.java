@@ -12,6 +12,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.Predicate;
 
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,10 +27,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.sooeez.ecomm.domain.OrderItem;
+import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.PurchaseOrder;
 import com.sooeez.ecomm.domain.PurchaseOrderDelivery;
 import com.sooeez.ecomm.domain.PurchaseOrderDeliveryItem;
 import com.sooeez.ecomm.domain.PurchaseOrderItem;
+import com.sooeez.ecomm.domain.Shipment;
+import com.sooeez.ecomm.domain.ShipmentItem;
 import com.sooeez.ecomm.domain.SupplierProduct;
 import com.sooeez.ecomm.domain.User;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
@@ -667,6 +679,125 @@ public class PurchaseOrderDeliveryService {
 
 	public Page<PurchaseOrderDeliveryItem> getPagedPurchaseOrderDeliveryItems(Pageable pageable) {
 		return this.purchaseOrderDeliveryItemRepository.findAll(pageable);
+	}
+	
+	public void addPurchaseOrderDeliveryToCell( PurchaseOrder purchaseOrder, Workbook workbook, Sheet sheet )
+	{
+    	Row firstRow = sheet.getRow( 0 );
+    	CellReference a1 = new CellReference("A1");
+    	Cell orderFromRowCell = firstRow.getCell( a1.getCol() );
+    	
+    	orderFromRowCell.setCellValue( "Order From: " + ( purchaseOrder.getSupplier() != null ? purchaseOrder.getSupplier().getName() : "" ) );
+    	CellReference d1 = new CellReference("D1");
+    	Cell estimateReceiveDateRowCell = firstRow.getCell( d1.getCol() );
+    	
+    	estimateReceiveDateRowCell.setCellValue( "到货日期: " + ( purchaseOrder.getEstimateReceiveDate() != null ? new SimpleDateFormat("yyyy-MM-dd").format( purchaseOrder.getEstimateReceiveDate() ) : "" ) );
+
+    	Font itemContentFont = workbook.createFont();
+    	itemContentFont.setColor( HSSFColor.BLACK.index );
+    	itemContentFont.setBold( false );
+    	itemContentFont.setFontName("宋体");
+    	itemContentFont.setFontHeightInPoints( (short) 12 );
+    	
+    	CellStyle itemContentCommonStyle = workbook.createCellStyle();
+    	itemContentCommonStyle.setWrapText( true );
+    	itemContentCommonStyle.setFont( itemContentFont );
+    	itemContentCommonStyle.setBorderBottom( CellStyle.BORDER_THIN );
+    	itemContentCommonStyle.setBorderLeft( CellStyle.BORDER_THIN );
+    	itemContentCommonStyle.setBorderRight( CellStyle.BORDER_THIN );
+    	itemContentCommonStyle.setBorderTop( CellStyle.BORDER_THIN );
+    	
+    	/* 添加收货单详情
+    	 */
+    	List<PurchaseOrderItem> purchaseOrderItems = purchaseOrder.getItems();
+    	if( purchaseOrderItems != null && purchaseOrderItems.size() > 0 )
+    	{
+    		for( int i = 0; i < purchaseOrderItems.size(); i++ )
+    		{
+    			PurchaseOrderItem item = purchaseOrderItems.get( i );
+    			
+    			String productName = item.getSupplierProduct() != null && item.getSupplierProduct().getSupplierProductName() != null ? item.getSupplierProduct().getSupplierProductName() : " ";
+    			if( productName.trim().equals("") )
+    			{
+    				productName = item.getSupplierProduct() != null && item.getSupplierProduct().getProduct() != null && item.getSupplierProduct().getProduct().getShortName() != null ? item.getSupplierProduct().getProduct().getShortName() : " ";
+        			if( productName.trim().equals("") )
+        			{
+        				productName = item.getSupplierProduct() != null && item.getSupplierProduct().getProduct() != null && item.getSupplierProduct().getProduct().getName() != null ? item.getSupplierProduct().getProduct().getName() : " ";
+        			}
+    			}
+    			
+    			String barcode = item.getSupplierProduct() != null && item.getSupplierProduct().getSupplierProductBarcode() != null ? item.getSupplierProduct().getSupplierProductBarcode() : " ";
+    			if( barcode.trim().equals("") )
+    			{
+    				barcode = item.getSupplierProduct() != null && item.getSupplierProduct().getProduct() != null ? item.getSupplierProduct().getProduct().getBarcode() : " ";
+    			}
+    			String purchaseQty = item.getPurchaseQty() != null ? item.getPurchaseQty().toString() : "";
+
+    			Row contentRow = sheet.createRow( i + 2 );
+    	    	
+	        	setCell( contentRow, null, productName, 0 );
+	        	setCell( contentRow, null, barcode, 1 );
+	        	setCell( contentRow, null, purchaseQty, 2 );
+    		}
+    	}
+	}
+
+	public void addShipmentToCell( Shipment shipment, Sheet sheet, CellStyle contentStyle, Integer rowIndex )
+	{
+    	/* 如果存在指定发货单 */
+    	if( shipment != null )
+    	{
+    		StringBuffer shippedProductsBuffer = new StringBuffer();
+    		
+    		List<ShipmentItem> shipmentItems = shipment.getShipmentItems();
+    		if( shipmentItems != null && shipmentItems.size() > 0 )
+    		{
+    			for( int i = 0; i < shipmentItems.size(); i++ )
+    			{
+    				if( ! shippedProductsBuffer.toString().equals("") )
+    				{
+    					shippedProductsBuffer.append(", ");
+    				}
+    				OrderItem orderItem = shipmentItems.get( i ).getOrderItem();
+    				if( orderItem != null && orderItem.getProduct() != null )
+    				{
+    					Product product = orderItem.getProduct();
+    					shippedProductsBuffer.append( product.getShortName() );
+    					shippedProductsBuffer.append( "*" );
+    					shippedProductsBuffer.append( orderItem.getQtyOrdered() );
+//    					shippedProductsBuffer.append( "\n" );
+    				}
+    			}
+    		}
+    		
+    		String[] contents =
+    		{
+    			shipment.getReceiveName(), shipment.getReceivePhone(), shipment.getReceivePhone(), shipment.getReceiveAddress(),
+    			shippedProductsBuffer.toString(), shipment.getOrderId().toString(), shipment.getShipNumber(),
+    			shipment.getId().toString(), /* this.getShipStatusByTinyint( shipment.getShipStatus() ) */ "正常" , shipment.getMemo()
+    		};
+    		
+        	Row contentRow = sheet.createRow( rowIndex );
+        	for( int i = 0; i < contents.length; i++ )
+        	{
+            	Cell cell = contentRow.createCell( i );
+            	
+            	/* 如果是
+            	 */
+//            	if( i == 0 || i == 3 || i == 4 )
+//            	{
+                	cell.setCellStyle( contentStyle );
+//            	}
+            	cell.setCellValue( contents[ i ] );
+        	}
+    	}
+	}
+	
+	public void setCell( Row row, CellStyle cellStyle, String cellValue, Integer index )
+	{
+    	Cell cell = row.createCell( index );
+    	cell.setCellStyle( cellStyle );
+    	cell.setCellValue( cellValue );
 	}
 	
 	

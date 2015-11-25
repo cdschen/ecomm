@@ -76,7 +76,11 @@ public class SupplierProductController {
 //			productDTO.setWeight(p.getWeight());
 
 			SupplierProduct fsp = new SupplierProduct();
-			BeanUtils.copyProperties( osp, fsp, "product", "supplier", "creator" );
+			BeanUtils.copyProperties
+			(
+				osp, fsp, "product"
+//				, "supplier", "creator"
+			);
 			if( osp.getProduct() != null )
 			{
 				Product op = osp.getProduct();
