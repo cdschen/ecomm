@@ -22,18 +22,16 @@
         font-size:medium;
         font-weight:bolder;
     }
-    .bottom-receive-table
-    {
-        border:none;
-        border-collapse: separate;
-    }
-    .order-detail-table
-    {
-    }
+    .bottom-receive-table,
+    .sum-table,
     .operator-table
     {
         border:none;
-        font-size:small;
+        border-collapse: separate;
+        border-spacing: 3px;
+    }
+    .order-detail-table
+    {
     }
 </style>
 
@@ -44,168 +42,171 @@
 </ol>
 <table class="print-table" ng-show="page" style="width:98%; margin:0 auto;">
     <tbody>
-    <tr ng-repeat="order in page.content" ng-class="{active: order.active}">
-        <td>
-            <table class="print-table-inner top-receive-table">
-                <tr>
-                    <td>
-                        <table class="print-table-inner">
-                            <tr>
-                                <th>订单编号: {{ order.id }}</th>
-                            </tr>
-                            <tr>
-                                <th>
-                                    TO: {{ order.receiveName }}
-                                </th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    [{{ order.receiveAddress }}]
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    Tel: {{ order.receivePhone }}
-                                    &nbsp;&nbsp;
-                                    手机: {{ order.receiveMobile }}
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-            <br/><br/><br/>
-            <table class="print-table-inner bottom-receive-table">
-                <tr>
-                    <td width="25%">购货人:&nbsp;&nbsp;&nbsp;{{ order.senderName }}</td>
-                    <td width="25%">下单时间:&nbsp;&nbsp;&nbsp;{{ order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss' }}</td>
-                    <td width="25%">支付方式:&nbsp;&nbsp;&nbsp;</td>
-                    <td width="25%">订单编号:&nbsp;&nbsp;&nbsp;{{ order.id }}</td>
-                </tr>
-                <tr>
-                    <td>付款时间:&nbsp;&nbsp;&nbsp;</td>
-                    <td>发货时间:&nbsp;&nbsp;&nbsp;</td>
-                    <td>
-                        配送方式:&nbsp;&nbsp;&nbsp;
-                        {{
-                            order.deliveryMethod == 1 ? '快递' :
-                            order.deliveryMethod == 2 ? '自提' :
-                            order.deliveryMethod == 3 ? '送货上门' : ''
-                        }}
-                    </td>
-                    <td>
-                        发货单号:&nbsp;&nbsp;&nbsp;
-                        <span ng-repeat=" shipment in order.shipments ">
-                            <span ng-if=" $index > 0 ">,&nbsp;</span>{{ shipment.shipNumber }}
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="4">
-                        收货地址:&nbsp;&nbsp;&nbsp;{{ order.receiveAddress }}
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        收货人:&nbsp;&nbsp;&nbsp;{{ order.receiveName }}
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        手机:&nbsp;&nbsp;&nbsp;{{ order.receiveMobile }}
-                    </td>
-                </tr>
-            </table>
-            <table class="print-table-inner table-bordered order-detail-table">
-                <tr class="bg-success text-center" style="font-weight:bold;">
-                    <td width="3%">数量</td>
-                    <td width="67%">商品名称</td>
-                    <td width="10%">货号</td>
-                    <td width="10%">价格</td>
-                    <td width="10%">小计</td>
-                </tr>
-                <tr ng-repeat="item in order.items">
-                    <td class="text-center">
-                        <span style="padding:3px;">
-                            {{ item.qtyOrdered }}
-                        </span>
-                    </td>
-                    <td class="text-left">
-                        <span style="padding:3px;">
-                            {{ item.name ? item.name : item.externalName ? item.externalName : '' }}
-                        </span>
-                    </td>
-                    <td class="text-center">
-                        <span style="padding:3px;">
-                            {{ item.qtyOrdered }}
-                        </span>
-                    </td>
-                    <td class="text-right">
-                        <span style="padding:3px;">
-                            {{ item.unitPrice | currency : '' }}
-                        </span>
-                    </td>
-                    <td class="text-right">
-                        <span style="padding:3px;">
-                            {{ item.unitPrice * item.qtyOrdered | currency : '' }}
-                        </span>
-                    </td>
-                </tr>
-            </table>
-            <br/><br/>
-            <table class="print-table-inner operator-table">
-                <tr>
-                    <td>
-                        <table class="print-table-inner">
-                            <tr>
-                                <th>订单编号: {{ order.senderName }}</th>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </td>
-        <!--<td>-->
-        <!--{{order.shop.name}}-->
-        <!--</td>-->
-        <!--<td>-->
-        <!--订单:<br/>-->
-        <!--{{order.id}}<br/>-->
-        <!--店铺订单:<br/>-->
-        <!--{{order.externalSn}}<br/>-->
-        <!--快递:<br/>-->
-        <!--<ul ng-repeat="shipment in order.shipments" style="list-style:none; margin:0; padding-left:10px;">-->
-        <!--<li>{{ shipment.shipNumber }}</li>-->
-        <!--</ul>-->
-        <!--</td>-->
-        <!--<td>-->
-        <!--<div ng-show="order.internalCreateTime">-->
-        <!--下单 : {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}-->
-        <!--</div>-->
-        <!--&lt;!&ndash;<div ng-show="order.internalCreateTime">&ndash;&gt;-->
-        <!--&lt;!&ndash;导入 : {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}&ndash;&gt;-->
-        <!--&lt;!&ndash;</div>&ndash;&gt;-->
-        <!--<div ng-show="order.pickupTime">-->
-        <!--发出 : {{order.pickupTime | date : 'yyyy-MM-dd HH:mm:ss'}}-->
-        <!--</div>-->
-        <!--</td>-->
-        <!--<td>-->
-        <!--{{order.grandTotal | currency : ''}}-->
-        <!--</td>-->
-        <!--<td>-->
-        <!--<div ng-show="order.receiveName">-->
-        <!--名字 : {{order.receiveName}}-->
-        <!--</div>-->
-        <!--<div ng-show="order.receivePhone">-->
-        <!--电话 : {{order.receivePhone}}-->
-        <!--</div>-->
-        <!--<div ng-show="order.receiveAddress">-->
-        <!--地址 : {{order.receiveAddress}}-->
-        <!--</div>-->
-        <!--</td>-->
-        <!--<td>-->
-        <!--<div ng-repeat="item in order.items | limitTo:5">-->
-        <!--{{item.name}}&nbsp;*&nbsp;{{item.qtyOrdered}}-->
-        <!--</div>-->
-        <!--<a href="" class="btn btn-info btn-xs pull-right" ng-click="toggleDetailsSlide(order)">...</a>-->
-        <!--</td>-->
-        <!--<td>-->
-        <!--{{order.memo}}-->
-        <!--</td>-->
-    </tr>
+        <tr ng-repeat="order in page.content" ng-class="{active: order.active}">
+            <td>
+                <table class="print-table-inner top-receive-table">
+                    <tr>
+                        <td>
+                            <table class="print-table-inner">
+                                <tr>
+                                    <th>订单编号: {{ order.id }}</th>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        TO: {{ order.receiveName }}
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        [{{ order.receiveAddress }}]
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Tel: {{ order.receivePhone }}
+                                        &nbsp;&nbsp;
+                                        手机: {{ order.receiveMobile }}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <table class="print-table-inner bottom-receive-table">
+                    <tr>
+                        <td colspan="4" class="text-center">订单信息</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td width="25%">购货人:&nbsp;&nbsp;&nbsp;{{ order.senderName }}</td>
+                        <td width="25%">下单时间:&nbsp;&nbsp;&nbsp;{{ order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss' }}</td>
+                        <td width="25%">支付方式:&nbsp;&nbsp;&nbsp;</td>
+                        <td width="25%">订单编号:&nbsp;&nbsp;&nbsp;{{ order.id }}</td>
+                    </tr>
+                    <tr>
+                        <td>付款时间:&nbsp;&nbsp;&nbsp;</td>
+                        <td>发货时间:&nbsp;&nbsp;&nbsp;</td>
+                        <td>
+                            配送方式:&nbsp;&nbsp;&nbsp;
+                            {{
+                                order.deliveryMethod == 1 ? '快递' :
+                                order.deliveryMethod == 2 ? '自提' :
+                                order.deliveryMethod == 3 ? '送货上门' : ''
+                            }}
+                        </td>
+                        <td>
+                            发货单号:&nbsp;&nbsp;&nbsp;
+                            <span ng-repeat=" shipment in order.shipments ">
+                                <span ng-if=" $index > 0 ">,&nbsp;</span>{{ shipment.shipNumber }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            收货地址:&nbsp;&nbsp;&nbsp;{{ order.receiveAddress }}
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            收货人:&nbsp;&nbsp;&nbsp;{{ order.receiveName }}
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            手机:&nbsp;&nbsp;&nbsp;{{ order.receiveMobile }}
+                        </td>
+                    </tr>
+                </table>
+                <table class="print-table-inner table-bordered order-detail-table">
+                    <tr class="bg-success text-center" style="font-weight:bold;">
+                        <td width="5%">数量</td>
+                        <td width="55%">商品名称</td>
+                        <td width="10%">货号</td>
+                        <td width="10%">价格</td>
+                        <td width="20%">小计</td>
+                    </tr>
+                    <tr ng-repeat="item in order.items">
+                        <td class="text-center">
+                            <span style="padding:3px;">
+                                {{ item.qtyOrdered }}
+                            </span>
+                        </td>
+                        <td class="text-left">
+                            <span style="padding:3px;">
+                                {{ item.name ? item.name : item.externalName ? item.externalName : '' }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <span style="padding:3px;">
+                                {{ item.product.barcode }}
+                            </span>
+                        </td>
+                        <td class="text-right">
+                            <span style="padding:3px;">
+                                {{ item.unitPrice | currency : '' }}
+                            </span>
+                        </td>
+                        <td class="text-right">
+                            <span style="padding:3px;">
+                                {{ item.unitPrice * item.qtyOrdered | currency : '' }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">&nbsp;</td>
+                        <td class="text-right">
+                            <span style="padding:3px;">
+                                商品总金额: {{ order.subtotal | currency : '' }}
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+                <table class="print-table-inner sum-table">
+                    <tr>
+                        <td class="text-right">
+                            <span style="padding:3px;">
+                            - 折扣： + 配送费用：{{ order.shippingFee | currency : '' }} = 订单总金额：{{ order.grandTotal | currency : '' }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">
+                            <span style="padding:3px;">
+                            - 已付款金额：{{ order.totalPaid | currency : '' }} - 使用余额： = 应付款金额：{{ order.grandTotal - order.totalPaid | currency : '' }}
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+                <!--订单附言：-->
+                <!--商家给客户的留言：   发货备注：-->
+                <!--缺货处理： 和我联系。联系时间： 支付备注：-->
+                <!--面岛爱购（http://www.mdd.co.nz/） 地址：155 Queen St, Auckland City 电话：0800 999 899/09-9729611-->
+                <!--打印时间：2015-11-24 16:10:19 操作者：Candy、-->
+                <table class="print-table-inner operator-table">
+                    <tr>
+                        <td>
+                            订单附言：
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            商家给客户的留言：&nbsp;&nbsp;发货备注：
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            缺货处理：&nbsp;&nbsp;联系时间：&nbsp;&nbsp;支付备注：
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            面岛爱购（http://www.mdd.co.nz/）&nbsp;&nbsp;地址：{{ order.receiveAddress }}&nbsp;&nbsp;电话：0800 999 899/09-9729611
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            打印时间：{{ printTime | date : 'yyyy-MM-dd HH:mm:ss' }}&nbsp;&nbsp;操作人：{{ operator.username }}
+                        </td>
+                    </tr>
+                </table>
+                <br/><br/><br/><br/>
+            </td>
+        </tr>
     </tbody>
 </table>

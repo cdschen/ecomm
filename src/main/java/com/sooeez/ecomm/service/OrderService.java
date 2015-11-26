@@ -995,6 +995,8 @@ public class OrderService {
 				/* 所有数据已准备就绪，初始化［创建时间］和［最后更新时间］并生成发货单 */
 				shipment.setCreateTime( new Date() );
 				shipment.setLastUpdate( new Date() );
+				System.out.println("order.getMemo(): " + order.getMemo());
+				shipment.setMemo( order.getMemo() );
 				this.shipmentRepository.save(shipment);
 			}
 			review.getResultMap().put("generatedShipmentCount", shipmentGenerableOrders.size());
