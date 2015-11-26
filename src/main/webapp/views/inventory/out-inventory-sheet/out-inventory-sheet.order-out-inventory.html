@@ -119,8 +119,11 @@
                                 </ul>
                                 <div class="page-total">
                                     共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
-                                    <select class="form-control" style="display: inline; padding:0" ng-model="query.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
-                                    </select>
+                                    <ng-form>
+                                        <input type="number" class="form-control" ng-model="query.size">
+                                    </ng-form>
+                                    <!-- <select class="form-control" style="display: inline; padding:0" ng-model="query.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                    </select> -->
                                 </div>
                             </nav>
                         </td>

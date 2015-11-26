@@ -1,7 +1,7 @@
 angular.module('ecommApp')
 
-.controller('InventoryController', ['$rootScope', '$scope', 'Warehouse', 'Inventory', 'Auth', 'InventoryBatchItem', 'Utils',
-    function($rootScope, $scope, Warehouse, Inventory, Auth, InventoryBatchItem, Utils) {
+.controller('InventoryController', ['$rootScope', '$scope', '$state', 'Warehouse', 'Inventory', 'Auth', 'InventoryBatchItem', 'Utils', 'InventoryBatch',
+    function($rootScope, $scope, $state, Warehouse, Inventory, Auth, InventoryBatchItem, Utils, InventoryBatch) {
 
         var t = $.now();
 
@@ -101,10 +101,13 @@ angular.module('ecommApp')
 
         $scope.defaultBatch = {
             operate: 2, // 出库操作
-            type: 1, // 出库状态，待完成
+            type: 2, // 出库状态，已完成
             operateTime: undefined,
             warehouse: undefined,
             user: {
+                id: $rootScope.user().id
+            },
+            executeOperator: {
                 id: $rootScope.user().id
             },
             memo: '',
@@ -112,20 +115,6 @@ angular.module('ecommApp')
         };
 
         $scope.batch = angular.copy($scope.defaultBatch);
-
-        $scope.defaultItem = {
-            product: undefined,
-            warehouse: undefined,
-            position: undefined,
-            outBatch: undefined,
-            user: {
-                id: $rootScope.user().id
-            },
-            changedQuantity: 0,
-            expireDate: undefined
-        };
-
-        $scope.item = angular.copy($scope.defaultItem);
 
         $scope.addOutInventory = function(product, detail) {
             $scope.detail = detail;
@@ -135,18 +124,58 @@ angular.module('ecommApp')
             $scope.batch.warehouse = warehouse;
 
             var item = {
+                batchOperate: 2,
                 product: product,
                 warehouse: $scope.warehouse.selected,
                 position: detail.position,
+                outBatchId: detail.batchId,
                 outBatch: {
                     id: detail.batchId
                 },
-                changedQuantity: detail.quantity
+                user: {
+                    id: $rootScope.user().id
+                },
+                executeOperator: {
+                    id: $rootScope.user().id
+                },
+                actualQuantity: detail.quantity,
+                changedQuantity: detail.quantity,
+                detail: detail,
+                keep: detail.quantity
             };
+
+            detail.enteredOutInventoryList = true;
 
             $scope.batch.items.push(item);
 
             $scope.toggleOutInventoryList();
+        };
+
+        $scope.removeOutInventory = function(item) {
+            $.each($scope.batch.items, function(i) {
+                if (this === item) {
+                    $scope.batch.items.splice(i, 1);
+                    item.detail.enteredOutInventoryList = false;
+                    return false;
+                }
+            });
+        };
+
+        $scope.saveOutInventory = function(batch) {
+            console.log('saveOutInventory:');
+            console.log(batch);
+
+            // 把实际出库数量负数化
+            $.each($scope.batch.items, function(){
+                this.actualQuantity = -this.actualQuantity;
+                this.changedQuantity = -this.changedQuantity;
+            });
+
+            InventoryBatch.save({}, $scope.batch, function(batch) {
+                console.log(batch);
+                $scope.toggleOutInventoryList();
+                $state.reload('inventory');
+            });
         };
 
         /*

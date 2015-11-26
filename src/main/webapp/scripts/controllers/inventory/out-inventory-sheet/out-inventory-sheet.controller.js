@@ -89,7 +89,7 @@ angular.module('ecommApp')
             format: 'yyyy/mm/dd',
             clearBtn: true,
             language: 'zh-CN',
-            orientation: 'top left',
+            orientation: 'bottom left',
             todayHighlight: true,
             autoclose: true
         });
