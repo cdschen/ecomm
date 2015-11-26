@@ -1,5 +1,5 @@
 
-var OrderPrintController = function($scope, $location, orderService, Utils)
+var OrderPrintController = function($scope, $rootScope, $location, $interval, orderService, Utils)
 {
 
     $scope.defaultQuery = {
@@ -7,25 +7,51 @@ var OrderPrintController = function($scope, $location, orderService, Utils)
     };
     $scope.query = angular.copy($scope.defaultQuery);
 
+    $scope.operator = $rootScope.user();
+
+
+    function updatePrintTime() {
+        $scope.printTime = new Date();
+    }
+
+    var printTimeInterval = $interval( updatePrintTime, 500 );
+
+    $scope.$on('$destroy', function(){
+        $interval.cancel( printTimeInterval );
+    });
+
     $scope.searchData = function(query, number)
     {
         var search = $location.search();
         var orderId = search.orderId;
-        query.orderIds.push( orderId );
+        //var orderIds = search.orderIds;
 
-        orderService.get({
-            page: number ? number : 0,
-            orderIds: query.orderIds
-        }, function(page) {
-            $scope.page = page;
-            query.totalPagesList = Utils.setTotalPagesList(page);
-        });
+
+        //if( orderId )
+        //{
+        //    query.orderIds.push( orderId );
+        //}
+        if( orderId )
+        {
+            query.orderIds = orderId.split(',');
+        }
+
+        if( query.orderIds.length > 0 )
+        {
+            orderService.get({
+                page: number ? number : 0,
+                orderIds: query.orderIds
+            }, function(page) {
+                $scope.page = page;
+                query.totalPagesList = Utils.setTotalPagesList(page);
+            });
+        }
     };
 
     $scope.searchData($scope.query);
 
 };
 
-OrderPrintController.$inject = ['$scope', '$location', 'orderService', 'Utils'];
+OrderPrintController.$inject = ['$scope', '$rootScope', '$location', '$interval', 'orderService', 'Utils'];
 
 angular.module('ecommApp').controller('OrderPrintController', OrderPrintController);

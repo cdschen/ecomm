@@ -1,5 +1,5 @@
 
-var OrderController = function($scope, $location, orderService, Utils, Process, ObjectProcess, Shop, Auth)
+var OrderController = function($scope, $location, toastr, orderService, Utils, Process, ObjectProcess, Shop, Auth)
 {
 
     /* Activate Date Picker */
@@ -27,6 +27,17 @@ var OrderController = function($scope, $location, orderService, Utils, Process, 
         },
         popover: {
             url: 'process-tmpl.html'
+        }
+    };
+
+    $scope.isCheckedAll = false;
+    $scope.batchManipulationValue = 'batchManipulation';
+
+    $scope.checkAllOrders = function()
+    {
+        for( var orderIndex in $scope.page.content )
+        {
+            $scope.page.content[ orderIndex ].isSelected = $scope.isCheckedAll;
         }
     };
 
@@ -168,6 +179,36 @@ var OrderController = function($scope, $location, orderService, Utils, Process, 
         }
     };
 
+    ///* 批量操作 */
+    $scope.batchManipulation = function()
+    {
+        var orders = $scope.page.content;
+        var selectedOrders = [];
+        var orderIds = [];
+        $.each( orders, function()
+        {
+            var order = this;
+            if ( order.isSelected )
+            {
+                selectedOrders.push( angular.copy( order ) );
+                orderIds.push( order.id );
+            }
+        });
+        if ( selectedOrders.length > 0 )
+        {
+            if($scope.batchManipulationValue === 'orderPrint')
+            {
+                var url = '/order-print?orderId=' +( orderIds || '');
+                $location.url( url );
+            }
+        }
+        else
+        {
+            toastr.error('请选择一到多个订单来继续！');
+        }
+
+        $scope.batchManipulationValue = 'batchManipulation';
+    };
 
     $scope.printSingle = function( orderId )
     {
@@ -177,6 +218,6 @@ var OrderController = function($scope, $location, orderService, Utils, Process, 
 
 };
 
-OrderController.$inject = ['$scope', '$location', 'orderService', 'Utils', 'Process', 'ObjectProcess', 'Shop', 'Auth'];
+OrderController.$inject = ['$scope', '$location', 'toastr', 'orderService', 'Utils', 'Process', 'ObjectProcess', 'Shop', 'Auth'];
 
 angular.module('ecommApp').controller('OrderController', OrderController);
