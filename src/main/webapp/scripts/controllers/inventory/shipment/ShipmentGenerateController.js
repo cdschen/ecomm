@@ -9,10 +9,8 @@ angular.module('ecommApp')
             }
         };
 
-        var $ = angular.element;
-        $scope.totalPagesList = [];
-        $scope.pageSize = 20;
         $scope.defaultQuery = {
+            size: 20,
             warehouse: undefined,
             shop: undefined,
             statuses: [],
@@ -48,7 +46,7 @@ angular.module('ecommApp')
         };
 
         Warehouse.getAll({ // 导入所有仓库
-            deleted: false,
+            enabled: true,
             sort: ['name']
         }).then(function(warehouses) {
             $scope.warehouses = warehouses;
@@ -60,7 +58,7 @@ angular.module('ecommApp')
             });
         }).then(function() { // 导入所有店铺
             return Shop.getAll({
-                deleted: false,
+                enabled: true,
                 sort: ['name']
             }).then(function(shops) {
                 $scope.shops = shops;
@@ -70,7 +68,7 @@ angular.module('ecommApp')
         }).then(function() {
             orderService.getPagedOrdersForOrderDeploy({
                 page: 0,
-                size: $scope.pageSize,
+                size: $scope.query.size,
                 sort: ['internalCreateTime,desc'],
                 warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
                 shopId: $scope.query.shop ? $scope.query.shop.id : null,
@@ -82,7 +80,7 @@ angular.module('ecommApp')
                     orderService.checkItemProductShopTunnel(this);
                 });
                 $scope.page = page;
-                $scope.totalPagesList = Utils.setTotalPagesList(page);
+                Utils.initList(page, $scope.query);
             });
         });
 
@@ -92,7 +90,7 @@ angular.module('ecommApp')
             console.log($scope.query);
             orderService.getPagedOrdersForOrderDeploy({
                 page: 0,
-                size: $scope.pageSize,
+                size: $scope.query.size,
                 sort: ['internalCreateTime,desc'],
                 warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
                 shopId: $scope.query.shop ? $scope.query.shop.id : null,
@@ -104,7 +102,7 @@ angular.module('ecommApp')
                 $.each(page.content, function() {
                     orderService.checkItemProductShopTunnel(this);
                 });
-                $scope.totalPagesList = Utils.setTotalPagesList(page);
+                Utils.initList(page, $scope.query);
                 $scope.isCheckedAll = false;
             });
         };
@@ -117,7 +115,7 @@ angular.module('ecommApp')
             console.log($scope.query);
             orderService.get({
                 page: 0,
-                size: $scope.pageSize,
+                size: $scope.query.size,
                 sort: ['internalCreateTime,desc'],
                 warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
                 shopId: $scope.query.shop ? $scope.query.shop.id : null,
@@ -129,7 +127,7 @@ angular.module('ecommApp')
                 $.each(page.content, function() {
                     orderService.checkItemProductShopTunnel(this);
                 });
-                $scope.totalPagesList = Utils.setTotalPagesList(page);
+                Utils.initList(page, $scope.query);
                 $scope.isCheckedAll = false;
             });
         };

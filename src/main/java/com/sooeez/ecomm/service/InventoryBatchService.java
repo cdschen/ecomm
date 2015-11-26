@@ -257,7 +257,7 @@ public class InventoryBatchService {
 			
 			if (batch.getType().intValue() == 2) { // 当出库单状态为已完成的时候，修改库存
 				
-				batch.setOutInventoryTime(new Date(System.currentTimeMillis()));
+				batch.setOutInventoryTime(batch.getOperateTime());
 				
 				List<InventoryBatchItem> batchItems = batch.getItems();
 				
@@ -265,6 +265,9 @@ public class InventoryBatchService {
 				inventoryQuery.setWarehouseId(batch.getWarehouse().getId());
 				inventoryQuery.setProductIds(new ArrayList<>());
 				for (InventoryBatchItem item : batchItems) {
+					if (item.getCreateTime() == null) {
+						item.setCreateTime(batch.getOperateTime());
+					}
 					InventoryBatch outBatch = new InventoryBatch();
 					outBatch.setId(item.getOutBatchId().longValue());
 					item.setOutBatch(outBatch);
@@ -311,8 +314,8 @@ public class InventoryBatchService {
 							}
 							position = product.getPositions().get(product.getPositions().size() - 1);
 							if (position.getId().longValue() == item.getPosition().getId().longValue()) {
-								position.setTotal(position.getTotal().longValue() + item.getChangedQuantity().longValue());
-								product.setTotal(product.getTotal().longValue() + item.getChangedQuantity().longValue());
+								position.setTotal(position.getTotal().longValue() + item.getActualQuantity().longValue());
+								product.setTotal(product.getTotal().longValue() + item.getActualQuantity().longValue());
 								snapshot += "{\"" + position.getName() + "\":" + position.getTotal() + "}";
 							} else {
 								snapshot += "{\"" + position.getName() + "\":" + position.getTotal() + "}";
