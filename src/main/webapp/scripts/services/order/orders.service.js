@@ -21,9 +21,19 @@ angular.module('ecommApp')
         });
     };
 
-    order.confirmOrderWhenGenerateShipment = function(reviewDTO) {
-        return $http.post('/api/orders/confirm/shipment', reviewDTO)
-            .then(function(res) {
+    order.getDeployedOrdersAsShipments = function( params )
+    {
+        return $http.get('/api/orders/deployed/shipments', {
+            params: params
+        }).then(function(res) {
+            return res.data;
+        });
+    };
+
+    order.confirmOrderWhenGenerateShipment = function(reviewDTO, params) {
+        return $http.post('/api/orders/confirm/shipment', reviewDTO, {
+                params : params
+            }).then(function(res) {
                 return (operationReview = res.data);
             });
     };

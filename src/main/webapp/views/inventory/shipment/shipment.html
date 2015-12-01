@@ -14,7 +14,7 @@
 </ol>
 <div class="container-fluid">
     <div class="panel panel-default">
-        <form name="searchForm" novalidate ng-submit="search()">
+        <form name="searchForm" novalidate ng-submit="search( query )">
             <table class="table" style="margin:0">
                 <tbody>
                     <tr>
@@ -87,133 +87,130 @@
                     </tr>
                 </tbody>
             </table>
-        </form>
-        <div class="panel-body" style="padding:0"></div>
-        <table class="table table-bordered table-condensed" ng-show="page">
-            <thead>
-                <tr>
-                    <th width="2%" class="text-center">
-                        <input type="checkbox" name="orderId" ng-model="isCheckedAll" ng-click="checkAllOrders()">
-                    </th>
-                    <th width="8%" class="text-center">店铺</th>
-                    <th width="8%" class="text-center">仓库</th>
-                    <th width="12%" class="text-center">单号</th>
-                    <th width="5%" class="text-center">状态</th>
-                    <th width="16%" class="text-center">时间（创建,更新,取件,签收）</th>
-                    <th width="6%" class="text-center">创建人</th>
-                    <th width="6%" class="text-center">发货人</th>
-                    <th width="10%" class="text-center">收件人</th>
-                    <th width="10%" class="text-center">发货单详情</th>
-                    <th style="padding: 2px">
-                        <select class="form-control input-sm" ng-change="batchManipulation()" ng-model="batchManipulationValue">
-                            <option selected="selected" value="batchManipulation">批量操作</option>
-                            <!--<option value="shipmentComplete">完成</option>-->
-                            <option value="shipmentExport">导出</option>
-                            <option value="shipmentPrint">打印</option>
-                            <option value="shipmentObsolete">作废</option>
-                        </select>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="shipment in page.content" class="text-center">
-                    <td>
-                        <input type="checkbox" ng-model="shipment.isSelected">
-                    </td>
-                    <td>
-                        {{ shipment.shop.name }}
-                    </td>
-                    <td>
-                        {{ shipment.warehouse.name }}
-                    </td>
-                    <td class="text-left">
-                        订单:<br/>
-                        {{ shipment.orderId }}<br/>
-                        发货:<br/>
-                        {{ shipment.id }}<br/>
-                        快递:<br/>
-                        {{ shipment.shipNumber }}
-                    </td>
-                    <td>
-                        {{
-                            shipment.shipStatus == 1 ? '待打印' :
-                            shipment.shipStatus == 2 ? '已打印' :
-                            shipment.shipStatus == 3 ? '已发出' :
-                            shipment.shipStatus == 4 ? '已签收' :
-                            shipment.shipStatus == 5 ? '配送异常' :
-                            shipment.shipStatus == 6 ? '已作废' : '未指定状态'
-                        }}
-                    </td>
-                    <td class="text-left">
-                        <ul style="list-style: none; padding-left:6px;">
-                            <li>创建 : {{ shipment.createTime | date : 'yyyy-MM-dd HH:mm:ss' }}</li>
-                            <li>更新 : {{ shipment.lastUpdate | date : 'yyyy-MM-dd HH:mm:ss' }}</li>
-                            <li>取件 : {{ ! shipment.pickupTime ? '未取件' : shipment.pickupTime | date : 'yyyy-MM-dd HH:mm:ss' }}</li>
-                            <li>签收 : {{ ! shipment.signupTime ? '未签收' : shipment.signupTime | date : 'yyyy-MM-dd HH:mm:ss' }}</li>
-                        </ul>
-                    </td>
-                    <td>
-                        {{ shipment.operator.username }}
-                    </td>
-                    <td>
-                        {{ ! shipment.executeOperator ? '未发' : shipment.executeOperator.username }}
-                    </td>
-                    <td class="text-left">
-                        <ul style="list-style:none; padding-left:4px; margin:0;">
-                            <li><strong>姓名 : </strong>{{ shipment.receiveName }}</li>
-                            <li><strong>电话 : </strong>{{ shipment.receivePhone }}</li>
-                            <li><strong>地址 : </strong>{{ shipment.receiveAddress }}</li>
-                        </ul>
-                    </td>
-                    <td>
-                        <ul style="list-style:none; padding:0px; margin:0;">
-                            <li ng-repeat="shipmentItem in shipment.shipmentItems">
-                                {{ shipmentItem.orderItem.name }} * {{ shipmentItem.qtyShipped }}
-                            </li>
-                        </ul>
-                    </td>
-                    <td style="text-align: center;">
-                        <a class="btn btn-xs btn-success" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5" ng-click="showShipmentCompleteSlide( shipment )">完成</a>
-                        <a ng-href="/api/shipment/export?id={{ shipment.id }}" class="btn btn-xs btn-info">
-                            <span class="glyphicon glyphicon-save-file"></span>
-                            导出
-                        </a>
-                        <a class="btn btn-xs btn-info">
-                            <span class="glyphicon glyphicon-print"></span>
-                            打印
-                        </a>
-                        <a class="btn btn-xs btn-danger" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5" ng-click="showObsoleteShipmentModal( shipment )">作废</a>
-                    </td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="20">
-                        <nav class="page-list">
-                            <ul class="pagination pagination-sm">
-                                <li ng-class="{disabled: page.first}">
-                                    <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
-                                </li>
-                                <li ng-repeat="i in totalPagesList" ng-class="{active: i == page.number}">
-                                    <a href="" ng-click="turnPage(i)">{{i+1}}</a>
-                                </li>
-                                <li ng-class="{disabled: page.last}">
-                                    <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
+            <div class="panel-body" style="padding:0"></div>
+            <table class="table table-bordered table-condensed" ng-show="page">
+                <thead>
+                    <tr>
+                        <th width="2%" class="text-center">
+                            <input type="checkbox" name="orderId" ng-model="isCheckedAll" ng-click="checkAllOrders()">
+                        </th>
+                        <th width="8%" class="text-center">店铺</th>
+                        <th width="8%" class="text-center">仓库</th>
+                        <th width="12%" class="text-center">单号</th>
+                        <th width="5%" class="text-center">状态</th>
+                        <th width="16%" class="text-center">时间（创建,更新,取件,签收）</th>
+                        <th width="6%" class="text-center">创建人</th>
+                        <th width="6%" class="text-center">发货人</th>
+                        <th width="10%" class="text-center">收件人</th>
+                        <th width="10%" class="text-center">发货单详情</th>
+                        <th style="padding: 2px">
+                            <select class="form-control input-sm" ng-change="batchManipulation()" ng-model="batchManipulationValue">
+                                <option selected="selected" value="batchManipulation">批量操作</option>
+                                <!--<option value="shipmentComplete">完成</option>-->
+                                <option value="shipmentExport">导出</option>
+                                <option value="shipmentPrint">补打</option>
+                                <option value="shipmentObsolete">作废</option>
+                            </select>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="shipment in page.content" class="text-center">
+                        <td>
+                            <input type="checkbox" ng-model="shipment.isSelected">
+                        </td>
+                        <td>
+                            {{ shipment.shop.name }}
+                        </td>
+                        <td>
+                            {{ shipment.warehouse.name }}
+                        </td>
+                        <td class="text-left">
+                            订单:<br/>
+                            {{ shipment.orderId }}<br/>
+                            发货:<br/>
+                            {{ shipment.id }}<br/>
+                            快递:<br/>
+                            {{ shipment.shipNumber }}
+                        </td>
+                        <td>
+                            {{
+                                shipment.shipStatus == 1 ? '已打印' :
+                                shipment.shipStatus == 2 ? '配货完成' :
+                                shipment.shipStatus == 3 ? '已发出' :
+                                shipment.shipStatus == 4 ? '已签收' :
+                                shipment.shipStatus == 5 ? '配送异常' :
+                                shipment.shipStatus == 6 ? '已作废' : '未指定状态'
+                            }}
+                        </td>
+                        <td class="text-left">
+                            <ul style="list-style: none; padding-left:6px;">
+                                <li>创建 : {{ shipment.createTime | date : 'yyyy-MM-dd HH:mm:ss' }}</li>
+                                <li>更新 : {{ shipment.lastUpdate | date : 'yyyy-MM-dd HH:mm:ss' }}</li>
+                                <li>取件 : {{ ! shipment.pickupTime ? '未取件' : shipment.pickupTime | date : 'yyyy-MM-dd HH:mm:ss' }}</li>
+                                <li>签收 : {{ ! shipment.signupTime ? '未签收' : shipment.signupTime | date : 'yyyy-MM-dd HH:mm:ss' }}</li>
+                            </ul>
+                        </td>
+                        <td>
+                            {{ shipment.operator.username }}
+                        </td>
+                        <td>
+                            {{ ! shipment.executeOperator ? '未发' : shipment.executeOperator.username }}
+                        </td>
+                        <td class="text-left">
+                            <ul style="list-style:none; padding-left:4px; margin:0;">
+                                <li><strong>姓名 : </strong>{{ shipment.receiveName }}</li>
+                                <li><strong>电话 : </strong>{{ shipment.receivePhone }}</li>
+                                <li><strong>地址 : </strong>{{ shipment.receiveAddress }}</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul style="list-style:none; padding:0px; margin:0;">
+                                <li ng-repeat="shipmentItem in shipment.shipmentItems">
+                                    {{ shipmentItem.orderItem.name }} * {{ shipmentItem.qtyShipped }}
                                 </li>
                             </ul>
-                            <div class="page-total">
-                                共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
-                                <select class="form-control" style="display: inline; padding:0" ng-model="pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
-                                </select>
-                            </div>
-                        </nav>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-        <div class="panel-body" ng-show="!page || page.content.length == 0">
-            <div class="alert alert-warning">没有任何数据被检索到</div>
-        </div>
+                        </td>
+                        <td style="text-align: center;">
+                            <a class="btn btn-xs btn-success" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5" ng-click="showShipmentCompleteSlide( shipment )">完成</a>
+                            <!--<a ng-href="/api/shipment/export?id={{ shipment.id }}" class="btn btn-xs btn-info">-->
+                                <!--<span class="glyphicon glyphicon-save-file"></span>-->
+                                <!--导出-->
+                            <!--</a>-->
+                            <a class="btn btn-xs btn-info">
+                                <span class="glyphicon glyphicon-print"></span>
+                                补打
+                            </a>
+                            <a class="btn btn-xs btn-danger" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5" ng-click="showObsoleteShipmentModal( shipment )">作废</a>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="20">
+                            <nav class="page-list">
+                                <ul class="pagination pagination-sm">
+                                    <li ng-repeat="i in query.list" ng-class="{active: i.value === page.number}">
+                                        <a href="" ng-click="turnPage(i.value)">{{i.label}}</a>
+                                    </li>
+                                </ul>
+                                <div class="page-total">
+                                    共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
+                                    <ng-form>
+                                        <input type="number" class="form-control" ng-model="query.size">
+                                    </ng-form>
+                                    <!-- <select class="form-control" style="display: inline; padding:0" ng-model="query.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                    </select> -->
+                                </div>
+                            </nav>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="panel-body" ng-show="!page || page.content.length == 0">
+                <div class="alert alert-warning">没有任何数据被检索到</div>
+            </div>
+        </form>
     </div>
 </div>
 

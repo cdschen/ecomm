@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -46,6 +47,13 @@ public class ShipmentItem implements Serializable {
 	private OrderItem orderItem;
 
 	//
+
+	/* 商品简称 */
+	@Transient
+	private String shortName;
+	/* 商品全称 */
+	@Transient
+	private String fullName;
 
 	public Long getId() {
 		return id;
@@ -85,6 +93,22 @@ public class ShipmentItem implements Serializable {
 
 	public void setOrderItemId(Long orderItemId) {
 		this.orderItemId = orderItemId;
+	}
+
+	public String getShortName() {
+		return shortName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 	
 }

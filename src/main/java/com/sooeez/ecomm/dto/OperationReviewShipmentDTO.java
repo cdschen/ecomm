@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import com.sooeez.ecomm.domain.Order;
 import com.sooeez.ecomm.domain.Shipment;
 
 public class OperationReviewShipmentDTO implements Serializable {
@@ -34,6 +38,8 @@ public class OperationReviewShipmentDTO implements Serializable {
 	private Shipment shipment;
 	/* 多发货单验证 */
 	private List<Shipment> shipments;
+	// 指定出库的仓库id
+	private Long assignWarehouseId;
 	
 
 	public boolean isConfirmable() {
@@ -98,6 +104,14 @@ public class OperationReviewShipmentDTO implements Serializable {
 
 	public void setShipments(List<Shipment> shipments) {
 		this.shipments = shipments;
+	}
+
+	public Long getAssignWarehouseId() {
+		return assignWarehouseId;
+	}
+
+	public void setAssignWarehouseId(Long assignWarehouseId) {
+		this.assignWarehouseId = assignWarehouseId;
 	}
 
 }

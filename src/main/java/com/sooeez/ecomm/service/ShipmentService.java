@@ -85,12 +85,12 @@ public class ShipmentService {
 		
 		switch( shipStatus )
 		{
-			case 1: strStatus = "待打印"; break;
-			case 2: strStatus = "已打印"; break;
+			case 1: strStatus = "已打印"; break;
+			case 2: strStatus = "配货完成"; break;
 			case 3: strStatus = "已发出"; break;
 			case 4: strStatus = "已签收"; break;
 			case 5: strStatus = "配送异常"; break;
-			case 6: strStatus = "已作废"; break;
+			case 6: strStatus = "作废"; break;
 			default :strStatus = "未指定状态";
 		}
 		
