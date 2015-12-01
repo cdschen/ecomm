@@ -41,6 +41,7 @@
     margin: 25px 20px;
 }
 
+.page-list .page-total form,
 .page-list .page-total input,
 .page-list .page-total select {
     height: 26px;

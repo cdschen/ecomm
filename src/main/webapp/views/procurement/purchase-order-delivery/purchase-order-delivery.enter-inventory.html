@@ -140,11 +140,24 @@
                 </tr>
             </tbody>
         </table>
-        <hr style="">
+        <hr style="margin: 0">
         <div class="panel-body">
-            <!-- <pre>
-                {{batches | json}}
-            </pre> -->
+            <form name="someOperatorForm" novalidate class="form-horizontal">
+                <div class="form-group has-feedback" ng-class="{'has-success':(someOperatorForm.purchaseBatchId.$dirty && someOperatorForm.purchaseBatchId.$valid), 'has-warning':(someOperatorForm.purchaseBatchId.$dirty && someOperatorForm.purchaseBatchId.$invalid) }">
+                    <label class="control-label col-md-2">临时采购性质的出库单号 </label>
+                    <div class="col-md-3">
+                        <input type="number" class="form-control" name="purchaseBatchId" ng-model="purchaseBatchId" placeholder="(选填)" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="someOperatorForm.purchaseBatchId.$dirty && someOperatorForm.purchaseBatchId.$valid"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="someOperatorForm.purchaseBatchId.$dirty && someOperatorForm.purchaseBatchId.$invalid"></span>
+                    </div>
+                    <span class="col-md-7 help-block">
+                        如果本张收货单入库是针对一张临时采购的出库单的，必须在这里填写临时采购性质的出库单号。
+                    </span>
+                </div>
+            </form>
+        </div>
+        <hr style="margin: 0">
+        <div class="panel-body">
             <div class="row">
                 <div class="col-md-2 col-md-offset-10">
                     <button type="button" class="btn btn-success btn-lg pull-right" ng-click="enterInventory()">入库确认</button>

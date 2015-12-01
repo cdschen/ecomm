@@ -3,11 +3,12 @@
     <li><a ui-sref="outInventorySheet">出库单管理</a></li>
     <li class="active">出库单</li>
 </ol>
+
 <div class="container-fluid">
     <form name="batchForm" novalidate>
         <div class="panel panel-success">
             <div class="panel-heading">
-                <h3 class="panel-title">出库单</h3>
+                <h3 class="panel-title">出库单 <span class="text-danger" ng-show="batch.nature == 'purchase'">(临时采购)</span></h3>
             </div>
             <div class="panel-body">
                 <div class="row">
@@ -44,6 +45,7 @@
                                 <tr>
                                     <td colspan="2">
                                         <a href="" class="btn btn-success" ng-click="toggleDetailsSlide(batch)">查看相关订单</a>
+                                        <a href="" class="btn btn-danger" ng-click="togglePurchaseDetailsSlide(batch)" ng-show="batch.nature == 'purchase'">生成临时采购单</a>
                                     </td>
                                 </tr>
                             </table>
@@ -120,3 +122,4 @@
     </form>
 </div>
 <section ng-include="template.details.url" ></section>
+<section ng-include="template.purchaseDetails.url" ></section>

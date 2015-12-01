@@ -41,7 +41,6 @@ public class UserService {
 	 * Session
 	 */
 	
-	@Transactional(readOnly = true)
     public User getUserWithAuthorities() {
         User user = userRepository.findOneByUsernameAndEnabled(SecurityUtils.getCurrentLogin(), true);
 		log.debug("Get Current Login user {}", user);

@@ -94,7 +94,8 @@ public class OrderItem implements Serializable {
 	
 	@Transient
 	private ShopTunnel assignTunnel;
-
+	
+	
 	//
 
 	public Long getId() {

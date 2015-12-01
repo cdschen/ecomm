@@ -47,18 +47,7 @@
             <tfoot>
                 <tr>
                     <td colspan="20">
-                        <nav class="page-list">
-                            <ul class="pagination pagination-sm">
-                                <li ng-repeat="i in query.list" ng-class="{active: i.value === page.number}">
-                                    <a href="" ng-click="turnPage(i.value)">{{i.label}}</a>
-                                </li>
-                            </ul>
-                            <div class="page-total">
-                                共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
-                                <select class="form-control" style="display: inline; padding:0" ng-model="query.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
-                                </select>
-                            </div>
-                        </nav>
+                        <nav co-pagination page="page" query="query" search-data="searchData(query)" mode="input"></nav>
                     </td>
                 </tr>
             </tfoot>

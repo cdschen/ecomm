@@ -44,6 +44,9 @@ public class Product implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	@Column(name = "temp_purchasing")
+	private Boolean tempPurchasing;
+	
 	@Column(name = "product_type", nullable = false)
 	private Integer productType;
 
@@ -724,6 +727,14 @@ public class Product implements Serializable {
 
 	public void setAction(String action) {
 		this.action = action;
+	}
+
+	public Boolean getTempPurchasing() {
+		return tempPurchasing;
+	}
+
+	public void setTempPurchasing(Boolean tempPurchasing) {
+		this.tempPurchasing = tempPurchasing;
 	}
 
 }

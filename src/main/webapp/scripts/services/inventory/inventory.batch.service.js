@@ -18,6 +18,12 @@ angular.module('ecommApp')
         });
     };
 
+    batch.trash = function(params) {
+        return $http.post('/api/inventory-batches/trash', params).then(function(res) {
+            return res.data;
+        });
+    };
+
     batch.refreshBatchItems = function(batch) {
         var products = [],
             batchItems = batch.items;

@@ -1,7 +1,7 @@
 angular.module('ecommApp')
 
-.controller('ProductController', ['$scope', 'Product', 'Utils', 'Process', 'ObjectProcess',
-    function($scope, Product, Utils, Process, ObjectProcess) {
+.controller('ProductController', ['$scope', 'Product', 'Process', 'ObjectProcess',
+    function($scope, Product, Process, ObjectProcess) {
 
         var t = $.now();
 
@@ -21,6 +21,7 @@ angular.module('ecommApp')
         };
 
         $scope.defaultQuery = {
+            page: 0,
             size: 20,
             sort: ['name'],
             product: {
@@ -46,9 +47,9 @@ angular.module('ecommApp')
             Process.initStatus(processes);
         });
 
-        $scope.searchData = function(query, number) {
+        $scope.searchData = function(query) {
             Product.get({
-                page: number ? number : 0,
+                page: query.page,
                 size: query.size,
                 sort: query.sort,
                 nameOrSku: query.product.nameOrSku,
@@ -57,18 +58,10 @@ angular.module('ecommApp')
                 action: 'getInventories'
             }, function(page) {
                 $scope.page = page;
-                console.log(page);
-                Utils.initList(page, query);
             });
         };
 
         $scope.searchData($scope.query);
-
-        $scope.turnPage = function(number) {
-            if (number > -1 && number < $scope.page.totalPages) {
-                $scope.searchData($scope.query, number);
-            }
-        };
 
         $scope.search = function(query) {
             $scope.searchData(query);
