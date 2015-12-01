@@ -1,44 +1,56 @@
 angular.module('ecommApp')
+.controller('ShipmentGenerateController', ['$scope', '$rootScope', '$location', '$interval', 'toastr', 'orderService', 'Shop', 'Utils', 'Warehouse', 'courierService',
+    function($scope, $rootScope, $location, $interval, toastr, orderService, Shop, Utils, Warehouse, courierService) {
 
-.controller('ShipmentGenerateController', ['$scope', '$rootScope', 'toastr', '$modal', 'filterFilter', 'Warehouse', 'Shop', 'orderService', 'courierService', 'Process', 'Utils', 'Inventory', 'OrderItem',
-    function($scope, $rootScope, toastr, $modal, filterFilter, Warehouse, Shop, orderService, courierService, Process, Utils, Inventory, OrderItem) {
+        var $ = angular.element;
 
-        $scope.template = {
-            shipmentGenerateOperationReview: {
-                url: 'views/inventory/shipment/shipment-generate-operation-review.html?' + (new Date())
-            }
-        };
+        /** 如果编辑了任何信息，则切换数据时提示操作员［确定取消当前所有操作？］
+         */
+        $scope.isAnythingModified = false;
+        /** 是否显示出过发货单的订单
+         */
+        $scope.showDeployedOrders = false;
 
+        $scope.courier = {};
         $scope.defaultQuery = {
-            size: 20,
+            number: 0,
+            size: 100,
+            sort: ['internalCreateTime,desc'],
             warehouse: undefined,
             shop: undefined,
-            statuses: [],
+            statuses: []
         };
-        $scope.query = angular.copy($scope.defaultQuery);
-        $scope.warehouses = [];
-        $scope.shops = [];
-        $scope.couriers = [];
-        $scope.courier = {};
-        $scope.processes = [];
-        $scope.inventory = {}; // 库存对象，里面每一个子属性都是一个仓库，仓库的值是一个归类好的产品数组
+        $scope.query = angular.copy( $scope.defaultQuery );
 
-        $scope.generateShipmentSheetCheckListSlideChecked = false;
-        $scope.couriers = [];
+        $scope.deliveryMethods =
+        [
+            { name:'快递', value:1 },
+            { name:'自提', value:2 },
+            { name:'送货上门', value:3 }
+        ];
+
+        $scope.shipments = [];
+
 
         // 将所有店铺过滤，拿出所有配置了配送状态的店铺的ID
-        $scope.selectAllShops = function(shops) {
-            $.each(shops, function() {
+        $scope.selectAllShops = function(shops)
+        {
+            $.each(shops, function()
+            {
                 var shop = this;
-                if (shop.deployStep) {
+                if (shop.deployStep)
+                {
                     var exist = false;
-                    $.each($scope.query.statuses, function() {
-                        if (this.id === shop.deployStep.id) {
+                    $.each($scope.query.statuses, function()
+                    {
+                        if (this.id === shop.deployStep.id)
+                        {
                             exist = true;
                             return false;
                         }
                     });
-                    if (!exist) {
+                    if ( ! exist )
+                    {
                         $scope.query.statuses.push(shop.deployStep);
                     }
                 }
@@ -66,184 +78,536 @@ angular.module('ecommApp')
                 //console.log($scope.query.statuses);
             });
         }).then(function() {
-            orderService.getPagedOrdersForOrderDeploy({
-                page: 0,
-                size: $scope.query.size,
-                sort: ['internalCreateTime,desc'],
-                warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
-                shopId: $scope.query.shop ? $scope.query.shop.id : null,
-                deleted: false
-            }).then(function(page) {
-                console.log('page:');
-                console.log(page);
-                $.each(page.content, function() {
-                    orderService.checkItemProductShopTunnel(this);
-                });
-                $scope.page = page;
-                Utils.initList(page, $scope.query);
-            });
+            $scope.searchData();
         });
 
-        $scope.search = function() {
-            console.clear();
-            console.log('search:');
-            console.log($scope.query);
-            orderService.getPagedOrdersForOrderDeploy({
-                page: 0,
-                size: $scope.query.size,
-                sort: ['internalCreateTime,desc'],
-                warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
-                shopId: $scope.query.shop ? $scope.query.shop.id : null,
-                deleted: false
-            }).then(function(page) {
-                console.log('page:');
-                console.log(page);
-                $scope.page = page;
-                $.each(page.content, function() {
-                    orderService.checkItemProductShopTunnel(this);
-                });
-                Utils.initList(page, $scope.query);
-                $scope.isCheckedAll = false;
-            });
+        $scope.searchData = function()
+        {
+            executeShipmentOperationReview('VERIFY' );
+            $scope.isAnythingModified = false;
         };
 
-        $scope.reset = function() {
-            console.clear();
-            console.log('reset:');
-            $scope.query = angular.copy($scope.defaultQuery);
-            $scope.selectAllShops($scope.shops);
-            console.log($scope.query);
-            orderService.get({
-                page: 0,
-                size: $scope.query.size,
-                sort: ['internalCreateTime,desc'],
-                warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
-                shopId: $scope.query.shop ? $scope.query.shop.id : null,
-                deleted: false
-            }, function(page) {
-                console.log('page:');
-                console.log(page);
-                $scope.page = page;
-                $.each(page.content, function() {
-                    orderService.checkItemProductShopTunnel(this);
-                });
-                Utils.initList(page, $scope.query);
-                $scope.isCheckedAll = false;
-            });
-        };
-
-        /* 选择仓库用 */
-        $scope.selectItemWarehouse = function(item, $item){
-            console.clear();
-            console.log('selectItemWarehouse');
-            console.log(item);
-            console.log($item);
-            item.warehouseId = $item.id;
-            OrderItem.save({}, item, function(item){
-                console.log('selectItemWarehouse complete');
-                console.log(item);
-            });
-        };
-
-        $scope.toggleShipmentSheetSlide = function(){
-            $scope.generateShipmentSheetCheckListSlideChecked = !$scope.generateShipmentSheetCheckListSlideChecked;
-
-            /* 如果打开弹出层，则显示弹出层滚动条并隐藏body滚动条，反之亦然 */
-            if( $scope.generateShipmentSheetCheckListSlideChecked )
+        $scope.turnPage = function( number )
+        {
+            if (number > -1 && number < $scope.page.totalPages)
             {
-                $('body').css('overflow','hidden');
-                $('[ps-open="generateShipmentSheetCheckListSlideChecked"]').css('overflow','auto');
+                $scope.query.number = number;
+                $scope.searchData();
+            }
+        };
+
+        $scope.searchBtn = function()
+        {
+            if( ! $scope.isAnythingModified )
+            {
+                $scope.searchData();
             }
             else
             {
-                $('body').css('overflow','auto');
-                $('[ps-open="generateShipmentSheetCheckListSlideChecked"]').css('overflow','hidden');
+                $('#cancelModifiedInfoWhilePagination').modal('show');
             }
         };
 
-
-        // selected orders
-        $scope.isCheckedAll = false;
-        $scope.batchManipulationValue = 'batchManipulation';
-        $scope.selectedCourier = {};
-        $scope.startCourierNumber = '';
-
-        $scope.checkAllOrders = function()
+        $scope.search = function( e )
         {
-            for( var order in $scope.page.content )
+            var keyCode = e.which || e.keyCode;
+            if ( keyCode === 13 )
             {
-                $scope.page.content[order].isSelected = $scope.isCheckedAll;
-            }
-        };
-
-        /* 生成多个订单的货运单  */
-        $scope.batchManipulation = function()
-        {
-            var orders = $scope.page.content;
-            orderService.selectedOrders.length = 0;
-            $.each(orders, function(){
-                var order = this;
-                if (order.isSelected) {
-                    orderService.selectedOrders.push(angular.copy(order));
-                }
-            });
-            if (orderService.selectedOrders.length > 0)
-            {
-                if($scope.batchManipulationValue === 'generateShipment')
+                if( ! $scope.isAnythingModified )
                 {
-                    $('#generateShipment').modal('show');
+                    if( ! angular.isNumber( $scope.query.size ) || $scope.query.size < 1 )
+                    {
+                        $scope.query.size = 1;
+                    }
+                    // Do that thing you finally wanted to do
+                    $scope.searchData();
+                }
+                else
+                {
+                    $('#cancelModifiedInfoWhilePagination').modal('show');
+                }
+            }
+        };
+
+        $scope.reset = function()
+        {
+            if( ! $scope.isAnythingModified )
+            {
+                $scope.query = angular.copy( $scope.defaultQuery );
+                $scope.searchData();
+            }
+            else
+            {
+                $('#cancelModifiedInfoWhilePagination').modal('show');
+            }
+        };
+
+        /* 锁定/解锁同品更名 */
+        $scope.shipmentJoinedLockedEditName = function( e, item, shipment )
+        {
+            var keyCode = e.which || e.keyCode;
+            if ( keyCode === 13 )
+            {
+                var items = shipment.shipmentItems;
+                for( var itemIndex in items )
+                {
+                    /* 如果连锁更名生效 */
+                    if( items[ itemIndex ].isShipmentJoinedLockEditName )
+                    {
+                        if( ! items[ itemIndex ].holdName )
+                        {
+                            items[ itemIndex ].holdName = items[ itemIndex ].shortName ? items[ itemIndex ].shortName : items[ itemIndex ].fullName;
+                        }
+                        items[ itemIndex ].shortName = item.shortName;
+                    }
+                }
+            }
+        };
+
+        /* hold住并更改详情简称 */
+        $scope.holdAndChangeItemShortName = function( item )
+        {
+            if( ! item.holdName )
+            {
+                item.holdName = item.shortName ? item.shortName : item.fullName;
+            }
+            $scope.isAnythingModified = true;
+        };
+
+        /* 更改详情数量，有做改动 */
+        $scope.changeItemQtyShippedBlur = function( item )
+        {
+            if( ! angular.isNumber( item.qtyShipped ) || item.qtyShipped < 1 )
+            {
+                item.qtyShipped = 1;
+            }
+            $scope.isAnythingModified = true;
+        };
+
+        /* 更改拆分数量，有做改动 */
+        $scope.changeItemQtySeparatedBlur = function( item )
+        {
+            if( angular.isNumber( item.qtySeparated ) && item.qtySeparated < 1 )
+            {
+                item.qtySeparated = 1;
+            }
+            else if( angular.isNumber( item.qtySeparated ) && item.qtySeparated > item.qtyShipped )
+            {
+                item.qtySeparated = item.qtyShipped;
+            }
+        };
+
+        /* 清空同品更名 */
+        $scope.emptyIsShipmentJoinedLockedEditName = function( shipment )
+        {
+            var items = shipment.shipmentItems;
+            for( var itemIndex in items )
+            {
+                items[ itemIndex ].isShipmentJoinedLockEditName = false;
+                items[ itemIndex ].shortName = items[ itemIndex ].holdName ? items[ itemIndex ].holdName : items[ itemIndex ].shortName;
+            }
+        };
+
+        var itemIndex = 0;
+
+        /* 分单 */
+        $scope.separateShipmentPrepare = function( shipment )
+        {
+            /* 分单准备之前要确保详情不止一个 */
+            if( shipment.shipmentItems && shipment.shipmentItems.length > 1 )
+            {
+                var items = shipment.shipmentItems;
+
+                /* 当未激活时 */
+                if( ! shipment.isShipmentSeparationActivate )
+                {
+                    for( itemIndex in items )
+                    {
+                        items[ itemIndex].isShipmentSeparationActivate = true;
+                    }
+                    shipment.isShipmentSeparationActivate = true;
+                }
+                /* 当激活时再进来就是［确认分单］操作 */
+                else
+                {
+                    var isSeparateSuccessful = false;
+                    var clonedItems = [];
+
+                    for( itemIndex in items )
+                    {
+                        if( items[ itemIndex ].qtySeparated )
+                        {
+                            isSeparateSuccessful = true;
+
+                            var holdQtyShipped = items[ itemIndex ].qtyShipped;
+                            var clonedItem = angular.copy( items[ itemIndex ] );
+                            clonedItem.qtyShipped = clonedItem.qtySeparated;
+                            clonedItem.qtySeparated = null;
+                            clonedItems.push( clonedItem );
+
+                            if( items[ itemIndex ].qtyShipped === items[ itemIndex ].qtySeparated )
+                            {
+                                items.splice( itemIndex, 1 );
+                            }
+                            else
+                            {
+                                items[ itemIndex ].qtyShipped = holdQtyShipped;
+                                items[ itemIndex ].qtySeparated = null;
+                            }
+                        }
+                    }
+
+                    for( itemIndex in clonedItems )
+                    {
+                        clonedItems[ itemIndex ].isShipmentSeparationActivate = false;
+                    }
+
+                    /* 拆分成功 */
+                    if( isSeparateSuccessful )
+                    {
+                        for( itemIndex in items )
+                        {
+                            items[ itemIndex].isShipmentSeparationActivate = false;
+                        }
+
+                        var sameOrderLastShipmentIndex = 0;
+                        var clonedShipment = {};
+                        for( var shipmentIndex in $scope.shipments )
+                        {
+                            if( $scope.shipments[ shipmentIndex].orderId === shipment.orderId )
+                            {
+                                sameOrderLastShipmentIndex = shipmentIndex;
+                                clonedShipment = angular.copy( $scope.shipments[ shipmentIndex] );
+                            }
+                        }
+                        clonedShipment.shipmentItems = clonedItems;
+
+                        sameOrderLastShipmentIndex++;
+
+                        $scope.shipments.splice( sameOrderLastShipmentIndex , 0, clonedShipment );
+
+                        console.log( 'sameOrderLastShipmentIndex: ' + sameOrderLastShipmentIndex );
+
+                        shipment.isShipmentSeparationActivate = false;
+                        clonedShipment.isShipmentSeparationActivate = false;
+                    }
+                    /* 拆分失败 */
+                    else
+                    {
+                        toastr.warning('请在需要拆分的商品后面［拆分数量］输入框内填写数量');
+                    }
+                }
+            }
+            /* 如果详情小于等于 1 个，则提示操作员当［当前订单只有一个商品不能进行分单操作］ */
+            else
+            {
+                toastr.warning('当前订单只有一个商品不能进行分单操作');
+            }
+        };
+
+        /* 取消分单 */
+        $scope.separateShipmentCancel = function( shipment )
+        {
+            var items = shipment.shipmentItems;
+            for( itemIndex in items )
+            {
+                items[ itemIndex].isShipmentSeparationActivate = false;
+                items[ itemIndex].qtySeparated = null;
+            }
+            shipment.isShipmentSeparationActivate = false;
+        };
+
+        $scope.mergeSelectedShipments = function()
+        {
+            var selectedShipments = [];
+            if( $scope.shipments && $scope.shipments.length > 0 )
+            {
+                var shipments = $scope.shipments;
+                for( var shipmentIndex in shipments )
+                {
+                    if( shipments[ shipmentIndex ].isSelected )
+                    {
+                        selectedShipments.push( shipments[ shipmentIndex ] );
+                    }
+                }
+            }
+
+            if( selectedShipments.length > 1 )
+            {
+                var isOrderIdMatched = true;
+                var previousShipment = null;
+                for( var selectedShipmentIndex in selectedShipments )
+                {
+                    var selectedShipment = selectedShipments[ selectedShipmentIndex ];
+                    if( previousShipment )
+                    {
+                        if( selectedShipment.orderId !== previousShipment.orderId )
+                        {
+                            isOrderIdMatched = false;
+                            break;
+                        }
+                    }
+                    previousShipment = angular.copy( selectedShipment );
+                }
+                if( isOrderIdMatched )
+                {
+                    var finalShipment = selectedShipments[ 0 ];
+                    var finalShipmentItems = finalShipment.shipmentItems;
+                    for( var finalShipmentIndex in selectedShipments )
+                    {
+                        console.log( 'finalShipmentIndex: ' + finalShipmentIndex );
+                        if( finalShipmentIndex > 0 )
+                        {
+                            var mergedShipmentItems = selectedShipments[ finalShipmentIndex].shipmentItems;
+                            for( var mergedShipmentItemIndex in mergedShipmentItems )
+                            {
+                                for( var finalShipmentItemIndex in finalShipmentItems )
+                                {
+                                    console.log( 'mergedShipmentItems[ mergedShipmentItemIndex ]: ' );
+                                    console.log( mergedShipmentItems[ mergedShipmentItemIndex ] );
+                                    console.log( 'finalShipmentItems[ finalShipmentItemIndex ]: ' );
+                                    console.log( finalShipmentItems[ finalShipmentItemIndex ] );
+                                    if( mergedShipmentItems[ mergedShipmentItemIndex ].orderItemId === finalShipmentItems[ finalShipmentItemIndex ].orderItemId )
+                                    {
+                                        finalShipmentItems[ finalShipmentItemIndex ].qtyShipped += mergedShipmentItems[ mergedShipmentItemIndex ].qtyShipped;
+                                    }
+                                    else
+                                    {
+                                        finalShipmentItems.push( angular.copy( mergedShipmentItems[ mergedShipmentItemIndex] ) );
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    toastr.success('成功合并选中的运单');
+                }
+                else
+                {
+                    toastr.warning('合并的运单内包含不同订单的运单，请剔除不同订单的运单再继续');
                 }
             }
             else
             {
-                toastr.error('请选择一到多个订单来继续！');
+                toastr.warning('请选择至少 2 张同订单号的运单来进行合并');
             }
-
-
-            $scope.batchManipulationValue = 'batchManipulation';
         };
 
 
-        function executeShipmentOperationReview(action)
+
+        function executeShipmentOperationReview( query, action )
         {
-            var reviewDTO = {
-                action                    : action,
-                orders                    : orderService.selectedOrders,
-                selectedCourier           : $scope.courier.selected,
-                dataMap : {
-                    operatorId                  : $rootScope.user().id,
-                    startShipNumber           : $scope.startShipNumber
+            var data = {
+                action                      : action,
+                warehouseId                 : query.warehouse ? query.warehouse.id : null,
+                shopId                      : query.shop ? query.shop.id : null,
+                deleted                     : false,
+                orders                      : orderService.selectedOrders,
+                //selectedCourier             : $scope.courier.selected,
+                dataMap                     :
+                {
+                    operatorId              : $rootScope.user().id,
+                    startShipNumber         : $scope.startShipNumber
                 },
-                ignoredMap : {
+                ignoredMap                  :
+                {
                     differentWarehouseError : false,
                     differentDeliveryMethodError : false,
                     emptyCourierAndShipNumberError : false,
                     warehouseExistOrderShipmentError : false,
                     emptyReceiveAddressError : false
                 },
-                assignWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null
+                assignWarehouseId           : $scope.query.warehouse ? $scope.query.warehouse.id : null,
+                assignShopId                : $scope.query.shop ? $scope.query.shop.id : null,
+                assignDeliveryMethod        : $scope.query.deliveryMethod ? $scope.query.deliveryMethod.value : null,
+                shippingDescription         : $scope.query.shippingDescription ? $scope.query.shippingDescription : null,
+                showDeployedOrders          : $scope.showDeployedOrders
+            };
+            var params =
+            {
+                page: $scope.query.number,
+                size: $scope.query.size,
+                sort : ['internalCreateTime,desc']
             };
             console.log('Before Operation Review:');
-            console.log(reviewDTO);
-            orderService.confirmOrderWhenGenerateShipment(reviewDTO).then(function(review){
+            console.log( data );
+            orderService.confirmOrderWhenGenerateShipment( data, params ).then(function(review){
                 console.log('After Operation Review:');
                 console.log(review);
+                $scope.page = review.pagedOrder;
+                console.log( '$scope.page: ' );
+                console.log( $scope.page );
+
+                $scope.shipments = angular.copy( review.shipments );
+
             });
         }
 
-        /* 第一次进入生成发货单操作复核 */
-        $scope.checkGenerateShipmentModal = function()
+        executeShipmentOperationReview( $scope.query, 0, 'VERIFY' );
+
+
+        $scope.operateDate = Date.now();
+        $scope.operationReview = orderService.getOperationReview;
+
+        function updateCreateTime() {
+            $scope.operateDate = new Date();
+        }
+
+        var createTime = $interval(updateCreateTime, 500);
+
+        /* 点击将某个订单的 ignoreCheck 标为  ! ignoreCheck，在进行复核验证时不再对该订单进行验证 */
+        $scope.ignoreOrNotCheckOrder = function( order )
         {
-            /* 隐藏指定快递公司弹出层 */
-            $('#generateShipment').modal('hide');
+            order.ignoreCheck = ! order.ignoreCheck;
+            var operationReview = orderService.getOperationReview();
+            var data =
+            {
+                'action' : 'VERIFY',
+                'orders' : operationReview.orders,
+                'checkMap' : operationReview.checkMap,
+                'dataMap' : operationReview.dataMap,
+                'ignoredMap' : operationReview.ignoredMap,
+                'selectedCourier' : operationReview.selectedCourier,
+                'assignWarehouseId' : operationReview.assignWarehouseId,
+                'assignShopId'                : operationReview.assignShopId,
+                'assignDeliveryMethod'        : operationReview.assignDeliveryMethod,
+                'shippingDescription'         : operationReview.shippingDescription,
+                'showDeployedOrders'          : operationReview.showDeployedOrders
+            };
+            var params =
+            {
+                page: $scope.query.number,
+                size: $scope.query.size,
+                sort : ['internalCreateTime,desc']
+            };
+            orderService.confirmOrderWhenGenerateShipment( data, params).then(function(review){
+                console.log('After Operation Review:');
+                console.log(review);
 
-            executeShipmentOperationReview('VERIFY');
-
-            $scope.toggleShipmentSheetSlide();
-            /* 查看检查结果 */
+                $scope.shipments = angular.copy( review.shipments );
+            });
         };
-    
 
+        /* 点击将［取消］或［恢复］某项验证 */
+        $scope.ignoreOrNotChecker = function(ignoredMap, checker, isIgnored)
+        {
+            ignoredMap[checker] = isIgnored;
+
+            var operationReview = orderService.getOperationReview();
+            var data =
+            {
+                'action' : 'VERIFY',
+                'orders' : operationReview.orders,
+                'checkMap' : operationReview.checkMap,
+                'dataMap' : operationReview.dataMap,
+                'ignoredMap' : operationReview.ignoredMap,
+                'selectedCourier' : operationReview.selectedCourier,
+                'assignWarehouseId' : operationReview.assignWarehouseId,
+                'assignShopId'                : operationReview.assignShopId,
+                'assignDeliveryMethod'        : operationReview.assignDeliveryMethod,
+                'shippingDescription'         : operationReview.shippingDescription,
+                'showDeployedOrders'          : operationReview.showDeployedOrders
+            };
+            var params =
+            {
+                page: $scope.query.number,
+                size: $scope.query.size,
+                sort : ['internalCreateTime,desc']
+            };
+            orderService.confirmOrderWhenGenerateShipment( data, params ).then(function(review){
+                console.log('After Operation Review:');
+                console.log(review);
+
+                $scope.shipments = angular.copy( review.shipments );
+            });
+        };
+
+        /* 确认生成发货单，如果再次验证通过则可以生成，否则保持在该页 */
+        $scope.confirmShipmentGeneration = function()
+        {
+            var operationReview = orderService.getOperationReview();
+            var data =
+            {
+                'action' : 'CONFIRM',
+                'orders' : operationReview.orders,
+                'checkMap' : operationReview.checkMap,
+                'dataMap' : operationReview.dataMap,
+                'ignoredMap' : operationReview.ignoredMap,
+                'selectedCourier' : operationReview.selectedCourier,
+                'assignWarehouseId' : operationReview.assignWarehouseId,
+                'assignShopId'                : operationReview.assignShopId,
+                'assignDeliveryMethod'        : operationReview.assignDeliveryMethod,
+                'shippingDescription'         : operationReview.shippingDescription,
+                'showDeployedOrders'          : operationReview.showDeployedOrders
+            };
+            var params =
+            {
+                page: $scope.query.number,
+                size: $scope.query.size,
+                sort : ['internalCreateTime,desc']
+            };
+            orderService.confirmOrderWhenGenerateShipment( data, params ).then(function(review){
+
+                if( review.confirmable )
+                {
+                    /* 如果没有最终订单  */
+                    if( review.resultMap.isEmptyFinalOrders )
+                    {
+                        toastr.warning('抱歉，没有可以生成发货单的订单！');
+                    }
+                    else
+                    {
+                        toastr.success('成功开出 ' + review.resultMap.generatedShipmentCount + ' 张发货单。');
+                        $scope.$parent.toggleShipmentSheetSlide();
+
+                        orderService.getPagedOrdersForOrderDeploy({
+                            page: 0,
+                            size: $scope.$parent.pageSize,
+                            sort: ['internalCreateTime,desc'],
+                            warehouseId: $scope.$parent.query.warehouse ? $scope.$parent.query.warehouse.id : null,
+                            shopId: $scope.$parent.query.shop ? $scope.$parent.query.shop.id : null,
+                            deleted: false
+                        }).then(function(page) {
+                            console.log('page:');
+                            console.log(page);
+                            $.each(page.content, function() {
+                                orderService.checkItemProductShopTunnel(this);
+                            });
+                            $scope.$parent.page = page;
+                            $scope.$parent.totalPagesList = Utils.setTotalPagesList(page);
+                        });
+
+                        $location.url('/shipments');
+                    }
+                }
+                else
+                {
+                    toastr.warning('确认之前请确保验证全部通过，或者您可以选择点击［取消验证］之后再确认！');
+                }
+
+                console.log('After Operation Review:');
+                console.log(review);
+                console.log('验证是否全部通过 ：' + review.confirmable);
+                $interval.cancel(createTime);
+            });
+        };
 
     }
-]);
+]).directive('tooltip', function()
+{
+    return {
+        restrict: 'A',
+        link: function(scope, element)
+        {
+            $(element).hover(function()
+            {
+                // on mouseenter
+                $(element).tooltip('show');
+            }, function()
+            {
+                // on mouseleave
+                $(element).tooltip('hide');
+            });
+        }
+    };
+});

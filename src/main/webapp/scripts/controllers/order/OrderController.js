@@ -8,8 +8,8 @@ var OrderController = function($scope, $location, toastr, orderService, Utils, P
         format: 'yyyy-mm-dd',
         clearBtn: true,
         language: 'zh-CN',
-        orientation: 'top left',
-        todayHighlight: true,
+        orientation: 'bottom left',
+        todayHighlight: true
     });
 
     $scope.template = {
@@ -42,7 +42,7 @@ var OrderController = function($scope, $location, toastr, orderService, Utils, P
     };
 
     $scope.defaultQuery = {
-        pageSize: 20,
+        size: 20,
         totalPagesList: [],
         sort: ['internalCreateTime,desc'],
         order: {},
@@ -74,13 +74,16 @@ var OrderController = function($scope, $location, toastr, orderService, Utils, P
         console.log('processes');
         console.log(processes);
         Process.initStatus(processes);
+    }).then(function() {
+        $scope.searchData( $scope.query, $scope.number );
     });
 
     $scope.searchData = function(query, number)
     {
+        $scope.number = number;
         orderService.get({
             page: number ? number : 0,
-            size: query.pageSize,
+            size: query.size,
             sort: query.sort,
             orderId: query.order.orderId,
             shipNumber: query.order.shipNumber,
@@ -95,14 +98,11 @@ var OrderController = function($scope, $location, toastr, orderService, Utils, P
         }, function(page) {
             $scope.page = page;
             console.log(page.content);
-            query.totalPagesList = Utils.setTotalPagesList(page);
+            console.log( page );
+            Utils.initList(page, $scope.query);
+            console.log( $scope.query );
         });
-
-        console.log('orderService.getAll()');
-        console.log( orderService.getAll() );
     };
-
-    $scope.searchData($scope.query);
 
     $scope.turnPage = function(number) {
         if (number > -1 && number < $scope.page.totalPages) {
@@ -110,8 +110,8 @@ var OrderController = function($scope, $location, toastr, orderService, Utils, P
         }
     };
 
-    $scope.search = function() {
-        $scope.searchData($scope.query);
+    $scope.search = function(query) {
+        $scope.searchData(query);
     };
 
     $scope.reset = function() {

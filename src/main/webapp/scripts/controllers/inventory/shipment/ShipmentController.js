@@ -20,8 +20,8 @@ angular.module('ecommApp')
             format: 'yyyy-mm-dd',
             clearBtn: true,
             language: 'zh-CN',
-            orientation: 'top left',
-            todayHighlight: true,
+            orientation: 'bottom left',
+            todayHighlight: true
         });
 
         $scope.selectedShipment = {};
@@ -29,53 +29,60 @@ angular.module('ecommApp')
         $scope.shipmentCompleteSlideChecked = false;
         $scope.shipmentsCompleteSlideChecked = false;
 
-        $scope.totalPagesList = [];
-        $scope.pageSize = 20;
-        $scope.defaultQuery = {};
-        $scope.query = angular.copy($scope.defaultQuery);
+        $scope.defaultQuery = {
+            size: 20,
+            sort: ['createTime,desc'],
+            warehouse: undefined,
+            shop: undefined,
+            statuses: [],
+        };
+        $scope.query = angular.copy( $scope.defaultQuery );
         $scope.warehouses = [];
         $scope.shipments = [];
         $scope.shops = [];
         $scope.couriers = [];
         $scope.shipStatus = [
             {
-                id : 1, name : '待打印'
+                id : 1, name : '已打印'
             },
             {
-                id : 2, name : '已发出'
+                id : 2, name : '配货完成'
             },
             {
-                id : 3, name : '已签收'
+                id : 3, name : '已发出'
             },
             {
-                id : 4, name : '派送异常'
+                id : 4, name : '已签收'
             },
             {
-                id : 5, name : '作废'
+                id : 5, name : '派送异常'
+            },
+            {
+                id : 6, name : '作废'
             }
         ];
 
         /* 查询发货单分页数据所需查询参数 */
-        function getQueryParamJSON()
+        function getQueryParamJSON( query, number )
         {
             return {
-                page: 0,
-                size: $scope.pageSize,
+                page: number ? number : 0,
+                size: query.size,
                 sort: ['createTime,desc'],
-                shipWarehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
-                orderId: $scope.query.orderId ? $scope.query.orderId : null,
-                courierId: $scope.query.courier ? $scope.query.courier.id : null,
-                shipNumber: $scope.query.shipNumber ? $scope.query.shipNumber : null,
-                shopId: $scope.query.shop ? $scope.query.shop.id : null,
-                shipStatus: $scope.query.shipStatus ? $scope.query.shipStatus.id : null,
-                createTimeStart: $scope.query.createTimeStart ? $scope.query.createTimeStart : null,
-                createTimeEnd: $scope.query.createTimeEnd ? $scope.query.createTimeEnd : null,
-                lastUpdateStart: $scope.query.lastUpdateStart ? $scope.query.lastUpdateStart : null,
-                lastUpdateEnd: $scope.query.lastUpdateEnd ? $scope.query.lastUpdateEnd : null,
-                pickupTimeStart: $scope.query.pickupTimeStart ? $scope.query.pickupTimeStart : null,
-                pickupTimeEnd: $scope.query.pickupTimeEnd ? $scope.query.pickupTimeEnd : null,
-                signupTimeStart: $scope.query.signupTimeStart ? $scope.query.signupTimeStart : null,
-                signupTimeEnd: $scope.query.signupTimeEnd ? $scope.query.signupTimeEnd : null
+                shipWarehouseId: query.warehouse ? query.warehouse.id : null,
+                orderId: query.orderId ? query.orderId : null,
+                courierId: query.courier ? query.courier.id : null,
+                shipNumber: query.shipNumber ? query.shipNumber : null,
+                shopId: query.shop ? query.shop.id : null,
+                shipStatus: query.shipStatus ? query.shipStatus.id : null,
+                createTimeStart: query.createTimeStart ? query.createTimeStart : null,
+                createTimeEnd: query.createTimeEnd ? query.createTimeEnd : null,
+                lastUpdateStart: query.lastUpdateStart ? query.lastUpdateStart : null,
+                lastUpdateEnd: query.lastUpdateEnd ? query.lastUpdateEnd : null,
+                pickupTimeStart: query.pickupTimeStart ? query.pickupTimeStart : null,
+                pickupTimeEnd: query.pickupTimeEnd ? query.pickupTimeEnd : null,
+                signupTimeStart: query.signupTimeStart ? query.signupTimeStart : null,
+                signupTimeEnd: query.signupTimeEnd ? query.signupTimeEnd : null
             };
         }
 
@@ -100,39 +107,35 @@ angular.module('ecommApp')
                 $scope.shops = shops;
             });
         }).then(function() {
-            shipmentService.get( getQueryParamJSON(), function(page) {
-                console.log('page:');
-                console.log(page);
-                $scope.page = page;
-                $scope.totalPagesList = Utils.setTotalPagesList(page);
-            });
+            $scope.search( $scope.query );
         });
 
-        $scope.search = function() {
-            console.clear();
-            console.log('search:');
-            console.log($scope.query);
-            shipmentService.get( getQueryParamJSON(), function(page) {
+        $scope.searchData = function( query, number )
+        {
+            shipmentService.get( getQueryParamJSON( query, number ), function(page) {
                 console.log('page:');
                 console.log(page);
                 $scope.page = page;
-                $scope.totalPagesList = Utils.setTotalPagesList(page);
-                $scope.isCheckedAll = false;
+                Utils.initList(page, $scope.query);
             });
         };
 
-        $scope.reset = function() {
-            console.clear();
-            console.log('reset:');
+        $scope.turnPage = function(number)
+        {
+            if (number > -1 && number < $scope.page.totalPages) {
+                $scope.searchData( $scope.query, number );
+            }
+        };
+
+        $scope.search = function( query )
+        {
+            $scope.searchData( query );
+        };
+
+        $scope.reset = function()
+        {
             $scope.query = angular.copy($scope.defaultQuery);
-            console.log($scope.query);
-            shipmentService.get( getQueryParamJSON(), function(page) {
-                console.log('page:');
-                console.log(page);
-                $scope.page = page;
-                $scope.totalPagesList = Utils.setTotalPagesList(page);
-                $scope.isCheckedAll = false;
-            });
+            $scope.searchData( $scope.query );
         };
 
         $scope.toggleShipmentCompleteSlide = function(){
@@ -238,7 +241,7 @@ angular.module('ecommApp')
                         console.log('page:');
                         console.log(page);
                         $scope.page = page;
-                        $scope.totalPagesList = Utils.setTotalPagesList(page);
+                        Utils.initList(page, $scope.query);
                     });
                 });
 
@@ -275,7 +278,7 @@ angular.module('ecommApp')
                         console.log('page:');
                         console.log(page);
                         $scope.page = page;
-                        $scope.totalPagesList = Utils.setTotalPagesList(page);
+                        Utils.initList(page, $scope.query);
                     });
                 });
 

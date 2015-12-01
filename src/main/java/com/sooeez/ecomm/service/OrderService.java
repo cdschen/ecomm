@@ -701,17 +701,20 @@ public class OrderService {
 		review.getCheckMap().put("differentDeliveryMethodError", false);
 		List<Order> orders = review.getOrders();
 		
-		Order lastOrder = review.getOrders().get( review.getOrders().size() - 1 );
-		for(Order order : orders)
+		if( review.getOrders() != null && review.getOrders().size() > 0 )
 		{
-			/* 没有被移出 */
-			if( ! order.getIgnoreCheck() )
+			Order lastOrder = review.getOrders().get( review.getOrders().size() - 1 );
+			for(Order order : orders)
 			{
-				if( order.getDeliveryMethod() == null || ! order.getDeliveryMethod().equals(lastOrder.getDeliveryMethod())  )
+				/* 没有被移出 */
+				if( ! order.getIgnoreCheck() )
 				{
-					/* 不通过 */
-					review.getCheckMap().put("differentDeliveryMethodError", true);
-					break;
+					if( order.getDeliveryMethod() == null || ! order.getDeliveryMethod().equals(lastOrder.getDeliveryMethod())  )
+					{
+						/* 不通过 */
+						review.getCheckMap().put("differentDeliveryMethodError", true);
+						break;
+					}
 				}
 			}
 		}
@@ -752,7 +755,9 @@ public class OrderService {
 					{
 						for( OrderItem item : order.getItems() )
 						{
-							if( shipment.getShipWarehouseId().equals( item.getAssignTunnel().getDefaultWarehouse().getId() ) )
+							if(
+								shipment.getShipWarehouseId() != null && item.getAssignTunnel() != null && item.getAssignTunnel().getDefaultWarehouse() != null && item.getAssignTunnel().getDefaultWarehouse().getId() != null &&
+								shipment.getShipWarehouseId().equals( item.getAssignTunnel().getDefaultWarehouse().getId() ) )
 							{
 								isWarehouseExistOrderShipment = true;
 							}
@@ -1007,10 +1012,118 @@ public class OrderService {
 			review.getResultMap().put("isEmptyFinalOrders", true);
 		}
 	}
-
-	public OperationReviewDTO confirmOrderWhenGenerateShipment(OperationReviewDTO review)
+	
+	/* 通过orderids重新查询一遍所选的orders */
+	public void refreshShipmentsBySelectedShipmentIds( OperationReviewDTO review, Pageable pageable )
 	{
-		this.refreshOrdersBySelectedOrderIds(review);
+		/* 2. 获得订单信息 */
+		StringBuffer bufferSQL = new StringBuffer();
+		bufferSQL.append( "SELECT * FROM t_order ");
+		bufferSQL.append( "WHERE deleted = false " );
+		if( review.getShopId() != null )
+		{
+			bufferSQL.append( "AND shop_id = ?1 " );
+		}
+		if( review.getShowDeployedOrders() == null || ! review.getShowDeployedOrders() )
+		{
+			/** 暂时这么写，以后发货单多了，肯定要优化
+			 */
+			bufferSQL.append( "AND id NOT IN( SELECT DISTINCT(order_id) FROM t_shipment ) " );
+		}
+		if( review.getAssignDeliveryMethod() != null )
+		{
+			bufferSQL.append( "AND delivery_method = ?2 " );
+		}
+		if( review.getShopId() != null )
+		{
+			bufferSQL.append( "AND shop_id = ?3 " );
+		}
+		bufferSQL.append( "LIMIT ?4, ?5" );
+		
+		Query query =  em.createNativeQuery( bufferSQL.toString(), Order.class );
+		if( review.getShopId() != null )
+		{
+			query.setParameter(1, review.getShopId() );
+		}
+		if( review.getAssignDeliveryMethod() != null )
+		{
+			query.setParameter(2, review.getAssignDeliveryMethod());
+		}
+		if( review.getShopId() != null )
+		{
+			query.setParameter(3, review.getAssignShopId());
+		}
+		query.setParameter(4, ( pageable.getPageNumber() <=1 ? 0 : pageable.getPageNumber() - 1) * pageable.getPageSize());
+		query.setParameter(5, pageable.getPageSize());
+		
+		if( query.getResultList() != null && query.getResultList().size() > 0 )
+		{
+			@SuppressWarnings("unchecked")
+			List<Order> orders = query.getResultList();
+			
+			orders.forEach( o ->
+			{
+				this.checkItemProductShopTunnel( o );
+			});
+			
+			if (review.getAssignWarehouseId() != null)
+			{
+				this.filterItemsForOrder( orders, review.getAssignWarehouseId() );
+			}
+			
+			review.setTotalNumber( query.getResultList().size() );
+			review.setOrders( orders );
+			
+			
+			/** 获取发货单列表
+			 */
+			
+			List<Shipment> shipments = new ArrayList<Shipment>();
+			for( Order finalOrder : orders )
+			{
+				Shipment shipment = new Shipment();
+				shipment.setOrderId( finalOrder.getId() );
+				shipment.setTotalWeight( finalOrder.getWeight() );
+				shipment.setSenderName( finalOrder.getSenderName() );
+				shipment.setSenderPhone( finalOrder.getSenderPhone() );
+				shipment.setSenderEmail( finalOrder.getSenderEmail() );
+				shipment.setSenderAddress( finalOrder.getSenderAddress() );
+				shipment.setSenderPost( finalOrder.getSenderPost() );
+				shipment.setReceiveName( finalOrder.getReceiveName() );
+				shipment.setReceivePhone( finalOrder.getReceivePhone() );
+				shipment.setReceiveEmail( finalOrder.getReceiveEmail() );
+				shipment.setReceiveAddress( finalOrder.getReceiveAddress() );
+				shipment.setReceivePost( finalOrder.getReceivePost() );
+				shipment.setReceiveCity( finalOrder.getReceiveCity() );
+				shipment.setReceiveProvince( finalOrder.getReceiveProvince() );
+				shipment.setReceiveCountry( finalOrder.getReceiveCountry() );
+				shipment.setShipWarehouseId( review.getAssignWarehouseId() );
+				
+				if( finalOrder.getItems() != null && finalOrder.getItems().size() > 0 )
+				{
+					List<ShipmentItem> items = new ArrayList<ShipmentItem>();
+					for( OrderItem item : finalOrder.getItems() )
+					{
+						ShipmentItem finalItem = new ShipmentItem();
+						finalItem.setShortName( item.getProduct().getShortName() );
+						finalItem.setFullName( item.getName() != null && ! item.getName().trim().equals("") ? item.getName() : item.getExternal_name() );
+						finalItem.setQtyShipped( item.getQtyOrdered() );
+						finalItem.setOrderItemId( item.getId() );
+						items.add( finalItem );
+					}
+					shipment.setShipmentItems( items );
+				}
+				
+				shipments.add( shipment );
+			}
+			
+			review.setShipments( shipments );
+		}
+	}
+
+	public OperationReviewDTO confirmOrderWhenGenerateShipment( OperationReviewDTO review, Pageable pageable )
+	{
+		this.refreshShipmentsBySelectedShipmentIds( review, pageable );
 		
 		/* 验证 1 ： 是否在同一仓库 */
 		this.confirmDifferentWarehouse(review);
@@ -1066,6 +1179,10 @@ public class OrderService {
 			if (order.getShopIds() != null && order.getShopIds().length > 0)
 			{
 				predicates.add(root.get("shopId").in((Object[]) order.getShopIds()));
+			}
+			if( order.getDeliveryMethod() != null )
+			{
+				predicates.add( cb.equal( root.get("deliveryMethod") , order.getDeliveryMethod() ) );
 			}
 			if (StringUtils.hasText(order.getReceiveName()))
 			{
