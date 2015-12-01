@@ -1,13 +1,16 @@
 angular.module('ecommApp')
 
-.controller('OutInventorySheetOperatorController', ['$rootScope', '$scope', '$state', '$stateParams', 'Inventory', 'InventoryBatch', 'orderService',
-    function($rootScope, $scope, $state, $stateParams, Inventory, InventoryBatch, orderService) {
+.controller('OutInventorySheetOperatorController', ['$rootScope', '$scope', '$state', '$stateParams', 'Inventory', 'InventoryBatch', 'orderService', 'toastr',
+    function($rootScope, $scope, $state, $stateParams, Inventory, InventoryBatch, orderService, toastr) {
 
         var t = $.now();
 
         $scope.template = {
             details: {
                 url: 'views/inventory/out-inventory-sheet/out-inventory-sheet.operator.order-detail-slide.html?' + t
+            },
+            purchaseDetails: {
+                url: 'views/inventory/out-inventory-sheet/out-inventory-sheet.operator.purchase-detail-slide.html?' + t
             }
         };
 
@@ -29,6 +32,20 @@ angular.module('ecommApp')
         });
 
         $scope.outInventory = function() {
+
+            // 判断一张临时采购性质的出库单是否有关联入库批次
+
+            var noOutBatch = false;
+            $.each($scope.batch.items, function() {
+                if (!this.outBatchId) {
+                    noOutBatch = true;
+                    return false;
+                }
+            });
+            if (noOutBatch) {
+                toastr.warning('需要临时采购的出库单没有关联入库批次，不得入库。');
+                return false;
+            }
 
             $scope.batch.executeOperator = $rootScope.user();
             $scope.batch.type = 2;
@@ -95,16 +112,48 @@ angular.module('ecommApp')
                 $('body').css('overflow', 'hidden');
                 $('div[ps-open="detailsSlideChecked"]').css('overflow', 'auto');
                 var orderIds = [];
-                $.each(batch.orderBatches, function(){
+                $.each(batch.orderBatches, function() {
                     orderIds.push(this.orderId);
                 });
+
                 orderService.getAll({
                     orderIds: orderIds
-                }).then(function(orders){
+                }).then(function(orders) {
                     $scope.orders = orders;
                     console.log(orders);
                 });
             }
+        };
+
+        /*
+         *   临时采购
+         */
+
+        $scope.purchaseDetailsSlideChecked = false;
+
+        $scope.togglePurchaseDetailsSlide = function() {
+            console.log('togglePurchaseDetailsSlide():');
+            $scope.purchaseDetailsSlideChecked = !$scope.purchaseDetailsSlideChecked;
+            $('body').css('overflow', 'auto');
+            $('div[ps-open="purchaseDetailsSlideChecked"]').css('overflow', 'hidden');
+            if ($scope.purchaseDetailsSlideChecked) {
+                $.each($scope.products, function() {
+                    var product = this;
+                    $.each(product.positions, function() {
+                        product.purchaseQty = Math.abs(this.total);
+                    });
+                });
+                $('body').css('overflow', 'hidden');
+                $('div[ps-open="purchaseDetailsSlideChecked"]').css('overflow', 'auto');
+            }
+        };
+
+        $scope.doPurchase = function() {
+            console.log('doPurchase()');
+            console.log($scope.products);
+            $('body').css('overflow', 'auto');
+            $('div[ps-open="purchaseDetailsSlideChecked"]').css('overflow', 'hidden');
+            $state.go('purchaseOrder.operator');
         };
 
     }

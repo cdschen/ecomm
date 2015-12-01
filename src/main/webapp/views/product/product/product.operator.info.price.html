@@ -1,7 +1,9 @@
-<div class="panel panel-default" style="height:600px">
+<div class="panel panel-default" >
     <div class="panel-body">
         <h4 class="text-success"><strong>{{title}}基本价格</strong></h4>
-        <hr>
+    </div>
+    <hr style="margin: 0">
+    <div class="panel-body">
         <!-- product.priceL1 -->
         <div class="form-group has-feedback" ng-class="{'has-success':(productForm.priceL1.$dirty && productForm.priceL1.$valid), 'has-warning':(productForm.priceL1.$dirty && productForm.priceL1.$invalid) }">
             <label class="control-label col-md-2">一级价格 <span class="text-danger">*</span></label>

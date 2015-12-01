@@ -3,7 +3,9 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <h4 class="text-success"><strong>商品类型</strong></h4>
-            <hr>
+        </div>
+        <hr style="margin: 0">
+        <div class="panel-body">
             <!-- product.productType -->
             <div class="form-group">
                 <label class="control-label col-md-2">类型 <span class="text-danger">*</span></label>
@@ -16,6 +18,23 @@
                     </ui-select>
                 </div>
             </div>
+            <!-- product.tempPurchasing -->
+            <div class="form-group">
+                <label class="control-label col-md-2">属于临时采购商品 <span class="text-danger">*</span></label>
+                <div class="col-md-6">
+                    <ui-select ng-model="product.tempPurchasing">
+                        <ui-select-match placeholder="(必选，默认显示20，请输入名字搜索)">{{$select.selected.label}}</ui-select-match>
+                        <ui-select-choices repeat="opt in isorno | filter: $select.search | limitTo: 20">
+                            <div ng-bind-html="opt.label | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+            <div class="row">
+                <span class="col-md-6 col-md-offset-2 text-warning">
+                    当一个商品属于临时采购商品时，从订单生成出库单时，将不对其库存进行验证，并且对订单中所有这类没有库存的商品生成一张‘需要采购的特殊出库单’，如果有库存则会被例如到正常的出库单中。
+                </span>
+            </div>
         </div>
     </div>
 </form>
@@ -23,9 +42,11 @@
 </div>
 <form name="productForm" class="form-horizontal" novalidate>
     <div class="row">
-        <div class="col-md-6" ng-include="template.info.attr.url">
+        <div class="col-md-12" ng-include="template.info.attr.url">
         </div>
-        <div class="col-md-6" ng-include="template.info.price.url">
+    </div>
+    <div class="row">
+        <div class="col-md-12" ng-include="template.info.price.url">
         </div>
     </div>
     <div class="panel panel-default">

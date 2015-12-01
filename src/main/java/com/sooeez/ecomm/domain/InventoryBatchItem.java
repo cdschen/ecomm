@@ -89,6 +89,9 @@ public class InventoryBatchItem implements Serializable {
 	@Column(name = "batch_operate")
 	private Integer batchOperate;
 
+	@Column(name = "batch_nature")
+	private String batchNature;
+
 	@Lob
 	@Column(name = "memo")
 	private String memo;
@@ -381,6 +384,14 @@ public class InventoryBatchItem implements Serializable {
 
 	public void setMemo(String memo) {
 		this.memo = memo;
+	}
+
+	public String getBatchNature() {
+		return batchNature;
+	}
+
+	public void setBatchNature(String batchNature) {
+		this.batchNature = batchNature;
 	}
 
 }

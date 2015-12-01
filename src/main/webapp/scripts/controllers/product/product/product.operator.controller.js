@@ -43,6 +43,14 @@ angular.module('ecommApp')
             value: 1
         }];
 
+        $scope.isorno = [{
+            label: '是',
+            value: true
+        }, {
+            label: '否',
+            value: false
+        }];
+
         $scope.shops = [];
         $scope.brands = [];
         $scope.categories = [];
@@ -137,6 +145,7 @@ angular.module('ecommApp')
                         console.log('[' + $scope.action + '] loading product');
                         console.log(product);
                         product.productType = $scope.productTypes[product.productType];
+                        product.tempPurchasing = $scope.isorno[product.tempPurchasing ? 0 : 1];
                         $scope.product = product;
                         setDefaultProductShopTunnel(product.shopTunnels);
                         return product;

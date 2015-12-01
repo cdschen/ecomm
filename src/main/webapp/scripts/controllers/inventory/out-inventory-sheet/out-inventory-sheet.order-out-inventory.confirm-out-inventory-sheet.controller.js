@@ -3,7 +3,6 @@ angular.module('ecommApp')
 .controller('ConfirmOutInventorySheetController', ['$rootScope', '$scope', '$state', 'toastr', 'orderService', 'Inventory',
     function($rootScope, $scope, $state, toastr, orderService, Inventory) {
 
-        var $ = angular.element;
         $scope.operateDate = Date.now();
         $scope.operationReview = orderService.getOperationReview;
         $scope.defaultHeight = function() {

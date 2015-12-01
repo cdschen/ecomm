@@ -3,6 +3,9 @@
         <div class="panel panel-info">
             <div class="panel-body">
                 <button type="button" class="close" ng-click="toggleDetailsSlide()">&times;</button>
+                <h4 class="text-success">
+                    <strong>相关订单列表</strong>
+                </h4>
                 <div class="panel panel-success" style="margin-top: 20px;" ng-repeat="order in orders">
                     <div class="panel-heading">
                         <a href="" class="pull-right" title="查看订单其他信息" ng-click="order.show = !order.show">

@@ -85,6 +85,7 @@
                                             {{item.name}}
                                             <p>
                                                 ({{item.product.sku}})
+                                                <span class="text-danger" ng-show="item.product.tempPurchasing">(属于临时采购商品)</span>
                                             </p>
                                         </td>
                                         <td width="8.5%">

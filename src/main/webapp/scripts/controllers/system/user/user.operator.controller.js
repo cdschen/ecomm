@@ -78,13 +78,13 @@ angular.module('ecommApp')
             });
         }).then(function() {
             Shop.getAll({
-                deleted: false
+                enabled: true
             }).then(function(shops) {
                 $scope.shops = shops;
             });
         }).then(function() {
             Warehouse.getAll({
-                deleted: false
+                enabled: true
             }).then(function(warehouses) {
                 $scope.warehouses = warehouses;
             });

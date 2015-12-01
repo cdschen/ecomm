@@ -1,8 +1,8 @@
 angular.module('ecommApp')
 
-.controller('OutInventorySheetController', ['$rootScope', '$scope', 'Warehouse', 'Utils', 'Inventory', 'InventoryBatch', 'Auth',
-    function($rootScope, $scope, Warehouse, Utils, Inventory, InventoryBatch, Auth) {
-        
+.controller('OutInventorySheetController', ['$rootScope', '$scope', 'Warehouse', 'Inventory', 'InventoryBatch', 'Auth',
+    function($rootScope, $scope, Warehouse, Inventory, InventoryBatch, Auth) {
+
         $scope.types = [{
             label: '全部',
             value: null
@@ -18,6 +18,7 @@ angular.module('ecommApp')
         }];
 
         $scope.defautlQuery = {
+            page: 0,
             size: 20,
             sort: ['operateTime,desc'],
             warehouse: undefined,
@@ -43,9 +44,9 @@ angular.module('ecommApp')
             $scope.warehouses = warehouses;
         });
 
-        $scope.searchData = function(query, number) {
+        $scope.searchData = function(query) {
             InventoryBatch.get({
-                page: number ? number : 0,
+                page: query.page,
                 size: query.size,
                 sort: query.sort,
                 warehouseId: query.warehouse ? query.warehouse.id : null,
@@ -56,19 +57,12 @@ angular.module('ecommApp')
                 outInventoryTimeEnd: query.batch.outInventoryTimeEnd,
                 type: query.batch.type ? query.batch.type.value : null,
                 operate: query.batch.operate
-            },function(page) {
+            }, function(page) {
                 $scope.page = page;
-                Utils.initList(page, query);
             });
         };
 
         $scope.searchData($scope.query);
-
-        $scope.turnPage = function(number) {
-            if (number > -1 && number < $scope.page.totalPages) {
-                $scope.searchData($scope.query, number);
-            }
-        };
 
         $scope.search = function(query) {
             $scope.searchData(query);
@@ -94,15 +88,14 @@ angular.module('ecommApp')
             autoclose: true
         });
 
-        $scope.showInvalidBatch = function(batch) {
+        $scope.showTrashBatch = function(batch) {
             $scope.invalidingBatch = batch;
             $('#batchInvalidModal').modal('show');
         };
 
-        $scope.invalidBatch = function() {
+        $scope.trashBatch = function() {
             $scope.invalidingBatch.type = 0;
-            $scope.invalidingBatch.orderBatches.length = 0;
-            InventoryBatch.save({}, $scope.invalidingBatch, function() {
+            InventoryBatch.trash($scope.invalidingBatch).then(function(){
                 $('#batchInvalidModal').modal('hide');
                 $scope.searchData($scope.query);
             });

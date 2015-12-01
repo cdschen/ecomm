@@ -200,18 +200,24 @@ public class InventoryController {
 	}
 	
 	@RequestMapping(value = "/inventory-batches", method = RequestMethod.POST)
-	public InventoryBatch saveBatch(@RequestBody InventoryBatch inventoryBatch) {
-		return batchService.saveInventoryBatch(inventoryBatch);
+	public InventoryBatch saveBatch(@RequestBody InventoryBatch batch) {
+		return batchService.saveInventoryBatch(batch);
 	}
 	
 	@RequestMapping(value = "/inventory-batches/save/list", method = RequestMethod.POST)
-	public List<InventoryBatch> saveBatches(@RequestBody List<InventoryBatch> inventoryBatches) {
-		return batchService.saveInventoryBatches(inventoryBatches);
+	public List<InventoryBatch> saveBatches(@RequestBody List<InventoryBatch> batches) {
+		return batchService.saveInventoryBatches(batches);
 	}
 	
 	@RequestMapping(value = "/inventory-batches/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteBatch(@PathVariable("id") Long id) {
 		batchService.deleteBatch(id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/inventory-batches/trash", method = RequestMethod.POST)
+	public ResponseEntity<?> trashBatch(@RequestBody InventoryBatch batch) {
+		batchService.trashBatch(batch);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	

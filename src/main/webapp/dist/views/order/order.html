@@ -92,7 +92,7 @@
             <thead>
                 <tr>
                     <th width="2%">
-                        <input type="checkbox" name="orderId">
+                        <input type="checkbox" ng-model="isCheckedAll" ng-click="checkAllOrders()">
                     </th>
                     <th width="10%">店铺</th>
                     <th width="12%">单号</th>
@@ -103,8 +103,9 @@
                     <th width="12%">备注</th>
                     <th width="10%">状态</th>
                     <th width="6%" style="padding: 2px">
-                        <select class="form-control input-sm">
-                            <option selected="selected">批量操作</option>
+                        <select class="form-control input-sm" ng-change="batchManipulation()" ng-model="batchManipulationValue">
+                            <option selected="selected" value="batchManipulation">批量操作</option>
+                            <option value="orderPrint">打印</option>
                         </select>
                     </th>
                 </tr>
@@ -112,7 +113,7 @@
             <tbody>
                 <tr ng-repeat="order in page.content" ng-class="{active: order.active}">
                     <td>
-                        <input type="checkbox" name="orderId">
+                        <input type="checkbox" ng-model="order.isSelected">
                     </td>
                     <td>
                         {{order.shop.name}}
