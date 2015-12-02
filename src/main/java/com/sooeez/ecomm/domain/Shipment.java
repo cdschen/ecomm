@@ -223,6 +223,10 @@ public class Shipment implements Serializable {
 	@Transient
 	private String signupTimeEnd;
 
+	/* 货运描述 */
+	@Transient
+	private String shippingDescription;
+
 	/**
 	 * 复核操作
 	 */
@@ -624,6 +628,14 @@ public class Shipment implements Serializable {
 
 	public void setProductContent(String productContent) {
 		this.productContent = productContent;
+	}
+
+	public String getShippingDescription() {
+		return shippingDescription;
+	}
+
+	public void setShippingDescription(String shippingDescription) {
+		this.shippingDescription = shippingDescription;
 	}
 
 }

@@ -49,10 +49,15 @@ public class OperationReviewDTO implements Serializable {
 	// 指定配送方式
 	private Integer assignDeliveryMethod;
 	/* 收货单验证 */
+	private String assignShippingDescription;
+	/* 收货单验证 */
 	private List<PurchaseOrder> purchaseOrders;
 	
 	/* 发货单批量添加 */
 	private List<Shipment> shipments;
+	
+	/* 复核操作列出用 */
+	private List<Shipment> reviewShipments;
 	
 	/* 操作复核查询［快递］之用 */
 	private String shippingDescription;
@@ -159,6 +164,14 @@ public class OperationReviewDTO implements Serializable {
 		this.shipments = shipments;
 	}
 
+	public List<Shipment> getReviewShipments() {
+		return reviewShipments;
+	}
+
+	public void setReviewShipments(List<Shipment> reviewShipments) {
+		this.reviewShipments = reviewShipments;
+	}
+
 	public Long getShopId() {
 		return shopId;
 	}
@@ -213,6 +226,14 @@ public class OperationReviewDTO implements Serializable {
 
 	public void setShowDeployedOrders(Boolean showDeployedOrders) {
 		this.showDeployedOrders = showDeployedOrders;
+	}
+
+	public String getAssignShippingDescription() {
+		return assignShippingDescription;
+	}
+
+	public void setAssignShippingDescription(String assignShippingDescription) {
+		this.assignShippingDescription = assignShippingDescription;
 	}
 
 }

@@ -1,11 +1,3 @@
-<ol class="breadcrumb">
-    <li><a ui-sref="dashboard">首页</a></li>
-    <li><a ui-sref="shipment">发货单管理</a></li>
-    <li class="active">创建发货单</li>
-    <!--<li class="pull-right" id="breadcrumb-li">-->
-    <!--<a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="shipment">返回发货单列表</a>-->
-    <!--</li>-->
-</ol>
 <style>
     table.shipment_confirm_tables>tbody>tr>th,
     table.shipment_confirm_tables>tbody>tr>td
@@ -22,14 +14,37 @@
     .pagination>li>a, .pagination>li>span {
         color: #4cae4c;
     }
+    @media print
+    {
+        .print-hide
+        {
+            display:none;
+        }
+        .hide-border-print
+        {
+            border:none;
+        }
+    }
+    .print-table
+    {
+        width:100%;
+        font-size:x-small;
+        font-family: "宋体";
+    }
 </style>
-<div class="alert alert-info" role="alert">
-    <h2 class="text-center">目前只能使用［分单］，［同品更名］，［确定生成］按钮</h2>
-    <h2>在点击［确定生成］按钮之前确保已经点击了所有的［取消验证］按钮，避免刷新数据</h2>
-    <br/>
-    <h2 class="text-center">其余的 Coming this week！</h2>
+<ol class="breadcrumb print-hide">
+    <li><a ui-sref="dashboard">首页</a></li>
+    <li><a ui-sref="shipment">发货单管理</a></li>
+    <li class="active">创建发货单</li>
+    <!--<li class="pull-right" id="breadcrumb-li">-->
+    <!--<a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="shipment">返回发货单列表</a>-->
+    <!--</li>-->
+</ol>
+<div class="alert alert-info print-hide" role="alert">
+    <h2 class="text-center">［打印快递单］功能目前还不完善，需要调整快递单打印模版的数据对齐位置</h2>
+    <h2 class="text-center">其余功能都 OK，有 BUG 随时来骚扰我</h2>
 </div>
-<div class="container-fluid container">
+<div class="container-fluid container print-hide">
     <div class="panel panel-default">
         <div class="panel-body">
             <h3 class="text-center" style="margin: 0;">
@@ -167,7 +182,7 @@
                 <div class="col-md-2">
                     <div class="panel panel-default" style="height:200px">
                         <div class="panel-body">
-                            <button type="button" class="btn btn-success btn-lg btn-block" ng-click="confirmShipmentGeneration()">确定生成</button>
+                            <button type="button" class="btn btn-success btn-lg btn-block" ng-click="confirmShipmentGeneration()" ng-disabled=" ! shipments || shipments.length < 1 ">确定生成</button>
                         </div>
                     </div>
                 </div>
@@ -208,7 +223,7 @@
                         <td width="20%">
                             <div class="form-group">
                                 <div class="col-md-12">
-                                    <input type="text" class="form-control" ng-model="query.shippingDescription" placeholder="请输入快递名称" ng-show=" query.deliveryMethod && query.deliveryMethod.value == 1" />
+                                    <input type="text" class="form-control" ng-keyup="search( $event )" ng-model="query.shippingDescription" placeholder="请输入快递名称" ng-show=" query.deliveryMethod && query.deliveryMethod.value == 1" />
                                 </div>
                             </div>
                         </td>
@@ -217,7 +232,7 @@
                                 <div class="col-md-12">
                                     <label class="col-md-12">
                                         <div class="col-md-1" style="padding-left:0; padding-right:0; line-height:30px;" >
-                                            <input type="checkbox" ng-model="showDeployedOrders" />
+                                            <input type="checkbox" ng-model="query.showDeployedOrders" />
                                         </div>
                                         <p class="form-control-static col-md-11">显示已配货订单</p>
                                     </label>
@@ -245,9 +260,13 @@
                     <thead>
                         <tr>
                             <td colspan="10">
-                                <a class="btn btn-xs btn-success" ng-click="">
+                                <a class="btn btn-xs btn-success" ng-click="printDistributedOrders()">
                                     <span class="glyphicon glyphicon-print"></span>
-                                    批量打印快递单
+                                    打印配货单
+                                </a>
+                                <a class="btn btn-xs btn-success" ng-click="toggleShipmentCourierPrintSlide()">
+                                    <span class="glyphicon glyphicon-print"></span>
+                                    打印快递单
                                 </a>
                                 <a class="btn btn-xs btn-success" ng-click="mergeSelectedShipments()">
                                     <span class="glyphicon glyphicon-th-large"></span>
@@ -263,14 +282,15 @@
                         </tr>
                         <tr>
                             <th width="3%"></th>
-                            <th width="10%">订单编号</th>
-                            <th width="20%">收件人信息</th>
-                            <th width="42%">发货详情</th>
-                            <th width="5%" class="text-center">A</th>
-                            <th width="5%" class="text-center">B</th>
-                            <th width="5%" class="text-center">C</th>
-                            <th width="5%" class="text-center">D</th>
-                            <th width="5%" class="text-center">E</th>
+                            <th width="13%">编号</th>
+                            <th width="15%">收件人信息</th>
+                            <th width="41%">发货详情</th>
+                            <th width="13%">发货描述</th>
+                            <th width="3%" class="text-center">A</th>
+                            <th width="3%" class="text-center">B</th>
+                            <th width="3%" class="text-center">C</th>
+                            <th width="3%" class="text-center">D</th>
+                            <th width="3%" class="text-center">E</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -279,40 +299,43 @@
                             <td>
                                 <input type="checkbox" ng-model="shipment.isSelected" />
                             </td>
-                            <td width="10%">
+                            <td width="13%">
+                                <strong>所属订单:</strong><br/>
                                 <strong>{{ shipment.orderId }}</strong>
+                                <br/><br/>
+                                <strong>输入快递单:</strong><br/>
+                                <div>
+                                    <input class="form-control input-sm" type="text" ng-model="shipment.shipNumber" />
+                                </div>
+                                <div style="margin-top:2px;" class="text-center">
+                                    <a class="btn btn-xs btn-success" ng-click="downwardGeneratingShipNumbers( shipment )">向下批量生成快递单号</a>
+                                </div>
                             </td>
-                            <td width="20%">
+                            <td width="15%" style="word-break:break-all;">
                                 姓名: {{ shipment.receiveName }}<br/>
                                 电话: {{ shipment.receivePhone }}<br/>
                                 地址: {{ shipment.receiveAddress }}<br/>
-                                <a class="btn btn-xs btn-primary" ng-click="emptyIsShipmentJoinedLockedEditName( shipment )">
-                                    <span class="glyphicon glyphicon-trash"></span>
-                                    清空同品更名
-                                </a>
-                                <br/><br/>
-                                <a class="btn btn-xs btn-{{ shipment.isShipmentSeparationActivate ? 'success' : 'primary' }}" ng-click="separateShipmentPrepare( shipment )">
-                                    <span class="glyphicon glyphicon-{{ shipment.isShipmentSeparationActivate ? 'ok-circle' : 'th' }}"></span>
-                                    {{ shipment.isShipmentSeparationActivate ? '确认分单' : '分单' }}
-                                </a>
-                                <a class="btn btn-xs btn-warning" ng-show="shipment.isShipmentSeparationActivate" ng-click="separateShipmentCancel( shipment )">
-                                    <span class="glyphicon glyphicon-remove-circle" ></span>
-                                    取消分单
-                                </a>
                             </td>
-                            <td width="42%">
+                            <td width="41%">
                                 <table class="table table-bordered table-condensed clear-marginbottom-table">
+                                    <thead>
+                                        <tr>
+                                            <th width="30%">品名</th>
+                                            <th width="20%">订购数量</th>
+                                            <th width="50%" class="text-center">操作</th>
+                                        </tr>
+                                    </thead>
                                     <tbody>
                                         <tr ng-repeat="item in shipment.shipmentItems" my-repeat-directive>
                                             <td width="30%">
-                                                <input type="text" data-toggle="tooltip" data-placement="top" title="{{ item.fullName }}" tooltip ng-model="item.shortName" ng-value="item.fullName" class="form-control" ng-keydown="holdAndChangeItemShortName( item )" ng-keypress="shipmentJoinedLockedEditName( $event, item, shipment )" />
+                                                <input type="text" data-toggle="tooltip" data-placement="top" title="{{ item.fullName }}" tooltip ng-model="item.shortName" ng-value="item.fullName" class="form-control input-sm" ng-keydown="holdAndChangeItemShortName( item )" ng-keypress="shipmentJoinedLockedEditName( $event, item, shipment )" />
                                             </td>
                                             <td width="20%">
-                                                <input type="number" ng-model="item.qtyShipped" class="form-control" ng-blur="changeItemQtyShippedBlur( item )" />
+                                                <input type="number" ng-model="item.qtyShipped" class="form-control input-sm" ng-blur="changeItemQtyShippedBlur( item )" />
                                             </td>
                                             <td width="50%">
                                                 <div class="col-md-7" ng-show=" shipment.isShipmentSeparationActivate ">
-                                                    <input type="number" ng-model="item.qtySeparated" class="form-control" placeholder="拆分数量" ng-blur="changeItemQtySeparatedBlur( item )" />
+                                                    <input type="number" ng-model="item.qtySeparated" class="form-control input-sm" placeholder="拆分数量" ng-blur="changeItemQtySeparatedBlur( item )" />
                                                 </div>
                                                 <a
                                                     class="btn btn-xs {{ item.isShipmentJoinedLockEditName ? 'btn-primary' : 'btn-info' }} pull-right"
@@ -323,34 +346,56 @@
                                                 </a>
                                             </td>
                                         </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <span>
+                                                <a class="btn btn-xs btn-{{ shipment.isShipmentSeparationActivate ? 'success' : 'primary' }}" ng-click="separateShipmentPrepare( shipment )">
+                                                    <span class="glyphicon glyphicon-{{ shipment.isShipmentSeparationActivate ? 'ok-circle' : 'th' }}"></span>
+                                                    {{ shipment.isShipmentSeparationActivate ? '确认分单' : '分单' }}
+                                                </a>
+                                                <a class="btn btn-xs btn-warning" ng-show="shipment.isShipmentSeparationActivate" ng-click="separateShipmentCancel( shipment )">
+                                                    <span class="glyphicon glyphicon-remove-circle" ></span>
+                                                    取消操作
+                                                </a>
+                                            </span>
+                                            <a class="btn btn-xs btn-primary pull-right" ng-click="emptyIsShipmentJoinedLockedEditName( shipment )">
+                                                <span class="glyphicon glyphicon-trash"></span>
+                                                清空同品更名
+                                            </a>
+
+                                        </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </td>
-                            <td width="5%" class="text-center">
+                            <td width="13%" style="word-break:break-all;">
+                                {{ shipment.shippingDescription }}
+                            </td>
+                            <td width="3%" class="text-center">
                                 <div ng-switch on="operationReview().checkMap.differentWarehouseError">
                                     <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
                                     <span class="glyphicon glyphicon-remove-circle text-danger" ng-switch-when="true" ng-show="! operationReview().ignoredMap.differentWarehouseError "></span>
                                 </div>
                             </td>
-                            <td width="5%" class="text-center">
+                            <td width="3%" class="text-center">
                                 <div ng-switch on="operationReview().checkMap.differentDeliveryMethodError">
                                     <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
                                     <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show="! operationReview().ignoredMap.differentDeliveryMethodError "></span>
                                 </div>
                             </td>
-                            <td width="5%" class="text-center">
+                            <td width="3%" class="text-center">
                                 <div ng-switch on="operationReview().checkMap.emptyCourierAndShipNumberError">
                                     <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
                                     <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show="! operationReview().ignoredMap.emptyCourierAndShipNumberError "></span>
                                 </div>
                             </td>
-                            <td width="5%" class="text-center">
+                            <td width="3%" class="text-center">
                                 <div ng-switch on="order.checkMap.warehouseExistOrderShipmentError">
                                     <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
                                     <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show="! operationReview().ignoredMap.warehouseExistOrderShipmentError "></span>
                                 </div>
                             </td>
-                            <td width="5%" class="text-center">
+                            <td width="3%" class="text-center">
                                 <div ng-switch on="order.checkMap.emptyReceiveAddressError">
                                     <span class="glyphicon glyphicon-ok text-success" ng-switch-when="false"></span>
                                     <span class="glyphicon glyphicon-warning-sign text-warning" ng-switch-when="true" ng-show=" ! operationReview().ignoredMap.emptyReceiveAddressError "></span>
@@ -406,32 +451,56 @@
     </div>
 </div>
 
-<div style="position:fixed;
-    left: 0px;
-    top: 300px;
-    height: 30px; background:#f8f8f8;" class="text-center" ng-show=" ! isShortcutOperationShow">
-    <a class="btn btn-xs btn-default" ng-click=" isShortcutOperationShow = ! isShortcutOperationShow">
-        <span class="glyphicon glyphicon-flash"></span><br/>
-        显<br/>
-        示<br/>
-        快<br/>
-        捷<br/>
-        操<br/>
-        作<br/>
-    </a>
+<!--<div style="position:fixed;-->
+    <!--left: 0px;-->
+    <!--top: 300px;-->
+    <!--height: 30px; background:#f8f8f8;" class="text-center" ng-show=" ! isShortcutOperationShow">-->
+    <!--<a class="btn btn-xs btn-default" ng-click=" isShortcutOperationShow = ! isShortcutOperationShow">-->
+        <!--<span class="glyphicon glyphicon-flash"></span><br/>-->
+        <!--显<br/>-->
+        <!--示<br/>-->
+        <!--快<br/>-->
+        <!--捷<br/>-->
+        <!--操<br/>-->
+        <!--作<br/>-->
+    <!--</a>-->
+<!--</div>-->
+<!--<div style="position:fixed;-->
+    <!--left: 0px;-->
+    <!--top: 300px;-->
+    <!--width: 85px;-->
+    <!--height: 150px; padding:5px; background:#f8f8f8;" class="text-center" ng-show="isShortcutOperationShow">-->
+    <!--<a class="btn btn-xs btn-default" ng-click=" isShortcutOperationShow = ! isShortcutOperationShow">-->
+        <!--<span class="glyphicon glyphicon-eye-close"></span>-->
+        <!--隐藏-->
+    <!--</a>-->
+    <!--<h5 style="font-size:12px;">快捷操作</h5>-->
+    <!--<a class="btn btn-xs btn-success" ng-click="mergeSelectedShipments()">-->
+        <!--<span class="glyphicon glyphicon-th-large"></span>-->
+        <!--批量合单-->
+    <!--</a>-->
+<!--</div>-->
+
+<div pageslide ps-open="shipmentCourierPrintSlideChecked" ps-speed="0.25" ps-size="100%">
+
+    <div id="operator-slider" style="padding:1px" class="container">
+        <div class="panel panel-default hide-border-print">
+            <div class="panel-body">
+                <button type="button" class="close print-hide" ng-click="toggleShipmentCourierPrintSlide()">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <table class="print-table text-center">
+                    <tbody>
+                        <tr ng-repeat="shipmentCourier in shipmentCouriers">
+                            <td>{{ shipmentCourier.receiveName }}</td>
+                            <td>{{ shipmentCourier.shipNumber }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 </div>
-<div style="position:fixed;
-    left: 0px;
-    top: 300px;
-    width: 85px;
-    height: 150px; padding:5px; background:#f8f8f8;" class="text-center" ng-show="isShortcutOperationShow">
-    <a class="btn btn-xs btn-default" ng-click=" isShortcutOperationShow = ! isShortcutOperationShow">
-        <span class="glyphicon glyphicon-eye-close"></span>
-        隐藏
-    </a>
-    <h5 style="font-size:12px;">快捷操作</h5>
-    <a class="btn btn-xs btn-success">
-        <span class="glyphicon glyphicon-th-large"></span>
-        批量合单
-    </a>
-</div>
+
+<span>&nbsp;</span>

@@ -76,7 +76,6 @@ public class OrderService {
 	@Transactional
 	public Order saveOrder(Order order)
 	{
-		System.out.println("saveOrder(Order order)");
 		/* If id not null then is edit action */
 		if (order.getId() == null)
 		{
@@ -114,11 +113,6 @@ public class OrderService {
 		}
 		/* execute no matter create or update */
 		order.setLastUpdateTime(new Date());
-		
-//		for( ObjectProcess objectProcess : order.getProcesses() )
-//		{
-//			System.out.println( "==========    objectProcess.getProcess().getName(): " + objectProcess.getProcess().getName() );
-//		}
 
 		Integer qtyTotalItemOrdered = 0;
 		Integer weight = 0;
@@ -913,123 +907,69 @@ public class OrderService {
 	}
 
 	/* 如果验证全都通过，并且操作类型是 CONFIRM 则执行创建操作 */
-	public void executeShipmentGeneration(OperationReviewDTO review)
+	public void executeShipmentGeneration( OperationReviewDTO review )
 	{
-		/* 假设有可生成发货单的订单 */
-		review.getResultMap().put("isEmptyFinalOrders", false);
-		
-		List<Order> orders = review.getOrders();
-		List<Order> shipmentGenerableOrders = new ArrayList<Order>();
-		for( Order order : orders )
-		{
-			/* 如果订单没有被移出，则添加到最终订单列表中 */
-			if( ! order.getIgnoreCheck() )
-			{
-				shipmentGenerableOrders.add(order);
-			}
-		}
-		
-		/* 如果有可生成发货单的订单 */
-		if( shipmentGenerableOrders.size() > 0 )
+		/* 如果有运单 */
+		if( review.getShipments() != null && review.getShipments().size() > 0 )
 		{
 			/* 取得操作员信息 */
 			Number operatorId = (Number) review.getDataMap().get("operatorId");
 			Long finalOperatorId = operatorId.longValue();
 			
-			/* 取得快递公司及起始快递单号 */
-			Long courierId = review.getSelectedCourier() != null ? review.getSelectedCourier().getId() : null;
-			String startShipNumber = (String) review.getDataMap().get("startShipNumber");
+//			/* 取得快递公司及起始快递单号 */
+//			Long courierId = review.getSelectedCourier() != null ? review.getSelectedCourier().getId() : null;
 			
-
-			Integer initStartShipmentNumber = 0;
-			if( startShipNumber != null && ! startShipNumber.trim().equals("") )
+			Boolean isGeneratableShipments = false;
+			
+			List<Shipment> shipments = review.getShipments();
+			for( Shipment shipment : shipments )
 			{
-				initStartShipmentNumber = Integer.valueOf( startShipNumber );
+				/** 确保运单详情不为空
+				 */
+				if( shipment.getShipmentItems() != null && shipment.getShipmentItems().size() > 0 )
+				{
+					/* 给发货单初始化创建人 */
+					shipment.setOperatorId( finalOperatorId );
+					
+//					/* 给发货单初始化快递公司编号及起始快递单号 */
+//					shipment.setCourierId( courierId );
+					
+					/* 1 : 待取件 */
+					shipment.setShipStatus( 1 );
+
+					/* 已发货商品总件数 */
+					/* 商品相关数据初始化 */
+					Integer qtyTotalItemShipped = 0;
+					
+					/* 重新计算运单详情数量 */
+					for( ShipmentItem item : shipment.getShipmentItems() )
+					{
+						/* 叠加每件商品的数量，成本，重量 */
+						qtyTotalItemShipped += item.getQtyShipped();
+					}
+					shipment.setQtyTotalItemShipped( qtyTotalItemShipped );
+					
+					/* 所有数据已准备就绪，初始化［创建时间］和［最后更新时间］并生成发货单 */
+					shipment.setCreateTime( new Date() );
+					shipment.setLastUpdate( new Date() );
+					
+					
+					isGeneratableShipments = true;
+				}
 			}
 			
-			
-			for( Order order : shipmentGenerableOrders )
+			if( isGeneratableShipments )
 			{
-				/* 给发货单初始化数据 */
-				Shipment shipment = new Shipment();
-
-				/* 给发货单初始化创建人 */
-				shipment.setOperatorId( finalOperatorId );
-				
-				/* 给发货单初始化快递公司编号及起始快递单号 */
-				shipment.setCourierId( courierId );
-				
-				if( startShipNumber != null && ! startShipNumber.trim().equals("") )
-				{
-					shipment.setShipNumber( initStartShipmentNumber.toString() );
-					initStartShipmentNumber ++ ;
-				}
-				
-
-				/* 给发货单初始化余下数据 */
-				shipment.setOrderId( order.getId() );
-				/* 1 : 待取件 */
-				shipment.setShipStatus( 1 );
-				/* 初始化发件人数据 */
-				shipment.setSenderName( order.getSenderName() );
-				shipment.setSenderAddress( order.getSenderAddress() );
-				shipment.setSenderPhone( order.getSenderPhone() );
-				shipment.setSenderEmail( order.getSenderEmail() );
-				shipment.setSenderPost( order.getSenderPost() );
-				/* 初始化收件人数据 */
-				shipment.setReceiveName( order.getReceiveName() );
-				shipment.setReceivePhone( order.getReceivePhone() );
-				shipment.setReceiveEmail( order.getReceiveEmail() );
-				shipment.setReceiveCountry( order.getReceiveCountry() );
-				shipment.setReceiveProvince( order.getReceiveProvince() );
-				shipment.setReceiveCity( order.getReceiveCity() );
-				shipment.setReceiveAddress( order.getReceiveAddress() );
-				shipment.setReceivePost( order.getReceivePost() );
-
-				/* 已发货商品总件数 */
-				/* 商品相关数据初始化 */
-				Integer qtyTotalItemShipped = 0;
-				BigDecimal bigZero = new BigDecimal( 0 );
-				BigDecimal shipFeeCost = new BigDecimal( 0 );
-				Integer totalWeight = 0;
-				/* 初始化发货商品数据 */
-				List<ShipmentItem> shipmentItems = new ArrayList<ShipmentItem>();
-				for( OrderItem orderItem : order.getItems() )
-				{
-					/* 叠加每件商品的数量，成本，重量 */
-					qtyTotalItemShipped += orderItem.getQtyOrdered();
-					shipFeeCost = shipFeeCost.add( orderItem.getUnitCost() != null ? orderItem.getUnitCost() : bigZero );
-					totalWeight += orderItem.getQtyOrdered() * orderItem.getUnitWeight();
-					
-					ShipmentItem shipmentItem = new ShipmentItem();
-					shipmentItem.setOrderItemId( orderItem.getId() );
-					shipmentItem.setQtyShipped( orderItem.getQtyOrdered() );
-					
-					/* 关联发货单和发货详情 */
-					shipmentItems.add( shipmentItem );
-				}
-				shipment.setShipmentItems( shipmentItems );
-				shipment.setQtyTotalItemShipped( qtyTotalItemShipped );
-				shipment.setShipfeeCost( shipFeeCost );
-				shipment.setTotalWeight( totalWeight );
-				
-				/* 获取仓库编号 */
-				Long warehouseId = order.getItems().get(0).getAssignTunnel().getDefaultWarehouse().getId();
-				shipment.setShipWarehouseId( warehouseId );
-				
-				/* 所有数据已准备就绪，初始化［创建时间］和［最后更新时间］并生成发货单 */
-				shipment.setCreateTime( new Date() );
-				shipment.setLastUpdate( new Date() );
-				System.out.println("order.getMemo(): " + order.getMemo());
-				shipment.setMemo( order.getMemo() );
-				this.shipmentRepository.save(shipment);
+				this.shipmentRepository.save( shipments );
+				review.getResultMap().put( "generatedShipmentCount", shipments.size() );
 			}
-			review.getResultMap().put("generatedShipmentCount", shipmentGenerableOrders.size());
+			/* 是否有可生成的运单 */
+			review.getResultMap().put("isEmptyShipments", ! isGeneratableShipments);
 		}
 		else
 		{
 			/* 如果没有最终订单 */
-			review.getResultMap().put("isEmptyFinalOrders", true);
+			review.getResultMap().put("isEmptyShipments", true);
 		}
 	}
 	
@@ -1040,7 +980,7 @@ public class OrderService {
 		StringBuffer bufferSQL = new StringBuffer();
 		bufferSQL.append( "SELECT * FROM t_order ");
 		bufferSQL.append( "WHERE deleted = false " );
-		if( review.getShopId() != null )
+		if( review.getAssignShopId() != null )
 		{
 			bufferSQL.append( "AND shop_id = ?1 " );
 		}
@@ -1054,14 +994,14 @@ public class OrderService {
 		{
 			bufferSQL.append( "AND delivery_method = ?2 " );
 		}
-		if( review.getShopId() != null )
+		if( review.getAssignShippingDescription() != null )
 		{
-			bufferSQL.append( "AND shop_id = ?3 " );
+			bufferSQL.append( "AND shipping_description LIKE ?3 " );
 		}
 		bufferSQL.append( "LIMIT ?4, ?5" );
 		
 		Query query =  em.createNativeQuery( bufferSQL.toString(), Order.class );
-		if( review.getShopId() != null )
+		if( review.getAssignShopId() != null )
 		{
 			query.setParameter(1, review.getShopId() );
 		}
@@ -1069,11 +1009,11 @@ public class OrderService {
 		{
 			query.setParameter(2, review.getAssignDeliveryMethod());
 		}
-		if( review.getShopId() != null )
+		if( review.getAssignShippingDescription() != null )
 		{
-			query.setParameter(3, review.getAssignShopId());
+			query.setParameter(3, "%" + review.getAssignShippingDescription() + "%" );
 		}
-		query.setParameter(4, ( pageable.getPageNumber() <=1 ? 0 : pageable.getPageNumber() - 1) * pageable.getPageSize());
+		query.setParameter(4, ( pageable.getPageNumber() <= 1 ? 0 : pageable.getPageNumber() - 1) * pageable.getPageSize());
 		query.setParameter(5, pageable.getPageSize());
 		
 		if( query.getResultList() != null && query.getResultList().size() > 0 )
@@ -1098,7 +1038,7 @@ public class OrderService {
 			/** 获取发货单列表
 			 */
 			
-			List<Shipment> shipments = new ArrayList<Shipment>();
+			List<Shipment> reviewShipments = new ArrayList<Shipment>();
 			for( Order finalOrder : orders )
 			{
 				Shipment shipment = new Shipment();
@@ -1117,7 +1057,19 @@ public class OrderService {
 				shipment.setReceiveCity( finalOrder.getReceiveCity() );
 				shipment.setReceiveProvince( finalOrder.getReceiveProvince() );
 				shipment.setReceiveCountry( finalOrder.getReceiveCountry() );
-				shipment.setShipWarehouseId( review.getAssignWarehouseId() );
+				Long shipWarehouseId = null;
+				if
+				(
+						finalOrder.getItems() != null && finalOrder.getItems().size() > 0 &&
+						finalOrder.getItems().get(0).getAssignTunnel() != null && finalOrder.getItems().get(0).getAssignTunnel().getDefaultWarehouse() != null
+				)
+				{
+					shipWarehouseId = finalOrder.getItems().get(0).getAssignTunnel().getDefaultWarehouse().getId();
+				}
+				shipment.setShipWarehouseId( shipWarehouseId );
+				shipment.setShippingDescription( finalOrder.getShippingDescription() );
+				shipment.setShipfeeCost( finalOrder.getShippingFee() != null ? finalOrder.getShippingFee() : new BigDecimal( 0 ) );
+				shipment.setTotalWeight( finalOrder.getWeight() != null ? finalOrder.getWeight() : 0 );
 				
 				if( finalOrder.getItems() != null && finalOrder.getItems().size() > 0 )
 				{
@@ -1134,10 +1086,10 @@ public class OrderService {
 					shipment.setShipmentItems( items );
 				}
 				
-				shipments.add( shipment );
+				reviewShipments.add( shipment );
 			}
 			
-			review.setShipments( shipments );
+			review.setReviewShipments( reviewShipments );
 		}
 	}
 
@@ -1147,7 +1099,6 @@ public class OrderService {
 		
 		/* 验证 1 ： 是否在同一仓库 */
 		this.confirmDifferentWarehouse(review);
-
 		
 		/* 验证 2 ： 全部订单的发货方式是否相同 */
 		this.confirmOrderDeliveryMethodSame(review);
@@ -1172,7 +1123,7 @@ public class OrderService {
 		if
 		(
 			review.isConfirmable() &&
-			review.getAction().equals(OperationReviewDTO.CONFIRM)
+			review.getAction().equals( OperationReviewDTO.CONFIRM )
 		)
 		{
 			/* 执行生成发货单操作 */
@@ -1637,8 +1588,6 @@ public class OrderService {
 				Query query =  em.createNativeQuery( sql , Product.class);
 				query.setParameter(1, shop.getId());
 				query.setParameter(2, dtoOrderItem.getSku());
-				System.out.println("shop.getId() :" + shop.getId());
-				System.out.println("dtoOrderItem.getSku(): " + dtoOrderItem.getSku());
 
 				if( ! query.getResultList().isEmpty() )
 				{

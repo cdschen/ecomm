@@ -1,5 +1,5 @@
 
-var OrderPrintController = function($scope, $rootScope, $location, $interval, orderService, Utils)
+var OrderPrintController = function($scope, $rootScope, $location, $interval, toastr, orderService, Utils)
 {
 
     $scope.defaultQuery = {
@@ -44,6 +44,7 @@ var OrderPrintController = function($scope, $rootScope, $location, $interval, or
             }, function(page) {
                 $scope.page = page;
                 query.totalPagesList = Utils.setTotalPagesList(page);
+                toastr.success('配货单准备就绪，可以进行打印操作');
             });
         }
     };
@@ -52,6 +53,6 @@ var OrderPrintController = function($scope, $rootScope, $location, $interval, or
 
 };
 
-OrderPrintController.$inject = ['$scope', '$rootScope', '$location', '$interval', 'orderService', 'Utils'];
+OrderPrintController.$inject = ['$scope', '$rootScope', '$location', '$interval', 'toastr', 'orderService', 'Utils'];
 
 angular.module('ecommApp').controller('OrderPrintController', OrderPrintController);
