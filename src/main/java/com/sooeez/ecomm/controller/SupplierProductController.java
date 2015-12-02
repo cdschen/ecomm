@@ -103,7 +103,7 @@ public class SupplierProductController {
 				fp.setPriceL10( op.getPriceL10() );
 				fp.setWeight( op.getWeight() );
 				
-				osp.setProduct( fp );
+				fsp.setProduct( fp );
 			}
 			
 			
