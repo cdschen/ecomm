@@ -103,6 +103,8 @@ public class UserService {
 			if (user.getEnabled() != null) {
 				predicates.add(cb.equal(root.get("enabled"), user.getEnabled()));
 			}
+			
+			
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
 		

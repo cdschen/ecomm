@@ -153,20 +153,24 @@ angular.module('ecommApp')
             console.log($scope.products);
             $('body').css('overflow', 'auto');
             $('div[ps-open="purchaseDetailsSlideChecked"]').css('overflow', 'hidden');
-            var purchasedProducts = [];
+            var purchasedProducts = '';
             $.each($scope.products, function() {
-                var purchasedProduct = {
-                    id: this.id,
-                    sku: this.sku,
-                    barcode: this.sku,
-                    name: this.name,
-                    purchaseQty: this.purchaseQty
-                };
-                purchasedProducts.push(purchasedProduct);
+                // var purchasedProduct = {
+                //     id: this.id,
+                //     sku: this.sku,
+                //     barcode: this.sku,
+                //     name: this.name,
+                //     purchaseQty: this.purchaseQty
+                // };
+                // purchasedProducts.push(purchasedProduct);
+                purchasedProducts += this.sku + ',' + this.purchaseQty + ';';
             });
             console.log('purchasedProducts:');
             console.log(purchasedProducts);
-            $state.transitionTo('purchaseOrder.operator', {
+
+
+
+            $state.go('purchaseOrder.operator', {
                 purchasedProducts: purchasedProducts
             });//purchasedProducts: purchasedProducts
         };
