@@ -50,7 +50,7 @@ angular.module('ecommApp')
             $scope.action = 'update';
             Warehouse.get({
                 id: $stateParams.id
-            }, {}, function(warehouse) {
+            }, function(warehouse) {
                 $scope.warehouse = warehouse;
                 initProperties(warehouse);
             });

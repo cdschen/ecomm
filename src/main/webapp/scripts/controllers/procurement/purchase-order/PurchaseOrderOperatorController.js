@@ -1,4 +1,7 @@
 var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stateParams, $filter, toastr, $timeout, $interval, purchaseOrderService, Supplier, Currency, supplierProductService) {
+    
+    console.log($stateParams);
+
     var t = $.now();
 
     $scope.template = {
@@ -28,7 +31,7 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
     });
 
     Supplier.getAll({
-        deleted : 0
+        enabled : true
     }).then(function(suppliers) {
         $scope.suppliers = suppliers;
     });
