@@ -302,49 +302,61 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
     {
         console.log( '$stateParams.purchasedProducts: ' );
         console.log( $stateParams.purchasedProducts );
-        //if( ! $scope.purchaseOrder.supplier )
-        //{
-        //    $scope.purchaseOrder.supplier = {};
-        //}
-        //$scope.purchaseOrder.supplier.id = 76;
-        //
-        //$timeout(function()
-        //{
-        //    $.each( $scope.suppliers, function()
-        //    {
-        //        if( this.id === $scope.purchaseOrder.supplier.id )
-        //        {
-        //            $scope.purchaseOrder.supplier = angular.copy( this );
-        //        }
-        //    });
-        //    $scope.changeSupplierConfirm();
-        //
-        //    $timeout(function()
-        //    {
-        //        $.each( $scope.supplierProducts, function()
-        //        {
-        //            var supplierProduct = this;
-        //            $.each( $stateParams.purchasedProducts, function()
-        //            {
-        //                if( supplierProduct.product && this.sku === supplierProduct.product.sku )
-        //                {
-        //                    supplierProduct.purchaseQty = this.purchaseQty;
-        //                    var item =
-        //                    {
-        //                        supplierProduct : supplierProduct,
-        //                        purchaseQty : supplierProduct.purchaseQty,
-        //                        estimatePurchaseUnitPrice : supplierProduct.defaultPurchasePrice
-        //                    };
-        //                    $scope.purchaseOrder.items.push( item );
-        //                }
-        //            });
-        //        });
-        //    }, 300);
-        //
-        //    console.log( '$scope.purchaseOrder: ' );
-        //    console.log( $scope.purchaseOrder );
-        //
-        //}, 200);
+        var purchasedProductsStr = $stateParams.purchasedProducts.split(';');
+        var finalPurchasedProducts = [];
+        for( var purchasedProductsStrIndex in purchasedProductsStr )
+        {
+            var purchasedProductStr = purchasedProductsStr[ purchasedProductsStrIndex].split(',');
+            var purchasedProduct = {
+                sku             :    purchasedProductStr[ 0 ],
+                purchaseQty     :    purchasedProductStr[ 1 ]
+            };
+            finalPurchasedProducts.push( purchasedProduct );
+        }
+
+        if( ! $scope.purchaseOrder.supplier )
+        {
+            $scope.purchaseOrder.supplier = {};
+        }
+        $scope.purchaseOrder.supplier.id = 76;
+
+        $timeout(function()
+        {
+            $.each( $scope.suppliers, function()
+            {
+                if( this.id === $scope.purchaseOrder.supplier.id )
+                {
+                    $scope.purchaseOrder.supplier = angular.copy( this );
+                }
+            });
+            $scope.changeSupplierConfirm();
+
+            $timeout(function()
+            {
+                $.each( $scope.supplierProducts, function()
+                {
+                    var supplierProduct = this;
+                    $.each( finalPurchasedProducts, function()
+                    {
+                        if( this.purchaseQty && supplierProduct.product && this.sku === supplierProduct.product.sku )
+                        {
+                            supplierProduct.purchaseQty = this.purchaseQty;
+                            var item =
+                            {
+                                supplierProduct : supplierProduct,
+                                purchaseQty : supplierProduct.purchaseQty,
+                                estimatePurchaseUnitPrice : supplierProduct.defaultPurchasePrice
+                            };
+                            $scope.purchaseOrder.items.push( item );
+                        }
+                    });
+                });
+            }, 300);
+
+            console.log( '$scope.purchaseOrder: ' );
+            console.log( $scope.purchaseOrder );
+
+        }, 200);
     }
 
     /* 模糊搜索：延迟 500 毫秒，相同模糊匹配关键词则不进行搜索 */
