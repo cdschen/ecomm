@@ -1,6 +1,4 @@
 var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stateParams, $filter, toastr, $timeout, $interval, purchaseOrderService, Supplier, Currency, supplierProductService) {
-    
-    console.log($stateParams);
 
     var t = $.now();
 
@@ -297,6 +295,57 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
 
         $scope.filterSupplierProduct();
     };
+
+    /** 如果临时采购产品不为空，则是从出库哪里跳转过来的
+     */
+    if( $stateParams.purchasedProducts && $stateParams.purchasedProducts.length > 0 )
+    {
+        console.log( '$stateParams.purchasedProducts: ' );
+        console.log( $stateParams.purchasedProducts );
+        //if( ! $scope.purchaseOrder.supplier )
+        //{
+        //    $scope.purchaseOrder.supplier = {};
+        //}
+        //$scope.purchaseOrder.supplier.id = 76;
+        //
+        //$timeout(function()
+        //{
+        //    $.each( $scope.suppliers, function()
+        //    {
+        //        if( this.id === $scope.purchaseOrder.supplier.id )
+        //        {
+        //            $scope.purchaseOrder.supplier = angular.copy( this );
+        //        }
+        //    });
+        //    $scope.changeSupplierConfirm();
+        //
+        //    $timeout(function()
+        //    {
+        //        $.each( $scope.supplierProducts, function()
+        //        {
+        //            var supplierProduct = this;
+        //            $.each( $stateParams.purchasedProducts, function()
+        //            {
+        //                if( supplierProduct.product && this.sku === supplierProduct.product.sku )
+        //                {
+        //                    supplierProduct.purchaseQty = this.purchaseQty;
+        //                    var item =
+        //                    {
+        //                        supplierProduct : supplierProduct,
+        //                        purchaseQty : supplierProduct.purchaseQty,
+        //                        estimatePurchaseUnitPrice : supplierProduct.defaultPurchasePrice
+        //                    };
+        //                    $scope.purchaseOrder.items.push( item );
+        //                }
+        //            });
+        //        });
+        //    }, 300);
+        //
+        //    console.log( '$scope.purchaseOrder: ' );
+        //    console.log( $scope.purchaseOrder );
+        //
+        //}, 200);
+    }
 
     /* 模糊搜索：延迟 500 毫秒，相同模糊匹配关键词则不进行搜索 */
     $scope.queryPurchaseOrderItemFuzzySearchParamHold = '';
