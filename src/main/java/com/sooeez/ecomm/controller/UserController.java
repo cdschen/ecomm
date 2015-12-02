@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sooeez.ecomm.domain.Role;
 import com.sooeez.ecomm.domain.User;
-import com.sooeez.ecomm.repository.RoleService;
+import com.sooeez.ecomm.service.RoleService;
 import com.sooeez.ecomm.service.UserService;
 
 @RestController
@@ -89,8 +89,8 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/roles")
-	public List<Role> getRoles() {
-		return roleService.getRoles();
+	public List<Role> getRoles(Role role) {
+		return roleService.getRoles(role);
 	}
 
 	@RequestMapping(value = "/roles", method = RequestMethod.POST)

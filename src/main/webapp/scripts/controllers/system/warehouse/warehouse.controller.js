@@ -1,32 +1,27 @@
 angular.module('ecommApp')
 
-.controller('WarehouseController', ['$scope', 'Warehouse', 'WarehousePosition', 'Utils', 'toastr',
-    function($scope, Warehouse, WarehousePosition, Utils, toastr) {
+.controller('WarehouseController', ['$scope', 'Warehouse', 'WarehousePosition', 'toastr',
+    function($scope, Warehouse, WarehousePosition, toastr) {
 
         $scope.defaultQuery = {
+            page: 0,
             size: 20,
             sort: ['name']
         };
+
         $scope.query = angular.copy($scope.defaultQuery);
 
-        $scope.searchData = function(query, number) {
+        $scope.searchData = function(query) {
             Warehouse.get({
-                page: number ? number : 0,
+                page: query.page,
                 size: query.size,
                 sort: query.sort
             }, function(page) {
                 $scope.page = page;
-                Utils.initList(page, query);
             });
         };
 
         $scope.searchData($scope.query);
-
-        $scope.turnPage = function(number) {
-            if (number > -1 && number < $scope.page.totalPages) {
-                $scope.searchData($scope.query, number);
-            }
-        };
 
         $scope.positionsModal = function(warehouse) {
             $scope.positions = warehouse.positions;
@@ -64,7 +59,6 @@ angular.module('ecommApp')
                     $scope.positions = [];
                 });
             }
-
 
         };
 

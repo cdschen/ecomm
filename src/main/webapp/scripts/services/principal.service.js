@@ -41,20 +41,20 @@ angular.module('ecommApp')
             _authenticated = identity !== null;
         },
         identify: function(force) {
-            //console.log('[DEBUG][principal.service.js]---[Principal.identify(force)]---[' + force + ']');
+            // console.log('[DEBUG][principal.service.js]---[Principal.identify(force)]---[' + force + ']');
             var deferred = $q.defer();
             if (force === true) {
                 _identity = undefined;
             }
             var isDefined = angular.isDefined(_identity);
-            //console.log('[DEBUG][principal.service.js]---[Principal.identify(force){angular.isDefined(_identity)}]---[' + isDefined + ']');
+            // console.log('[DEBUG][principal.service.js]---[Principal.identify(force){angular.isDefined(_identity)}]---[' + isDefined + ']');
             if (isDefined) {
                 deferred.resolve(_identity);
                 return deferred.promise;
             }
             Account.get().$promise
                 .then(function(user) {
-                    //console.log('[DEBUG][principal.service.js]---[Principal.identify(force){Account.get().$promise.then()}]');
+                    // console.log('[DEBUG][principal.service.js]---[Principal.identify(force){Account.get().$promise.then()}]');
                     //console.log(JSON.stringify(user));
                     _identity = user;
                     _authenticated = true;
@@ -65,7 +65,7 @@ angular.module('ecommApp')
                     deferred.resolve(_identity);
                 })
                 .catch(function() {
-                    //console.log('[DEBUG][principal.service.js]---[Principal.identify(force){Account.get().$promise.catch()}]');
+                    // console.log('[DEBUG][principal.service.js]---[Principal.identify(force){Account.get().$promise.catch()}]');
                     _identity = null;
                     _authenticated = false;
                     deferred.resolve(_identity);
