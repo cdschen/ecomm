@@ -2,10 +2,10 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">发货单管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="shipment.shipmentImport">
-            <span class="glyphicon glyphicon-open-file"></span>
-            导入发货单
-        </a>
+        <!--<a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="shipment.shipmentImport">-->
+            <!--<span class="glyphicon glyphicon-open-file"></span>-->
+            <!--导入发货单-->
+        <!--</a>-->
         <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="shipment.shipmentGenerate">
             <span class="glyphicon glyphicon-plus-sign"></span>
             创建发货单
@@ -96,7 +96,7 @@
                         </th>
                         <th width="8%" class="text-center">店铺</th>
                         <th width="8%" class="text-center">仓库</th>
-                        <th width="12%" class="text-center">单号</th>
+                        <th width="12%" class="text-center">编号</th>
                         <th width="5%" class="text-center">状态</th>
                         <th width="16%" class="text-center">时间（创建,更新,取件,签收）</th>
                         <th width="6%" class="text-center">创建人</th>
@@ -128,9 +128,9 @@
                         <td class="text-left">
                             订单:<br/>
                             {{ shipment.orderId }}<br/>
-                            发货:<br/>
+                            发货单:<br/>
                             {{ shipment.id }}<br/>
-                            快递:<br/>
+                            快递单:<br/>
                             {{ shipment.shipNumber }}
                         </td>
                         <td>

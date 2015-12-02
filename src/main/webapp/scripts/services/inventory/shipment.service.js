@@ -76,5 +76,20 @@ angular.module('ecommApp')
             shipment.selectedShipment = selectedShipment;
         };
 
+
+        /** 发货快递单，供拉出层打印用
+         */
+        shipment.shipmentCouriers = [];
+
+        shipment.getShipmentCouriers = function()
+        {
+            return shipment.shipmentCouriers;
+        };
+
+        shipment.setShipmentCouriers = function( shipmentCouriers )
+        {
+            shipment.shipmentCouriers = shipmentCouriers;
+        };
+
     return shipment;
 }]);

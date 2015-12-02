@@ -49,7 +49,11 @@
                         <td>
                             <table class="print-table-inner">
                                 <tr>
-                                    <th>订单编号: {{ order.id }}</th>
+                                    <th>
+                                        外部订单编号: {{ order.externalSn }}
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        Ecomm订单编号: {{ order.id }}
+                                    </th>
                                 </tr>
                                 <tr>
                                     <th>
