@@ -107,9 +107,15 @@
                             <select class="form-control input-sm" ng-change="batchManipulation()" ng-model="batchManipulationValue">
                                 <option selected="selected" value="batchManipulation">批量操作</option>
                                 <!--<option value="shipmentComplete">完成</option>-->
-                                <option value="shipmentExport">导出</option>
-                                <option value="shipmentPrint">补打</option>
-                                <option value="shipmentObsolete">作废</option>
+                                <!--<option value="shipmentExport">导出</option>-->
+                                <option value="shipmentPrint">打印快递单</option>
+                                <option disabled>--- 切换状态 ---</option>
+                                <option value="shipmentPrinted">切换至［已打印］状态</option>
+                                <option value="shipmentPending">切换至［待处理］状态</option>
+                                <option value="shipmentDeployed">切换至［配货完成］状态</option>
+                                <option value="shipmentDispatched">切换至［已发货］状态</option>
+                                <option value="shipmentSigned">切换至［已签收］状态</option>
+                                <option value="shipmentObsolete">切换至［配送异常］状态</option>
                             </select>
                         </th>
                     </tr>
@@ -137,10 +143,11 @@
                             {{
                                 shipment.shipStatus == 1 ? '已打印' :
                                 shipment.shipStatus == 2 ? '配货完成' :
-                                shipment.shipStatus == 3 ? '已发出' :
+                                shipment.shipStatus == 3 ? '已发货' :
                                 shipment.shipStatus == 4 ? '已签收' :
                                 shipment.shipStatus == 5 ? '配送异常' :
-                                shipment.shipStatus == 6 ? '已作废' : '未指定状态'
+                                shipment.shipStatus == 6 ? '已作废' :
+                                shipment.shipStatus == 7 ? '待处理' : '未指定状态'
                             }}
                         </td>
                         <td class="text-left">
@@ -171,7 +178,7 @@
                                 </li>
                             </ul>
                         </td>
-                        <td style="text-align: center;">
+                        <td>
                             <a class="btn btn-xs btn-success" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5" ng-click="showShipmentCompleteSlide( shipment )">完成</a>
                             <!--<a ng-href="/api/shipment/export?id={{ shipment.id }}" class="btn btn-xs btn-info">-->
                                 <!--<span class="glyphicon glyphicon-save-file"></span>-->
@@ -179,9 +186,13 @@
                             <!--</a>-->
                             <a class="btn btn-xs btn-info">
                                 <span class="glyphicon glyphicon-print"></span>
-                                补打
+                                打印快递
                             </a>
-                            <a class="btn btn-xs btn-danger" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5" ng-click="showObsoleteShipmentModal( shipment )">作废</a>
+                            <div class="form-group">
+                                <h5>切换状态至</h5>
+
+                                <a class="btn btn-xs btn-danger" ng-hide="shipment.shipStatus == 2 || shipment.shipStatus == 3 || shipment.shipStatus == 5" ng-click="showObsoleteShipmentModal( shipment )">作废</a>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -214,8 +225,8 @@
     </div>
 </div>
 
-<!-- obsoleteShipments Modal -->
-<div class="modal fade" id="obsoleteShipments">
+<!-- switchShipmentStatus Modal -->
+<div class="modal fade" id="switchShipmentStatus">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">

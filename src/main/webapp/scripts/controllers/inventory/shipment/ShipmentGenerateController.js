@@ -469,7 +469,7 @@ angular.module('ecommApp')
                 }
                 else
                 {
-                    toastr.warning('请确保该运单有运单号，才能使用批量向下生成');
+                    toastr.warning('请确保该运单有快递单号，才能使用批量向下生成');
                 }
             }
             else

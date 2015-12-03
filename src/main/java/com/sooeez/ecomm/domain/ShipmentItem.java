@@ -38,6 +38,9 @@ public class ShipmentItem implements Serializable {
 	@Column(name = "qty_shipped")
 	private Integer qtyShipped;
 	
+	@Column(name = "print_name")
+	private String printName;
+	
 	/*
 	 * Related Properties
 	 */
@@ -109,6 +112,14 @@ public class ShipmentItem implements Serializable {
 
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
+	}
+
+	public String getPrintName() {
+		return printName;
+	}
+
+	public void setPrintName(String printName) {
+		this.printName = printName;
 	}
 	
 }

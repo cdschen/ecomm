@@ -149,6 +149,10 @@ public class Shipment implements Serializable {
 	@Column(name = "ship_warehouse_id")
 	private Long shipWarehouseId;
 
+	/* 快递单打印详情内容 */
+	@Column(name = "print_item_content")
+	private String printItemContent;
+	
 	/*
 	 * Related Properties
 	 */
@@ -636,6 +640,14 @@ public class Shipment implements Serializable {
 
 	public void setShippingDescription(String shippingDescription) {
 		this.shippingDescription = shippingDescription;
+	}
+
+	public String getPrintItemContent() {
+		return printItemContent;
+	}
+
+	public void setPrintItemContent(String printItemContent) {
+		this.printItemContent = printItemContent;
 	}
 
 }

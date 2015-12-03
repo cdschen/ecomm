@@ -139,7 +139,11 @@ public class SupplierProduct implements Serializable {
 	 */
 	@Transient
 	private Long currentTimeMillis;
-	
+
+
+	// 检查唯一
+	@Transient
+	private Boolean checkUnique;
 	
 
 	//
@@ -343,6 +347,14 @@ public class SupplierProduct implements Serializable {
 
 	public void setCurrentTimeMillis(Long currentTimeMillis) {
 		this.currentTimeMillis = currentTimeMillis;
+	}
+
+	public Boolean getCheckUnique() {
+		return checkUnique;
+	}
+
+	public void setCheckUnique(Boolean checkUnique) {
+		this.checkUnique = checkUnique;
 	}
 
 

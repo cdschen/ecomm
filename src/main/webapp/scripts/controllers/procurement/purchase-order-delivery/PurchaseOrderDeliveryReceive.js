@@ -79,6 +79,12 @@ angular.module('ecommApp')
                 toastr.warning('［名称］不能为空');
                 isQualified = false;
             }
+
+            if( ! item.supplierProduct || ! item.supplierProduct.supplierProductCode )
+            {
+                toastr.warning('［供应商产品编码］不能为空');
+                isQualified = false;
+            }
             if( ! item.receiveQty )
             {
                 toastr.warning('［数量］不能为空');

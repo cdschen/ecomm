@@ -14,6 +14,19 @@ angular.module('ecommApp')
             });
         };
 
+        supplierProduct.checkUniqueSupplierProductCode = function( params )
+        {
+            return $http.get('/api/supplierproducts/check-unique', {
+                params: params
+            }).success( function( data )
+            {
+                return data;
+            }).error( function()
+            {
+                return false;
+            });
+        };
+
 
         /* 批量选中 */
         supplierProduct.selectedSupplierProducts = [];
