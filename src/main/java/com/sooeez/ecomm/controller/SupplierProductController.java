@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.SupplierProduct;
+import com.sooeez.ecomm.domain.User;
 import com.sooeez.ecomm.dto.PageDTO;
 import com.sooeez.ecomm.service.SupplierProductService;
 
@@ -123,8 +124,13 @@ public class SupplierProductController {
 	}
 
 	@RequestMapping(value = "/supplierproducts", method = RequestMethod.POST)
-	public SupplierProduct saveSupplier(@RequestBody SupplierProduct supplierProduct) {
+	public SupplierProduct saveSupplierProduct(@RequestBody SupplierProduct supplierProduct) {
 		return supplierProductService.saveSupplierProduct( supplierProduct );
+	}
+	
+	@RequestMapping(value = "/supplierproducts/check-unique")
+	public Boolean existsSupplierProduct(SupplierProduct supplierProduct) {
+		return supplierProductService.existsSupplierProduct( supplierProduct );
 	}
 
 	@RequestMapping(value = "/supplierproducts/{id}", method = RequestMethod.DELETE)

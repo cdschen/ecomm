@@ -63,11 +63,16 @@
                 </div>
             </div>
 
-            <div class="form-group has-feedback">
+            <div class="form-group has-feedback" ng-class="{'has-success':(supplierProductOperatorForm.supplierProductCode.$dirty && supplierProductOperatorForm.supplierProductCode.$valid), 'has-warning':(supplierProductOperatorForm.supplierProductCode.$dirty && supplierProductOperatorForm.supplierProductCode.$invalid) }">
                 <label class="control-label col-md-2">供应商产品编号*</label>
                 <div class="col-md-3">
-                    <input type="text" class="form-control" placeholder="(必填)" ng-model="supplierProduct.supplierProductCode" required />
+                    <input type="text" class="form-control" name="supplierProductCode" ng-model="supplierProduct.supplierProductCode" placeholder="(必填)" required ng-minlength="5" ng-maxlength="50" check-unique="/api/supplierproducts/check-unique" check-property="supplierProductCode" check-id="{{supplierProduct.id}}" />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="supplierProductOperatorForm.supplierProductCode.$dirty && supplierProductOperatorForm.supplierProductCode.$valid"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="supplierProductOperatorForm.supplierProductCode.$dirty && supplierProductOperatorForm.supplierProductCode.$invalid"></span>
                 </div>
+                <span class="col-md-5 help-block" ng-messages="supplierProductOperatorForm.supplierProductCode.$error" ng-show="supplierProductOperatorForm.supplierProductCode.$dirty && supplierProductOperatorForm.supplierProductCode.$invalid">
+                    <span ng-messages-include="views/error-messages.html" ></span>
+                </span>
             </div>
 
             <div class="form-group has-feedback">

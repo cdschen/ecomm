@@ -35,12 +35,14 @@ import com.sooeez.ecomm.domain.PurchaseOrderDeliveryItem;
 import com.sooeez.ecomm.domain.PurchaseOrderItem;
 import com.sooeez.ecomm.domain.Shipment;
 import com.sooeez.ecomm.domain.ShipmentItem;
+import com.sooeez.ecomm.domain.Supplier;
 import com.sooeez.ecomm.domain.SupplierProduct;
 import com.sooeez.ecomm.domain.User;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.repository.PurchaseOrderDeliveryItemRepository;
 import com.sooeez.ecomm.repository.PurchaseOrderDeliveryRepository;
 import com.sooeez.ecomm.repository.PurchaseOrderRepository;
+import com.sooeez.ecomm.repository.SupplierProductRepository;
 
 @Service
 public class PurchaseOrderDeliveryService {
@@ -50,6 +52,8 @@ public class PurchaseOrderDeliveryService {
 	@Autowired PurchaseOrderRepository purchaseOrderRepository;
 	
 	@Autowired PurchaseOrderDeliveryItemRepository purchaseOrderDeliveryItemRepository;
+	
+	@Autowired SupplierProductRepository supplierProductRepository;
 	
 	// Service
 	@PersistenceContext private EntityManager em;
@@ -86,6 +90,31 @@ public class PurchaseOrderDeliveryService {
 			 */
 			for(PurchaseOrderDeliveryItem item : purchaseOrderDelivery.getItems() )
 			{
+				if( item.getSupplierProduct() != null && ! item.getSupplierProduct().getSupplierProductCode().trim().equals("") )
+				{
+					String supplierProductSQL = "SELECT * FROM t_supplier_product " +
+											 "WHERE supplier_product_code = ?1";
+					Query supplierProductQuery = em.createNativeQuery( supplierProductSQL, SupplierProduct.class );
+					supplierProductQuery.setParameter( 1, item.getSupplierProduct().getSupplierProductCode() );
+					
+					/** 如果不存在该［供应商编码］的［供应商产品］
+					 */
+					if( supplierProductQuery.getResultList().size() < 1 )
+					{
+						/** 获取该收货单对应的供应商编号
+						 */
+						User creator = new User();
+						creator.setId( purchaseOrderDelivery.getReceiveUser().getId() );
+						Supplier supplier = new Supplier();
+						supplier.setId( purchaseOrder.getSupplier().getId() );
+						item.getSupplierProduct().setSupplier( supplier );
+						item.getSupplierProduct().setCreator( creator );
+						
+						this.supplierProductRepository.save( item.getSupplierProduct() );
+					}
+					
+				}
+				
 				BigDecimal realPurchaseUnitPrice = item.getRealPurchaseUnitPrice() != null ? item.getRealPurchaseUnitPrice() : new BigDecimal( 0 );
 				Long receiveQty = item.getReceiveQty() != null ? item.getReceiveQty() : 0L;
 				

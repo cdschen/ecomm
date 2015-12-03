@@ -2103,8 +2103,20 @@ public class OrderService {
 			 * 		可能需要做改动，因为再第一位的有可能不是流程状态？
 			 * 
 			 */
+			Boolean isOrderInitialed = false;
+			if( order.getProcesses() != null && order.getProcesses().size() > 0 )
+			{
+				for( ObjectProcess op : order.getProcesses() )
+				{
+					/* 如果订单流程状态处在初始化阶段 */
+					if( op.getStep() != null && op.getStep().getId().equals( shop.getInitStep().getId() ) )
+					{
+						isOrderInitialed = true;
+					}
+				}
+			}
 			/* 如果订单流程状态处在初始化阶段，也就是未处理阶段，那么就可以进行删改操作 */
-			if( order.getProcesses().get(0).getStep().getId().equals( shop.getInitStep().getId() ) )
+			if( isOrderInitialed )
 			{
 				/* 将订单是否删除更新成 true */
 				order.setDeleted( true );

@@ -42,6 +42,20 @@ var SupplierProductOperatorController = function($scope, $rootScope, $state, $st
             {
                 toastr.warning('请填写［供应商产品编号］');
             }
+            else
+            {
+                supplierProductService.checkUniqueSupplierProductCode
+                ({
+                    checkUnique             :   true,
+                    supplierProductCode     :   supplierProduct.supplierProductCode
+                }, {}).then(function( result )
+                {
+                    if( result.data )
+                    {
+                        toastr.warning('［供应商产品编号］不可以重复');
+                    }
+                });
+            }
             if( !supplierProduct.supplierProductName )
             {
                 toastr.warning('请填写［供应商产品名称］');
@@ -55,7 +69,6 @@ var SupplierProductOperatorController = function($scope, $rootScope, $state, $st
 
         if( isQualified )
         {
-
             console.log(supplierProduct);
             supplierProductService.save({
                 action: $scope.action

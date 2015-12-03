@@ -46,6 +46,10 @@ public class SupplierProductService {
 		return this.supplierProductRepository.save( supplierProduct );
 	}
 	
+	public Boolean existsSupplierProduct(SupplierProduct supplierProduct) {
+		return this.supplierProductRepository.count( getSupplierProductCheckUniqueSpecification( supplierProduct ) ) > 0 ? true : false;
+	}
+	
 	public void deleteSupplierProduct(Long id) {
 		this.supplierProductRepository.delete(id);
 	}
@@ -60,6 +64,31 @@ public class SupplierProductService {
 
 	public Page<SupplierProduct> getPagedSupplierProducts(SupplierProduct supplierProduct, Pageable pageable) {
 		return this.supplierProductRepository.findAll( getSupplierProductSpecification( supplierProduct ) , pageable);
+	}
+	
+	private Specification<SupplierProduct> getSupplierProductCheckUniqueSpecification(SupplierProduct supplierProduct)
+	{
+		return (root, query, cb) -> {
+			List<Predicate> predicates = new ArrayList<>();
+			
+			if ( supplierProduct.getId() != null )
+			{
+				if (supplierProduct.getCheckUnique() != null && supplierProduct.getCheckUnique().booleanValue() == true)
+				{
+					predicates.add(cb.notEqual(root.get("id"), supplierProduct.getId()));
+				}
+				else
+				{
+					predicates.add(cb.equal(root.get("id"), supplierProduct.getId()));
+				}
+			}
+			if ( supplierProduct.getSupplierProductCode() != null && StringUtils.hasText( supplierProduct.getSupplierProductCode() ) )
+			{
+				predicates.add( cb.equal( root.get("supplierProductCode"), supplierProduct.getSupplierProductCode() ) );
+			}
+			
+			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+		};
 	}
 	
 	private Specification<SupplierProduct> getSupplierProductSpecification(SupplierProduct supplierProduct)
