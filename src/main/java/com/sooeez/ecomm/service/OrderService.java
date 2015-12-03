@@ -237,6 +237,10 @@ public class OrderService {
 			sqlString += " and `order`.receive_name like '%" + order.getReceiveName() + "%'";
 			order.setReceiveName(null);
 		}
+		// 查询出有出库单或者没有出库单的order
+		if (order.getHasOrderBatch() != null && order.getHasOrderBatch().booleanValue() == true) {
+			sqlString += " and not EXISTS(select 1 from t_order_batch as orderBatch where orderBatch.order_id = `order`.id)";
+		}
 		if (order.getWarehouseId() != null) {
 			sqlString += " and(orderItem.warehouse_id = " + order.getWarehouseId()
 					+ " or("

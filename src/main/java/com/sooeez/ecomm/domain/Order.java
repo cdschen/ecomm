@@ -274,10 +274,22 @@ public class Order implements Serializable {
 	@Transient
 	private String action;
 
+	// 查询的时候，判断order是否有出库单
+	@Transient
+	private Boolean hasOrderBatch;
+
 	//
 
 	public Long getId() {
 		return id;
+	}
+
+	public Boolean getHasOrderBatch() {
+		return hasOrderBatch;
+	}
+
+	public void setHasOrderBatch(Boolean hasOrderBatch) {
+		this.hasOrderBatch = hasOrderBatch;
 	}
 
 	public Long[] getShopIds() {
