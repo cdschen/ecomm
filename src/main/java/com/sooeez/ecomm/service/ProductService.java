@@ -1,14 +1,9 @@
 package com.sooeez.ecomm.service;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-
-
-
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,9 +11,6 @@ import javax.persistence.Query;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
-
-
-
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,18 +22,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-
-
-
 import com.sooeez.ecomm.domain.Inventory;
 import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Order;
+import com.sooeez.ecomm.domain.Process;
 import com.sooeez.ecomm.domain.ProcessStep;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Shop;
-import com.sooeez.ecomm.domain.Process;
 import com.sooeez.ecomm.domain.Warehouse;
-import com.sooeez.ecomm.dto.ProductSearchDTO;
 import com.sooeez.ecomm.dto.api.DTO_Product_Partner;
 import com.sooeez.ecomm.dto.api.DTO_Product_Self;
 import com.sooeez.ecomm.dto.api.general.DTO_Pagination;
@@ -202,7 +190,8 @@ public class ProductService {
 	/*
 	 * 获得一个商品在仓库中的库存，需要设置product的action=getInventories
 	 */
-	public void setProductWarehouseInventories(Product product) {
+	public void setProductWarehouseInventories(Product product)
+	{
 		Warehouse warehouseQuery = new Warehouse();
 		warehouseQuery.setEnabled(true);;
 		List<Warehouse> warehouses = warehouseService.getWarehouses(warehouseQuery, new Sort(Sort.Direction.ASC, "name"));
@@ -242,7 +231,7 @@ public class ProductService {
 			orderQuery.setAction("getOrderedQty");
 			orderService.findAvailableDeployOrder(orderQuery);
 			List<Order> orders =  orderService.getOrders(orderQuery, null);
-			System.out.println("setProductWarehouseOrderedQuantity().orders: " + orders.size());
+//			System.out.println("setProductWarehouseOrderedQuantity().orders: " + orders.size());
 			orders.forEach(order -> {
 				orderService.checkItemProductShopTunnel(order);
 				order.getItems().forEach(item -> {
@@ -262,23 +251,23 @@ public class ProductService {
 	 * API Product
 	 */
 	
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	public void setAPIResponseProductDetail(Shop shop, Product product, DTO_Product_Self productSelf, DTO_Product_Partner productPartner)
 	{
 		/* 获得库存数量 */
-		String inventoryQuantitySQL = "SELECT SUM(quantity) FROM t_inventory " +
-									  "WHERE product_id = ?1";
-		Query inventoryQuantityQuery = em.createNativeQuery( inventoryQuantitySQL );
-		inventoryQuantityQuery.setParameter( 1, product.getId() );
-		BigDecimal quantity = (BigDecimal) inventoryQuantityQuery.getSingleResult();
+//		String inventoryQuantitySQL = "SELECT SUM(quantity) FROM t_inventory " +
+//									  "WHERE product_id = ?1";
+//		Query inventoryQuantityQuery = em.createNativeQuery( inventoryQuantitySQL );
+//		inventoryQuantityQuery.setParameter( 1, product.getId() );
+//		BigDecimal quantity = (BigDecimal) inventoryQuantityQuery.getSingleResult();
 		
 		/* 获得库存保质期 */
-		String inventoryExpireDateSQL = "SELECT DATE_FORMAT(expire_date, '%Y-%m-%d %T') FROM t_inventory " +
-									  	"WHERE product_id = ?1 " +
-									  	"ORDER BY expire_date ASC";
-		Query inventoryExpireDateQuery = em.createNativeQuery( inventoryExpireDateSQL );
-		inventoryExpireDateQuery.setParameter( 1, product.getId() );
-		List<String> expire_string_dates = (List<String>) inventoryExpireDateQuery.getResultList();
+//		String inventoryExpireDateSQL = "SELECT DATE_FORMAT(expire_date, '%Y-%m-%d %T') FROM t_inventory " +
+//									  	"WHERE product_id = ?1 " +
+//									  	"ORDER BY expire_date ASC";
+//		Query inventoryExpireDateQuery = em.createNativeQuery( inventoryExpireDateSQL );
+//		inventoryExpireDateQuery.setParameter( 1, product.getId() );
+//		List<String> expire_string_dates = (List<String>) inventoryExpireDateQuery.getResultList();
 		
 		
 		/* 是否自营店 */
@@ -311,10 +300,10 @@ public class ProductService {
 			productSelf.setCurrecy( product.getCurrency()!=null ? product.getCurrency().getName() : null );
 			
 			/* 设置库存数量 */
-			productSelf.setAvailable_stock( quantity.intValue() );
+//			productSelf.setAvailable_stock( quantity.intValue() );
 			
 			/* 获得库存保质期 */
-			productSelf.setRecent_expire_dates( expire_string_dates );
+//			productSelf.setRecent_expire_dates( expire_string_dates );
 			
 			/* 是自营，获取各等级价格 */
 			productSelf.getPrices().put("level1", product.getPriceL1());
@@ -354,10 +343,10 @@ public class ProductService {
 			productPartner.setCurrecy( product.getCurrency()!=null ? product.getCurrency().getName() : null );
 			
 			/* 设置库存数量 */
-			productPartner.setAvailable_stock( quantity.intValue() );
+//			productPartner.setAvailable_stock( quantity.intValue() );
 			
 			/* 获得库存保质期 */
-			productPartner.setRecent_expire_date( expire_string_dates.get(0) );
+//			productPartner.setRecent_expire_date( expire_string_dates.get(0) );
 			
 			/* 是合作，获取店铺对应等级价格 */
 			switch ( shop.getPriceLevel() )
@@ -380,39 +369,43 @@ public class ProductService {
 	@SuppressWarnings("unchecked")
 	public void setAPIRespondProducts(Shop shop, List<DTO_Product_Self> productsSelf, List<DTO_Product_Partner> productsPartner, DTO_Pagination page_context)
 	{
-		
 		/* 1. 获得商品总数 */
+//		String sqlCount = "SELECT COUNT(*) FROM t_product " +
+//						  "WHERE id IN (" +
+//							  "SELECT product_id FROM t_inventory " +
+//							  "WHERE warehouse_id IN (" +
+//								  "SELECT warehouse_id FROM t_tunnel_warehouse " +
+//								  "WHERE tunnel_id IN (" +
+//									  "SELECT id FROM t_shop_tunnel " +
+//									  "WHERE shop_id = ?1 " +
+//								  ")" +
+//							  ")" +
+//						  ") AND enabled = true";
 		String sqlCount = "SELECT COUNT(*) FROM t_product " +
-						  "WHERE id IN (" +
-							  "SELECT product_id FROM t_inventory " +
-							  "WHERE warehouse_id IN (" +
-								  "SELECT warehouse_id FROM t_tunnel_warehouse " +
-								  "WHERE tunnel_id IN (" +
-									  "SELECT id FROM t_shop_tunnel " +
-									  "WHERE shop_id = ?1 " +
-								  ")" +
-							  ")" +
-						  ") AND enabled = true";
+						  "WHERE enabled = true";
 		Query queryCount = em.createNativeQuery(sqlCount);
-		queryCount.setParameter(1, shop.getId());
+//		queryCount.setParameter(1, shop.getId());
 		BigInteger total_number = (BigInteger) queryCount.getSingleResult();
 		page_context.setTotal_number( total_number );
 		
 		/* 2. 获得产品信息 */
+//		String sql = "SELECT * FROM t_product " +
+//					 "WHERE id IN (" +
+//						 "SELECT product_id FROM t_inventory " +
+//						 "WHERE warehouse_id IN (" +
+//							 "SELECT warehouse_id FROM t_tunnel_warehouse " +
+//							 "WHERE tunnel_id IN (" +
+//								 "SELECT id FROM t_shop_tunnel " +
+//								 "WHERE shop_id = ?1 " +
+//							 ")" +
+//						 ")" +
+//					 ") AND enabled = true " +
+//					 "LIMIT ?2, ?3";
 		String sql = "SELECT * FROM t_product " +
-					 "WHERE id IN (" +
-						 "SELECT product_id FROM t_inventory " +
-						 "WHERE warehouse_id IN (" +
-							 "SELECT warehouse_id FROM t_tunnel_warehouse " +
-							 "WHERE tunnel_id IN (" +
-								 "SELECT id FROM t_shop_tunnel " +
-								 "WHERE shop_id = ?1 " +
-							 ")" +
-						 ")" +
-					 ") AND enabled = true " +
-					 "LIMIT ?2, ?3";
+				 	 "WHERE enabled = true " +
+				 	 "LIMIT ?2, ?3";
 		Query query =  em.createNativeQuery( sql , Product.class);
-		query.setParameter(1, shop.getId());
+//		query.setParameter(1, shop.getId());
 		query.setParameter(2, (page_context.getPage() <=1 ? 0 : page_context.getPage() - 1) * page_context.getPer_page());
 		query.setParameter(3, page_context.getPer_page());
 		
@@ -437,6 +430,28 @@ public class ProductService {
 				
 				setAPIResponseProductDetail(shop, product, productSelf, productPartner);
 				
+				this.setProductWarehouseInventories(product);
+				
+				if( product.getWarehouses() != null && product.getWarehouses().size() > 0 )
+				{
+					for( Warehouse warehouse : product.getWarehouses() )
+					{
+						productSelf.setAvailable_stock
+						(
+							/** 如果［可用库存］不等于空，则累加每个仓库的总库存，否则添加仓库的总库存
+							 */
+							productSelf.getAvailable_stock() != null ? productSelf.getAvailable_stock() + warehouse.getTotal().intValue() : warehouse.getTotal().intValue()
+						);
+						productPartner.setAvailable_stock
+						(
+							/** 如果［可用库存］不等于空，则累加每个仓库的总库存，否则添加仓库的总库存
+							 */
+							productPartner.getAvailable_stock() != null ? productPartner.getAvailable_stock() + warehouse.getTotal().intValue() : warehouse.getTotal().intValue()
+						);
+					}
+				}
+				
+				
 				productsSelf.add( productSelf );
 				productsPartner.add( productPartner );
 			}
@@ -445,22 +460,26 @@ public class ProductService {
 
 	public void setAPIRespondProduct(Shop shop, Long id, String sku, DTO_Product_Self productSelf, DTO_Product_Partner productPartner)
 	{
+//		String sql = "SELECT * FROM t_product " +
+//					 "WHERE (id = ?2 OR sku = ?3) " +
+//					 "AND id IN (" +
+//						 "SELECT product_id FROM t_inventory " +
+//						 "WHERE warehouse_id IN (" +
+//							 "SELECT warehouse_id FROM t_tunnel_warehouse " +
+//							 "WHERE tunnel_id IN (" +
+//								 "SELECT id FROM t_shop_tunnel " +
+//								 "WHERE shop_id = ?1 " +
+//							 ") " +
+//						 ") " +
+//					 ") " +
+//					 "AND enabled = true " +
+//					 "LIMIT 1";
 		String sql = "SELECT * FROM t_product " +
-					 "WHERE (id = ?2 OR sku = ?3) " +
-					 "AND id IN (" +
-						 "SELECT product_id FROM t_inventory " +
-						 "WHERE warehouse_id IN (" +
-							 "SELECT warehouse_id FROM t_tunnel_warehouse " +
-							 "WHERE tunnel_id IN (" +
-								 "SELECT id FROM t_shop_tunnel " +
-								 "WHERE shop_id = ?1 " +
-							 ") " +
-						 ") " +
-					 ") " +
+					 "WHERE ( id = ?2 OR sku = ?3 ) " +
 					 "AND enabled = true " +
 					 "LIMIT 1";
 		Query query =  em.createNativeQuery( sql , Product.class);
-		query.setParameter(1, shop.getId());
+//		query.setParameter(1, shop.getId());
 		query.setParameter(2, id);
 		query.setParameter(3, sku);
 		
@@ -469,6 +488,27 @@ public class ProductService {
 			Product product = (Product) query.getSingleResult();
 
 			setAPIResponseProductDetail(shop, product, productSelf, productPartner);
+			
+			this.setProductWarehouseInventories(product);
+			
+			if( product.getWarehouses() != null && product.getWarehouses().size() > 0 )
+			{
+				for( Warehouse warehouse : product.getWarehouses() )
+				{
+					productSelf.setAvailable_stock
+					(
+						/** 如果［可用库存］不等于空，则累加每个仓库的总库存，否则添加仓库的总库存
+						 */
+						productSelf.getAvailable_stock() != null ? productSelf.getAvailable_stock() + warehouse.getTotal().intValue() : warehouse.getTotal().intValue()
+					);
+					productPartner.setAvailable_stock
+					(
+						/** 如果［可用库存］不等于空，则累加每个仓库的总库存，否则添加仓库的总库存
+						 */
+						productPartner.getAvailable_stock() != null ? productPartner.getAvailable_stock() + warehouse.getTotal().intValue() : warehouse.getTotal().intValue()
+					);
+				}
+			}
 		}
 	}
 	

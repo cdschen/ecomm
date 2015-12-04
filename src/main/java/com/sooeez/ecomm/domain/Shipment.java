@@ -230,6 +230,10 @@ public class Shipment implements Serializable {
 	/* 货运描述 */
 	@Transient
 	private String shippingDescription;
+	
+	/* 发货方式 */
+	@Transient
+	private Integer deliveryMethod;
 
 	/**
 	 * 复核操作
@@ -648,6 +652,14 @@ public class Shipment implements Serializable {
 
 	public void setPrintItemContent(String printItemContent) {
 		this.printItemContent = printItemContent;
+	}
+
+	public Integer getDeliveryMethod() {
+		return deliveryMethod;
+	}
+
+	public void setDeliveryMethod(Integer deliveryMethod) {
+		this.deliveryMethod = deliveryMethod;
 	}
 
 }

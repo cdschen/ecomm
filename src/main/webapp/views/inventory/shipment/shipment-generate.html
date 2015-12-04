@@ -326,7 +326,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr ng-repeat="item in shipment.shipmentItems" my-repeat-directive>
+                                        <tr ng-repeat="item in shipment.shipmentItems">
                                             <td width="30%">
                                                 <input type="text" data-toggle="tooltip" data-placement="top" title="{{ item.fullName }}" tooltip ng-model="item.shortName" ng-value="item.fullName" class="form-control input-sm" ng-keydown="holdAndChangeItemShortName( item )" ng-keypress="shipmentJoinedLockedEditName( $event, item, shipment )" />
                                             </td>
@@ -346,25 +346,25 @@
                                                 </a>
                                             </td>
                                         </tr>
-                                    <tr>
-                                        <td colspan="3">
-                                            <span>
-                                                <a class="btn btn-xs btn-{{ shipment.isShipmentSeparationActivate ? 'success' : 'primary' }}" ng-click="separateShipmentPrepare( shipment )">
-                                                    <span class="glyphicon glyphicon-{{ shipment.isShipmentSeparationActivate ? 'ok-circle' : 'th' }}"></span>
-                                                    {{ shipment.isShipmentSeparationActivate ? '确认分单' : '分单' }}
+                                        <tr>
+                                            <td colspan="3">
+                                                <span>
+                                                    <a class="btn btn-xs btn-{{ shipment.isShipmentSeparationActivate ? 'success' : 'primary' }}" ng-click="separateShipmentPrepare( shipment )">
+                                                        <span class="glyphicon glyphicon-{{ shipment.isShipmentSeparationActivate ? 'ok-circle' : 'th' }}"></span>
+                                                        {{ shipment.isShipmentSeparationActivate ? '确认分单' : '分单' }}
+                                                    </a>
+                                                    <a class="btn btn-xs btn-warning" ng-show="shipment.isShipmentSeparationActivate" ng-click="separateShipmentCancel( shipment )">
+                                                        <span class="glyphicon glyphicon-remove-circle" ></span>
+                                                        取消操作
+                                                    </a>
+                                                </span>
+                                                <a class="btn btn-xs btn-primary pull-right" ng-click="emptyIsShipmentJoinedLockedEditName( shipment )">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                    清空同品更名
                                                 </a>
-                                                <a class="btn btn-xs btn-warning" ng-show="shipment.isShipmentSeparationActivate" ng-click="separateShipmentCancel( shipment )">
-                                                    <span class="glyphicon glyphicon-remove-circle" ></span>
-                                                    取消操作
-                                                </a>
-                                            </span>
-                                            <a class="btn btn-xs btn-primary pull-right" ng-click="emptyIsShipmentJoinedLockedEditName( shipment )">
-                                                <span class="glyphicon glyphicon-trash"></span>
-                                                清空同品更名
-                                            </a>
 
-                                        </td>
-                                    </tr>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </td>

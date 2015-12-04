@@ -52,15 +52,55 @@ public class ShipmentService {
 	@Autowired private ShipmentRepository shipmentRepository;
 	@Autowired private ShipmentItemRepository shipmentItemRepository;
 	@Autowired private ObjectProcessRepository objectProcessRepository;
-	
-	// Service
-	@Autowired private ProcessService processService;
 
 	@PersistenceContext private EntityManager em;
 	
 	/*
 	 * Shipment
 	 */
+
+	/** 批量更改状态
+	 */
+	public List<Shipment> changeShipmentsStatus( Shipment shipment )
+	{
+		return new ArrayList<Shipment>();
+	}
+
+	/** 单个更改状态
+	 */
+	public Shipment changeShipmentStatus( Shipment shipment )
+	{
+		/** 如果切换状态至［已发出］
+		 	1   :   '已打印',
+            2   :   '配货完成',
+            3   :   '已发出',
+            4   :   '已签收',
+            5   :   '配送异常',
+            6   :   '已作废',
+            7   :   '待处理'
+		 */
+		System.out.println( "shipment.getShipStatus(): " + shipment.getShipStatus() );
+//		if( shipment.getShipStatus() != null && shipment.getShipStatus().equals( 3 ) )
+//		{
+//			/* 更新订单状态至：店铺的完成状态 */
+//			Order order = this.orderRepository.findOne( shipment.getOrderId() );
+//			
+//			Integer qtyTotalRecentDispatched = order.getQtyTotalItemShipped() + shipment.getQtyTotalItemShipped();
+//			
+//			/* 更新订单的［运送数量］ */
+//			this.orderRepository.updateQtyTotalItemShipped( qtyTotalRecentDispatched, order.getId() );
+//			
+//			/* 如果［当前总发货数量］大于等于［订购数量］ */
+//			if( qtyTotalRecentDispatched >= order.getQtyTotalItemOrdered() )
+//			{
+//				Long stepId = order.getShop().getCompleteStep().getId();
+//				Long processId = order.getShop().getCompleteStep().getProcessId();
+//				Integer objectType = order.getShop().getCompleteStep().getType();
+//				this.objectProcessRepository.updateStepId( stepId, order.getId(), processId, objectType);
+//			}
+//		}
+		return new Shipment();
+	}
 	
 	public List<Shipment> saveShipments( Shipment shipment )
 	{
@@ -185,6 +225,19 @@ public class ShipmentService {
 			Shop shop = this.shopRepository.getOne( order.getShopId() );
 			
 			finalShipment.setShop( shop );
+			
+			/** 获取操作发货单详情所需信息
+			 */
+			if( finalShipment.getShipmentItems() != null && finalShipment.getShipmentItems().size() > 0 )
+			{
+				for( ShipmentItem item : finalShipment.getShipmentItems() )
+				{
+//					if(  )
+//					{
+//						
+//					}
+				}
+			}
 		}
 		return page;
 	}
@@ -260,11 +313,47 @@ public class ShipmentService {
 			
 			if (shipment.getShopId() != null)
 			{
+				/** [AND] WHERE order_id IN
+				 *  (
+				 *     SELECT id FROM t_order
+				 *     WHERE shop_id = { shipment.getShopId() }
+				 *  )
+				 */
 				Subquery<Order> orderSubquery = query.subquery( Order.class );
 				Root<Order> orderRoot = orderSubquery.from( Order.class );
 				orderSubquery.select( orderRoot.get("id") );
-				orderSubquery.where( orderRoot.get("shopId").in( shipment.getShopId() ) );
-				predicates.add( cb.in(root.get("orderId")).value( orderSubquery ) );
+				orderSubquery.where( cb.equal( orderRoot.get("shopId"), shipment.getShopId() ) );
+				predicates.add( cb.in( root.get("orderId") ).value( orderSubquery ) );
+			}
+			
+			if ( shipment.getDeliveryMethod() != null )
+			{
+				/** [AND] WHERE order_id IN
+				 *  (
+				 *     SELECT id FROM t_order
+				 *     WHERE delivery_method = { shipment.getDeliveryMethod() }
+				 *  )
+				 */
+				Subquery<Order> orderSubquery = query.subquery( Order.class );
+				Root<Order> orderRoot = orderSubquery.from( Order.class );
+				orderSubquery.select( orderRoot.get("id") );
+				orderSubquery.where( cb.equal( orderRoot.get("deliveryMethod"), shipment.getDeliveryMethod() ) );
+				predicates.add( cb.in( root.get("orderId") ).value( orderSubquery ) );
+			}
+			
+			if ( shipment.getShippingDescription() != null && ! shipment.getShippingDescription().trim().equals("") )
+			{
+				/** [AND] WHERE order_id IN
+				 *  (
+				 *     SELECT id FROM t_order
+				 *     WHERE shipping_description LIKE % { shipment.getShippingDescription() } %
+				 *  )
+				 */
+				Subquery<Order> orderSubquery = query.subquery( Order.class );
+				Root<Order> orderRoot = orderSubquery.from( Order.class );
+				orderSubquery.select( orderRoot.get("id") );
+				orderSubquery.where( cb.like( orderRoot.get( "shippingDescription" ), "%" + shipment.getShippingDescription() + "%" ) );
+				predicates.add( cb.in( root.get("orderId") ).value( orderSubquery ) );
 			}
 			
 			return cb.and( predicates.toArray( new Predicate[predicates.size()] ) );
@@ -275,11 +364,14 @@ public class ShipmentService {
 	public void setConfirmable(OperationReviewShipmentDTO review)
 	{
 		/* 如果验证全都通过 */
-		if( ! review.getCheckMap().get("emptyCourierError") &&
+		if
+		(
+			! review.getCheckMap().get("emptyCourierError") &&
 			! review.getCheckMap().get("emptyShipNumberError") &&
 			! review.getCheckMap().get("emptyReceiveNameError") &&
 			! review.getCheckMap().get("emptyReceivePhoneError") &&
-			! review.getCheckMap().get("emptyReceiveAddressError") )
+			! review.getCheckMap().get("emptyReceiveAddressError")
+		)
 		{
 			review.setConfirmable( true );
 		}
@@ -319,11 +411,14 @@ public class ShipmentService {
 			}
 			
 			/* 如果有一个验证不通过 */
-			if( isEmptyCourierError ||
-					isEmptyShipNumberError ||
-					isEmptyReceiveNameError ||
-					isEmptyReceivePhoneError ||
-				isEmptyReceiveAddressError )
+			if
+			(
+				isEmptyCourierError ||
+				isEmptyShipNumberError ||
+				isEmptyReceiveNameError ||
+				isEmptyReceivePhoneError ||
+				isEmptyReceiveAddressError
+			)
 			{
 				review.setConfirmable( false );
 			}
