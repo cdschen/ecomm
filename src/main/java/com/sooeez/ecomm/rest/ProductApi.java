@@ -27,15 +27,16 @@ public class ProductApi {
 	@Autowired ProductService productService;
 	
 	@RequestMapping(value = "/v1/products", method = RequestMethod.GET)
-	public Map<String, Object> getProducts(
-			@RequestHeader("authorization") String authorization,
-			@RequestHeader("ecomm-shopId") Long shopId,
-			@RequestParam( value = "page", required = false ) Long currentPage,
-			@RequestParam( value = "per_page", required = false ) Long perPage,
-			@RequestParam( value = "id", required = false ) Long productId,
-			@RequestParam( value = "sku", required = false ) String productSku)
+	public Map<String, Object> getProducts
+	(
+		@RequestHeader("authorization") String authorization,
+		@RequestHeader("ecomm-shopId") Long shopId,
+		@RequestParam( value = "page", required = false ) Long currentPage,
+		@RequestParam( value = "per_page", required = false ) Long perPage,
+		@RequestParam( value = "id", required = false ) Long productId,
+		@RequestParam( value = "sku", required = false ) String productSku
+	)
 	{
-		
 		Map<String, Object> map = new HashMap<>();
 		
 		Shop shop = shopService.getShop(shopId);

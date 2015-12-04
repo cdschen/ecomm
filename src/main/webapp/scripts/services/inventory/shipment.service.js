@@ -30,6 +30,24 @@ angular.module('ecommApp')
                 });
         };
 
+        shipment.changeShipmentStatus = function( shipment )
+        {
+            return $http.post('/api/shipment/change-status', shipment )
+                .then(function(res)
+                {
+                    return res.data;
+                });
+        };
+
+        shipment.changeShipmentsStatus = function( shipment )
+        {
+            return $http.post('/api/shipments/change-status', shipment )
+                .then(function(res)
+                {
+                    return res.data;
+                });
+        };
+
         /* 批量选中 */
         shipment.selectedShipments = [];
         /* 单个选中 */
