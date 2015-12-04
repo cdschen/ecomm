@@ -64,6 +64,7 @@ angular.module('ecommApp')
         $scope.searchData($scope.query);
 
         $scope.search = function(query) {
+            query.page = 0;
             $scope.searchData(query);
         };
 
