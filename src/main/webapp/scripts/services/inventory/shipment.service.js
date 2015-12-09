@@ -48,6 +48,15 @@ angular.module('ecommApp')
                 });
         };
 
+        shipment.saveShipmentsChanges = function( shipment )
+        {
+            return $http.post('/api/shipments/save-changes', shipment )
+                .then(function(res)
+                {
+                    return res.data;
+                });
+        };
+
         /* 批量选中 */
         shipment.selectedShipments = [];
         /* 单个选中 */

@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -44,6 +45,7 @@ public class ShipmentItem implements Serializable {
 	/*
 	 * Related Properties
 	 */
+    
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "order_item_id", insertable = false, updatable = false)
@@ -121,5 +123,5 @@ public class ShipmentItem implements Serializable {
 	public void setPrintName(String printName) {
 		this.printName = printName;
 	}
-	
+
 }

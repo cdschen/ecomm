@@ -116,6 +116,26 @@
             <table class="table table-bordered table-condensed" ng-show="page">
                 <thead>
                     <tr>
+                        <td colspan="8">
+                            <!--<a class="btn btn-xs btn-success" ng-click="printDistributedOrders()">-->
+                                <!--<span class="glyphicon glyphicon-print"></span>-->
+                                <!--打印配货单-->
+                            <!--</a>-->
+                            <a class="btn btn-xs btn-success" ng-click="toggleShipmentCourierPrintSlide()">
+                                <span class="glyphicon glyphicon-print"></span>
+                                打印快递单
+                            </a>
+                            <a class="btn btn-xs btn-primary" ng-click="mergeSelectedShipments()">
+                                <span class="glyphicon glyphicon-th-large"></span>
+                                批量合单
+                            </a>
+                            <a class="btn btn-xs btn-success pull-right" ng-click="saveShipmentsChangesModal()">
+                                <span class="glyphicon glyphicon-floppy-saved"></span>
+                                保存改动
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
                         <th width="2%" class="text-center">
                             <input type="checkbox" name="orderId" ng-model="isCheckedAll" ng-click="checkAllOrders()">
                         </th>
@@ -124,7 +144,7 @@
                         <th width="5%" class="text-center">状态</th>
                         <th width="16%" class="text-center">时间（创建,更新,取件,签收）</th>
                         <th width="14%" class="text-center">人员</th>
-                        <th width="26%" class="text-center">发货单详情</th>
+                        <th width="20%" class="text-center">发货单详情</th>
                         <th style="padding: 2px">
                             <select class="form-control input-sm" ng-change="batchManipulation()" ng-model="batchManipulationValue">
                                 <option selected="selected" value="batchManipulation">批量操作</option>
@@ -164,8 +184,8 @@
                             <div>
                                 <input class="form-control input-sm" type="text" ng-model="shipment.shipNumber" />
                             </div>
-                            <div style="margin-top:2px;" class="text-center">
-                                <a class="btn btn-xs btn-success" ng-click="downwardGeneratingShipNumbers( shipment )">向下批量生成快递单号</a>
+                            <div>
+                                <a class="btn btn-xs btn-success btn-block" ng-click="downwardGeneratingShipNumbers( shipment )">向下批量生成快递单号</a>
                             </div>
                         </td>
                         <td>
@@ -204,52 +224,59 @@
                         <td>
                             <table class="table table-bordered table-condensed clear-marginbottom-table">
                                 <thead>
-                                <tr>
-                                    <th width="30%">品名</th>
-                                    <th width="20%">订购数量</th>
-                                    <th width="50%" class="text-center">操作</th>
-                                </tr>
+                                    <tr>
+                                        <th width="37%">品名</th>
+                                        <th width="28%">订购数量</th>
+                                        <th width="35%" class="text-center">操作</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="item in shipment.shipmentItems">
-                                    <td width="30%">
-                                        <input type="text" data-toggle="tooltip" data-placement="top" title="{{ item.fullName }}" tooltip ng-model="item.shortName" ng-value="item.fullName" class="form-control input-sm" ng-keydown="holdAndChangeItemShortName( item )" ng-keypress="shipmentJoinedLockedEditName( $event, item, shipment )" />
-                                    </td>
-                                    <td width="20%">
-                                        <input type="number" ng-model="item.qtyShipped" class="form-control input-sm" ng-blur="changeItemQtyShippedBlur( item )" />
-                                    </td>
-                                    <td width="50%">
-                                        <div class="col-md-7" ng-show=" shipment.isShipmentSeparationActivate ">
-                                            <input type="number" ng-model="item.qtySeparated" class="form-control input-sm" placeholder="拆分数量" ng-blur="changeItemQtySeparatedBlur( item )" />
-                                        </div>
-                                        <a
-                                                class="btn btn-xs {{ item.isShipmentJoinedLockEditName ? 'btn-primary' : 'btn-info' }} pull-right"
-                                                ng-click="item.isShipmentJoinedLockEditName = ! item.isShipmentJoinedLockEditName; item.shortName = item.holdName ? item.holdName : item.shortName;"
-                                                >
-                                            <span class="glyphicon glyphicon-{{ item.isShipmentJoinedLockEditName ? 'lock' : 'pencil' }}"></span>
-                                            同品更名
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3">
-                                                <span>
-                                                    <a class="btn btn-xs btn-{{ shipment.isShipmentSeparationActivate ? 'success' : 'primary' }}" ng-click="separateShipmentPrepare( shipment )">
-                                                        <span class="glyphicon glyphicon-{{ shipment.isShipmentSeparationActivate ? 'ok-circle' : 'th' }}"></span>
-                                                        {{ shipment.isShipmentSeparationActivate ? '确认分单' : '分单' }}
-                                                    </a>
-                                                    <a class="btn btn-xs btn-warning" ng-show="shipment.isShipmentSeparationActivate" ng-click="separateShipmentCancel( shipment )">
-                                                        <span class="glyphicon glyphicon-remove-circle" ></span>
-                                                        取消操作
-                                                    </a>
+                                    <tr ng-repeat="item in shipment.shipmentItems">
+                                        <td width="37%">
+                                            <input type="text" data-toggle="tooltip" data-placement="top" title="{{ item.fullName }}" tooltip ng-model="item.printName" ng-value="item.shortName ? item.shortName : item.fullName" class="form-control input-sm" ng-keydown="holdAndChangeItemShortName( item )" ng-keypress="shipmentJoinedLockedEditName( $event, item, shipment )" />
+                                            <a class="btn btn-xs {{ item.isShipmentJoinedLockEditName ? 'btn-primary' : 'btn-info' }} btn-block"
+                                               ng-click="item.isShipmentJoinedLockEditName = ! item.isShipmentJoinedLockEditName; item.printName = item.holdName && item.holdName != '' ? item.holdName : item.printName ? item.printName : item.shortName ? item.shortName : item.fullName;" >
+                                                <span class="glyphicon glyphicon-{{ item.isShipmentJoinedLockEditName ? 'lock' : 'pencil' }}"></span>
+                                                <span ng-switch=" item.isShipmentJoinedLockEditName ">
+                                                    <span ng-switch-when=" false ">
+                                                        同品更名
+                                                    </span>
+                                                    <span ng-switch-when=" true ">
+                                                        点击还原
+                                                    </span>
+                                                    <span ng-switch-default>
+                                                        同品更名
+                                                    </span>
                                                 </span>
-                                        <a class="btn btn-xs btn-primary pull-right" ng-click="emptyIsShipmentJoinedLockedEditName( shipment )">
-                                            <span class="glyphicon glyphicon-trash"></span>
-                                            清空同品更名
-                                        </a>
-
-                                    </td>
-                                </tr>
+                                            </a>
+                                        </td>
+                                        <td width="28%">
+                                            <input type="number" ng-model="item.qtyShipped" class="form-control input-sm" ng-blur="changeItemQtyShippedBlur( item )" />
+                                        </td>
+                                        <td width="35%">
+                                            <span ng-show=" shipment.isShipmentSeparationActivate " >
+                                                <input type="number" ng-model="item.qtySeparated" class="form-control input-sm" placeholder="拆分数量" ng-blur="changeItemQtySeparatedBlur( item )" />
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <a class="btn btn-xs btn-primary pull-left" ng-click="emptyIsShipmentJoinedLockedEditName( shipment )">
+                                                <span class="glyphicon glyphicon-repeat"></span>
+                                                还原更名
+                                            </a>
+                                            <span class="pull-right">
+                                                <a class="btn btn-xs btn-{{ shipment.isShipmentSeparationActivate ? 'success' : 'primary' }}" ng-click="separateShipmentPrepare( shipment )">
+                                                    <span class="glyphicon glyphicon-{{ shipment.isShipmentSeparationActivate ? 'ok-circle' : 'th' }}"></span>
+                                                    {{ shipment.isShipmentSeparationActivate ? '确认分单' : '分单' }}
+                                                </a>
+                                                <a class="btn btn-xs btn-warning" ng-show="shipment.isShipmentSeparationActivate" ng-click="separateShipmentCancel( shipment )">
+                                                    <span class="glyphicon glyphicon-remove-circle" ></span>
+                                                    取消操作
+                                                </a>
+                                            </span>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </td>
@@ -337,10 +364,35 @@
         隐藏
     </a>
     <h5 style="font-size:12px;">快捷操作</h5>
-    <a class="btn btn-xs btn-success" ng-click="mergeSelectedShipments()">
+    <a class="btn btn-xs btn-primary" ng-click="mergeSelectedShipments()">
         <span class="glyphicon glyphicon-th-large"></span>
         批量合单
     </a>
+    <a class="btn btn-xs btn-success" ng-click="saveShipmentsChangesModal()" style="margin-top:1px;">
+        <span class="glyphicon glyphicon-floppy-saved"></span>
+        保存改动
+    </a>
+</div>
+
+<!-- saveShipmentsChanges Modal -->
+<div class="modal fade" id="saveShipmentsChanges">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">保存对发货单做的改动</h3>
+            </div>
+            <div class="modal-body">
+                <p>确定保存做过改动的发货单？</p>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group">
+                    <button class="btn btn-primary" type="button" ng-click="saveShipmentsChanges()">确认保存</button>
+                    <button class="btn btn-warning" type="button" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- changeShipmentsStatus Modal -->

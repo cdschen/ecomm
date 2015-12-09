@@ -1,6 +1,6 @@
 angular.module('ecommApp')
-.controller('ShipmentGenerateController', ['$scope', '$rootScope', '$location', '$window', '$state', '$interval', 'toastr', 'orderService', 'Shop', 'Utils', 'Warehouse', 'courierService',
-    function($scope, $rootScope, $location, $window, $state, $interval, toastr, orderService, Shop, Utils, Warehouse, courierService) {
+.controller('ShipmentGenerateController', ['$scope', '$rootScope', '$location', '$window', '$timeout', '$state', '$interval', 'toastr', 'orderService', 'Shop', 'Utils', 'Warehouse', 'courierService',
+    function($scope, $rootScope, $location, $window, $timeout, $state, $interval, toastr, orderService, Shop, Utils, Warehouse, courierService) {
 
         var $ = angular.element;
 
@@ -76,6 +76,7 @@ angular.module('ecommApp')
                 sort: ['name']
             }).then(function(shops) {
                 $scope.shops = shops;
+                $scope.query.shop = $scope.query.shop ? $scope.query.shop : $scope.shops[ 0 ];
                 $scope.selectAllShops(shops);
                 //console.log($scope.query.statuses);
             });
@@ -266,10 +267,11 @@ angular.module('ecommApp')
                 {
                     var isSeparateSuccessful = false;
                     var clonedItems = [];
+                    var deletedItems = [];
 
                     for( itemIndex in items )
                     {
-                        if( items[ itemIndex ].qtySeparated )
+                        if( items[ itemIndex ].qtySeparated > 0 )
                         {
                             isSeparateSuccessful = true;
 
@@ -282,13 +284,21 @@ angular.module('ecommApp')
 
                             if( items[ itemIndex ].qtyShipped === items[ itemIndex ].qtySeparated )
                             {
-                                items.splice( itemIndex, 1 );
+                                deletedItems.push( items[ itemIndex ] );
                             }
                             else
                             {
                                 items[ itemIndex ].qtyShipped = holdQtyShipped - holdQtySeparated;
                                 items[ itemIndex ].qtySeparated = null;
                             }
+                        }
+                    }
+
+                    if( deletedItems && deletedItems.length > 0 )
+                    {
+                        for( var deletedItemIndex in deletedItems )
+                        {
+                            items.splice( items.indexOf( deletedItems[ deletedItemIndex ] ), 1 );
                         }
                     }
 
@@ -570,7 +580,6 @@ angular.module('ecommApp')
 
                 $scope.shipments = angular.copy( review.reviewShipments );
                 $scope.orders = angular.copy( review.orders );
-
             });
         }
 

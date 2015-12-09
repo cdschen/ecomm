@@ -342,6 +342,12 @@ public class InventoryController {
 		return shipmentService.changeShipmentStatus( shipment );
 	}
 	
+	@RequestMapping(value = "/shipments/save-changes", method = RequestMethod.POST)
+	public List<Shipment> saveShipmentsChanges(@RequestBody Shipment shipment)
+	{
+		return shipmentService.saveShipments( shipment );
+	}
+	
 	/*
 	 * ShipmentItem
 	 */
