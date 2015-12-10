@@ -49,8 +49,11 @@ public class EcommHttp
 
 		finalUrlBuilder.append( urlBuilder.toString() + identityBuilder.toString() + paramsBuilder.toString() );
 
-		System.out.println( "finalUrlBuilder: " );
-		System.out.println( finalUrlBuilder.toString() );
+		/*
+		 * 打印完整调用URL
+		 */
+		// System.out.println( "finalUrlBuilder: " );
+		// System.out.println( finalUrlBuilder.toString() );
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpget = new HttpGet( finalUrlBuilder.toString() );
@@ -58,11 +61,11 @@ public class EcommHttp
 
 		String json = EntityUtils.toString( response.getEntity(), "UTF-8" );
 
-		// System.out.println( "json: " );
-		// System.out.println( json );
-
 		JSONParser parser = new JSONParser();
 		Object resultObject = parser.parse( json );
+		
+		response.close();
+		httpclient.close();
 
 		return ( JSONObject ) resultObject;
 	}

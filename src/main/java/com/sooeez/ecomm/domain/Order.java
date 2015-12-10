@@ -55,6 +55,10 @@ public class Order implements Serializable {
 	@Column(name = "external_create_time")
 	private Date externalCreateTime;
 
+	/* 店铺订单最近更新时间戳 */
+	@Column(name = "external_log_time")
+	private Long externalLogTime;
+
 	/* 订单在系统创建时间, 为订单导入或在系统创建的时间 */
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "internal_create_time", nullable = false)
@@ -726,6 +730,16 @@ public class Order implements Serializable {
 
 	public void setAction(String action) {
 		this.action = action;
+	}
+
+	public Long getExternalLogTime()
+	{
+		return externalLogTime;
+	}
+
+	public void setExternalLogTime( Long externalLogTime )
+	{
+		this.externalLogTime = externalLogTime;
 	}
 
 }
