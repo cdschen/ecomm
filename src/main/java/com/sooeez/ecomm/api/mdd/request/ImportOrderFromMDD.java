@@ -30,10 +30,8 @@ import com.sooeez.ecomm.domain.Process;
 import com.sooeez.ecomm.domain.ProcessStep;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Shop;
-import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.repository.OrderRepository;
 import com.sooeez.ecomm.service.ProcessService;
-import com.sooeez.ecomm.service.ProductService;
 
 @Service
 public class ImportOrderFromMDD
@@ -48,8 +46,6 @@ public class ImportOrderFromMDD
 	 */
 	@Autowired
 	private ProcessService	processService;
-	@Autowired
-	private ProductService	productService;
 	@PersistenceContext
 	private EntityManager	em;
 
@@ -229,17 +225,8 @@ public class ImportOrderFromMDD
 									queryProduct.setParameter( 1, orderItem.getSku() );
 									if ( queryProduct.getResultList().size() > 0 )
 									{
-										Integer totalStock = 0;
+										// Integer totalStock = 0;
 										Product product = ( Product ) queryProduct.getSingleResult();
-										this.productService.setProductWarehouseInventories( product );
-										if ( product.getWarehouses() != null && product.getWarehouses().size() > 0 )
-										{
-											for ( Warehouse warehouse : product.getWarehouses() )
-											{
-												totalStock += warehouse.getTotal() != null
-													? warehouse.getTotal().intValue() : 0;
-											}
-										}
 										orderItem.setName( product.getName() );
 										orderItem.setUnitPrice(
 											product.getPriceL1() != null ? product.getPriceL1() : new BigDecimal( 0 ) );
@@ -248,10 +235,7 @@ public class ImportOrderFromMDD
 										orderItem.setProductId( product.getId() );
 										orderItem.setProduct( product );
 
-										if ( totalStock >= orderItem.getQtyOrdered() )
-										{
-											isAvailable = true;
-										}
+										isAvailable = true;
 									}
 									/*
 									 * 如果找到 sku 对应的商品
@@ -409,8 +393,11 @@ public class ImportOrderFromMDD
 							/*
 							 * 订单所有详情的 sku 都存在于 Ecomm 商品表中，并且发货方式正确
 							 */
-							System.out.println( "isAllItemSkuFoundInEcommProduct: " + isAllItemSkuFoundInEcommProduct );
-							System.out.println( "isDeliveryMethodCorrect: " + isDeliveryMethodCorrect );
+							// System.out.println(
+							// "isAllItemSkuFoundInEcommProduct: " +
+							// isAllItemSkuFoundInEcommProduct );
+							// System.out.println( "isDeliveryMethodCorrect: " +
+							// isDeliveryMethodCorrect );
 							if ( isAllItemSkuFoundInEcommProduct && isDeliveryMethodCorrect )
 							{
 								finalOrders.add( order );
@@ -436,7 +423,8 @@ public class ImportOrderFromMDD
 		if ( finalOrders.size() > 0 )
 		{
 			this.orderRepository.save( finalOrders );
-			System.out.println( "可导入的订单：" + finalOrders != null ? finalOrders.size() : 0 );
+			// System.out.println( "可导入的订单：" + ( finalOrders != null ?
+			// finalOrders.size() : 0 ) );
 		}
 		/**
 		 * 结束：调用 插入或更新订单及详情
