@@ -38,5 +38,6 @@ angular.module('ecommApp')
                     roles: []
                 }
             });
+            
     }
 ]);
