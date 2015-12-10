@@ -30,8 +30,10 @@ import com.sooeez.ecomm.domain.Process;
 import com.sooeez.ecomm.domain.ProcessStep;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Shop;
+import com.sooeez.ecomm.domain.Warehouse;
 import com.sooeez.ecomm.repository.OrderRepository;
 import com.sooeez.ecomm.service.ProcessService;
+import com.sooeez.ecomm.service.ProductService;
 
 @Service
 public class ImportOrderFromMDD
@@ -46,6 +48,8 @@ public class ImportOrderFromMDD
 	 */
 	@Autowired
 	private ProcessService	processService;
+	@Autowired
+	private ProductService	productService;
 	@PersistenceContext
 	private EntityManager	em;
 
@@ -219,13 +223,23 @@ public class ImportOrderFromMDD
 									orderItem.setSku( orderGood.getGoodsSn() );
 									orderItem.setExternal_name( orderGood.getGoodsName() );
 
-									Boolean isExisted = false;
-									String sqlProduct = "SELECT * FROM t_product WHERE sku = ?1";
+									Boolean isAvailable = false;
+									String sqlProduct = "SELECT * FROM t_product WHERE sku = ?1 AND enabled = true";
 									Query queryProduct = em.createNativeQuery( sqlProduct, Product.class );
 									queryProduct.setParameter( 1, orderItem.getSku() );
 									if ( queryProduct.getResultList().size() > 0 )
 									{
+										Integer totalStock = 0;
 										Product product = ( Product ) queryProduct.getSingleResult();
+										this.productService.setProductWarehouseInventories( product );
+										if ( product.getWarehouses() != null && product.getWarehouses().size() > 0 )
+										{
+											for ( Warehouse warehouse : product.getWarehouses() )
+											{
+												totalStock += warehouse.getTotal() != null
+													? warehouse.getTotal().intValue() : 0;
+											}
+										}
 										orderItem.setName( product.getName() );
 										orderItem.setUnitPrice(
 											product.getPriceL1() != null ? product.getPriceL1() : new BigDecimal( 0 ) );
@@ -234,12 +248,15 @@ public class ImportOrderFromMDD
 										orderItem.setProductId( product.getId() );
 										orderItem.setProduct( product );
 
-										isExisted = true;
+										if ( totalStock >= orderItem.getQtyOrdered() )
+										{
+											isAvailable = true;
+										}
 									}
 									/*
 									 * 如果找到 sku 对应的商品
 									 */
-									if ( isExisted )
+									if ( isAvailable )
 									{
 
 										/* Accumulate total weight */
@@ -392,11 +409,8 @@ public class ImportOrderFromMDD
 							/*
 							 * 订单所有详情的 sku 都存在于 Ecomm 商品表中，并且发货方式正确
 							 */
-							// System.out.println(
-							// "isAllItemSkuFoundInEcommProduct: " +
-							// isAllItemSkuFoundInEcommProduct );
-							// System.out.println( "isDeliveryMethodCorrect: " +
-							// isDeliveryMethodCorrect );
+							System.out.println( "isAllItemSkuFoundInEcommProduct: " + isAllItemSkuFoundInEcommProduct );
+							System.out.println( "isDeliveryMethodCorrect: " + isDeliveryMethodCorrect );
 							if ( isAllItemSkuFoundInEcommProduct && isDeliveryMethodCorrect )
 							{
 								finalOrders.add( order );
