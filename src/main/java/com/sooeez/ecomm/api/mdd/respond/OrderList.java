@@ -1,10 +1,14 @@
 package com.sooeez.ecomm.api.mdd.respond;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.sooeez.ecomm.api.mdd.EcommUtils;
 import com.sooeez.ecomm.api.mdd.constant.RespondCode;
 
 public class OrderList
@@ -12,14 +16,14 @@ public class OrderList
 	/*
 	 * Respond 基本属性
 	 */
-	private Long			successCode;
-	private Long			errorCode;
-	private String			errorDesc;
+	private Long							successCode;
+	private Long							errorCode;
+	private String							errorDesc;
 	/*
 	 * OrderInfo 专有属性
 	 */
-	private List< Long >	orderIds	= new ArrayList< Long >();
-	private String			dataStr;
+	private List< Map< String, Object > >	contentMap	= new ArrayList< Map< String, Object > >();
+	private String							dataStr;
 
 	public Long getSuccessCode()
 	{
@@ -41,26 +45,26 @@ public class OrderList
 		this.errorCode = errorCode;
 	}
 
-	public List< Long > getOrderIds()
+	public List< Map< String, Object > > getContentMap()
 	{
-		return orderIds;
+		return contentMap;
 	}
 
-	public void setOrderIds( List< Long > orderIds )
+	public void setContentMap( List< Map< String, Object > > contentMap )
 	{
-		this.orderIds = orderIds;
+		this.contentMap = contentMap;
 	}
 
 	public String getDataStr()
 	{
 		StringBuilder dataBuilder = new StringBuilder();
-		for ( Long orderId : orderIds )
+		for ( Map< String, Object > content : contentMap )
 		{
 			if ( ! dataBuilder.toString().trim().equals( "" ) )
 			{
 				dataBuilder.append( ", " );
 			}
-			dataBuilder.append( orderId );
+			dataBuilder.append( content.get( "order_id" ) );
 		}
 		this.setDataStr( dataBuilder.toString() );
 
@@ -85,42 +89,28 @@ public class OrderList
 	public OrderList()
 	{}
 
-	@SuppressWarnings( "unchecked" )
 	public OrderList( JSONObject jsonObject )
 	{
-		Long respondSuccessCode = ( Long ) jsonObject.get( "success" );
-		Long respondErrorCode = ( Long ) jsonObject.get( "errorcode" );
-		String respondErrorDesc = ( String ) jsonObject.get( "errordesc" );
-		List< String > respondData = ( List< String > ) jsonObject.get( "data" );
+		Long respondSuccessCode = EcommUtils.getLongValue( jsonObject.get( "success" ) );
+		Long respondErrorCode = EcommUtils.getLongValue( jsonObject.get( "errorcode" ) );
+		String respondErrorDesc = EcommUtils.getStringValue( jsonObject.get( "errordesc" ) );
+		JSONArray respondData = ( JSONArray ) jsonObject.get( "data" );
 
-		if ( respondSuccessCode != null )
-		{
-			this.setSuccessCode( Long.valueOf( respondSuccessCode ) );
-		}
-		else
-		{
-			this.setSuccessCode( RespondCode.ERROR_FREE );
-		}
-
-		if ( respondErrorCode != null )
-		{
-			this.setErrorCode( Long.valueOf( respondErrorCode ) );
-		}
-		else
-		{
-			this.setErrorCode( RespondCode.ERROR_FREE );
-		}
-
-		if ( respondErrorDesc != null )
-		{
-			this.setErrorDesc( respondErrorDesc );
-		}
+		this.setSuccessCode( respondSuccessCode != null ? respondSuccessCode : RespondCode.ERROR_FREE );
+		this.setErrorCode( respondErrorCode != null ? respondErrorCode : RespondCode.ERROR_FREE );
+		this.setErrorDesc( respondErrorDesc );
 
 		if ( respondData != null && respondData.size() > 0 )
 		{
-			for ( Object object : respondData )
+			for ( Object obj : respondData )
 			{
-				orderIds.add( Long.valueOf( object.toString() ) );
+				JSONObject jsonObjectOrderList = ( JSONObject ) obj;
+				
+				Map< String, Object > map = new HashMap< String, Object >();
+				map.put( "order_id", EcommUtils.getLongValue( jsonObjectOrderList.get( "order_id" ) ) );
+				map.put( "log_time", EcommUtils.getLongValue( jsonObjectOrderList.get( "log_time" ) ) );
+				
+				this.getContentMap().add( map );
 			}
 		}
 	}

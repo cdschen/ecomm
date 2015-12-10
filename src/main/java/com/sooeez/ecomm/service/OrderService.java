@@ -152,6 +152,10 @@ public class OrderService
 						.add( orderItem.getUnitPrice().multiply( new BigDecimal( orderItem.getQtyOrdered() ) ) );
 					subtotal = subtotal
 						.add( orderItem.getUnitPrice().multiply( new BigDecimal( orderItem.getQtyOrdered() ) ) );
+
+					BigDecimal gst = orderItem.getUnitPrice().multiply( new BigDecimal( orderItem.getQtyOrdered() ) )
+						.multiply( new BigDecimal( 3 ) ).divide( new BigDecimal( 23 ), 2, BigDecimal.ROUND_DOWN );
+					orderItem.setUnitGst( gst );
 				}
 			}
 
