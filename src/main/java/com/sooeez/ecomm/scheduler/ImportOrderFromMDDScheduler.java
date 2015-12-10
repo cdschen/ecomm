@@ -17,18 +17,17 @@ public class ImportOrderFromMDDScheduler
 	private ImportOrderFromMDD importOrderFromMDD;
 
 	// 每 10 秒钟执行一次
-	@Scheduled( cron = "*/10 * * * * * " )
-	private void importOrderFromMDDEveryTenSeconds() throws Exception
-	{
-		System.out.println( "aa" );
-		this.importOrderFromMDD.importOrderFromMDD();
-	}
-
-	// 每 3 分钟执行一次
-	// @Scheduled( cron = "0 */3 * * * * " )
-	// private void importOrderFromMDDByCronEveryFiveMinutes() throws Exception
+	// @Scheduled( cron = "*/10 * * * * * " )
+	// private void importOrderFromMDDEveryTenSeconds() throws Exception
 	// {
 	// this.importOrderFromMDD.importOrderFromMDD();
 	// }
+
+	// 每 3 分钟执行一次
+	@Scheduled( cron = "0 */3 * * * * " )
+	private void importOrderFromMDDByCronEveryFiveMinutes() throws Exception
+	{
+		this.importOrderFromMDD.importOrderFromMDD();
+	}
 
 }
