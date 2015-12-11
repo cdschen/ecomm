@@ -61,6 +61,9 @@ public class PageDTO<T> implements Serializable {
 
 	public void setTotalElements(Long totalElements) {
 		this.totalElements = totalElements;
+		int totalPages = totalElements.intValue() % size.intValue() == 0 ? 
+				totalElements.intValue() / size.intValue() : totalElements.intValue() / size.intValue() + 1;
+		this.setTotalPages(totalPages);
 	}
 
 	public Integer getTotalPages() {

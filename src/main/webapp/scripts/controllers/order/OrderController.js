@@ -1,5 +1,5 @@
 
-var OrderController = function($scope, orderService, Utils, Process, ObjectProcess, Shop, Auth)
+var OrderController = function($scope, $location, toastr, orderService, Utils, Process, ObjectProcess, Shop, Auth)
 {
 
     /* Activate Date Picker */
@@ -8,8 +8,8 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
         format: 'yyyy-mm-dd',
         clearBtn: true,
         language: 'zh-CN',
-        orientation: 'top left',
-        todayHighlight: true,
+        orientation: 'bottom left',
+        todayHighlight: true
     });
 
     $scope.template = {
@@ -30,8 +30,19 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
         }
     };
 
+    $scope.isCheckedAll = false;
+    $scope.batchManipulationValue = 'batchManipulation';
+
+    $scope.checkAllOrders = function()
+    {
+        for( var orderIndex in $scope.page.content )
+        {
+            $scope.page.content[ orderIndex ].isSelected = $scope.isCheckedAll;
+        }
+    };
+
     $scope.defaultQuery = {
-        pageSize: 20,
+        size: 20,
         totalPagesList: [],
         sort: ['internalCreateTime,desc'],
         order: {},
@@ -63,13 +74,16 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
         console.log('processes');
         console.log(processes);
         Process.initStatus(processes);
+    }).then(function() {
+        $scope.searchData( $scope.query, $scope.number );
     });
 
     $scope.searchData = function(query, number)
     {
+        $scope.number = number;
         orderService.get({
             page: number ? number : 0,
-            size: query.pageSize,
+            size: query.size,
             sort: query.sort,
             orderId: query.order.orderId,
             shipNumber: query.order.shipNumber,
@@ -84,14 +98,11 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
         }, function(page) {
             $scope.page = page;
             console.log(page.content);
-            query.totalPagesList = Utils.setTotalPagesList(page);
+            console.log( page );
+            Utils.initList(page, $scope.query);
+            console.log( $scope.query );
         });
-
-        console.log('orderService.getAll()');
-        console.log( orderService.getAll() );
     };
-
-    $scope.searchData($scope.query);
 
     $scope.turnPage = function(number) {
         if (number > -1 && number < $scope.page.totalPages) {
@@ -99,8 +110,8 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
         }
     };
 
-    $scope.search = function() {
-        $scope.searchData($scope.query);
+    $scope.search = function(query) {
+        $scope.searchData(query);
     };
 
     $scope.reset = function() {
@@ -168,8 +179,45 @@ var OrderController = function($scope, orderService, Utils, Process, ObjectProce
         }
     };
 
+    ///* 批量操作 */
+    $scope.batchManipulation = function()
+    {
+        var orders = $scope.page.content;
+        var selectedOrders = [];
+        var orderIds = [];
+        $.each( orders, function()
+        {
+            var order = this;
+            if ( order.isSelected )
+            {
+                selectedOrders.push( angular.copy( order ) );
+                orderIds.push( order.id );
+            }
+        });
+        if ( selectedOrders.length > 0 )
+        {
+            if($scope.batchManipulationValue === 'orderPrint')
+            {
+                var url = '/order-print?orderId=' +( orderIds || '');
+                $location.url( url );
+            }
+        }
+        else
+        {
+            toastr.error('请选择一到多个订单来继续！');
+        }
+
+        $scope.batchManipulationValue = 'batchManipulation';
+    };
+
+    $scope.printSingle = function( orderId )
+    {
+        var url = '/order-print?orderId=' +( orderId || '');
+        $location.url( url );
+    };
+
 };
 
-OrderController.$inject = ['$scope', 'orderService', 'Utils', 'Process', 'ObjectProcess', 'Shop', 'Auth'];
+OrderController.$inject = ['$scope', '$location', 'toastr', 'orderService', 'Utils', 'Process', 'ObjectProcess', 'Shop', 'Auth'];
 
 angular.module('ecommApp').controller('OrderController', OrderController);

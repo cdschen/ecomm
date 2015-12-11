@@ -1,9 +1,11 @@
 package com.sooeez.ecomm.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sooeez.ecomm.domain.PurchaseOrder;
 import com.sooeez.ecomm.domain.PurchaseOrderItem;
 import com.sooeez.ecomm.domain.SupplierProduct;
+import com.sooeez.ecomm.dto.PageDTO;
 import com.sooeez.ecomm.service.PurchaseOrderService;
 
 @RestController
@@ -38,8 +41,39 @@ public class PurchaseOrderController {
 	}
 	
 	@RequestMapping(value = "/purchaseorders")
-	public Page<PurchaseOrder> getPagedPurchaseOrders(PurchaseOrder purchaseOrder, Pageable pageable) {
-		return this.purchaseOrderService.getPagedPurchaseOrders(purchaseOrder, pageable);
+	public PageDTO<PurchaseOrder> getPagedPurchaseOrders(PurchaseOrder purchaseOrder, Pageable pageable) {
+		Page<PurchaseOrder> page = this.purchaseOrderService.getPagedPurchaseOrders( purchaseOrder, pageable );
+		PageDTO<PurchaseOrder> pageDTO = new PageDTO<>();
+		BeanUtils.copyProperties( page, pageDTO, "content", "sort" );
+		List<PurchaseOrder> fpos = new ArrayList<>();
+		page.getContent().forEach( opo ->
+		{
+			PurchaseOrder fpo = new PurchaseOrder();
+			BeanUtils.copyProperties( opo, fpo, "purchaseOrderDeliveries", "items" );
+			fpos.add( fpo );
+//			Product productDTO = new Product();
+//			productDTO.setId(p.getId());
+//			productDTO.setSku(p.getSku());
+//			productDTO.setName(p.getName());
+//			productDTO.setProcesses(p.getProcesses());
+//			productDTO.setWarehouses(p.getWarehouses());
+//			
+//			productDTO.setPriceL1(p.getPriceL1());
+//			productDTO.setPriceL2(p.getPriceL2());
+//			productDTO.setPriceL3(p.getPriceL3());
+//			productDTO.setPriceL4(p.getPriceL4());
+//			productDTO.setPriceL5(p.getPriceL5());
+//			productDTO.setPriceL6(p.getPriceL6());
+//			productDTO.setPriceL7(p.getPriceL7());
+//			productDTO.setPriceL8(p.getPriceL8());
+//			productDTO.setPriceL9(p.getPriceL9());
+//			productDTO.setPriceL10(p.getPriceL10());
+//			productDTO.setWeight(p.getWeight());
+			
+//			fpos.add( productDTO );
+		});
+		pageDTO.setContent( fpos );
+		return pageDTO;
 	}
 	
 //	@RequestMapping(value = "/purchaseOrders/confirm/shipment")

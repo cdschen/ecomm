@@ -30,6 +30,33 @@ angular.module('ecommApp')
                 });
         };
 
+        shipment.changeShipmentStatus = function( shipment )
+        {
+            return $http.post('/api/shipment/change-status', shipment )
+                .then(function(res)
+                {
+                    return res.data;
+                });
+        };
+
+        shipment.changeShipmentsStatus = function( shipment )
+        {
+            return $http.post('/api/shipments/change-status', shipment )
+                .then(function(res)
+                {
+                    return res.data;
+                });
+        };
+
+        shipment.saveShipmentsChanges = function( shipment )
+        {
+            return $http.post('/api/shipments/save-changes', shipment )
+                .then(function(res)
+                {
+                    return res.data;
+                });
+        };
+
         /* 批量选中 */
         shipment.selectedShipments = [];
         /* 单个选中 */
@@ -74,6 +101,21 @@ angular.module('ecommApp')
         shipment.setSelectedShipment = function( selectedShipment )
         {
             shipment.selectedShipment = selectedShipment;
+        };
+
+
+        /** 发货快递单，供拉出层打印用
+         */
+        shipment.shipmentCouriers = [];
+
+        shipment.getShipmentCouriers = function()
+        {
+            return shipment.shipmentCouriers;
+        };
+
+        shipment.setShipmentCouriers = function( shipmentCouriers )
+        {
+            shipment.shipmentCouriers = shipmentCouriers;
         };
 
     return shipment;

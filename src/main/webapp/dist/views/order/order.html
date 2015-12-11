@@ -2,14 +2,19 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">订单管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="order.operator">创建</a>
-        <a href="javascript:void(0)" class="btn btn-info btn-xs">导入</a>
-        <a href="javascript:void(0)" class="btn btn-info btn-xs">导出</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="order.operator">
+            <span class="glyphicon glyphicon-plus-sign"></span>
+            创建订单
+        </a>
+        <!--<a href="javascript:void(0)" class="btn btn-info btn-xs">-->
+            <!--<span class="glyphicon glyphicon-open-file"></span>-->
+            <!--导入订单-->
+        <!--</a>-->
     </li>
 </ol>
 <div class="container-fluid">
     <div class="panel panel-default">
-        <form name="orderSerachForm" novalidate ng-submit="search()">
+        <form name="orderSerachForm" novalidate ng-submit="search( query )">
             <table class="table" style="margin:0">
                 <tbody>
                     <tr>
@@ -81,124 +86,127 @@
                     </tr>
                 </tbody>
             </table>
-        </form>
-        <div class="panel-body" style="padding:0"></div>
-        <table class="table table-bordered" ng-show="page">
-            <thead>
-                <tr>
-                    <th width="2%">
-                        <input type="checkbox" name="orderId">
-                    </th>
-                    <th width="10%">订单编号</th>
-                    <th width="10%">店铺</th>
-                    <th width="10%">店铺单号</th>
-                    <th width="14%">时间（下单，导入，发出）</th>
-                    <th width="6%">总金额</th>
-                    <th width="10%">收件人</th>
-                    <th width="10%">商品信息</th>
-                    <th width="12%">备注</th>
-                    <th width="10%">状态</th>
-                    <th width="6%" style="padding: 2px">
-                        <select class="form-control input-sm">
-                            <option selected="selected">批量操作</option>
-                        </select>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="order in page.content" ng-class="{active: order.active}">
-                    <td>
-                        <input type="checkbox" name="orderId">
-                    </td>
-                    <td>
-                        {{order.id}}
-                    </td>
-                    <td>
-                        {{order.shop.name}}
-                    </td>
-                    <td>
-                        {{order.externalSn}}
-                    </td>
-                    <td>
-                        <div ng-show="order.internalCreateTime">
-                            下单 : {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}
-                        </div>
-                        <!--<div ng-show="order.internalCreateTime">-->
-                            <!--导入 : {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}-->
-                        <!--</div>-->
-                        <div ng-show="order.pickupTime">
-                            发出 : {{order.pickupTime | date : 'yyyy-MM-dd HH:mm:ss'}}
-                        </div>
-
-                    </td>
-                    <td>
-                        {{order.grandTotal | currency : ''}}
-                    </td>
-                    <td>
-                        <div ng-show="order.receiveName">
-                            名字 : {{order.receiveName}}
-                        </div>
-                        <div ng-show="order.receivePhone">
-                            电话 : {{order.receivePhone}}
-                        </div>
-                        <div ng-show="order.receiveAddress">
-                            地址 : {{order.receiveAddress}}
-                        </div>
-                    </td>
-                    <td>
-                        <div ng-repeat="item in order.items | limitTo:5">
-                            {{item.name}}&nbsp;*&nbsp;{{item.qtyOrdered}}
-                        </div>
-                        <a href="" class="btn btn-info btn-xs pull-right" ng-click="toggleDetailsSlide(order)">...</a>
-                    </td>
-                    <td>
-                        {{order.memo}}
-                    </td>
-                    <td>
-                        <a href="javascript:void(0)" popover-template="template.popover.url" ng-click="updateStep(order)" popover-trigger="focus" class="btn btn-success btn-xs" ng-repeat="process in order.processes" style="margin-right: 5px; margin-bottom:5px">
-                            {{process.step.name}}
-                        </a>
-                        <a href="javascript:void(0)" class="btn btn-info btn-xs pull-right" ng-click="toggleProcessSlide(order)">...</a>
-                    </td>
-                    <td>
-                        <a ui-sref="order.operator({id:order.id})" class="btn btn-info btn-xs">
-                            <span class="glyphicon glyphicon-edit"></span> 编辑
-                        </a>
-                    </td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="20">
-                        <div class="panel-body" ng-show="page.content.length == 0">
-                            <div class="alert alert-warning">没有任何数据被检索到</div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="20">
-                        <nav class="page-list">
-                            <ul class="pagination pagination-sm">
-                                <li ng-class="{disabled: page.first}">
-                                    <a href="" ng-click="turnPage(page.number - 1)">&laquo;</a>
-                                </li>
-                                <li ng-repeat="i in totalPagesList" ng-class="{active: i == page.number}">
-                                    <a href="" ng-click="turnPage(i)">{{i+1}}</a>
-                                </li>
-                                <li ng-class="{disabled: page.last}">
-                                    <a href="" ng-click="turnPage(page.number + 1)">&raquo;</a>
-                                </li>
+            <div class="panel-body" style="padding:0"></div>
+            <table class="table table-bordered" ng-show="page">
+                <thead>
+                    <tr>
+                        <th width="2%">
+                            <input type="checkbox" ng-model="isCheckedAll" ng-click="checkAllOrders()">
+                        </th>
+                        <th width="10%">店铺</th>
+                        <th width="12%">单号</th>
+                        <th width="16%">时间（下单，导入，发出）</th>
+                        <th width="6%">总金额</th>
+                        <th width="10%">收件人</th>
+                        <th width="16%">商品信息</th>
+                        <th width="12%">备注</th>
+                        <th width="10%">状态</th>
+                        <th width="6%" style="padding: 2px">
+                            <select class="form-control input-sm" ng-change="batchManipulation()" ng-model="batchManipulationValue">
+                                <option selected="selected" value="batchManipulation">批量操作</option>
+                                <option value="orderPrint">打印</option>
+                            </select>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="order in page.content" ng-class="{active: order.active}">
+                        <td>
+                            <input type="checkbox" ng-model="order.isSelected">
+                        </td>
+                        <td>
+                            {{order.shop.name}}
+                        </td>
+                        <td>
+                            订单:<br/>
+                            {{order.id}}<br/>
+                            店铺订单:<br/>
+                            {{order.externalSn}}<br/>
+                            快递:<br/>
+                            <ul ng-repeat="shipment in order.shipments" style="list-style:none; margin:0; padding-left:10px;">
+                                <li>{{ shipment.shipNumber }}</li>
                             </ul>
-                            <div class="page-total">
-                                共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
-                                <select class="form-control" style="display: inline; padding:0" ng-model="query.pageSize" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
-                                </select>
+                        </td>
+                        <td>
+                            <div ng-show="order.internalCreateTime">
+                                下单 : {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}
                             </div>
-                        </nav>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
+                            <!--<div ng-show="order.internalCreateTime">-->
+                                <!--导入 : {{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}-->
+                            <!--</div>-->
+                            <div ng-show="order.pickupTime">
+                                发出 : {{order.pickupTime | date : 'yyyy-MM-dd HH:mm:ss'}}
+                            </div>
+                        </td>
+                        <td>
+                            {{order.grandTotal | currency : ''}}
+                        </td>
+                        <td>
+                            <div ng-show="order.receiveName">
+                                名字 : {{order.receiveName}}
+                            </div>
+                            <div ng-show="order.receivePhone">
+                                电话 : {{order.receivePhone}}
+                            </div>
+                            <div ng-show="order.receiveAddress">
+                                地址 : {{order.receiveAddress}}
+                            </div>
+                        </td>
+                        <td>
+                            <div ng-repeat="item in order.items | limitTo:5">
+                                {{item.name}}&nbsp;*&nbsp;{{item.qtyOrdered}}
+                            </div>
+                            <a href="" class="btn btn-info btn-xs pull-right" ng-click="toggleDetailsSlide(order)">...</a>
+                        </td>
+                        <td>
+                            {{order.memo}}
+                        </td>
+                        <td>
+                            <a href="javascript:void(0)" popover-template="template.popover.url" ng-click="updateStep(order)" popover-trigger="focus" class="btn btn-success btn-xs" ng-repeat="process in order.processes" style="margin-right: 5px; margin-bottom:5px">
+                                {{process.step.name}}
+                            </a>
+                            <a href="javascript:void(0)" class="btn btn-info btn-xs pull-right" ng-click="toggleProcessSlide(order)">...</a>
+                        </td>
+                        <td>
+                            <a ui-sref="order.operator({id:order.id})" class="btn btn-info btn-xs" style="margin-bottom: 2px;">
+                                <span class="glyphicon glyphicon-edit"></span> 编辑
+                            </a>
+                            <a ng-click="printSingle( order.id )" class="btn btn-info btn-xs">
+                                <span class="glyphicon glyphicon-print"></span> 打印
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="20">
+                            <div class="panel-body" ng-show="page.content.length == 0">
+                                <div class="alert alert-warning">没有任何数据被检索到</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="20">
+                            <nav class="page-list">
+                                <ul class="pagination pagination-sm">
+                                    <li ng-repeat="i in query.list" ng-class="{active: i.value === page.number}">
+                                        <a href="" ng-click="turnPage(i.value)">{{i.label}}</a>
+                                    </li>
+                                </ul>
+                                <div class="page-total">
+                                    共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
+                                    <ng-form>
+                                        <input type="number" class="form-control" ng-model="query.size">
+                                    </ng-form>
+                                    <!-- <select class="form-control" style="display: inline; padding:0" ng-model="query.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                    </select> -->
+                                </div>
+                            </nav>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </form>
     </div>
 </div>
 <section ng-controller="OrderDetailController" onload="initOrderDetailTabs()" ng-include="template.detail.url"></section>

@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +17,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.sooeez.ecomm.domain.Inventory;
+import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Warehouse;
+import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.repository.InventoryRepository;
 
 @Service
@@ -80,6 +85,14 @@ public class InventoryService {
 			if (inventory.getProductIds() != null && inventory.getProductIds().size() > 0) {
 				predicates.add(cb.in(root.get("productId")).value(inventory.getProductIds()));
 			} 
+			if (StringUtils.hasText(inventory.getNameOrSku())) {				
+				Subquery<Product> productSubquery = query.subquery(Product.class);
+				Root<Product> productRoot = productSubquery.from(Product.class);
+				productSubquery.select(productRoot.get("id"));
+				productSubquery.where(cb.or(cb.like(productRoot.get("name"), "%" + inventory.getNameOrSku() + "%"), 
+						cb.like(productRoot.get("sku"), "%" + inventory.getNameOrSku() + "%")));
+				predicates.add(cb.in(root.get("productId")).value(productSubquery));
+			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
 	}
@@ -138,13 +151,32 @@ public class InventoryService {
 		return warehouses;
 	}
 	
-	public Long countAsInventory(Pageable pageable) {
-		
-		Long count = inventoryRepository.countAsInventory();
-		
-		System.out.println("countAsInventory(): " + inventoryRepository.countAsInventory());
-		
+	public Long countAsInventory(Inventory inventory, Pageable pageable) {
+		String sqlString = "select count(*) from (select product_id from t_inventory";
+		if (StringUtils.hasText(inventory.getNameOrSku())) {
+			sqlString += " where product_id in (select id from t_product where sku like '%" + inventory.getNameOrSku() + "%' or name like '%" + inventory.getNameOrSku() + "%')";
+		}
+		sqlString += " GROUP BY product_id order by product_id ) res";
+		System.out.println("sqlString: " + sqlString);
+		Long count = Long.valueOf(em.createNativeQuery(sqlString).getSingleResult().toString());
+		System.out.println("countAsInventory(): " + count);
 		return count;
+	}
+	
+	public List<Inventory> getPagedInventoriesReturnList(Inventory inventory, Pageable pageable) {
+		int offset = pageable.getPageNumber() * pageable.getPageSize();
+		int size = pageable.getPageSize();
+		System.out.println("number: " + pageable.getPageNumber() + ", offset: " + offset + ", size: " + size);
+		inventory.setProductIds(new ArrayList<>());
+		String sqlString = "select product_id from t_inventory";
+		if (StringUtils.hasText(inventory.getNameOrSku())) {
+			sqlString += " where product_id in (select id from t_product where sku like '%" + inventory.getNameOrSku() + "%' or name like '%" + inventory.getNameOrSku() + "%')";
+		}
+		sqlString += " GROUP BY product_id order by product_id limit " + offset + ", " + size;
+		em.createNativeQuery(sqlString).getResultList().forEach(productId -> {
+			inventory.getProductIds().add(Long.parseLong(productId.toString()));
+		});
+		return getInventories(inventory, pageable.getSort());
 	}
 	
 }

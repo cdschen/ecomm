@@ -1,19 +1,21 @@
 package com.sooeez.ecomm.domain;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "t_user")
@@ -26,7 +28,7 @@ public class User implements Serializable {
 	 */
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue
 	private Long id;
 
 	@Column(name = "username", nullable = false)
@@ -53,7 +55,7 @@ public class User implements Serializable {
 
 	@ManyToMany
 	@JoinTable(name = "t_user_role", joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
-	private Set<Role> roles = new HashSet<>();
+	private List<Role> roles = new ArrayList<>();
 
 	/*
 	 * @Transient Properties
@@ -73,6 +75,16 @@ public class User implements Serializable {
 	/*
 	 * Functions
 	 */
+
+	//@JsonIgnore
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	//@JsonProperty
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
+	}
 
 	public Long getId() {
 		return id;
@@ -128,14 +140,6 @@ public class User implements Serializable {
 
 	public void setManagedWarehouses(String managedWarehouses) {
 		this.managedWarehouses = managedWarehouses;
-	}
-
-	public Set<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
 	}
 
 	public Boolean getCheckUnique() {

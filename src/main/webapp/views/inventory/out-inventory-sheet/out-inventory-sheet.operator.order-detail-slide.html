@@ -1,0 +1,174 @@
+<div pageslide ps-open="detailsSlideChecked" ps-side="left" ps-speed="0.25" ps-size="100%">
+    <div id="operator-slider">
+        <div class="panel panel-info">
+            <div class="panel-body">
+                <button type="button" class="close" ng-click="toggleDetailsSlide()">&times;</button>
+                <h4 class="text-success">
+                    <strong>相关订单列表</strong>
+                </h4>
+                <div class="panel panel-success" style="margin-top: 20px;" ng-repeat="order in orders">
+                    <div class="panel-heading">
+                        <a href="" class="pull-right" title="查看订单其他信息" ng-click="order.show = !order.show">
+                            <span class="glyphicon glyphicon-eye-open" ng-show="!order.show"></span>
+                            <span class="glyphicon glyphicon-eye-close" ng-show="order.show"></span>
+                        </a>
+                        <h3 class="panel-title">系统订单号: {{order.id}}</h3>
+                    </div>
+                    <table class="table table-bordered table-condensed" ng-show="order.show">
+                        <thead>
+                            <tr class="info">
+                                <td colspan="6">订单信息</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th width="15%">系统创建时间</th>
+                                <td width="18%">{{order.internalCreateTime | date : 'yyyy-MM-dd HH:mm:ss'}}</td>
+                                <th width="15%">最近更新时间</th>
+                                <td width="18%">{{order.lastUpdateTime | date : 'yyyy-MM-dd HH:mm:ss'}}</td>
+                                <th colspan="2"></th>
+                            </tr>
+                            <tr>
+                                <th width="15%">商品总件数</th>
+                                <td width="18%">{{ order.qtyTotalItemOrdered }}</td>
+                                <th width="15%">已发货商品总件数</th>
+                                <td width="18%">{{ order.qtyTotalItemShipped }}</td>
+                                <th width="15%">商品包含的税金</th>
+                                <td width="19%">{{ order.tax | currency : '$' }}</td>
+                            </tr>
+                            <tr>
+                                <th width="15%">商品总金额</th>
+                                <td width="18%">{{ order.subtotal | currency : '$' }}</td>
+                                <th width="15%">订单总金额</th>
+                                <td width="18%">{{ order.grandTotal | currency : '$' }}</td>
+                                <th width="15%">运费金额</th>
+                                <td width="19%">{{order.shippingFee | currency : '$' }}</td>
+                            </tr>
+                            <tr>
+                                <th width="15%">总共开出的发票金额</th>
+                                <td width="18%">{{ order.totalInvoiced | currency : '$' }}</td>
+                                <th width="15%">总共收到的付款金额</th>
+                                <td width="18%">{{ order.totalPaid | currency : '$' }}</td>
+                                <th width="15%">总共完成的退款金额</th>
+                                <td width="19%">{{ order.totalRefunded | currency : '$' }}</td>
+                            </tr>
+                        </tbody>
+                        <thead>
+                            <tr class="info">
+                                <td colspan="6">店铺信息</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th width="15%">店铺</th>
+                                <td width="18%">{{order.shop.name}}</td>
+                                <th width="15%">店铺订单号</th>
+                                <td width="18%">{{order.externalSn}}</td>
+                                <th colspan="2"></th>
+                            </tr>
+                            <tr>
+                                <th width="15%">店铺要求的发货方式描述</th>
+                                <td colspan="5">{{order.shippingDescription}}</td>
+                            </tr>
+                        </tbody>
+                        <thead>
+                            <tr class="info">
+                                <td colspan="6">收件人信息</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th width="15%">姓名</th>
+                                <td width="18%">{{order.receiveName}}</td>
+                                <th width="15%">电话</th>
+                                <td width="18%">{{order.receivePhone}}</td>
+                                <th width="15%">Email</th>
+                                <td width="19%">{{order.receiveEmail}}</td>
+                            </tr>
+                            <tr>
+                                <th width="15%">城市</th>
+                                <td width="18%">{{order.receiveCity}}</td>
+                                <th width="15%">国家</th>
+                                <td width="18%">{{order.receiveCountry}}</td>
+                                <th width="15%">省</th>
+                                <td width="19%">{{order.receiveProvince}}</td>
+                            </tr>
+                            <tr>
+                                <th width="15%">邮编</th>
+                                <td width="18%">{{order.receivePost}}</td>
+                                <th width="15%">地址</th>
+                                <td colspan="3">{{order.receiveAddress}}</td>
+                            </tr>
+                        </tbody>
+                        <thead>
+                            <tr class="info">
+                                <td colspan="6">发货人信息</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th width="15%">姓名</th>
+                                <td width="18%">{{order.senderName}}</td>
+                                <th width="15%">电话</th>
+                                <td width="18%">{{order.senderPhone}}</td>
+                                <th width="15%">Email</th>
+                                <td width="19%">{{order.senderEmail}}</td>
+                            </tr>
+                            <tr>
+                                <th width="15%">邮编</th>
+                                <td width="18%">{{order.senderPost}}</td>
+                                <th width="15%">发货方式</th>
+                                <td colspan="3">{{order.deliveryMethod}}</td>
+                            </tr>
+                            <tr>
+                                <th width="15%">发件地址</th>
+                                <td colspan="5">{{order.senderAddress}}</td>
+                            </tr>
+                        </tbody>
+                        
+                    </table>
+                    <table class="table table-bordered table-condensed">
+                        <thead>
+                            <tr class="info">
+                                <th colspan="10">商品详情</th>
+                            </tr>
+                        </thead>
+                        <thead>
+                            <tr>
+                                <th width="10%">商品外部SKU</th>
+                                <th width="10%">商品sku</th>
+                                <th width="19%">商品外部名称</th>
+                                <th width="19%">商品名称</th>
+                                <th width="6%">商品重量</th>
+                                <th width="6%">订购数量</th>
+                                <th width="7%">已发货数量</th>
+                                <th width="6%">单位售价</th>
+                                <th width="6%">单位成本</th>
+                                <th width="11%">单位售价包含的税金</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in order.items">
+                                <td>{{ item.externalSku }}</td>
+                                <td>{{ item.sku }}</td>
+                                <td>{{ item.externalName }}</td>
+                                <td>{{ item.name }}</td>
+                                <td>{{ item.unitWeight }}</td>
+                                <td>
+                                    <span ng-show="!item.editable">{{ item.qtyOrdered }}</span>
+                                    <div ng-show="item.editable" class="form-group has-feedback" ng-class="{'has-success':(itemForm.qtyOrdered{{$index}}.$dirty && itemForm.qtyOrdered{{$index}}.$valid), 'has-warning':(itemForm.qtyOrdered{{$index}}.$dirty && itemForm.qtyOrdered{{$index}}.$invalid) }">
+                                        <input type="number" name="qtyOrdered{{$index}}" ng-model="item.qtyOrdered" placeholder="数量(必填)" class="form-control" required min="1" />
+                                    </div>
+                                </td>
+                                <td>{{ item.qtyShipped }}</td>
+                                <td>{{ item.unitPrice | currency : '$' }}</td>
+                                <td>{{ item.unitCost | currency : '$' }}</td>
+                                <td>{{ item.unitGst | currency : '$' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

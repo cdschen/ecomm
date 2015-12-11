@@ -1,4 +1,5 @@
 var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stateParams, $filter, toastr, $timeout, $interval, purchaseOrderService, Supplier, Currency, supplierProductService) {
+
     var t = $.now();
 
     $scope.template = {
@@ -28,7 +29,7 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
     });
 
     Supplier.getAll({
-        deleted : 0
+        enabled : true
     }).then(function(suppliers) {
         $scope.suppliers = suppliers;
     });
@@ -223,8 +224,15 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
     else
     {
         $scope.purchaseOrder = {
-            items : [],
-            estimateReceiveDate : ''
+            items               :   [],
+            estimateReceiveDate :   '',
+            companyName         :   'Magic Group',
+            receiveName         :   'Candy ZHANG',
+            receivePhone        :   '0800 - 999 899  or 09-9729611',
+            receiveMobile       :   '027 652 8888',
+            receiveEmail        :   'candy@mdd.co.nz',
+            receiveAddress      :   'Magic Group Ltd (MDD).   Unit 1, 48 Ellice Road, Wairau Valley, Auckland',
+            deliverAttention    :   'Please Deliver between 11am~7pm.   Thanks for your help  :)'
         };
 
         $timeout(function()
@@ -288,6 +296,69 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
         $scope.filterSupplierProduct();
     };
 
+    /** 如果临时采购产品不为空，则是从出库哪里跳转过来的
+     */
+    if( $stateParams.purchasedProducts && $stateParams.purchasedProducts.length > 0 )
+    {
+        console.log( '$stateParams.purchasedProducts: ' );
+        console.log( $stateParams.purchasedProducts );
+        var purchasedProductsStr = $stateParams.purchasedProducts.split(';');
+        var finalPurchasedProducts = [];
+        for( var purchasedProductsStrIndex in purchasedProductsStr )
+        {
+            var purchasedProductStr = purchasedProductsStr[ purchasedProductsStrIndex].split(',');
+            var purchasedProduct = {
+                sku             :    purchasedProductStr[ 0 ],
+                purchaseQty     :    purchasedProductStr[ 1 ]
+            };
+            finalPurchasedProducts.push( purchasedProduct );
+        }
+
+        if( ! $scope.purchaseOrder.supplier )
+        {
+            $scope.purchaseOrder.supplier = {};
+        }
+        $scope.purchaseOrder.supplier.id = 76;
+
+        $timeout(function()
+        {
+            $.each( $scope.suppliers, function()
+            {
+                if( this.id === $scope.purchaseOrder.supplier.id )
+                {
+                    $scope.purchaseOrder.supplier = angular.copy( this );
+                }
+            });
+            $scope.changeSupplierConfirm();
+
+            $timeout(function()
+            {
+                $.each( $scope.supplierProducts, function()
+                {
+                    var supplierProduct = this;
+                    $.each( finalPurchasedProducts, function()
+                    {
+                        if( this.purchaseQty && supplierProduct.product && this.sku === supplierProduct.product.sku )
+                        {
+                            supplierProduct.purchaseQty = this.purchaseQty;
+                            var item =
+                            {
+                                supplierProduct : supplierProduct,
+                                purchaseQty : supplierProduct.purchaseQty,
+                                estimatePurchaseUnitPrice : supplierProduct.defaultPurchasePrice
+                            };
+                            $scope.purchaseOrder.items.push( item );
+                        }
+                    });
+                });
+            }, 300);
+
+            console.log( '$scope.purchaseOrder: ' );
+            console.log( $scope.purchaseOrder );
+
+        }, 200);
+    }
+
     /* 模糊搜索：延迟 500 毫秒，相同模糊匹配关键词则不进行搜索 */
     $scope.queryPurchaseOrderItemFuzzySearchParamHold = '';
     $scope.delayFuzzySearch = function()
@@ -347,7 +418,7 @@ var PurchaseOrderOperatorController = function($scope, $rootScope, $state, $stat
     {
         return {
             page: 0,
-            size: 2000,
+            size: 100,
             sort: ['supplierProductName,desc'],
             queryPurchaseOrderItemFuzzySearchParam: $scope.queryPurchaseOrderItemFuzzySearchParam ? $scope.queryPurchaseOrderItemFuzzySearchParam : null,
             querySupplierId: $scope.purchaseOrder.supplier ? $scope.purchaseOrder.supplier.id : null

@@ -1,0 +1,57 @@
+<div pageslide ps-open="outInventoryListSlideCheck" ps-side="left" ps-speed="0.25" ps-size="100%">
+    <div id="operator-slider">
+        <div class="panel panel-info">
+            <div class="panel-body">
+                <button type="button" class="close" ng-click="toggleOutInventoryList()">&times;</button>
+                <div class="alert alert-warning" ng-show="batch.items.length == 0">没有任何数据被检索到</div>
+                <form name="outInventoryForm" novalidate>
+                    <table class="table table-condensed" ng-show="batch.items.length > 0">
+                        <thead>
+                            <tr>
+                                <th width="15%">SKU</th>
+                                <th width="45%">商品</th>
+                                <th width="10%">库位</th>
+                                <th width="12%">出库数量</th>
+                                <th width="8%">可出库数量</th>
+                                <th width="10%">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in batch.items">
+                                <td>
+                                    {{item.product.sku}}
+                                </td>
+                                <td>
+                                    {{item.product.name}}
+                                </td>
+                                <td>
+                                    {{item.position.name}}
+                                </td>
+                                <td>
+                                    <div class="form-group has-feedback" ng-class="{'has-success':(outInventoryForm.actualQuantity.$dirty && outInventoryForm.actualQuantity.$valid), 'has-warning':(outInventoryForm.actualQuantity.$dirty && outInventoryForm.actualQuantity.$invalid) }">
+                                        <input type="number" class="form-control input-sm" name="actualQuantity" ng-model="item.actualQuantity" placeholder="" required min="1" ng-maxlength="10" max="{{item.keep}}" />
+                                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="outInventoryForm.actualQuantity.$dirty && outInventoryForm.actualQuantity.$valid"></span>
+                                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="outInventoryForm.actualQuantity.$dirty && outInventoryForm.actualQuantity.$invalid"></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    {{item.keep}}
+                                </td>
+                                <td>
+                                    <a href="" class="btn btn-danger btn-xs" ng-click="removeOutInventory(item)">从出库清单移出</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="20">
+                                    <button type="button" class="btn btn-success btn-lg pull-right" ng-click="saveOutInventory(batch)" ng-disabled="!outInventoryForm.$valid">确认出库</button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -28,7 +28,15 @@
                                 </ui-select-choices>
                             </ui-select>
                         </td>
-                        <td width="55%">
+                        <td width="15%">
+                            <ui-select ng-model="query.hasOrderBatch">
+                                <ui-select-match placeholder="请选择类型">{{$select.selected.label}}</ui-select-match>
+                                <ui-select-choices repeat="opt in isorno | filter: $select.search">
+                                    <div ng-bind-html="opt.label | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                        </td>
+                        <td width="40%">
                         </td>
                         <td width="15%">
                             <div class="form-group pull-right">
@@ -54,10 +62,10 @@
                         </th>
                         <th width="10%">店铺</th>
                         <th width="10%">订单编号</th>
-                        <th width="30%">商品名称</th>
+                        <th width="35%">商品名称</th>
                         <th width="5%">数量</th>
-                        <th width="25%">仓库</th>
-                        <th width="10%">配货信息</th>
+                        <th width="20%">仓库</th>
+                        <th width="10%">是否生成出库单</th>
                         <th width="10%" style="padding: 2px">
                             <select class="form-control input-sm" ng-change="selectOperator()" ng-model="selectOperatorValue">
                                 <option value="default">操作</option>
@@ -81,13 +89,17 @@
                             <table class="table table-condensed clear-marginbottom-table">
                                 <thead>
                                     <tr ng-repeat="item in order.items">
-                                        <td width="50%">
+                                        <td width="59%" style="font-size:12px">
                                             {{item.name}}
+                                            <p>
+                                                ({{item.product.sku}})
+                                                <span class="text-danger" ng-show="item.product.tempPurchasing">(属于临时采购商品)</span>
+                                            </p>
                                         </td>
                                         <td width="8.5%">
                                             {{item.qtyOrdered}}
                                         </td>
-                                        <td width="41.5%">
+                                        <td width="32.5%">
                                             <section ng-show="item.assignTunnel">
                                                 <ui-select ng-model="item.assignTunnel.defaultWarehouse" on-select="selectItemWarehouse(item, $item)">
                                                     <ui-select-match placeholder="请选择仓库">{{$select.selected.name}}</ui-select-match>
@@ -101,25 +113,17 @@
                                 </thead>
                             </table>
                         </td>
-                        <td></td>
+                        <td ng-switch on="order.batches.length > 0">
+                            <span class="glyphicon glyphicon-ok text-success" ng-switch-when="true"></span>
+                            <span class="glyphicon glyphicon-remove text-danger" ng-switch-when="false"></span>
+                        </td>
                         <td></td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr>
                         <td colspan="20">
-                            <nav class="page-list">
-                                <ul class="pagination pagination-sm">
-                                    <li ng-repeat="i in query.list" ng-class="{active: i.value === page.number}">
-                                        <a href="" ng-click="turnPage(i.value)">{{i.label}}</a>
-                                    </li>
-                                </ul>
-                                <div class="page-total">
-                                    共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
-                                    <select class="form-control" style="display: inline; padding:0" ng-model="query.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
-                                    </select>
-                                </div>
-                            </nav>
+                            <nav co-pagination page="page" query="query" search-data="searchData(query)" mode="input"></nav>
                         </td>
                     </tr>
                 </tfoot>

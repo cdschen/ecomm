@@ -3,12 +3,12 @@
     <li class="active">库存管理</li>
     <li class="pull-right" id="breadcrumb-li">
         <a class="btn btn-info btn-xs" ui-sref="inventory.enter({id:warehouse.selected.id})">入库</a>
-        <a class="btn btn-info btn-xs" ui-sref="inventory.out({id:warehouse.selected.id})">出库</a>
+        <!-- <a class="btn btn-info btn-xs" ui-sref="inventory.out({id:warehouse.selected.id})">出库</a> -->
         <a class="btn btn-info btn-xs">移库</a>
     </li>
 </ol>
 <div class="container-fluid">
-    <form>
+    <form name="inventoryForm" novalidate ng-submit="search(query)">
         <div class="panel panel-success">
             <div class="panel-heading">
                 <h3 class="panel-title">库存</h3>
@@ -16,14 +16,9 @@
             <table class="table table-condensed clear-marginbottom-table">
                 <thead>
                     <tr>
-                        <td width="12%">
+                        <td width="24%">
                             <div class="form-group">
-                                <input type="text" class="form-control" ng-model="p.sku" placeholder="SKU">
-                            </div>
-                        </td>
-                        <td width="12%">
-                            <div class="form-group">
-                                <input type="text" class="form-control" ng-model="p.name" placeholder="商品名称">
+                                <input type="text" ng-model="query.nameOrSku" class="form-control" placeholder="输入：SKU，商品名称">
                             </div>
                         </td>
                         <td width="16%">
@@ -34,71 +29,80 @@
                                 </ui-select-choices>
                             </ui-select>
                         </td>
-                        <td width="46%"></td>
+                        <td width="38%"></td>
+                        <td width="8%">
+                            <a href="" class="btn btn-info" ng-click="toggleOutInventoryList()">
+                                查看出库清单 <span class="badge">{{batch.items.length}}</span>
+                            </a>
+                        </td>
                         <td width="14%">
-                            <!-- <div class="form-group pull-right">
+                            <div class="form-group pull-right">
                                 <button type="reset" class="btn btn-default" ng-click="reset()">
                                     <span class="glyphicon glyphicon-refresh"></span> 重置
                                 </button>
                                 <button type="submit" class="btn btn-default">
                                     <span class="glyphicon glyphicon-search"></span> 搜索
                                 </button>
-                            </div> -->
+                            </div>
                         </td>
                     </tr>
                 </thead>
             </table>
-            <div class="panel-body" ng-show="products.length == 0">
-                <div class="alert alert-warning">
-                    没有任何数据被检索到
-                </div>
+            <div class="panel-body" ng-show="page == undefined || page.content.length == 0">
+                <div class="alert alert-warning">没有任何数据被检索到</div>
             </div>
-            <table class="table table-condensed" ng-show="products.length > 0">
+            <table class="table table-condensed" ng-show="page.content.length > 0">
                 <thead>
                     <tr>
                         <th width="12%">SKU</th>
                         <th width="18%">商品名称</th>
-                        <th width="10%">库位</th>
-                        <th width="10%">数量</th>
-                        <th width="10%">有效期</th>
-                        <th width="10%">批次</th>
-                        <th width="10%">采购单</th>
-                        <th width="10%">收货单</th>
-                        <th width="20%">库存快照</th>
+                        <th width="8.75%">库位</th>
+                        <th width="8.75%">数量</th>
+                        <th width="8.75%">有效期</th>
+                        <th width="8.75%">批次</th>
+                        <th width="8.75%"></th>
+                        <th width="8.75%"></th>
+                        <th width="8.75%"></th>
+                        <th width="10%">库存快照</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="product in products | filter:{sku: p.sku, name: p.name}">
+                    <tr ng-repeat="product in products">
                         <td>
                             {{product.sku}}
                         </td>
                         <td>
                             {{product.name}}
                         </td>
-                        <td colspan="6">
+                        <td colspan="7">
                             <table class="table table-condensed clear-marginbottom-table">
                                 <thead>
                                     <tr ng-repeat="detail in product.details">
-                                        <td width="16.6%">
+                                        <td width="14.28%">
                                             {{detail.position.name}}
                                         </td>
-                                        <td width="16.6%">
+                                        <td width="14.28%">
                                             {{detail.quantity}}
                                         </td>
-                                        <td width="16.6%">
+                                        <td width="14.28%">
                                             {{detail.expireDate | date:'yyyy-MM-dd'}}
                                         </td>
-                                        <td width="16.6%">
+                                        <td width="14.28%">
                                             {{detail.batchId}}
                                         </td>
-                                        <td width="16.6%">
+                                        <td width="14.28%">
                                             <a ui-sref="purchaseOrder.operator({id:detail.purchaseOrderId})" class="btn btn-info btn-xs">
                                                 <span class="glyphicon glyphicon-search"></span> 采购单
                                             </a>
                                         </td>
-                                        <td width="16.6%">
+                                        <td width="14.28%">
                                             <a ui-sref="purchaseOrderDelivery.receive({id:detail.receiveId})" class="btn btn-info btn-xs">
                                                 <span class="glyphicon glyphicon-search"></span> 收货单
+                                            </a>
+                                        </td>
+                                        <td width="14.28%">
+                                            <a href="" class="btn btn-danger btn-xs" ng-click="addOutInventory(product, detail)" ng-show="!detail.enteredOutInventoryList">
+                                                <span class="glyphicon glyphicon-plus"></span> 加入出库清单
                                             </a>
                                         </td>
                                     </tr>
@@ -107,10 +111,7 @@
                                         <td>
                                             <span class="text-success">总共：{{product.total}}</span>
                                         </td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td colspan="6"></td>
                                     </tr>
                                 </thead>
                             </table>
@@ -122,8 +123,27 @@
                         </td>
                     </tr>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="20">
+                            <nav class="page-list">
+                                <ul class="pagination pagination-sm">
+                                    <li ng-repeat="i in query.list" ng-class="{active: i.value === page.number}">
+                                        <a href="" ng-click="turnPage(i.value)">{{i.label}}</a>
+                                    </li>
+                                </ul>
+                                <div class="page-total">
+                                    共 <strong>{{ page.totalElements }}</strong> 条, 每页显示
+                                    <select class="form-control" style="display: inline; padding:0" ng-model="query.size" ng-options="value for value in [10, 20, 30, 40, 50]" ng-change="turnPage(0)">
+                                    </select>
+                                </div>
+                            </nav>
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </form>
 </div>
+<section ng-include="template.outInventoryList.url"></section>
 <section ng-include="template.snapshot.url"></section>

@@ -21,6 +21,7 @@ angular.module('ecommApp')
             product: undefined,
             warehouse: undefined,
             position: undefined,
+            outBatch: undefined,
             user: $rootScope.user(),
             changedQuantity: 1,
             expireDate: undefined
@@ -92,38 +93,62 @@ angular.module('ecommApp')
                     }
                 });
             }
-        }).then(function() {
-            if ($scope.batch.warehouse) {
-                Inventory.getAll({
-                    warehouseId: $scope.batch.warehouse.id,
-                    sort: ['productId', 'inventoryBatchId']
-                }).then(function(inventories) {
-                    $scope.products = Inventory.refresh(inventories);
-                });
-            }
         });
 
-        $scope.changeWarehouse = function($item) {
+        // .then(function() {
+        //     if ($scope.batch.warehouse) {
+        //         Inventory.getAll({
+        //             warehouseId: $scope.batch.warehouse.id,
+        //             sort: ['productId', 'inventoryBatchId']
+        //         }).then(function(inventories) {
+        //             $scope.products = Inventory.refresh(inventories);
+        //         });
+        //     }
+        // });
+
+
+
+        $scope.changeWarehouse = function() {
             $scope.batch.items.length = 0;
-            Inventory.getAll({
-                warehouseId: $item.id,
-                sort: ['productId', 'inventoryBatchId']
-            }).then(function(inventories) {
-                $scope.products = Inventory.refresh(inventories);
-                $scope.item = angular.copy($scope.defaultItem);
-                setBatches($scope.item);
-                setKeepQuantity($scope.item);
+            // Inventory.getAll({
+            //     warehouseId: $item.id,
+            //     sort: ['productId', 'inventoryBatchId']
+            // }).then(function(inventories) {
+            //     $scope.products = Inventory.refresh(inventories);
+            //     $scope.item = angular.copy($scope.defaultItem);
+            //     setBatches($scope.item);
+            //     setKeepQuantity($scope.item);
+            // });
+        };
+
+        $scope.getProduct = function(val) {
+            return Product.get({
+                page: 0,
+                size: 30,
+                enabled: true,
+                nameOrSku: val
+            }).$promise.then(function(page) {
+                return page.content;
             });
         };
 
-        $scope.changeProduct = function($item) {
-            console.log('选择商品');
-            console.log($item);
-            $scope.item.position = undefined;
-            $scope.item.outBatch = undefined;
-            setBatches($scope.item);
-            setKeepQuantity($scope.item);
-        };
+        $scope.$watch('item.product', function(product) {
+            if (product && product.id) {
+                console.log('选中了一个商品');
+                Inventory.getAll({
+                    warehouseId: $scope.batch.warehouse.id,
+                    productIds: product.id,
+                    sort: ['productId', 'inventoryBatchId']
+                }).then(function(inventories) {
+                    $scope.products = Inventory.refresh(inventories);
+                    $scope.item = angular.copy($scope.defaultItem);
+                    setBatches($scope.item);
+                    setKeepQuantity($scope.item);
+                });
+            } else {
+                console.log('还只是字符串');
+            }
+        });
 
         $scope.changePosition = function($item) {
             console.log('选择库位');

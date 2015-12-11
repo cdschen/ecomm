@@ -1,0 +1,45 @@
+<div pageslide ps-open="purchaseDetailsSlideChecked" ps-side="left" ps-speed="0.25" ps-size="100%">
+    <div id="operator-slider">
+        <div class="panel panel-info">
+            <div class="panel-body">
+                <button type="button" class="close" ng-click="togglePurchaseDetailsSlide()">&times;</button>
+                <h4 class="text-success">
+                    <strong>临时采购商品列表</strong>
+                </h4>
+                <form name="purchaseOutInventoryForm" novalidate ng-submit="doPurchase()">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th width="20%">SKU</th>
+                                <th width="60%">商品名称</th>
+                                <th width="20%">购买数量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="product in products">
+                                <td>
+                                    {{product.sku}}
+                                </td>
+                                <td>
+                                    {{product.name}}
+                                </td>
+                                <td>
+                                    <div class="form-group has-feedback" ng-class="{'has-success':(purchaseOutInventoryForm.purchaseQty.$dirty && purchaseOutInventoryForm.purchaseQty.$valid), 'has-warning':(purchaseOutInventoryForm.purchaseQty.$dirty && purchaseOutInventoryForm.purchaseQty.$invalid) }">
+                                        <input type="number" class="form-control" name="purchaseQty" ng-model="product.purchaseQty" placeholder="(必填购买数量)" required min="1" ng-maxlength="5" />
+                                        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="purchaseOutInventoryForm.purchaseQty.$dirty && purchaseOutInventoryForm.purchaseQty.$valid"></span>
+                                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" ng-show="purchaseOutInventoryForm.purchaseQty.$dirty && purchaseOutInventoryForm.purchaseQty.$invalid"></span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-md-2 col-md-offset-10">
+                            <button type="submit" class="btn btn-success btn-lg pull-right" >确认购买</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,9 +1,11 @@
 package com.sooeez.ecomm.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sooeez.ecomm.domain.PurchaseOrder;
 import com.sooeez.ecomm.domain.PurchaseOrderDelivery;
 import com.sooeez.ecomm.domain.PurchaseOrderDeliveryItem;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
+import com.sooeez.ecomm.dto.PageDTO;
 import com.sooeez.ecomm.service.PurchaseOrderDeliveryService;
 
 @RestController
@@ -38,8 +42,21 @@ public class PurchaseOrderDeliveryController {
 	}
 	
 	@RequestMapping(value = "/purchaseorderdeliveries")
-	public Page<PurchaseOrderDelivery> getPagedPurchaseOrderDeliverys(PurchaseOrderDelivery purchaseOrderDelivery, Pageable pageable) {
-		return this.purchaseOrderDeliveryService.getPagedPurchaseOrderDeliverys(purchaseOrderDelivery, pageable);
+	public PageDTO<PurchaseOrderDelivery> getPagedPurchaseOrderDeliverys(PurchaseOrderDelivery purchaseOrderDelivery, Pageable pageable) {
+		Page<PurchaseOrderDelivery> page = this.purchaseOrderDeliveryService.getPagedPurchaseOrderDeliverys( purchaseOrderDelivery, pageable );
+		PageDTO<PurchaseOrderDelivery> pageDTO = new PageDTO<>();
+		BeanUtils.copyProperties( page, pageDTO, "content", "sort" );
+		List<PurchaseOrderDelivery> fpods = new ArrayList<>();
+		page.getContent().forEach( opod ->
+		{
+			PurchaseOrderDelivery fpod = new PurchaseOrderDelivery();
+			BeanUtils.copyProperties( opod, fpod, "batches", "items" );
+			fpod.setEnteredQty(purchaseOrderDeliveryService.getEnteredQty(fpod.getId().longValue()));
+			fpod.setEnterableQty(purchaseOrderDeliveryService.getEnterableQty(fpod.getId().longValue()));
+			fpods.add( fpod );
+		});
+		pageDTO.setContent( fpods );
+		return pageDTO;
 	}
 	
 	@RequestMapping(value = "/purchaseorderdeliveries/confirm/complete/operation-review")

@@ -38,6 +38,7 @@ angular.module('ecommApp')
 
         $scope.save = function(product) {
             product.productType = product.productType.value;
+            product.tempPurchasing = product.tempPurchasing.value;
             if (product.productType === 0) {
                 product.members.length = 0;
             }

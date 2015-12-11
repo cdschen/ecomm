@@ -12,6 +12,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.Predicate;
 
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,16 +27,22 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.sooeez.ecomm.domain.OrderItem;
+import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.PurchaseOrder;
 import com.sooeez.ecomm.domain.PurchaseOrderDelivery;
 import com.sooeez.ecomm.domain.PurchaseOrderDeliveryItem;
 import com.sooeez.ecomm.domain.PurchaseOrderItem;
+import com.sooeez.ecomm.domain.Shipment;
+import com.sooeez.ecomm.domain.ShipmentItem;
+import com.sooeez.ecomm.domain.Supplier;
 import com.sooeez.ecomm.domain.SupplierProduct;
 import com.sooeez.ecomm.domain.User;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
 import com.sooeez.ecomm.repository.PurchaseOrderDeliveryItemRepository;
 import com.sooeez.ecomm.repository.PurchaseOrderDeliveryRepository;
 import com.sooeez.ecomm.repository.PurchaseOrderRepository;
+import com.sooeez.ecomm.repository.SupplierProductRepository;
 
 @Service
 public class PurchaseOrderDeliveryService {
@@ -38,6 +52,8 @@ public class PurchaseOrderDeliveryService {
 	@Autowired PurchaseOrderRepository purchaseOrderRepository;
 	
 	@Autowired PurchaseOrderDeliveryItemRepository purchaseOrderDeliveryItemRepository;
+	
+	@Autowired SupplierProductRepository supplierProductRepository;
 	
 	// Service
 	@PersistenceContext private EntityManager em;
@@ -74,6 +90,31 @@ public class PurchaseOrderDeliveryService {
 			 */
 			for(PurchaseOrderDeliveryItem item : purchaseOrderDelivery.getItems() )
 			{
+				if( item.getSupplierProduct() != null && ! item.getSupplierProduct().getSupplierProductCode().trim().equals("") )
+				{
+					String supplierProductSQL = "SELECT * FROM t_supplier_product " +
+											 "WHERE supplier_product_code = ?1";
+					Query supplierProductQuery = em.createNativeQuery( supplierProductSQL, SupplierProduct.class );
+					supplierProductQuery.setParameter( 1, item.getSupplierProduct().getSupplierProductCode() );
+					
+					/** 如果不存在该［供应商编码］的［供应商产品］
+					 */
+					if( supplierProductQuery.getResultList().size() < 1 )
+					{
+						/** 获取该收货单对应的供应商编号
+						 */
+						User creator = new User();
+						creator.setId( purchaseOrderDelivery.getReceiveUser().getId() );
+						Supplier supplier = new Supplier();
+						supplier.setId( purchaseOrder.getSupplier().getId() );
+						item.getSupplierProduct().setSupplier( supplier );
+						item.getSupplierProduct().setCreator( creator );
+						
+						this.supplierProductRepository.save( item.getSupplierProduct() );
+					}
+					
+				}
+				
 				BigDecimal realPurchaseUnitPrice = item.getRealPurchaseUnitPrice() != null ? item.getRealPurchaseUnitPrice() : new BigDecimal( 0 );
 				Long receiveQty = item.getReceiveQty() != null ? item.getReceiveQty() : 0L;
 				
@@ -159,10 +200,13 @@ public class PurchaseOrderDeliveryService {
 	public void setConfirmable(OperationReviewDTO review)
 	{
 		/* 如果验证全都通过 */
-		if( ! review.getCheckMap().get("emptyPurchaseUnitPriceError") &&
+		if
+		(
+			! review.getCheckMap().get("emptyPurchaseUnitPriceError") &&
 			! review.getCheckMap().get("emptyReceiveQtyError") &&
 			! review.getCheckMap().get("differentReceiveQtyError") &&
-			! review.getCheckMap().get("isStatusObsoleteError") )
+			! review.getCheckMap().get("isStatusObsoleteError")
+		)
 		{
 			review.setConfirmable( true );
 		}
@@ -196,7 +240,8 @@ public class PurchaseOrderDeliveryService {
 			}
 			
 			/* 如果有一个验证不通过 */
-			if(
+			if
+			(
 				isEmptyPurchaseUnitPriceError ||
 				isEmptyReceiveQtyError ||
 				isDifferentReceiveQtyError ||
@@ -306,9 +351,12 @@ public class PurchaseOrderDeliveryService {
 						if( ! purchaseOrderItem.getIgnoreCheck() )
 						{
 							/* 如果［实际采购单价］为空或者［实际采购单价］小于或者等于 0，则采购单价为空 */
-							if( purchaseOrderItem.getRealPurchaseUnitPrice() == null ||
+							if
+							(
+								purchaseOrderItem.getRealPurchaseUnitPrice() == null ||
 								purchaseOrderItem.getRealPurchaseUnitPrice().compareTo(BigDecimal.ZERO) == -1 ||
-								purchaseOrderItem.getRealPurchaseUnitPrice().compareTo(BigDecimal.ZERO) == 0 )
+								purchaseOrderItem.getRealPurchaseUnitPrice().compareTo(BigDecimal.ZERO) == 0
+							)
 							{
 								purchaseOrderItem.getCheckMap().put("emptyPurchaseUnitPriceError", true);
 								isAnyError = true;
@@ -377,8 +425,11 @@ public class PurchaseOrderDeliveryService {
 						if( ! purchaseOrderItem.getIgnoreCheck() )
 						{
 							/* 如果［待收货数量］为空或者［实际收货数量］为空或者［待收货数量］和［实际收货数量］不相等，则商品实际收货数量不匹配 */
-							if( purchaseOrderItem.getPendingQty() == null || purchaseOrderItem.getRealReceivedQty() == null ||
-								purchaseOrderItem.getPendingQty() != purchaseOrderItem.getRealReceivedQty() )
+							if
+							(
+								purchaseOrderItem.getPendingQty() == null || purchaseOrderItem.getRealReceivedQty() == null ||
+								purchaseOrderItem.getPendingQty() != purchaseOrderItem.getRealReceivedQty()
+							)
 							{
 								purchaseOrderItem.getCheckMap().put("differentReceiveQtyError", true);
 								isAnyError = true;
@@ -480,10 +531,13 @@ public class PurchaseOrderDeliveryService {
 				for( PurchaseOrderItem purchaseOrderItem : purchaseOrder.getItems() )
 				{
 					/* 待收货数量,实际收货数量,Credit数量,等back order数量任意一个不等于空且大于0，则该［收货单］可插入 */
-					if( ( purchaseOrderItem.getPendingQty() != null && purchaseOrderItem.getPendingQty() > 0 ) ||
+					if
+					(
+						( purchaseOrderItem.getPendingQty() != null && purchaseOrderItem.getPendingQty() > 0 ) ||
 						( purchaseOrderItem.getRealReceivedQty() != null && purchaseOrderItem.getRealReceivedQty() > 0 ) ||
 						( purchaseOrderItem.getCreditQty() != null && purchaseOrderItem.getCreditQty() > 0 ) ||
-						( purchaseOrderItem.getBackOrderQty() != null && purchaseOrderItem.getBackOrderQty() > 0 ) )
+						( purchaseOrderItem.getBackOrderQty() != null && purchaseOrderItem.getBackOrderQty() > 0 )
+					)
 					{
 						SupplierProduct insertableSupplierProduct = new SupplierProduct();
 //						PurchaseOrderItem insertablePurchaseOrderItem = new PurchaseOrderItem();
@@ -611,8 +665,27 @@ public class PurchaseOrderDeliveryService {
 		
 	}
 	
+	// 得到这张收货单已入库的数量
+	public Long getEnteredQty(Long receiveId) {
+		
+		String sqlString = "SELECT sum(changed_quantity) FROM t_inventory_batch_item WHERE inventory_batch_id IN (SELECT id FROM t_inventory_batch WHERE receive_id = " + receiveId + ")";
+		System.out.println("sqlString: " + sqlString);
+		Object obj = em.createNativeQuery(sqlString).getSingleResult();
+		Long count = Long.valueOf(obj == null ? "0" : obj.toString());
+		System.out.println("getEnteredQty(): " + count);
+		return count;
+	}
 	
-
+	// 得到这张收货单应入库的数量
+	
+	public Long getEnterableQty(Long receiveId) {
+		String sqlString = "select sum(receive_qty) from t_purchase_order_delivery_item where purchase_order_delivery_id = " + receiveId;
+		System.out.println("sqlString: " + sqlString);
+		Long count = Long.valueOf(em.createNativeQuery(sqlString).getSingleResult().toString());
+		System.out.println("getEnterableQty(): " + count);
+		return count;
+	}
+	
 	/*
 	 * PurchaseOrderDeliveryItem
 	 */
@@ -636,5 +709,126 @@ public class PurchaseOrderDeliveryService {
 	public Page<PurchaseOrderDeliveryItem> getPagedPurchaseOrderDeliveryItems(Pageable pageable) {
 		return this.purchaseOrderDeliveryItemRepository.findAll(pageable);
 	}
+	
+	public void addPurchaseOrderDeliveryToCell( PurchaseOrder purchaseOrder, Workbook workbook, Sheet sheet )
+	{
+    	Row firstRow = sheet.getRow( 0 );
+    	CellReference a1 = new CellReference("A1");
+    	Cell orderFromRowCell = firstRow.getCell( a1.getCol() );
+    	
+    	orderFromRowCell.setCellValue( "Order From: " + ( purchaseOrder.getSupplier() != null ? purchaseOrder.getSupplier().getName() : "" ) );
+    	CellReference d1 = new CellReference("D1");
+    	Cell estimateReceiveDateRowCell = firstRow.getCell( d1.getCol() );
+    	
+    	estimateReceiveDateRowCell.setCellValue( "到货日期: " + ( purchaseOrder.getEstimateReceiveDate() != null ? new SimpleDateFormat("yyyy-MM-dd").format( purchaseOrder.getEstimateReceiveDate() ) : "" ) );
+
+    	Font itemContentFont = workbook.createFont();
+    	itemContentFont.setColor( HSSFColor.BLACK.index );
+    	itemContentFont.setBold( false );
+    	itemContentFont.setFontName("宋体");
+    	itemContentFont.setFontHeightInPoints( (short) 12 );
+    	
+    	CellStyle itemContentCommonStyle = workbook.createCellStyle();
+    	itemContentCommonStyle.setWrapText( true );
+    	itemContentCommonStyle.setFont( itemContentFont );
+    	itemContentCommonStyle.setBorderBottom( CellStyle.BORDER_THIN );
+    	itemContentCommonStyle.setBorderLeft( CellStyle.BORDER_THIN );
+    	itemContentCommonStyle.setBorderRight( CellStyle.BORDER_THIN );
+    	itemContentCommonStyle.setBorderTop( CellStyle.BORDER_THIN );
+    	
+    	/* 添加收货单详情
+    	 */
+    	List<PurchaseOrderItem> purchaseOrderItems = purchaseOrder.getItems();
+    	if( purchaseOrderItems != null && purchaseOrderItems.size() > 0 )
+    	{
+    		for( int i = 0; i < purchaseOrderItems.size(); i++ )
+    		{
+    			PurchaseOrderItem item = purchaseOrderItems.get( i );
+    			
+    			String productName = item.getSupplierProduct() != null && item.getSupplierProduct().getSupplierProductName() != null ? item.getSupplierProduct().getSupplierProductName() : " ";
+    			if( productName.trim().equals("") )
+    			{
+    				productName = item.getSupplierProduct() != null && item.getSupplierProduct().getProduct() != null && item.getSupplierProduct().getProduct().getShortName() != null ? item.getSupplierProduct().getProduct().getShortName() : " ";
+        			if( productName.trim().equals("") )
+        			{
+        				productName = item.getSupplierProduct() != null && item.getSupplierProduct().getProduct() != null && item.getSupplierProduct().getProduct().getName() != null ? item.getSupplierProduct().getProduct().getName() : " ";
+        			}
+    			}
+    			
+    			String barcode = item.getSupplierProduct() != null && item.getSupplierProduct().getSupplierProductBarcode() != null ? item.getSupplierProduct().getSupplierProductBarcode() : " ";
+    			if( barcode.trim().equals("") )
+    			{
+    				barcode = item.getSupplierProduct() != null && item.getSupplierProduct().getProduct() != null ? item.getSupplierProduct().getProduct().getBarcode() : " ";
+    			}
+    			String purchaseQty = item.getPurchaseQty() != null ? item.getPurchaseQty().toString() : "";
+
+    			Row contentRow = sheet.createRow( i + 2 );
+    	    	
+	        	setCell( contentRow, null, productName, 0 );
+	        	setCell( contentRow, null, barcode, 1 );
+	        	setCell( contentRow, null, purchaseQty, 2 );
+    		}
+    	}
+	}
+
+	public void addShipmentToCell( Shipment shipment, Sheet sheet, CellStyle contentStyle, Integer rowIndex )
+	{
+    	/* 如果存在指定发货单 */
+    	if( shipment != null )
+    	{
+    		StringBuffer shippedProductsBuffer = new StringBuffer();
+    		
+    		List<ShipmentItem> shipmentItems = shipment.getShipmentItems();
+    		if( shipmentItems != null && shipmentItems.size() > 0 )
+    		{
+    			for( int i = 0; i < shipmentItems.size(); i++ )
+    			{
+    				if( ! shippedProductsBuffer.toString().equals("") )
+    				{
+    					shippedProductsBuffer.append(", ");
+    				}
+    				OrderItem orderItem = shipmentItems.get( i ).getOrderItem();
+    				if( orderItem != null && orderItem.getProduct() != null )
+    				{
+    					Product product = orderItem.getProduct();
+    					shippedProductsBuffer.append( product.getShortName() );
+    					shippedProductsBuffer.append( "*" );
+    					shippedProductsBuffer.append( orderItem.getQtyOrdered() );
+//    					shippedProductsBuffer.append( "\n" );
+    				}
+    			}
+    		}
+    		
+    		String[] contents =
+    		{
+    			shipment.getReceiveName(), shipment.getReceivePhone(), shipment.getReceivePhone(), shipment.getReceiveAddress(),
+    			shippedProductsBuffer.toString(), shipment.getOrderId().toString(), shipment.getShipNumber(),
+    			shipment.getId().toString(), /* this.getShipStatusByTinyint( shipment.getShipStatus() ) */ "正常" , shipment.getMemo()
+    		};
+    		
+        	Row contentRow = sheet.createRow( rowIndex );
+        	for( int i = 0; i < contents.length; i++ )
+        	{
+            	Cell cell = contentRow.createCell( i );
+            	
+            	/* 如果是
+            	 */
+//            	if( i == 0 || i == 3 || i == 4 )
+//            	{
+                	cell.setCellStyle( contentStyle );
+//            	}
+            	cell.setCellValue( contents[ i ] );
+        	}
+    	}
+	}
+	
+	public void setCell( Row row, CellStyle cellStyle, String cellValue, Integer index )
+	{
+    	Cell cell = row.createCell( index );
+    	cell.setCellStyle( cellStyle );
+    	cell.setCellValue( cellValue );
+	}
+	
+	
 	
 }

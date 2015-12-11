@@ -91,6 +91,14 @@ public class PurchaseOrderDelivery implements Serializable {
 	@Transient
 	private String queryReceiveTimeEnd;
 
+	// 应入库数量
+	@Transient
+	private Long enterableQty = 0L;
+
+	// 已入库数量
+	@Transient
+	private Long enteredQty = 0L;
+
 	/*
 	 * Constructor
 	 */
@@ -206,5 +214,21 @@ public class PurchaseOrderDelivery implements Serializable {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-	
+
+	public Long getEnterableQty() {
+		return enterableQty;
+	}
+
+	public void setEnterableQty(Long enterableQty) {
+		this.enterableQty = enterableQty;
+	}
+
+	public Long getEnteredQty() {
+		return enteredQty;
+	}
+
+	public void setEnteredQty(Long enteredQty) {
+		this.enteredQty = enteredQty;
+	}
+
 }

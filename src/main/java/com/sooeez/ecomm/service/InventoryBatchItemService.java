@@ -57,7 +57,7 @@ public class InventoryBatchItemService {
 	}
 	
 	private Specification<InventoryBatchItem> getBatchItemSpecification(InventoryBatchItem item) {
-
+		
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			if (item.getId() != null) {
@@ -93,7 +93,7 @@ public class InventoryBatchItemService {
 				predicates.add(cb.in(root.get("productId")).value(productSubquery));
 			}
 			if (item.getWarehouseIds() != null && item.getWarehouseIds().length > 0) {
-				predicates.add(cb.in(root.get("warehouseId")).value(item.getWarehouseIds()));
+				predicates.add(root.get("warehouseId").in((Object[]) item.getWarehouseIds()));
 			}
 			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 		};

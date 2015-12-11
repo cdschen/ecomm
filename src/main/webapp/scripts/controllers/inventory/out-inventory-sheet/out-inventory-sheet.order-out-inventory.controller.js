@@ -1,7 +1,7 @@
 angular.module('ecommApp')
 
-.controller('OrderOutInventoryController', ['$rootScope', '$scope', 'toastr', 'Warehouse', 'Shop', 'orderService', 'Utils', 'OrderItem', 'Auth',
-    function($rootScope, $scope, toastr, Warehouse, Shop, orderService, Utils, OrderItem, Auth) {
+.controller('OrderOutInventoryController', ['$rootScope', '$scope', 'toastr', 'Warehouse', 'Shop', 'orderService', 'OrderItem', 'Auth',
+    function($rootScope, $scope, toastr, Warehouse, Shop, orderService, OrderItem, Auth) {
 
         var t = $.now();
 
@@ -11,11 +11,21 @@ angular.module('ecommApp')
             }
         };
 
+        $scope.isorno = [{
+            label: '未生成出库单的订单',
+            value: true
+        }, {
+            label: '无条件',
+            value: false
+        }];
+
         $scope.defaultQuery = {
-            size: 20,
+            page: 0,
+            size: 100,
             sort: ['internalCreateTime,desc'],
             warehouse: undefined,
-            shop: undefined
+            shop: undefined,
+            hasOrderBatch: $scope.isorno[1]
         };
 
         $scope.query = angular.copy($scope.defaultQuery);
@@ -25,15 +35,16 @@ angular.module('ecommApp')
 
         $scope.confirmOutInventorySheetSlideChecked = false;
 
-        $scope.searchData = function(query, number) {
+        $scope.searchData = function(query) {
             orderService.getPagedOrdersForOrderDeploy({
-                page: number ? number : 0,
+                page: query.page,
                 size: query.size,
                 sort: query.sort,
                 warehouseId: $scope.query.warehouse ? $scope.query.warehouse.id : null,
                 warehouseIds: Auth.refreshManaged('warehouse'),
                 shopId: $scope.query.shop ? $scope.query.shop.id : null,
                 shopIds: Auth.refreshManaged('shop'),
+                hasOrderBatch: query.hasOrderBatch.value,
                 deleted: false
             }).then(function(page) {
                 console.log(page);
@@ -41,7 +52,6 @@ angular.module('ecommApp')
                     orderService.checkItemProductShopTunnel(this);
                 });
                 $scope.page = page;
-                Utils.initList(page, query);
                 $scope.selectAll = false;
             });
         };
@@ -63,12 +73,6 @@ angular.module('ecommApp')
         }).then(function() {
             $scope.searchData($scope.query);
         });
-
-        $scope.turnPage = function(number) {
-            if (number > -1 && number < $scope.page.totalPages) {
-                $scope.searchData($scope.query, number);
-            }
-        };
 
         $scope.search = function(query) {
             $scope.searchData(query);

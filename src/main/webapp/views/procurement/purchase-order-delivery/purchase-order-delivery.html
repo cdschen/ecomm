@@ -2,7 +2,10 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">收货单管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="purchaseOrderDelivery.purchaseOrderDeliveryGenerate">创建收货单</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="purchaseOrderDelivery.purchaseOrderDeliveryGenerate">
+            <span class="glyphicon glyphicon-plus-sign"></span>
+            创建收货单
+        </a>
     </li>
 </ol>
 <div class="container-fluid">
@@ -67,11 +70,11 @@
                     <th width="21%">收货仓库</th>
                     <th width="8%">收货单号</th>
                     <th width="8%">采购单号</th>
-                    <th width="15%">状态</th>
+                    <th width="10%">状态</th>
                     <th width="15%">已入库/应入库</th>
                     <th width="15%">收货时间</th>
                     <th width="10%">收货人</th>
-                    <th width="8%" style="padding: 2px">
+                    <th width="13%" style="padding: 2px">
                         <select class="form-control input-sm" ng-change="batchManipulation()" ng-model="batchManipulationValue">
                             <option selected="selected" value="batchManipulation">批量操作</option>
                         </select>
@@ -110,7 +113,7 @@
                         {{ purchaseOrderDelivery.receiveUser.username }}
                     </td>
                     <td>
-                        <a ui-sref="purchaseOrderDelivery.enterInventory({id:purchaseOrderDelivery.id})" class="btn btn-info btn-xs">
+                        <a has-any-role="SYSTEM_ADMIN,INVENTORY_ADMIN" ui-sref="purchaseOrderDelivery.enterInventory({id:purchaseOrderDelivery.id})" class="btn btn-info btn-xs">
                             <span class="glyphicon glyphicon-edit"></span> 入库
                         </a>
                     </td>

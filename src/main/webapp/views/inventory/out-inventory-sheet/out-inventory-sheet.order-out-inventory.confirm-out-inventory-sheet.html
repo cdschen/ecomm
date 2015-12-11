@@ -64,7 +64,7 @@
                                                 </div>
                                                 <div ng-switch-when="true" ng-switch on="operationReview().ignoredMap.productInventoryNotEnough">
                                                     <div class="btn btn-warning btn-xs pull-right" ng-switch-when="true" ng-click="recoverConfirm('productInventoryNotEnough')">
-                                                        <span class="glyphicon glyphicon-warning-sign"></span> 回复验证
+                                                        <span class="glyphicon glyphicon-warning-sign"></span> 恢复验证
                                                     </div>
                                                     <div class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="cancelConfirm('productInventoryNotEnough')">
                                                         <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
@@ -83,7 +83,7 @@
                                                 </div>
                                                 <div ng-switch-when="true" ng-switch on="operationReview().ignoredMap.orderExistOutInventorySheet">
                                                     <div class="btn btn-warning btn-xs pull-right" ng-switch-when="true" ng-click="recoverConfirm('orderExistOutInventorySheet')">
-                                                        <span class="glyphicon glyphicon-warning-sign"></span> 回复验证
+                                                        <span class="glyphicon glyphicon-warning-sign"></span> 恢复验证
                                                     </div>
                                                     <div class="btn btn-warning btn-xs pull-right" ng-switch-when="false" ng-click="cancelConfirm('orderExistOutInventorySheet')">
                                                         <span class="glyphicon glyphicon-warning-sign"></span> 取消验证
@@ -133,6 +133,10 @@
                                         <tr ng-class="{'active': order.ignoreCheck}" ng-repeat="item in order.items">
                                             <td width="53%">
                                                 {{item.name}}
+                                                <p>
+                                                    {{item.product.sku}}
+                                                    <span class="text-danger" ng-show="item.product.tempPurchasing">(属于临时采购商品)</span>
+                                                </p>
                                             </td>
                                             <td width="14.5%">
                                                 {{item.qtyOrdered}}

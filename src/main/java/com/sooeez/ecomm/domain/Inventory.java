@@ -87,6 +87,9 @@ public class Inventory implements Serializable {
 	@Transient
 	private List<Long> productIds;
 
+	@Transient
+	private String nameOrSku;
+
 	/*
 	 * Constructor
 	 */
@@ -200,6 +203,14 @@ public class Inventory implements Serializable {
 
 	public void setWarehouse(Warehouse warehouse) {
 		this.warehouse = warehouse;
+	}
+
+	public String getNameOrSku() {
+		return nameOrSku;
+	}
+
+	public void setNameOrSku(String nameOrSku) {
+		this.nameOrSku = nameOrSku;
 	}
 
 }

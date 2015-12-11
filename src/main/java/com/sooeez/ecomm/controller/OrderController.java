@@ -47,9 +47,14 @@ public class OrderController {
 		return this.orderService.getPagedOrdersForOrderDeploy(order, pageable);
 	}
 	
+	@RequestMapping(value = "/orders/deployed/shipments")
+	public Page<Order> getDeployed(Order order, Pageable pageable) {
+		return this.orderService.getPagedOrdersForOrderDeploy(order, pageable);
+	}
+	
 	@RequestMapping(value = "/orders/confirm/shipment")
-	public OperationReviewDTO confirmOrderWhenGenerateShipment(@RequestBody OperationReviewDTO review) {
-		return this.orderService.confirmOrderWhenGenerateShipment(review);
+	public OperationReviewDTO confirmOrderWhenGenerateShipment(@RequestBody OperationReviewDTO review, Pageable pageable) {
+		return this.orderService.confirmOrderWhenGenerateShipment( review, pageable);
 	}
 	
 	@RequestMapping(value = "/orders/confirm/outinventory", method = RequestMethod.POST)

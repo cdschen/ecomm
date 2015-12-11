@@ -2,7 +2,10 @@
     <li><a ui-sref="dashboard">首页</a></li>
     <li class="active">采购单管理</li>
     <li class="pull-right" id="breadcrumb-li">
-        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="purchaseOrder.operator">创建采购单</a>
+        <a href="javascript:void(0)" class="btn btn-info btn-xs" ui-sref="purchaseOrder.operator">
+            <span class="glyphicon glyphicon-plus-sign"></span>
+            创建采购单
+        </a>
     </li>
 </ol>
 <div class="container-fluid">
@@ -204,9 +207,13 @@
                     </td>
                     <td style="text-align: center;">
                         <a ui-sref="purchaseOrder.operator({id:purchaseOrder.id})" class="btn btn-info btn-xs" ng-hide="purchaseOrder.status == 2 || purchaseOrder.status == 3">
-                            <span class="glyphicon glyphicon-edit"></span> 编辑
+                            <span class="glyphicon glyphicon-edit"></span>
+                            编辑
                         </a>
-                        <a ng-href="/api/purchaseOrder/export?id={{ purchaseOrder.id }}" class="btn btn-xs btn-info">导出</a>
+                        <a ng-href="/api/purchaseOrder/export?id={{ purchaseOrder.id }}" class="btn btn-xs btn-info">
+                            <span class="glyphicon glyphicon-save-file"></span>
+                            导出
+                        </a>
                         <!-- 已收货，则不能被作废 -->
                         <a class="btn btn-danger btn-xs" ng-hide="purchaseOrder.status == 2 || purchaseOrder.status == 3" ng-click="showObsoletePurchaseOrderModal( purchaseOrder )">作废</a>
                     </td>

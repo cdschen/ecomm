@@ -47,19 +47,25 @@
                                     </tr>
                                 </thead>
                             </table>
-                            <div style="overflow:auto; height:484px;">
-                                <table class="table">
+                            <div style="overflow-y:auto; overflow-x:hidden; height:430px;">
+                                <table class="table" style="word-wrap:break-word; table-layout:fixed;">
                                     <tbody>
                                         <tr ng-repeat="supplierProduct in supplierProducts" class="pagination-ul" >
                                             <td width="20%">
-                                                sku:{{ supplierProduct.product ? supplierProduct.product.sku : '' }}<br/>
-                                                条码:{{ supplierProduct.product ? supplierProduct.product.barcode : supplierProduct.supplierProductBarcode }}
+                                                <p style="word-break:normal;">
+                                                    sku:{{ supplierProduct.product ? supplierProduct.product.sku : '' }}<br/>
+                                                    条码:{{ supplierProduct.product ? supplierProduct.product.barcode : supplierProduct.supplierProductBarcode }}
+                                                </p>
                                             </td>
                                             <td width="25%">
-                                                {{ supplierProduct.product ? supplierProduct.product.name : supplierProduct.supplierProductName }}
+                                                <p style="word-break:normal;">
+                                                    {{ supplierProduct.product ? supplierProduct.product.name : supplierProduct.supplierProductName }}
+                                                </p>
                                             </td>
                                             <td width="15%">
-                                                {{ supplierProduct.supplierProductCode }}
+                                                <p style="word-break:normal;">
+                                                    {{ supplierProduct.supplierProductCode }}
+                                                </p>
                                             </td>
                                             <td width="15%">
                                                 <input type="text" ng-model="supplierProduct.purchaseQty" ng-blur="rebuildPurchaseQtyNumeric( supplierProduct )" class="form-control input-sm" placeholder="(必填)" />
@@ -101,8 +107,8 @@
                                     </tr>
                                 </thead>
                             </table>
-                            <div style="overflow:auto; height:484px;">
-                                <table class="table">
+                            <div style="overflow-y:auto; overflow-x:hidden; height:430px;">
+                                <table class="table" style="word-wrap:break-word; table-layout:fixed;">
                                     <tbody>
                                         <tr ng-repeat="item in purchaseOrder.items" class="pagination-ul" >
                                             <td width="20%">
@@ -282,11 +288,11 @@
             </div>
 
             <div class="form-group has-feedback">
-                <label class="control-label col-md-2">收货人email</label>
+                <label class="control-label col-md-2">收货人手机</label>
                 <div class="col-md-3">
-                    <input class="form-control" type="text" ng-model="purchaseOrder.receiveEmail" placeholder="(选填)" />
+                    <input class="form-control" type="text" ng-model="purchaseOrder.receiveMobile" placeholder="(选填)" />
                 </div>
-                <label class="control-label col-md-2">发票总金额 （实际采购总金额)</label>
+                <label class="control-label col-md-2">发票总金额</label>
                 <div class="col-md-3">
                     <p class="form-control-static">
                         {{ purchaseOrder.totalInvoiceAmount ? purchaseOrder.totalInvoiceAmount : 0 | currency : '' }}
@@ -295,9 +301,9 @@
             </div>
 
             <div class="form-group has-feedback">
-                <label class="control-label col-md-2">收货地址</label>
+                <label class="control-label col-md-2">收货人email</label>
                 <div class="col-md-3">
-                    <input class="form-control" type="text" ng-model="purchaseOrder.receiveAddress" placeholder="(选填)" />
+                    <input class="form-control" type="text" ng-model="purchaseOrder.receiveEmail" placeholder="(选填)" />
                 </div>
                 <label class="control-label col-md-2">收货总件数</label>
                 <div class="col-md-3">
@@ -306,10 +312,11 @@
                     </p>
                 </div>
             </div>
+
             <div class="form-group has-feedback">
-                <label class="control-label col-md-2">收件邮编</label>
+                <label class="control-label col-md-2">收货公司</label>
                 <div class="col-md-3">
-                    <input class="form-control" type="text" ng-model="purchaseOrder.receivePost" placeholder="(选填)" />
+                    <input class="form-control" type="text" ng-model="purchaseOrder.companyName" placeholder="(选填)" />
                 </div>
                 <label class="control-label col-md-2">转credit总件数</label>
                 <div class="col-md-3">
@@ -318,16 +325,38 @@
                     </p>
                 </div>
             </div>
+
             <div class="form-group has-feedback">
-                <label class="control-label col-md-2">备注</label>
+                <label class="control-label col-md-2">收件邮编</label>
                 <div class="col-md-3">
-                    <input class="form-control" type="text" ng-model="purchaseOrder.memo" placeholder="(选填)" />
+                    <input class="form-control" type="text" ng-model="purchaseOrder.receivePost" placeholder="(选填)" />
                 </div>
                 <label class="control-label col-md-2">采购总件数</label>
                 <div class="col-md-3">
                     <p class="form-control-static">
                         {{ purchaseOrder.totalPurchasedQty ? purchaseOrder.totalPurchasedQty : 0 }}
                     </p>
+                </div>
+            </div>
+
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">收货地址</label>
+                <div class="col-md-8">
+                    <input class="form-control" type="text" ng-model="purchaseOrder.receiveAddress" placeholder="(选填)" />
+                </div>
+            </div>
+
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">运送注意事项</label>
+                <div class="col-md-8">
+                    <input class="form-control" type="text" ng-model="purchaseOrder.deliverAttention" placeholder="(选填)" />
+                </div>
+            </div>
+
+            <div class="form-group has-feedback">
+                <label class="control-label col-md-2">备注</label>
+                <div class="col-md-8">
+                    <input class="form-control" type="text" ng-model="purchaseOrder.memo" placeholder="(选填)" />
                 </div>
             </div>
 

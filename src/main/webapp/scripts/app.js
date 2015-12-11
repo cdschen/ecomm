@@ -35,13 +35,13 @@ angular.module('ecommApp', ['toastr', 'LocalStorageModule', 'ui.router', 'ngReso
             $rootScope.toState = toState;
             $rootScope.toStateParams = toParams;
             var isResolved = Principal.isResolved();
-            //console.log('[DEBUG][app.js]---[run().$stateChangeStart.Principal.isResolved()]---[' + isResolved + ']');
+            // console.log('[DEBUG][app.js]---[run().$stateChangeStart.Principal.isResolved()]---[' + isResolved + ']');
             if (isResolved) {
                 Auth.identify();
             }
         });
         $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
-            //console.log('[DEBUG][app.js]---[run().$stateChangeSuccess]');
+            // console.log('[DEBUG][app.js]---[run().$stateChangeSuccess]');
             var titleKey = 'EComm';
             $rootScope.previousStateName = fromState.name;
             $rootScope.previousStateParams = fromParams;
@@ -63,8 +63,9 @@ angular.module('ecommApp', ['toastr', 'LocalStorageModule', 'ui.router', 'ngReso
 .factory('authExpiredInterceptor', ['$rootScope', '$q', '$injector', function($rootScope, $q, $injector) {
     return {
         responseError: function(response) {
-            //console.log('[DEBUG][app.js]---[factory().responseError()]');
-            //console.log(response);
+            // console.log('[DEBUG][app.js]---[factory().responseError()]');
+            // console.log(response);
+
             //&& response.data.path.indexOf('/api/csrf') === -1
             if (response.status === 401 && response.data.path !== undefined) {
                 var Auth = $injector.get('Auth');

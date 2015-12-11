@@ -19,6 +19,8 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "t_inventory_batch_item")
 public class InventoryBatchItem implements Serializable {
@@ -87,6 +89,9 @@ public class InventoryBatchItem implements Serializable {
 	@Column(name = "batch_operate")
 	private Integer batchOperate;
 
+	@Column(name = "batch_nature")
+	private String batchNature;
+
 	@Lob
 	@Column(name = "memo")
 	private String memo;
@@ -120,6 +125,7 @@ public class InventoryBatchItem implements Serializable {
 	@JoinColumn(name = "execute_operator_id")
 	private User executeOperator = new User();
 
+	@JsonIgnore
 	@OneToOne
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "out_batch_id")
@@ -378,6 +384,14 @@ public class InventoryBatchItem implements Serializable {
 
 	public void setMemo(String memo) {
 		this.memo = memo;
+	}
+
+	public String getBatchNature() {
+		return batchNature;
+	}
+
+	public void setBatchNature(String batchNature) {
+		this.batchNature = batchNature;
 	}
 
 }

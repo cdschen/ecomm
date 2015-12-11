@@ -8,6 +8,7 @@ import java.util.Map;
 import com.sooeez.ecomm.domain.Courier;
 import com.sooeez.ecomm.domain.Order;
 import com.sooeez.ecomm.domain.PurchaseOrder;
+import com.sooeez.ecomm.domain.Shipment;
 
 public class OperationReviewDTO implements Serializable {
 
@@ -30,6 +31,11 @@ public class OperationReviewDTO implements Serializable {
 	private String action;
 	/* 复核可确认性 */
 	private boolean confirmable = true;
+	
+	private Boolean deleted = false;
+	private Long shopId;
+	private Long warehouseId;
+	
 
 	/* Logic-Related Attributes */
 	/* 订单验证 */
@@ -38,8 +44,28 @@ public class OperationReviewDTO implements Serializable {
 	private Courier selectedCourier;
 	// 指定出库的仓库id
 	private Long assignWarehouseId;
+	// 指定订单的店铺id
+	private Long assignShopId;
+	// 指定配送方式
+	private Integer assignDeliveryMethod;
+	/* 收货单验证 */
+	private String assignShippingDescription;
 	/* 收货单验证 */
 	private List<PurchaseOrder> purchaseOrders;
+	
+	/* 发货单批量添加 */
+	private List<Shipment> shipments;
+	
+	/* 复核操作列出用 */
+	private List<Shipment> reviewShipments;
+	
+	/* 操作复核查询［快递］之用 */
+	private String shippingDescription;
+	
+	/* 返回查询结果之用 */
+	private Integer totalNumber;
+	
+	private Boolean showDeployedOrders;
 	
 
 	public boolean isConfirmable() {
@@ -120,6 +146,94 @@ public class OperationReviewDTO implements Serializable {
 
 	public void setPurchaseOrders(List<PurchaseOrder> purchaseOrders) {
 		this.purchaseOrders = purchaseOrders;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public List<Shipment> getShipments() {
+		return shipments;
+	}
+
+	public void setShipments(List<Shipment> shipments) {
+		this.shipments = shipments;
+	}
+
+	public List<Shipment> getReviewShipments() {
+		return reviewShipments;
+	}
+
+	public void setReviewShipments(List<Shipment> reviewShipments) {
+		this.reviewShipments = reviewShipments;
+	}
+
+	public Long getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(Long shopId) {
+		this.shopId = shopId;
+	}
+
+	public Long getWarehouseId() {
+		return warehouseId;
+	}
+
+	public void setWarehouseId(Long warehouseId) {
+		this.warehouseId = warehouseId;
+	}
+
+	public Long getAssignShopId() {
+		return assignShopId;
+	}
+
+	public void setAssignShopId(Long assignShopId) {
+		this.assignShopId = assignShopId;
+	}
+
+	public Integer getAssignDeliveryMethod() {
+		return assignDeliveryMethod;
+	}
+
+	public void setAssignDeliveryMethod(Integer assignDeliveryMethod) {
+		this.assignDeliveryMethod = assignDeliveryMethod;
+	}
+
+	public String getShippingDescription() {
+		return shippingDescription;
+	}
+
+	public void setShippingDescription(String shippingDescription) {
+		this.shippingDescription = shippingDescription;
+	}
+
+	public Integer getTotalNumber() {
+		return totalNumber;
+	}
+
+	public void setTotalNumber(Integer totalNumber) {
+		this.totalNumber = totalNumber;
+	}
+
+	public Boolean getShowDeployedOrders() {
+		return showDeployedOrders;
+	}
+
+	public void setShowDeployedOrders(Boolean showDeployedOrders) {
+		this.showDeployedOrders = showDeployedOrders;
+	}
+
+	public String getAssignShippingDescription() {
+		return assignShippingDescription;
+	}
+
+	public void setAssignShippingDescription(String assignShippingDescription) {
+		this.assignShippingDescription = assignShippingDescription;
 	}
 
 }

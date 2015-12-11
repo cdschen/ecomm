@@ -179,6 +179,8 @@ angular.module('ecommApp')
                         $scope.batch.purchaseOrderId = $scope.receive.purchaseOrderId;
                         $scope.batch.warehouse = angular.copy(item.warehouse);
                         $scope.batch.items.push(item);
+
+                        $scope.batch.purchaseBatchId = $scope.purchaseBatchId;
                         $scope.batches.push(angular.copy($scope.batch));
                     }
                 });

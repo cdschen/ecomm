@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sooeez.ecomm.domain.PurchaseOrder;
 import com.sooeez.ecomm.domain.Shipment;
+import com.sooeez.ecomm.service.PurchaseOrderDeliveryService;
 import com.sooeez.ecomm.service.PurchaseOrderService;
 import com.sooeez.ecomm.service.ShipmentService;
 
@@ -43,6 +44,8 @@ public class DownloadStevenController {
 	
 	@Autowired 
 	private PurchaseOrderService purchaseOrderService;
+	@Autowired 
+	private PurchaseOrderDeliveryService purchaseOrderDeliveryService;
 	
 	@Autowired
     private ResourceLoader resourceLoader;
@@ -117,7 +120,7 @@ public class DownloadStevenController {
     	contentStyle.setFont( contentFont );
 
     	/* 创建［发货单标题］ */
-    	String[] titles = { "收货人", "电话号", "手机号", "地址", "物品内容", "邮编", "", "快递单号", "", "发货单号", "状态", "备注" };
+    	String[] titles = { "收货人", "电话号", "手机号", "地址", "物品内容", "邮编", "快递单号", "发货单号", "状态", "备注" };
 
     	Row titleRow = sheet.createRow( 0 );
     	for( int i = 0; i < titles.length; i++ )
@@ -182,6 +185,7 @@ public class DownloadStevenController {
     		excelName = "采购单( " + id + " ) - " + (new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss")).format(new Date()) + ".xlsx";
     		isExportable = true;
     	}
+    	
 //    	else if( ids != null && ids.length > 0 )
 //    	{
 //    		excelName = "采购单( 批量 ) - " + (new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss")).format(new Date()) + ".xlsx";
@@ -214,6 +218,70 @@ public class DownloadStevenController {
 //    			}
 //    		}
 //    	}
+    	
+    	
+    	ByteArrayOutputStream output = new ByteArrayOutputStream();
+    	workbook.write( output );
+		return getResponseEntity( output, excelName );
+    }
+
+	
+	/**
+	 * 收货单导出 Excel （单个/批量）
+	 * @param id
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/purchaseOrderDelivery/export")
+    public ResponseEntity<byte[]> exportPurchaseOrderDelivery
+    (
+    	@RequestParam( value = "id", required = false ) Long id,
+    	@RequestParam( value = "ids", required = false ) Long[] ids
+    )
+    throws IOException
+	{
+    	boolean isExportSinglePurchaseOrderDelivery = true;
+    	boolean isExportable = false;
+
+    	String excelName = null;
+    	
+    	if( id != null )
+    	{
+    		excelName = "收货单( " + id + " ) - " + (new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss")).format(new Date()) + ".xlsx";
+    		isExportable = true;
+    	}
+    	else if( ids != null && ids.length > 0 )
+    	{
+    		excelName = "收货单( 批量 ) - " + (new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss")).format(new Date()) + ".xlsx";
+    		isExportSinglePurchaseOrderDelivery = false;
+    		isExportable = true;
+    	}
+
+    	Resource reourse = resourceLoader.getResource("classpath:purchaseOrderDeliveryTemplate.xlsx");
+    	Workbook workbook = new XSSFWorkbook( reourse.getInputStream() );
+
+    	/* 创建 Sheet */
+    	Sheet sheet = workbook.getSheetAt( 0 );
+    	
+    	/* 导出单个收货单 */
+    	if( isExportSinglePurchaseOrderDelivery && isExportable )
+    	{
+        	/* 获取［收货单内容］ */
+        	PurchaseOrder purchaseOrder = this.purchaseOrderService.getPurchaseOrder( id );
+        	this.purchaseOrderDeliveryService.addPurchaseOrderDeliveryToCell( purchaseOrder, workbook, sheet );
+    	}
+    	/* 导出多个收货单 */
+    	else if( ! isExportSinglePurchaseOrderDelivery && isExportable )
+    	{
+    		List<Shipment> shipments = this.shipmentService.getShipmentsByIds( ids );
+    		
+    		if( shipments != null && shipments.size() > 0 )
+    		{
+    			for( int i = 0; i < shipments.size(); i++ )
+    			{
+    			}
+    		}
+    	}
     	
     	
     	ByteArrayOutputStream output = new ByteArrayOutputStream();

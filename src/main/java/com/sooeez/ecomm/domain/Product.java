@@ -24,6 +24,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.Where;
@@ -42,6 +44,9 @@ public class Product implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	@Column(name = "temp_purchasing")
+	private Boolean tempPurchasing;
+	
 	@Column(name = "product_type", nullable = false)
 	private Integer productType;
 
@@ -157,7 +162,7 @@ public class Product implements Serializable {
 	 * Related Properties
 	 */
 
-	@OneToOne
+	@OneToOne//(optional = false, fetch = FetchType.LAZY)
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "brand_id")
 	private Brand brand;
@@ -722,6 +727,14 @@ public class Product implements Serializable {
 
 	public void setAction(String action) {
 		this.action = action;
+	}
+
+	public Boolean getTempPurchasing() {
+		return tempPurchasing;
+	}
+
+	public void setTempPurchasing(Boolean tempPurchasing) {
+		this.tempPurchasing = tempPurchasing;
 	}
 
 }

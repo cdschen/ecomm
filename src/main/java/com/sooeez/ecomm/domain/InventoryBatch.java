@@ -50,6 +50,10 @@ public class InventoryBatch implements Serializable {
 	@Column(name = "operate", nullable = false)
 	private Integer operate;
 
+	// 标注一个出库单的性质，为采购性质：purchase
+	@Column(name = "nature")
+	private String nature;
+
 	// 创建batch的人
 	@Column(name = "user_id", nullable = false, insertable = false, updatable = false)
 	private Long userId;
@@ -133,6 +137,10 @@ public class InventoryBatch implements Serializable {
 	// 仓库id集合
 	@Transient
 	private Long[] warehouseIds;
+
+	// 存放采购性质的出库单的ID
+	@Transient
+	private Long purchaseBatchId;
 
 	/*
 	 * Constructor
@@ -327,6 +335,22 @@ public class InventoryBatch implements Serializable {
 
 	public void setWarehouseIds(Long[] warehouseIds) {
 		this.warehouseIds = warehouseIds;
+	}
+
+	public String getNature() {
+		return nature;
+	}
+
+	public void setNature(String nature) {
+		this.nature = nature;
+	}
+
+	public Long getPurchaseBatchId() {
+		return purchaseBatchId;
+	}
+
+	public void setPurchaseBatchId(Long purchaseBatchId) {
+		this.purchaseBatchId = purchaseBatchId;
 	}
 
 }

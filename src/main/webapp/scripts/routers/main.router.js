@@ -20,7 +20,7 @@ angular.module('ecommApp')
                 },
                 resolve: {
                     identify: ['Auth', function(Auth) {
-                        //console.log('[DEBUG][app.js]---[config().state(stie).resolve:{Auth.identify()}]');
+                        // console.log('[DEBUG][main.router.js]---[state(stie).resolve:{Auth.identify()}]');
                         return Auth.identify();
                     }]
                 }
@@ -38,5 +38,6 @@ angular.module('ecommApp')
                     roles: []
                 }
             });
+            
     }
 ]);

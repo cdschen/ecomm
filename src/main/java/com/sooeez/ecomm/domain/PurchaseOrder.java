@@ -39,6 +39,10 @@ public class PurchaseOrder implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	//	#公司名
+	@Column(name = "company_name")
+	private String companyName;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "create_time")
 	private Date createTime;
@@ -94,6 +98,10 @@ public class PurchaseOrder implements Serializable {
 	@Column(name = "memo")
 	private String memo;
 
+	//	#运送注意
+	@Column(name = "deliver_attention")
+	private String deliverAttention;
+
 	//	#最近更新时间
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "last_update", nullable = false)
@@ -106,6 +114,10 @@ public class PurchaseOrder implements Serializable {
 	//	#收货人电话
 	@Column(name = "receive_phone", nullable = false)
 	private String receivePhone;
+
+	//	#收货人手机
+	@Column(name = "receive_mobile", nullable = false)
+	private String receiveMobile;
 
 	//	#收货人email
 	@Column(name = "receive_email")
@@ -213,6 +225,14 @@ public class PurchaseOrder implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
 	}
 
 	public Date getCreateTime() {
@@ -327,6 +347,14 @@ public class PurchaseOrder implements Serializable {
 		this.memo = memo;
 	}
 
+	public String getDeliverAttention() {
+		return deliverAttention;
+	}
+
+	public void setDeliverAttention(String deliverAttention) {
+		this.deliverAttention = deliverAttention;
+	}
+
 	public Date getLastUpdate() {
 		return lastUpdate;
 	}
@@ -349,6 +377,14 @@ public class PurchaseOrder implements Serializable {
 
 	public void setReceivePhone(String receivePhone) {
 		this.receivePhone = receivePhone;
+	}
+
+	public String getReceiveMobile() {
+		return receiveMobile;
+	}
+
+	public void setReceiveMobile(String receiveMobile) {
+		this.receiveMobile = receiveMobile;
 	}
 
 	public String getReceiveEmail() {

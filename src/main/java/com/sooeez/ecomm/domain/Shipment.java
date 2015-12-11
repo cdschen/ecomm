@@ -149,6 +149,10 @@ public class Shipment implements Serializable {
 	@Column(name = "ship_warehouse_id")
 	private Long shipWarehouseId;
 
+	/* 快递单打印详情内容 */
+	@Column(name = "print_item_content")
+	private String printItemContent;
+	
 	/*
 	 * Related Properties
 	 */
@@ -173,7 +177,7 @@ public class Shipment implements Serializable {
 	@JoinColumn(name = "courier_id", insertable = false, updatable = false)
 	private Courier courier;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.LAZY)
+	@OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY )
 	@JoinColumn(name = "shipment_id")
 	private List<ShipmentItem> shipmentItems;
 
@@ -222,6 +226,18 @@ public class Shipment implements Serializable {
 	/* 签收结束日期 */
 	@Transient
 	private String signupTimeEnd;
+
+	/* 货运描述 */
+	@Transient
+	private String shippingDescription;
+	
+	/* 发货方式 */
+	@Transient
+	private Integer deliveryMethod;
+	
+	/* 发货方式 */
+	@Transient
+	private List<Long> deleteIds;
 
 	/**
 	 * 复核操作
@@ -624,6 +640,40 @@ public class Shipment implements Serializable {
 
 	public void setProductContent(String productContent) {
 		this.productContent = productContent;
+	}
+
+	public String getShippingDescription() {
+		return shippingDescription;
+	}
+
+	public void setShippingDescription(String shippingDescription) {
+		this.shippingDescription = shippingDescription;
+	}
+
+	public String getPrintItemContent() {
+		return printItemContent;
+	}
+
+	public void setPrintItemContent(String printItemContent) {
+		this.printItemContent = printItemContent;
+	}
+
+	public Integer getDeliveryMethod() {
+		return deliveryMethod;
+	}
+
+	public void setDeliveryMethod(Integer deliveryMethod) {
+		this.deliveryMethod = deliveryMethod;
+	}
+
+	public List< Long > getDeleteIds()
+	{
+		return deleteIds;
+	}
+
+	public void setDeleteIds( List< Long > deleteIds )
+	{
+		this.deleteIds = deleteIds;
 	}
 
 }

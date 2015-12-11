@@ -3,6 +3,7 @@ package com.sooeez.ecomm.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,6 @@ import com.sooeez.ecomm.domain.Courier;
 import com.sooeez.ecomm.domain.Inventory;
 import com.sooeez.ecomm.domain.InventoryBatch;
 import com.sooeez.ecomm.domain.InventoryBatchItem;
-import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Shipment;
 import com.sooeez.ecomm.domain.ShipmentItem;
 import com.sooeez.ecomm.dto.OperationReviewDTO;
@@ -72,17 +72,41 @@ public class InventoryController {
 	}
 	
 	@RequestMapping(value = "/inventories")
-	public PageDTO<Inventory> getPagedInventories(Inventory inventory, Pageable pageable) {
-		PageDTO<Inventory> page = new PageDTO<>();
+	public PageDTO<InventoryDTO> getPagedInventories(Inventory inventory, Pageable pageable) {
+		PageDTO<InventoryDTO> page = new PageDTO<>();
 		page.setNumber(pageable.getPageNumber());
 		page.setSize(pageable.getPageSize());
-		page.setTotalElements(inventoryService.countAsInventory(pageable));
-//		page.setTotalPages(
-//				page.getTotalElements().longValue() % page.getSize().longValue() == 0 
-//					? (page.getTotalElements().longValue() / page.getSize().longValue()) 
-//							: (page.getTotalElements().longValue() / page.getSize().longValue() + 1 ));
-		return null;
-		//return inventoryService.getPagedInventories(inventory, pageable);
+		page.setTotalElements(inventoryService.countAsInventory(inventory, pageable));
+		List<InventoryDTO> inventoriesDTO = new ArrayList<>();
+		inventoryService.getPagedInventoriesReturnList(inventory, pageable).forEach(inve -> {
+			InventoryDTO inventoryDTO = new InventoryDTO();
+			
+			InventoryProductDTO productDTO = new InventoryProductDTO();
+			productDTO.setId(inve.getProduct().getId());
+			productDTO.setSku(inve.getProduct().getSku());
+			productDTO.setName(inve.getProduct().getName());
+			inventoryDTO.setProduct(productDTO);
+			
+			InventoryPositionDTO positionDTO = new InventoryPositionDTO();
+			positionDTO.setId(inve.getPosition().getId());
+			positionDTO.setName(inve.getPosition().getName());
+			inventoryDTO.setPosition(positionDTO);
+			
+			InventoryBatchDTO batchDTO = new InventoryBatchDTO();
+			batchDTO.setId(inve.getBatch().getId());
+			batchDTO.setPurchaseOrderId(inve.getBatch().getPurchaseOrderId());
+			batchDTO.setReceiveId(inve.getBatch().getReceiveId());
+			inventoryDTO.setBatch(batchDTO);
+			
+			inventoryDTO.setId(inve.getId());
+			inventoryDTO.setInventoryBatchId(inve.getInventoryBatchId());
+			inventoryDTO.setQuantity(inve.getQuantity());
+			inventoryDTO.setExpireDate(inve.getExpireDate());
+			
+			inventoriesDTO.add(inventoryDTO);
+		});
+		page.setContent(inventoriesDTO);
+		return page;
 	}
 	
 	@RequestMapping(value = "/inventories/get/all")
@@ -142,12 +166,30 @@ public class InventoryController {
 	
 	@RequestMapping(value = "/inventory-batches/{id}")
 	public InventoryBatch getBatch(@PathVariable("id") Long id) {
-		return batchService.getBatch(id);
+		InventoryBatch batch = batchService.getBatch(id);
+		return batch;
 	}
 	
 	@RequestMapping(value = "/inventory-batches")
-	public Page<InventoryBatch> getPagedBatches(InventoryBatch batch, Pageable pageable) {
-		return batchService.getPagedBatches(batch, pageable);
+	public PageDTO<InventoryBatch> getPagedBatches(InventoryBatch batch, Pageable pageable) {
+		Page<InventoryBatch> page = batchService.getPagedBatches(batch, pageable);
+		PageDTO<InventoryBatch> pageDTO = new PageDTO<>();
+		BeanUtils.copyProperties(page, pageDTO, "content", "sort");
+		List<InventoryBatch> bList = new ArrayList<>();
+		page.forEach(b -> {
+			InventoryBatch batchDTO = new InventoryBatch();
+//			batchDTO.setId(b.getId().longValue());
+//			batchDTO.setType(b.getType().intValue());
+//			batchDTO.setOperate(b.getOperate().intValue());
+//			batchDTO.setUserId(b.getUserId().longValue());
+//			batchDTO.setExecuteOperatorId(b.getExecuteOperatorId().longValue());
+//			batchDTO.setOperateTime(b.getOperateTime());
+//			batchDTO.setOutInventoryTime(b.getOutInventoryTime());
+			BeanUtils.copyProperties(b, batchDTO, "items", "orderBatches");
+			bList.add(batchDTO);
+		});
+		pageDTO.setContent(bList);
+		return pageDTO;
 	}
 	
 	@RequestMapping(value = "/inventory-batches/get/all")
@@ -156,18 +198,24 @@ public class InventoryController {
 	}
 	
 	@RequestMapping(value = "/inventory-batches", method = RequestMethod.POST)
-	public InventoryBatch saveBatch(@RequestBody InventoryBatch inventoryBatch) {
-		return batchService.saveInventoryBatch(inventoryBatch);
+	public InventoryBatch saveBatch(@RequestBody InventoryBatch batch) {
+		return batchService.saveInventoryBatch(batch);
 	}
 	
 	@RequestMapping(value = "/inventory-batches/save/list", method = RequestMethod.POST)
-	public List<InventoryBatch> saveBatches(@RequestBody List<InventoryBatch> inventoryBatches) {
-		return batchService.saveInventoryBatches(inventoryBatches);
+	public List<InventoryBatch> saveBatches(@RequestBody List<InventoryBatch> batches) {
+		return batchService.saveInventoryBatches(batches);
 	}
 	
 	@RequestMapping(value = "/inventory-batches/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteBatch(@PathVariable("id") Long id) {
 		batchService.deleteBatch(id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/inventory-batches/trash", method = RequestMethod.POST)
+	public ResponseEntity<?> trashBatch(@RequestBody InventoryBatch batch) {
+		batchService.trashBatch(batch);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
@@ -280,6 +328,24 @@ public class InventoryController {
 	public OperationReviewShipmentDTO confirmOrderWhenImportShipments( @RequestBody OperationReviewShipmentDTO review )
 	{
 		return shipmentService.confirmOperationReviewWhenImportShipments( review );
+	}
+	
+	@RequestMapping(value = "/shipments/change-status", method = RequestMethod.POST)
+	public List<Shipment> changeShipmentsStatus(@RequestBody Shipment shipment)
+	{
+		return shipmentService.changeShipmentsStatus( shipment );
+	}
+	
+	@RequestMapping(value = "/shipment/change-status", method = RequestMethod.POST)
+	public Shipment changeShipmentStatus(@RequestBody Shipment shipment)
+	{
+		return shipmentService.changeShipmentStatus( shipment );
+	}
+	
+	@RequestMapping(value = "/shipments/save-changes", method = RequestMethod.POST)
+	public List<Shipment> saveShipmentsChanges(@RequestBody Shipment shipment)
+	{
+		return shipmentService.saveShipments( shipment );
 	}
 	
 	/*

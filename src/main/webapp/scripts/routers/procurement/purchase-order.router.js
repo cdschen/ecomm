@@ -19,7 +19,10 @@ angular.module('ecommApp')
             }
         })
         .state('purchaseOrder.operator', {
-            url: '/purchase-order/:id',
+            url: '/purchase-order/:id/:purchasedProducts',
+            // params: {
+            //     purchasedProducts: null
+            // },
             views: {
                 'content@': {
                     templateUrl: 'views/procurement/purchase-order/purchase-order.operator.html?' + t,

@@ -114,6 +114,14 @@ public class DownloadController {
     	cell.setCellStyle(style);
     	cell.setCellValue(Math.abs(batch.getTotal().longValue())); 
     	
+    	// 备注
+    	if ("purchase".equals(batch.getNature())) {
+    		cell = sheet.getRow(0).createCell(3);
+        	cell.setCellStyle(style);
+        	cell.setCellValue("以下商品都是需要临时采购，库存不足。"); 
+    	}
+    	
+    	
     	int startRow = 5;
     	for(Product product: products) {
     		
@@ -132,7 +140,12 @@ public class DownloadController {
     				// 设置应出库数量
     				row.getCell(3).setCellValue(Math.abs(position.getTotal().longValue()));
     				// 出库后应剩余库存
-    				row.getCell(4).setCellValue(position.getStock().longValue());
+    				if ("purchase".equals(batch.getNature())) {
+    					
+    				} else {
+        				row.getCell(4).setCellValue(position.getStock().longValue());
+    				}
+    				
     			} else {
     				startRow++;
     				row = createRowAndStyle(startRow, sheet, style);
@@ -141,7 +154,11 @@ public class DownloadController {
     				// 设置应出库数量
     				row.getCell(3).setCellValue(Math.abs(position.getTotal().longValue()));
     				// 出库后应剩余库存
-    				row.getCell(4).setCellValue(position.getStock().longValue());
+    				if ("purchase".equals(batch.getNature())) {
+    					
+    				} else {
+    					row.getCell(4).setCellValue(position.getStock().longValue());
+    				}
     			}
     		}
     		startRow++;
