@@ -27,11 +27,11 @@ import com.sooeez.ecomm.domain.ObjectProcess;
 import com.sooeez.ecomm.domain.Order;
 import com.sooeez.ecomm.domain.OrderItem;
 import com.sooeez.ecomm.domain.Process;
-import com.sooeez.ecomm.domain.ProcessStep;
 import com.sooeez.ecomm.domain.Product;
 import com.sooeez.ecomm.domain.Shop;
 import com.sooeez.ecomm.repository.OrderRepository;
 import com.sooeez.ecomm.service.ProcessService;
+import com.sooeez.ecomm.service.ShopService;
 
 @Service
 public class ImportOrderFromMDD
@@ -44,6 +44,8 @@ public class ImportOrderFromMDD
 	/*
 	 * Service
 	 */
+	@Autowired
+	private ShopService		shopService;
 	@Autowired
 	private ProcessService	processService;
 	@PersistenceContext
@@ -148,8 +150,7 @@ public class ImportOrderFromMDD
 					 */
 					if ( orderInfos != null && orderInfos.size() > 0 )
 					{
-						Shop mddShop = new Shop();
-						mddShop.setId( 2L );
+						Shop mddShop = this.shopService.getShop( 2L );
 
 						// ( id:100:NZD, id:101:RMB )
 						// ( 0：纽币,1：人民币 )
@@ -167,12 +168,14 @@ public class ImportOrderFromMDD
 							Boolean isDeliveryMethodCorrect = true;
 
 							Order order = new Order();
+							order.setShop( mddShop );
 							order.setId( orderInfo.getEcommOrderId() );
 
+							// 改订单为［待配货］或［配送中］
 							Process processQuery = new Process();
 							processQuery.setObjectType( 1 );
 							processQuery.setEnabled( true );
-							List< Process > processes = this.processService.getProcesses( processQuery, null );
+							List< Process > processes = processService.getProcesses( processQuery, null );
 							if ( processes != null && processes.size() > 0 )
 							{
 								for ( Process process : processes )
@@ -182,16 +185,16 @@ public class ImportOrderFromMDD
 										ObjectProcess objectProcess = new ObjectProcess();
 										objectProcess.setObjectType( 1 );
 										objectProcess.setProcess( process );
-										ProcessStep step = new ProcessStep();
-										if ( process.getDefaultStepId() != null )
+
+										if ( orderInfo.getOrderStatus().equals( 1L ) )
 										{
-											step.setId( process.getDefaultStepId() );
+											objectProcess.setStep( order.getShop().getDeployStep() );
 										}
 										else
 										{
-											step.setId( process.getSteps().get( 0 ).getId() );
+											objectProcess.setStep( order.getShop().getInitStep() );
 										}
-										objectProcess.setStep( step );
+
 										order.setProcesses( new ArrayList< ObjectProcess >() );
 										order.getProcesses().add( objectProcess );
 									}
@@ -359,8 +362,6 @@ public class ImportOrderFromMDD
 							{
 								order.setReceivePost( String.valueOf( orderInfo.getZipcode() ) );
 							}
-
-							order.setShop( mddShop );
 
 							if ( orderInfo.getBiz() != null && ! orderInfo.getBiz().equals( "" ) )
 							{
